@@ -107,7 +107,7 @@ package com.tinyspeck.engine.spritesheet {
 			
 			AvatarSSManager.doneFunc = doneFunc;
 			
-			if (p_mc) {
+			if (true || p_mc) {
 				setMc(p_mc);
 			} else {
 				; // satisfy compiler
@@ -518,7 +518,7 @@ package com.tinyspeck.engine.spritesheet {
 				} else {
 					; // satisfy compiler
 					CONFIG::debugging {
-						Console.error('NO placeholder_sheet_url');
+						//Console.error('NO placeholder_sheet_url');
 					}
 				}
 			} else {

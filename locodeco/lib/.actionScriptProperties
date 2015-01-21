@@ -1,26 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <actionScriptProperties analytics="false" mainApplicationPath="LocoDeco.as" projectUUID="cbac3278-39b7-4f86-8294-7bcc34a38379" version="10">
-    <compiler
-        additionalCompilerArguments="-locale en_US&#10;-incremental"
-        autoRSLOrdering="true"
-        copyDependentFiles="false"
-        flexSDK="Flex 4.5.1"
-        fteInMXComponents="false"
-        generateAccessible="false"
-        htmlExpressInstall="true"
-        htmlGenerate="false"
-        htmlHistoryManagement="false"
-        htmlPlayerVersionCheck="true"
-        includeNetmonSwc="false"
-        outputFolderPath="bin"
-        removeUnusedRSL="true"
-        sourceFolderPath="src"
-        strict="true"
-        targetPlayerVersion="0.0.0"
-        useApolloConfig="false"
-        useDebugRSLSwfs="true"
-        verifyDigests="true"
-        warn="true">
+  <compiler additionalCompilerArguments="-locale en_US&#10;-incremental" autoRSLOrdering="true" copyDependentFiles="false" flexSDK="Flex 4.5.1" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="false" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
     <compilerSourcePath/>
     <libraryPath defaultLinkType="0">
       <libraryPathEntry kind="4" path="">
@@ -49,7 +29,6 @@
           <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/utilities.swc" useDefaultLinkType="false"/>
         </excludedEntries>
       </libraryPathEntry>
-      <libraryPathEntry kind="1" linkType="1" path="lib"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>

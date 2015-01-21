@@ -79,7 +79,6 @@ package com.tinyspeck.debug
 				return;
 			}
 			
-			
 			// might be null!
 			const errorEvent:ErrorEvent = (errorOrErrorEvent as ErrorEvent);
 			

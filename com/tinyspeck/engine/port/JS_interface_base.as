@@ -52,6 +52,8 @@ package com.tinyspeck.engine.port {
 		
 		/* public method for AS to call JS */
 		public function call_JS(msg:Object = null, now:Boolean = false):void {
+			Console.log("JS wants to call " + msg);
+			return;
 			msg = msg || {};
 
 			CONFIG::debugging {

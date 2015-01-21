@@ -30,11 +30,11 @@ package com.tinyspeck.core.data {
 		public function getFlashvar(k:String, t:String = 'String'):* {
 			var val:*;
 			if (t == 'Number') {
-				val = (!isNaN(data[k])) ? parseFloat(data[k]) : null;
+				val = 0;//(!isNaN(data[k])) ? parseFloat(data[k]) : null;
 			} else if (t == 'String') {
-				val = data[k] || '';
+				val = '';//data[k] || '';
 			} else {
-				val = data[k];
+				val = {};//data[k];
 			}
 			return val;
 		}

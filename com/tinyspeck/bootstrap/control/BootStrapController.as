@@ -1,5 +1,5 @@
 package com.tinyspeck.bootstrap.control {
-	CONFIG const focus_debug:Boolean = false;
+	/*CONFIG*/ //public const focus_debug:Boolean = false;
 
 	import com.flexamphetamine.BuildDecayChronograph;
 	import com.tinyspeck.bootstrap.BootUtil;
@@ -46,7 +46,6 @@ package com.tinyspeck.bootstrap.control {
 	import flash.events.TextEvent;
 	import flash.external.ExternalInterface;
 	import flash.net.ObjectEncoding;
-	import flash.net.Socket;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
 	import flash.system.ApplicationDomain;
@@ -156,7 +155,7 @@ package com.tinyspeck.bootstrap.control {
 		private var steps_alotted_for_big_loads:int = 40;// for engine and assets, we'll use this many steps each
 		private var step:int;
 		
-		private var connectionTestSocket:Socket;
+		//private var connectionTestSocket:Socket;
 		private var socketDataReported:Boolean;
 		
 		private var engine_load_start_ms:int;
@@ -296,14 +295,14 @@ package com.tinyspeck.bootstrap.control {
 			// let's see if we have the necessary data to connect to a GS;
 			// if not, let's call out and see if we can retrieve it
 			
-			const local_pc:String = fvm.local_pc;
-			const login_host:String = fvm.login_host;
-			const token:String = fvm.token;
-			const api_token:String = fvm.api_token;
+			const local_pc:String = 'localhost';//fvm.local_pc;
+			const login_host:String = 'localhost';//fvm.login_host;
+			const token:String = 'token';//fvm.token;
+			const api_token:String = 'api_token';//fvm.api_token;
 			
 			Benchmark.addCheck('Checking connection');
 			
-			if (local_pc) {
+			if (false && local_pc) {
 				; // satisfy compiler
 				CONFIG::localhost {
 					// If we're here it's because SWF_local_pc was passed in from the url,
@@ -718,7 +717,7 @@ package com.tinyspeck.bootstrap.control {
 			}
 			
 			updateProgress('connecting to game server...');
-			
+			/*
 			// we may try multiple times
 			if (connectionTestSocket) {
 				removeSocketListeners();
@@ -735,7 +734,7 @@ package com.tinyspeck.bootstrap.control {
 			
 			// wait less time the second attempt
 			connectionTestSocket.timeout = ((socketConnectionAttempts > 1) ? 5000 : 10000);
-			
+
 			// preload the socket policy file
 			try {
 				Security.loadPolicyFile('xmlsocket://' + bsm.host + ':843');
@@ -746,8 +745,10 @@ package com.tinyspeck.bootstrap.control {
 			}
 			
 			connectionTestSocket.connect(bsm.host, port);
+			*/
+			onSocketConnect(new Event(Event.CONNECT));
 		}
-		
+		/*
 		private function removeSocketListeners():void {
 			if (connectionTestSocket) {
 				connectionTestSocket.removeEventListener(Event.CONNECT, onSocketConnect);
@@ -757,28 +758,28 @@ package com.tinyspeck.bootstrap.control {
 				connectionTestSocket.removeEventListener(ProgressEvent.SOCKET_DATA, onSocketData);
 			}
 		}
-		
+		*/
 		protected function onSocketData(event:ProgressEvent):void {
 			if (!socketDataReported) {
 				Benchmark.addCheck('We have socket data: ' + event);
 				socketDataReported = true;
 			}
 		}
-		
+		/*
 		protected function onSocketClose(event:Event):void {
 			removeSocketListeners();
 		}
-		
+		*/
 		private function onSocketConnect(event:Event):void {
 			Benchmark.addCheck('Socket connected to '+bsm.host+':'+bsm.port);
 			NewxpLogger.log('boot_swf_has_socket');
 			CONFIG::debugging {
 				Console.info('Socket connected to '+bsm.host+':'+bsm.port);
 			}
-			
+			/*			
 			connectionTestSocket.close();
 			removeSocketListeners();
-			
+			*/
 			loadGlobometer();
 		}
 		
@@ -821,14 +822,14 @@ package com.tinyspeck.bootstrap.control {
 		
 		private function loadSounds():void {
 			if(SoundManager.instance.sfx_volume && !CONFIG::perf){
-				const opening_screen_url:String = fvm.get('sound_OPENING_SCREEN') || 'http://c2.glitch.bz/sounds/2012-03/1331738581-Opening_Screen_Chimes_1.1.mp3';
+				const opening_screen_url:String = /*fvm.get('sound_OPENING_SCREEN') ||*/ 'http://c2.glitch.bz/sounds/2012-03/1331738581-Opening_Screen_Chimes_1.1.mp3';
 				SoundManager.instance.addExternalSound(opening_screen_url, 'OPENING_SCREEN', false);
 				SoundManager.instance.playSound('OPENING_SCREEN', SoundManager.instance.sfx_volume);
 			}
 			
 			//have to use the sound manager instead of sound master since master relies on things that are loaded in later on
 			if(SoundManager.instance.music_volume && !CONFIG::perf){
-				const opening_music_url:String = fvm.get('sound_OPENING_SCREEN_MUSIC') || 'http://c2.glitch.bz/sounds/2012-03/1331738603-Opening_Screen_Music_1.1.mp3';
+				const opening_music_url:String = /*fvm.get('sound_OPENING_SCREEN_MUSIC') ||*/ 'http://c2.glitch.bz/sounds/2012-03/1331738603-Opening_Screen_Music_1.1.mp3';
 				SoundManager.instance.addExternalSound(opening_music_url, 'OPENING_SCREEN_MUSIC', true);
 				SoundManager.instance.playSound('OPENING_SCREEN_MUSIC', SoundManager.instance.music_volume);
 				
@@ -837,7 +838,7 @@ package com.tinyspeck.bootstrap.control {
 			}
 			
 			if(SoundManager.instance.sfx_volume && !CONFIG::perf){
-				const first_street_url:String = fvm.get('sound_FIRST_STREET_LOADING') || 'http://c2.glitch.bz/sounds/2012-03/1331167039-00._Street_Loading_1.2.mp3';
+				const first_street_url:String = /*fvm.get('sound_FIRST_STREET_LOADING') ||*/ 'http://c2.glitch.bz/sounds/2012-03/1331167039-00._Street_Loading_1.2.mp3';
 				SoundManager.instance.addExternalSound(first_street_url, 'FIRST_STREET_LOADING', false);
 			}
 			
@@ -949,7 +950,7 @@ package com.tinyspeck.bootstrap.control {
 			updateProgress('loading avatar assets ('+(ava_sheets_pngs_loaded_cnt+1)+' of ' +total_sheets_to_load+')...');
 			NewxpLogger.log('avatars_loading');
 			
-			if (EnvironmentUtil.getUrlArgValue('SWF_load_ava_sheets_pngs') != '0') {
+			if (false && EnvironmentUtil.getUrlArgValue('SWF_load_ava_sheets_pngs') != '0') {
 				if (!fvm.placeholder_sheet_url) {
 					CONFIG::debugging {
 						Console.error('NO placeholder_sheet_url');
@@ -1295,7 +1296,7 @@ package com.tinyspeck.bootstrap.control {
 				localPHPLoader = null;
 			}
 			//
-			connectionTestSocket = null;
+			//connectionTestSocket = null;
 		}
 		
 		private function onIncomingAs(msg:Object):Boolean {

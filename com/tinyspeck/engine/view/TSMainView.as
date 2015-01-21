@@ -136,7 +136,7 @@ package com.tinyspeck.engine.view
 	CONFIG::god { import com.tinyspeck.engine.control.BenchmarkUnitTestRunner; }
 	CONFIG::god { import com.tinyspeck.engine.data.item.Item; }
 	CONFIG::god { import com.tinyspeck.engine.event.TSEvent; }
-	CONFIG::god { import com.tinyspeck.engine.EngineAllTests; }
+	//CONFIG::god { import com.tinyspeck.engine.EngineAllTests; }
 	CONFIG::god { import com.tinyspeck.engine.view.gameoverlay.ViewportScaleSliderView; }
 	CONFIG::god { import com.tinyspeck.engine.view.renderer.debug.PhysicsLoopRenderer; }
 	CONFIG::god { import com.tinyspeck.engine.view.renderer.debug.PhysicsMovementRenderer; }
@@ -1547,14 +1547,14 @@ package com.tinyspeck.engine.view
 			}
 			}*/
 			
-			CONFIG::god {
+			/*CONFIG::god {
 				// run unit test suite
 				Benchmark.addCheck('Running unit tests...');
 				var core:TextCore = new TextCore();
 				core.addListener(new BenchmarkUnitTestRunner());
 				core.textPrinter.hideLocalPaths = true;
 				core.start(EngineAllTests, null, null);
-			}
+			}*/
 			
 			CONFIG::perf {
 				if (model.flashVarModel.run_automated_tests) {

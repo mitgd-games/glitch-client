@@ -258,11 +258,11 @@ package com.tinyspeck.bridge
 			}
 			
 			player_open_cases = get('player_open_cases', 'Number');
-			root_url = get('root_url') || "http://dev.glitch.com/";
-			root_url = get('SWF_root_url') || root_url;
-			assetsUrl = get('assets_url') || "ERROR";
-			engineUrl = get('engine_url') || "ERROR";
-			avatar_url = get('avatar_url');
+			root_url = '/';//get('root_url') || "http://dev.glitch.com/";
+			root_url = '/';//get('SWF_root_url') || root_url;
+			assetsUrl = '../../Assets/bin-debug/Assets.swf';//get('assets_url') || "ERROR";
+			//engineUrl = get('engine_url') || "ERROR";
+			avatar_url = '../../glitch-avatars/base_avatar/Avatar.swf';//get('avatar_url');
 			load_progress_swf_url = get('load_progress_swf_url');
 			auto_reloaded_after_error = valueWhenOffByDefault('SWF_auto_reloaded_after_error');
 			pc_tsid = get('pc_tsid');
@@ -270,7 +270,7 @@ package com.tinyspeck.bridge
 			snap_distance = get('SWF_snap_distance', 'Number') || snap_distance;
 			
 			priority = get('SWF_pri');
-			local_pc = get('SWF_local_pc');
+			local_pc = 'localhost';//get('SWF_local_pc');
 			if (!pc_tsid) pc_tsid = local_pc;
 			login_host = get('login_host');
 			token = get('wittgensteins_mistress');
@@ -296,7 +296,7 @@ package com.tinyspeck.bridge
 			no_boot_message = valueWhenOffByDefault('no_boot_message');
 			boot_message = get('boot_message');
 			boot_message_prefix = get('boot_message_prefix');
-			css_file = get('css_file');
+			css_file = '../locodeco/swf/src/GlobalStyles.css';//get('css_file');
 			api_url = get('api_url');
 			api_token = get('api_token');
 			display_ava_path = valueWhenOffByDefault('SWF_display_ava_path');
