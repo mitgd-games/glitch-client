@@ -1111,7 +1111,7 @@ public function skills_reschedule_queue(time_change){
     return 0;
 }
 
-public function skills_points_to_seconds(points, category){
+public function skills_points_to_seconds(points, category=null){
     var s = points / config.skill_points_per_second;
 
     if (s <= 0) return 0;

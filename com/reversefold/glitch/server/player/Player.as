@@ -23,6 +23,8 @@ package com.reversefold.glitch.server.player {
 		public var label : String;
 		public var has_done_intro : Boolean;
 		public var daily_favor : Dictionary;
+		
+		public var location;
 
 		public function Player(config : Config) : void {
 			//init();
@@ -36,11 +38,13 @@ package com.reversefold.glitch.server.player {
 			quests = new Quests(config, this);
 			buffs = new Buffs(config, this);
 			achievements = new Achievements(config, this);
+			announcements = new Announcements(config, this);
 			prompts = new Prompts(config, this);
 			daily_history = new DailyHistory(config, this);
 			counters = new Counters(config, this);
 			imagination = new Imagination(config, this);
 			eleven_secrets = new ElevenSecrets(config, this);
+			butler = new Butler(config, this);
 		}
 
 //#include inc_admin.js,
@@ -73,6 +77,7 @@ package com.reversefold.glitch.server.player {
 		//inc_instances.js
 //#include inc_auctions.js,
 		//inc_announcements.js,
+		public var announcements : Announcements;
 		//inc_skill_packages.js
 //#include inc_activity.js,
 
@@ -117,6 +122,7 @@ public function activity_notify(args){
 		//inc_mountaineering.js,
 		//inc_physics.js
 //#include inc_butler.js,
+		public var butler : Butler;
 		//inc_newxp.js,
 		//inc_towers.js,
 		//inc_feats.js
@@ -542,10 +548,10 @@ public function isInAir(){
 }
 
 
-public function sendActivity(msg, from, no_growl, no_activity){
+public function sendActivity(msg, from=null, no_growl=false, no_activity=false){
 	if (no_growl && no_activity) return;
 
-	if (from === undefined) from = this;
+	if (from === null) from = this;
 
 	// Auto-prepend?
 	var auto_prepend = false;
@@ -3116,7 +3122,7 @@ public function onQuickReg(args){
 	}
 }
 
-public function show_rainbow(overlay_key, delay){
+public function show_rainbow(overlay_key, delay=0){
 	var duration = 4000;
 	var args = {
 		type: 'pc_overlay',

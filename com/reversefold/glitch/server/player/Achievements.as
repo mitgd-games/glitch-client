@@ -97,7 +97,7 @@ function achievements_reset(){
 // Increment a counter used for tracking achievement progress
 //
 
-function achievements_increment(group, label, count, no_callback, immediate_callback){
+function achievements_increment(group, label, count, no_callback=false, immediate_callback=false){
     this.achievements_init();
 
     if (group && group.length > 50){
@@ -306,7 +306,7 @@ function achievements_grant_multiple(){
 // Grant the player an achievement
 //
 
-function achievements_grant(id, close_payload){
+function achievements_grant(id, close_payload = null){
     if (this.tsid == 'PCRN0MDLUUT195N' || config.is_dev) log.info(this+' achievements_grant '+id);
     if (this.achievements_has(id)) return;
 

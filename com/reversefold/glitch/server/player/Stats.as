@@ -2,6 +2,7 @@ package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
     import com.reversefold.glitch.server.Prop;
     import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
     
@@ -74,9 +75,9 @@ public function stats_init(){
     var quoin_limit = (this.daily_quoin_limit) ? this.daily_quoin_limit : this.player.imagination.imagination_get_quoin_limit();
 
     this.quoins_today = new Prop(0, 0, quoin_limit);
-    //WTF is this? if (this.quoins_today) delete this.quoins_today;
+    // WTF is this? Why do we delete right after initing? if (this.quoins_today) delete this.quoins_today;
     this.meditation_today = new Prop(0, 0, (this.player.get_meditation_bonus() * this.player.metabolics.metabolics_get_max_energy()));
-    if (this.meditation_today) delete this.meditation_today;
+    // WTF? Why do we delete right after initing? if (this.meditation_today) this.meditation_today = null;
 
     if (!this.misc) this.misc = new Dictionary();
     if (!this.favor_points) {
@@ -135,7 +136,7 @@ public function stats_reset_imagination(){
 
 public function stats_reset_favor(){
 
-    delete this.favor_points;
+    this.favor_points = null;
     this.stats_init();
 }
 
@@ -363,8 +364,8 @@ public function stats_add_xp(xp, no_bonus = false, context = null){
         this.player.quests.quests_offer('puzzle_level_color_blockage');
     }
     if (this.xp.value >= 30128 && this.player.quests.getQuestStatus('join_club') == 'none') {
-        if (this.butler_tsid) {
-            var butler = Server.instance.apiFindObject(this.butler_tsid);
+        if (this.player.butler.butler_tsid) {
+            var butler = Server.instance.apiFindObject(this.player.butler.butler_tsid);
             if (!butler.available_quests) {
                 butler.setAvailableQuests(['join_club']);
             }
@@ -800,7 +801,7 @@ public function stats_set_making_xp_today(recipe_id, num){
 public function stats_add_making_xp_today(recipe_id, num){
 
     if (!this.stats.recipe_xp_today){
-        this.stats.recipe_xp_today = {};
+        this.stats.recipe_xp_today = new Dictionary();
     }
 
     if (!this.stats.recipe_xp_today[recipe_id]){
@@ -862,7 +863,7 @@ public function stats_set_currants(num){
     });
 }
 
-public function stats_add_currants(num, context){
+public function stats_add_currants(num, context = null){
     if (!num) return 0;
     this.stats_init();
 
@@ -1004,7 +1005,7 @@ public function stats_get_level(){
     return this.stats.level;
 }
 
-public function stats_add_favor_points(giant, value, suppress_prompt){
+public function stats_add_favor_points(giant, value, suppress_prompt=false){
     if (giant == 'all'){
         for (var i=0; i<config.base.giants.length; i++){
             this.stats_add_favor_points(config.base.giants[i], value);
@@ -1130,7 +1131,7 @@ public function stats_get_last_street_visit(tsid){
 
 public function stats_add_emblem(giant) {
     if(!this.giant_emblems) {
-        this.giant_emblems = {};
+        this.giant_emblems = new Dictionary();
     }
 
     this.giant_emblems[giant] = new Prop(0, 0, 100000);
@@ -1172,12 +1173,12 @@ public function stats_get_daily_count(class_tsid){
 
 public function stats_init_daily_counter(){
     if (!this.stats.daily_count){
-        this.stats.daily_count = {};
+        this.stats.daily_count = new Dictionary();
     }
 }
 
 public function stats_reset_daily_counter(){
-    this.stats.daily_count = {};
+    this.stats.daily_count = new Dictionary();
 }
 
 public function stats_get_daily_counter(class_tsid){

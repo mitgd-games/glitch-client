@@ -1,7 +1,8 @@
 package com.reversefold.glitch.server.player {
+    import com.reversefold.glitch.server.Prop;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -10,8 +11,10 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
-        public var skills;
 
+		public var energy : Prop;
+		public var mood : Prop;
+		
         public function Metabolics(config : Config, player : Player) {
             this.config = config;
             this.player = player;
@@ -79,7 +82,7 @@ function metabolics_add_energy(x, quiet, force){
     if (change && !quiet){
         this.apiSendAnnouncement({
             type: "energy_stat",
-            delta: change,
+            delta: change
         });
     }
 
@@ -110,7 +113,7 @@ function metabolics_add_mood(x, quiet, force){
     if (change && !quiet){
         this.apiSendAnnouncement({
             type: "mood_stat",
-            delta: change,
+            delta: change
         });
     }
 
@@ -146,7 +149,7 @@ function metabolics_lose_energy(x, quiet, force){
     if (change && !quiet){
         this.apiSendAnnouncement({
             type: "energy_stat",
-            delta: change,
+            delta: change
         });
     }
 
@@ -218,7 +221,7 @@ function metabolics_lose_mood(x, quiet, force){
     if (change && !quiet){
         this.apiSendAnnouncement({
             type: "mood_stat",
-            delta: change,
+            delta: change
         });
     }
 
@@ -247,7 +250,7 @@ function metabolics_get_mood(){
     return this.metabolics.mood.value;
 }
 
-function metabolics_set_energy(x, quiet, force){
+function metabolics_set_energy(x, quiet = false, force = false){
 
     if (this.metabolics.energy.top < x){
         x = this.metabolics.energy.top;
@@ -266,7 +269,7 @@ function metabolics_set_energy(x, quiet, force){
     }
 }
 
-function metabolics_set_mood(x, quiet, force){
+function metabolics_set_mood(x, quiet = false, force = false){
     if (this.metabolics.mood.top < x){
         x = this.metabolics.mood.top;
     }

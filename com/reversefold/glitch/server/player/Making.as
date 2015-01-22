@@ -777,7 +777,7 @@ public function finishMakingKnown(inf){
     // use the tool
     //
 
-    if (info.item.use){
+    if (info.item._use){
         var tool_uses = info.count * recipe_info.tool_wear;
         if (info.item.getClassProp('making_type') == 'machine'){
             for (var i in recipe_info.inputs){
@@ -796,7 +796,7 @@ public function finishMakingKnown(inf){
                 }
             }
         }
-        info.item.use(this, tool_uses);
+        info.item._use(this, tool_uses);
     }
 
 
@@ -1130,7 +1130,7 @@ public function finishMakingUnknown(inf){
     }
 
     if (!info.item){
-        log.error(this+" Making no item: "+info+" "+this.making+" "+this.making_queue);
+        log.error(this+" Making no item: "+info+" "+this+" "+this.player.making.making_queue);
     }
 
     var recipe_info = get_recipe(info.recipe);
@@ -1142,7 +1142,7 @@ public function finishMakingUnknown(inf){
     }
 
     //this.announce_sound_stop('MAKING_WAITING_COOKING');
-    this.announce_sound_stop(info.item.class_tsid.toUpperCase());
+    this.player.announcements.announce_sound_stop(info.item.class_tsid.toUpperCase());
     if (!info.unknown) {
         this.scheduleNextTimer(info);
         return;
@@ -1155,8 +1155,8 @@ public function finishMakingUnknown(inf){
     // use the tool
     //
 
-    if (info.item.use){
-        info.item.use(this);
+    if (info.item._use){
+        info.item._use(this);
     }
 
 
@@ -1314,7 +1314,7 @@ public function finishMakingUnknown(inf){
     var bonus_xp = this.stats_add_xp(50, false, context);
     var effects = {
         "energy": (recipe_info.energy_cost * -1),
-        "xp": making_rewards.xp + bonus_xp, // bonus xp reward
+        "xp": making_rewards.xp + bonus_xp // bonus xp reward
     };
 
     msg += effects['energy'] + ' energy';

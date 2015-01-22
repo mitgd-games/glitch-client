@@ -1,4 +1,4 @@
-package com.reversefold.glitch.server.player {
+package com.reversefold.glitch.server {
     import com.reversefold.glitch.server.Common;
     import com.reversefold.glitch.server.Server;
     import com.reversefold.glitch.server.data.Config;
@@ -249,7 +249,8 @@ public static function to_roman_numerals(num){
 
     for (var roman in roman_map){
         var number = roman_map[roman];
-        var matches = parseInt(n / number, 10); // intval is not available
+		//RVRS: TODO: Why do we parseInt again?
+        var matches = parseInt(new Number(n / number).toString(10), 10); // intval is not available
         for (var i=0; i<matches; i++){
             res += roman;
         }
@@ -368,7 +369,8 @@ public static function array_keys(a){
 }
 
 public static function shuffle(o){
-    for(var j, x, i = o.length; i; j = parseInt(Math.random() * i, 10), x = o[--i], o[i] = o[j], o[j] = x);
+	//RVRS: TODO: Why do we parseInt again?
+    for(var j, x, i = o.length; i; j = parseInt(new Number(Math.random() * i).toString(10), 10), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
 }
 

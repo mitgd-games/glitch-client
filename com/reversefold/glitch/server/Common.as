@@ -53,7 +53,7 @@ public static function gametime_to_key(gt){
 public static function current_game_month(){
     var gt = current_gametime();
 
-    return Config.game_month_names[gt[1]-1];
+    return Config.instance.base.game_month_names[gt[1]-1];
 }
 
 public static function timestamp_to_gametime(ts){
@@ -115,11 +115,11 @@ public static function calendar__day_to_md(id){
 
     var cd = 0;
 
-    for (var i=0; i<Config.game_month_lengths.length; i++){
-        cd += Config.game_month_lengths[i];
+    for (var i=0; i<Config.instance.base.game_month_lengths.length; i++){
+        cd += Config.instance.base.game_month_lengths[i];
         if (cd > id){
             var m = i+1;
-            var d = id+1 - (cd - Config.game_month_lengths[i]);
+            var d = id+1 - (cd - Config.instance.base.game_month_lengths[i]);
             return [m,d];
         }
     }
@@ -132,7 +132,7 @@ public static function calendar__md_to_day(m, d){
     var out = d-1;
 
     for (var i=0; i<m-1; i++){
-        out += Config.game_month_lengths[i];
+        out += Config.instance.base.game_month_lengths[i];
     }
 
     return out;
@@ -141,8 +141,8 @@ public static function calendar__md_to_day(m, d){
 public static function format_gametime(gt){
     var d = numberth(gt[2]);
 
-    var dm = d+' of '+Config.game_month_names[gt[1]-1];
-    if (gt[1]==12) dm = Config.game_month_names[gt[1]-1];
+    var dm = d+' of '+Config.instance.base.game_month_names[gt[1]-1];
+    if (gt[1]==12) dm = Config.instance.base.game_month_names[gt[1]-1];
 
     var i = ""+gt[4];
     if (i.length == 1) i = "0"+i;
