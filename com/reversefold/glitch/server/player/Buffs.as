@@ -1,5 +1,5 @@
 package com.reversefold.glitch.server.player {
-    import com.reversefold.glitch.server.data.ConfigProd;
+    import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
 
     import org.osmf.logging.Log;
@@ -8,11 +8,11 @@ package com.reversefold.glitch.server.player {
     public class Buffs {
         private static var log : Logger = Log.getLogger("server.player.Buffs");
 
-        public var config : ConfigProd;
+        public var config : Config;
         public var player : Player;
         public var skills;
 
-        public function Buffs(config : ConfigProd, player : Player) {
+        public function Buffs(config : Config, player : Player) {
             this.config = config;
             this.player = player;
             buffs_init();

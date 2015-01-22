@@ -1,11 +1,26 @@
 package com.reversefold.glitch.server.data {
-    public class ConfigProd {
+    public class Config { // aka ConfigProd
 
+		private static var _instance : Config = null;
+		public static function get instance() : Config {
+			if (_instance == null) {
+				_instance = new Config(new Key());
+			}
+			return _instance;
+		}
+		
+		public function Config(lock : Key) {
+			if (lock == null) {
+				throw new Error("singleton");
+			}
+		}
+		
 //#include config_base.js
         public var base : ConfigBase = new ConfigBase();
 
 //#include inc_data_swfs_locations_prod.js
 //#include inc_data_maps_prod.js
+		public var maps : MapsProd = new MapsProd();
 //#include inc_data_sounds.js
         public var sounds : Sounds = new Sounds();
 
@@ -14,6 +29,7 @@ package com.reversefold.glitch.server.data {
 
 //#include inc_data_street_upgrades_prod.js
 //#include inc_data_pols_prod.js
+		public static var pols : Pols = new Pols();
 //#include inc_data_swfs_avatar_prod.js
 //#include inc_data_mapextras_prod.js
 //#include inc_data_homes_prod.js
@@ -1366,3 +1382,5 @@ public var feature_report_hi_records = true;
 
     }
 }
+
+class Key {}

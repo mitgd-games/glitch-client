@@ -1,7 +1,8 @@
 package com.reversefold.glitch.server.player {
+    import com.reversefold.glitch.server.Common;
     import com.reversefold.glitch.server.Prop;
     import com.reversefold.glitch.server.Server;
-    import com.reversefold.glitch.server.data.ConfigProd;
+    import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
     
     import flash.utils.Dictionary;
@@ -9,15 +10,14 @@ package com.reversefold.glitch.server.player {
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
-    public class Stats {
+    public class Stats extends Common {
         private static var log : Logger = Log.getLogger("server.player.Stats");
-		
+
 		private var stats : Stats;
 
-        public var config : ConfigProd;
+        public var config : Config;
         public var player : Player;
-        public var skills;
-		
+
 		public var xp : Prop;
 		public var level : int;
 		public var currants : Prop;
@@ -34,10 +34,20 @@ package com.reversefold.glitch.server.player {
 		public var credits : Prop;
 		public var quoin_multiplier : int;
 		public var has_subscription : Boolean = false;
+		public var level_up_time : int;
+		public var making_xp_today : Prop;
+		public var recipe_xp_today : Dictionary = null;
+		public var last_rube_trade : int;
+		public var daily_count : Dictionary = null;
+		public var subscription_end;
+		
+		public var daily_favor : Dictionary;
+		
+		public var donation_xp_today : Prop;
 
-        public function Stats(config : ConfigProd, player : Player) {
+        public function Stats(config : Config, player : Player) {
 			stats = this;
-			
+
             this.config = config;
             this.player = player;
             stats_init();
@@ -90,6 +100,8 @@ public function stats_init(){
 
     this.imagination = new Prop(0, 0, 2000000000);
     this.credits = new Prop(0, 0, 2000000000);
+	
+	this.making_xp_today = new Prop(0, 0, 2000000000);
 
     if (!this.quoin_multiplier) this.quoin_multiplier = 1;
 
@@ -352,7 +364,7 @@ public function stats_add_xp(xp, no_bonus = false, context = null){
     }
     if (this.xp.value >= 30128 && this.player.quests.getQuestStatus('join_club') == 'none') {
         if (this.butler_tsid) {
-            var butler = apiFindObject(this.butler_tsid);
+            var butler = Server.instance.apiFindObject(this.butler_tsid);
             if (!butler.available_quests) {
                 butler.setAvailableQuests(['join_club']);
             }
@@ -398,11 +410,11 @@ public function stats_add_xp(xp, no_bonus = false, context = null){
 
         this.stats.level = info.level;
 
-        this.metabolics_recalc_limits(false);
+        this.player.metabolics.metabolics_recalc_limits(false);
 
-        if (!this.is_dead){
-            var energy_added = this.metabolics_set_energy(this.metabolics.energy.top);
-            var mood_added = this.metabolics_set_mood(this.metabolics.mood.top);
+        if (!this.player.is_dead){
+            var energy_added = this.player.metabolics.metabolics_set_energy(this.player.metabolics.energy.top);
+            var mood_added = this.player.metabolics.metabolics_set_mood(this.player.metabolics.mood.top);
         }
         else{
             var energy_added = 0;
@@ -410,8 +422,8 @@ public function stats_add_xp(xp, no_bonus = false, context = null){
         }
 
         //log.info('player has levelled up!');
-        this.sendActivity("Woo! you've reached level "+info.level+"!!!");
-        this.sendLocationActivity(this.label + " just reached level "+info.level+"!", this, this.buddies_get_ignoring_tsids());
+        this.player.sendActivity("Woo! you've reached level "+info.level+"!!!");
+        this.player.sendLocationActivity(this.player.label + " just reached level "+info.level+"!", this, this.player.buddies.buddies_get_ignoring_tsids());
 
         this.level_up_time = time();
 
@@ -437,7 +449,7 @@ public function stats_add_xp(xp, no_bonus = false, context = null){
 
         this.stats_add_currants(reward_currants);
         this.stats_add_favor_points('all', reward_favor);
-        this.daily_history_increment('level_up', 1);
+        this.player.daily_history.daily_history_increment('level_up', 1);
 
 
         //
@@ -454,36 +466,36 @@ public function stats_add_xp(xp, no_bonus = false, context = null){
             }
         };
 
-        if (!this.has_done_intro) rsp.do_not_annc = true;
+        if (!this.player.has_done_intro) rsp.do_not_annc = true;
 
         this.stats_get_login(rsp.stats);
-        this.metabolics_get_login(rsp.stats);
+        this.player.metabolics.metabolics_get_login(rsp.stats);
 
-        this.sendMsgOnline(rsp);
+        this.player.sendMsgOnline(rsp);
 
 
         // Tell your friends
-        this.buddies_update_reverse_cache();
+        this.player.buddies.buddies_update_reverse_cache();
         var rsp = {
             'type': 'pc_level_up',
-            'tsid': this.tsid,
-            'label': this.label,
+            'tsid': this.player.tsid,
+            'label': this.player.label,
             'level': this.stats.level
         };
 
-        this.reverseBuddiesSendMsg(rsp);
+        this.player.buddies.reverseBuddiesSendMsg(rsp);
 
         // Check for 11 secret locations start:
-        if (this.stats.level >= this.secretLocationsQuestLevel()) {
-            this.startSecretLocationsQuest();
+        if (this.stats.level >= this.player.eleven_secrets.secretLocationsQuestLevel()) {
+            this.player.eleven_secrets.startSecretLocationsQuest();
         }
 
-        this.activity_notify({
+        this.player.activity_notify({
             type    : 'level_up',
             level   : this.stats.level
         });
 
-        Server.instance.apiLogAction('LEVEL_UP', 'pc='+this.tsid, 'level='+this.stats.level, 'energy='+energy_added, 'mood='+mood_added, 'currants='+reward_currants, 'favor='+reward_favor);
+        Server.instance.apiLogAction('LEVEL_UP', 'pc='+this.player.tsid, 'level='+this.stats.level, 'energy='+energy_added, 'mood='+mood_added, 'currants='+reward_currants, 'favor='+reward_favor);
 
         this.stats_init(); // Stats init sets a lot of props that change when you level up
     }
@@ -494,7 +506,7 @@ public function stats_add_xp(xp, no_bonus = false, context = null){
             log_args.push(k+':'+context[k]);
         }
 
-        Server.instance.apiLogAction('GAIN_XP', 'pc='+this.tsid, 'context=['+log_args.join(",")+']', 'xp='+xp);
+        Server.instance.apiLogAction('GAIN_XP', 'pc='+this.player.tsid, 'context=['+log_args.join(",")+']', 'xp='+xp);
     }
 
     return xp;
@@ -524,7 +536,7 @@ public function stats_set_imagination(num, quiet){
     this.stats.imagination.apiSet(num);
 
     if (change && !quiet){
-        this.apiSendAnnouncement({
+        Server.instance.apiSendAnnouncement({
             type: "imagination_stat",
             delta: change
         });
@@ -536,9 +548,9 @@ public function stats_add_imagination(num, context = null){
     this.stats_init();
 
     var change = this.stats.imagination.apiInc(num);
-    this.daily_history_increment('imagination', change);
+    this.player.daily_history.daily_history_increment('imagination', change);
 
-    this.apiSendAnnouncement({
+    Server.instance.apiSendAnnouncement({
         type: "imagination_stat",
         delta: change
     });
@@ -549,7 +561,7 @@ public function stats_add_imagination(num, context = null){
             log_args.push(k+':'+context[k]);
         }
         if (change > 0) {
-            Server.instance.apiLogAction('GAIN_IMAGINATION', 'pc='+this.tsid, 'context=['+log_args.join(",")+']', 'imagination='+change);
+            Server.instance.apiLogAction('GAIN_IMAGINATION', 'pc='+this.player.tsid, 'context=['+log_args.join(",")+']', 'imagination='+change);
         }
     }
 
@@ -561,7 +573,7 @@ public function stats_remove_imagination(num, context){
 
     var change = this.stats.imagination.apiDec(num);
 
-    this.apiSendAnnouncement({
+    Server.instance.apiSendAnnouncement({
         type: "imagination_stat",
         delta: change
     });
@@ -572,7 +584,7 @@ public function stats_remove_imagination(num, context){
             log_args.push(k+':'+context[k]);
         }
         if (change < 0) {
-            Server.instance.apiLogAction('LOSE_IMAGINATION', 'pc='+this.tsid, 'context=['+log_args.join(",")+']', 'imagination='+change);
+            Server.instance.apiLogAction('LOSE_IMAGINATION', 'pc='+this.player.tsid, 'context=['+log_args.join(",")+']', 'imagination='+change);
         }
     }
 
@@ -602,7 +614,7 @@ public function stats_xp_apply_bonus(xp){
     xp = Math.round(xp * multiplier);
 
     // no-no powder nerf
-    if (this.buffs_has('no_no_powder')){
+    if (this.player.buffs.buffs_has('no_no_powder')){
         xp = Math.round(xp * 0.2);
     }
 
@@ -619,7 +631,7 @@ public function stats_get(){
 public function stats_get_login(out){
 
     this.stats_init();
-    this.skills_init();
+    this.player.skills.skills_init();
 
     var ret = this.stats_calc_level_from_xp(this.stats.xp.value);
 
@@ -643,23 +655,23 @@ public function stats_get_login(out){
         out.favor_points_new[i] = {
             current: this.favor_points[i].value,
             max: this.stats_get_max_favor(i),
-            cur_daily_favor: (this.daily_favor && this.daily_favor[i]) ? this.daily_favor[i] : 0
+            cur_daily_favor: (this.player.daily_favor && this.player.daily_favor[i]) ? this.player.daily_favor[i] : 0
         };
     }
 
     out.skill_training = {};
 
-    var queue = this.skills_get_queue();
+    var queue = this.player.skills.skills_get_queue();
     if (num_keys(queue)){
         for (var i in queue){
             if (!queue[i].is_paused){
-                var skill = this.skills_get(i);
+                var skill = this.player.skills.skills_get(i);
                 out.skill_training = {
                     tsid: i,
-                    name: this.skills_get_name(i),
+                    name: this.player.skills.skills_get_name(i),
                     desc: skill.description,
                     time_remaining: queue[i].end - time(),
-                    total_time: this.skills_points_to_seconds(skill.point_cost),
+                    total_time: this.player.skills.skills_points_to_seconds(skill.point_cost),
                     is_accelerated: queue[i].is_accelerated
                 };
             }
@@ -667,23 +679,23 @@ public function stats_get_login(out){
     }
 
     out.skill_unlearning = {};
-    var unlearningqueue = this.skills_get_unlearning();
+    var unlearningqueue = this.player.skills.skills_get_unlearning();
 
     if (unlearningqueue && unlearningqueue.id){
         var id = unlearningqueue.id;
-        var unskill = this.skills_get(id);
+        var unskill = this.player.skills.skills_get(id);
         out.skill_unlearning = {
             tsid: id,
-            name: this.skills_get_name(id),
+            name: this.player.skills.skills_get_name(id),
             desc: unskill.description,
             time_remaining: unlearningqueue.queue.remaining,
             total_time: unlearningqueue.queue.unlearn_time
         };
     }
 
-    out.num_skills = this.skills_get_count();
-    out.brain_capacity = this.get_brain_capacity();
-    out.skill_learning_modifier = this.skills_get_learning_time_modifier();
+    out.num_skills = this.player.skills.skills_get_count();
+    out.brain_capacity = this.player.skills.get_brain_capacity();
+    out.skill_learning_modifier = this.player.skills.skills_get_learning_time_modifier();
 
     out.quoins_today = {
         value   : this.stats.quoins_today.value,
@@ -695,15 +707,15 @@ public function stats_get_login(out){
         max : this.stats.meditation_today.top
     };
 
-    out.energy_spent_today = intval(this.daily_history_get(current_day_key(), 'energy_consumed')) * -1;
-    out.xp_gained_today = intval(this.daily_history_get(current_day_key(), 'xp'));
+    out.energy_spent_today = intval(this.player.daily_history.daily_history_get(current_day_key(), 'energy_consumed')) * -1;
+    out.xp_gained_today = intval(this.player.daily_history.daily_history_get(current_day_key(), 'xp'));
 
     out.imagination = this.stats.imagination.value;
-    out.imagination_gained_today = intval(this.daily_history_get(current_day_key(), 'imagination'));
+    out.imagination_gained_today = intval(this.player.daily_history.daily_history_get(current_day_key(), 'imagination'));
 
-    out.imagination_hand = this.imagination_get_login();
+    out.imagination_hand = this.player.imagination.imagination_get_login();
     out.imagination_shuffle_cost = 0;
-    out.imagination_shuffled_today = this.achievements_get_daily_label_count('imagination', 'shuffle') ? true : false;
+    out.imagination_shuffled_today = this.player.achievements.achievements_get_daily_label_count('imagination', 'shuffle') ? true : false;
 
     out.credits = this.stats.credits.value;
     out.is_subscriber = this.stats_is_sub();
@@ -723,8 +735,8 @@ public function stats_add_quoins_today(num){
         change = this.stats.quoins_today.apiDec(num * -1);
     }
 
-    if (this.stats.quoins_today.value == this.stats.quoins_today.top && !this.location.isParadiseLocation()){
-        this.prompts_add({
+    if (this.stats.quoins_today.value == this.stats.quoins_today.top && !this.player.location.isParadiseLocation()){
+        this.player.prompts.prompts_add({
             txt     : "Wowza! You've reached your limit on quoins for this game day.",
             icon_buttons    : false,
             timeout     : 10,
@@ -733,19 +745,19 @@ public function stats_add_quoins_today(num){
             ]
         });
         if (this.stats.quoins_today.top == 150){
-            this.show_rainbow('rainbow_150coinstoday');
+            this.player.show_rainbow('rainbow_150coinstoday');
         }else{
-            this.show_rainbow('rainbow_100coinstoday');
+            this.player.show_rainbow('rainbow_100coinstoday');
         }
 
-        Server.instance.apiLogAction('QUOIN_LIMIT', 'pc='+this.tsid, 'limit='+this.stats.quoins_today.top);
+        Server.instance.apiLogAction('QUOIN_LIMIT', 'pc='+this.player.tsid, 'limit='+this.stats.quoins_today.top);
 
         // http://bugs.tinyspeck.com/9138
         //this.buffs_remove('crazy_coin_collector');
     }
 
-    if (change && this.isOnline()){
-        this.apiSendAnnouncement({
+    if (change && this.player.isOnline()){
+        Server.instance.apiSendAnnouncement({
             type: "quoins_stat",
             delta: change
         });
@@ -758,8 +770,8 @@ public function stats_set_quoins_max_today(num){
     this.daily_quoin_limit = num;
     this.stats.quoins_today.apiSetLimits(0, num);
 
-    if (this.isOnline()){
-        this.apiSendAnnouncement({
+    if (this.player.isOnline()){
+        Server.instance.apiSendAnnouncement({
             type: "quoins_stat_max",
             delta: num
         });
@@ -767,7 +779,7 @@ public function stats_set_quoins_max_today(num){
 }
 
 public function stats_set_meditation_max_today(no_client){
-    this.init_prop('stats', 'meditation_today', 0, 0, (this.get_meditation_bonus() * this.metabolics_get_max_energy()));
+    this.meditation_today = new Prop(0, 0, (this.player.get_meditation_bonus() * this.player.metabolics.metabolics_get_max_energy()));
 
     var rsp = {
         'type': 'stat_max_changed',
@@ -776,8 +788,8 @@ public function stats_set_meditation_max_today(no_client){
 
     if (!no_client){
         this.stats_get_login(rsp.stats);
-        this.metabolics_get_login(rsp.stats);
-        this.apiSendMsg(rsp);
+        this.player.metabolics.metabolics_get_login(rsp.stats);
+        Server.instance.apiSendMsg(rsp);
     }
 }
 
@@ -792,9 +804,9 @@ public function stats_add_making_xp_today(recipe_id, num){
     }
 
     if (!this.stats.recipe_xp_today[recipe_id]){
-        this.stats.recipe_xp_today[recipe_id] = this.apiNewProperty(recipe_id.toString(), 0);
+        this.stats.recipe_xp_today[recipe_id] = new Prop(); //this.apiNewProperty(recipe_id.toString(), 0);
     }
-    this.stats.recipe_xp_today[recipe_id].apiSetLimits(0, this.making_get_xp_ceiling());
+    this.stats.recipe_xp_today[recipe_id].apiSetLimits(0, this.player.making.making_get_xp_ceiling());
 
     var change;
     if (num >= 0){
@@ -825,11 +837,11 @@ public function stats_add_meditation_today(num){
         tomorrow[4] = 0;
 
         var remaining = gametime_to_timestamp(tomorrow) - time();
-        this.buffs_apply('zen', {duration: remaining});
+        this.player.buffs.buffs_apply('zen', {duration: remaining});
     }
 
-    if (change && this.isOnline()){
-        this.apiSendAnnouncement({
+    if (change && this.player.isOnline()){
+        Server.instance.apiSendAnnouncement({
             type: "meditation_stat",
             delta: change
         });
@@ -844,7 +856,7 @@ public function stats_set_currants(num){
     var change = num - this.stats.currants.value;
     this.stats.currants.apiSet(num);
 
-    this.apiSendAnnouncement({
+    Server.instance.apiSendAnnouncement({
         type: "currants_stat",
         delta: change
     });
@@ -856,22 +868,22 @@ public function stats_add_currants(num, context){
 
     var change = this.stats.currants.apiInc(num);
 
-    this.apiSendAnnouncement({
+    Server.instance.apiSendAnnouncement({
         type: "currants_stat",
         delta: change
     });
 
     // Check for currants achievements
-    if (this.stats_get_currants() >= 2022 && !this.achievements_has('pennypincher')){
-        this.achievements_grant('pennypincher');
+    if (this.stats_get_currants() >= 2022 && !this.player.achievements.achievements_has('pennypincher')){
+        this.player.achievements.achievements_grant('pennypincher');
     }
 
-    if (this.stats_get_currants() >= 5011 && !this.achievements_has('moneybags')){
-        this.achievements_grant('moneybags');
+    if (this.stats_get_currants() >= 5011 && !this.player.achievements.achievements_has('moneybags')){
+        this.player.achievements.achievements_grant('moneybags');
     }
 
-    if (this.stats_get_currants() >= 11111 && !this.achievements_has('lovable_skinflint')){
-        this.achievements_grant('lovable_skinflint');
+    if (this.stats_get_currants() >= 11111 && !this.player.achievements.achievements_has('lovable_skinflint')){
+        this.player.achievements.achievements_grant('lovable_skinflint');
     }
 
     if (context){
@@ -880,7 +892,7 @@ public function stats_add_currants(num, context){
             log_args.push(k+':'+context[k]);
         }
         if (change > 0) {
-            Server.instance.apiLogAction('GAIN_CURRANTS', 'pc='+this.tsid, 'context=['+log_args.join(",")+']', 'currants='+change);
+            Server.instance.apiLogAction('GAIN_CURRANTS', 'pc='+this.player.tsid, 'context=['+log_args.join(",")+']', 'currants='+change);
         }
     }
 
@@ -892,7 +904,7 @@ public function stats_remove_currants(num, context){
 
     var change = this.stats.currants.apiDec(num);
 
-    this.apiSendAnnouncement({
+    Server.instance.apiSendAnnouncement({
         type: "currants_stat",
         delta: change
     });
@@ -903,11 +915,11 @@ public function stats_remove_currants(num, context){
             log_args.push(k+':'+context[k]);
         }
         if (change < 0) {
-            Server.instance.apiLogAction('LOSE_CURRANTS', 'pc='+this.tsid, 'context=['+log_args.join(",")+']', 'currants='+change);
+            Server.instance.apiLogAction('LOSE_CURRANTS', 'pc='+this.player.tsid, 'context=['+log_args.join(",")+']', 'currants='+change);
         }
     }
     else if (change < 0){
-        Server.instance.apiLogAction('LOSE_CURRANTS', 'pc='+this.tsid, 'currants='+change);
+        Server.instance.apiLogAction('LOSE_CURRANTS', 'pc='+this.player.tsid, 'currants='+change);
     }
 
     return change;
@@ -965,13 +977,13 @@ public function stats_set_temp_buff(buff_class_tsid, stat_id, value){
 
 public function stats_fixup_buffs(){
 
-    this.metabolics_recalc_limits(false);
+    this.player.metabolics.metabolics_recalc_limits(false);
 
     if (!this.stats.misc.buffs) return;
 
     for (var i in this.stats.misc.buffs){
 
-        if (!this.buffs_has(i)){
+        if (!this.player.buffs.buffs_has(i)){
 
             delete this.stats.misc.buffs[i];
         }
@@ -994,8 +1006,8 @@ public function stats_get_level(){
 
 public function stats_add_favor_points(giant, value, suppress_prompt){
     if (giant == 'all'){
-        for (var i=0; i<config.giants.length; i++){
-            this.stats_add_favor_points(config.giants[i], value);
+        for (var i=0; i<config.base.giants.length; i++){
+            this.stats_add_favor_points(config.base.giants[i], value);
         }
 
         return value;
@@ -1006,19 +1018,19 @@ public function stats_add_favor_points(giant, value, suppress_prompt){
     }
     else{
         /* Make sure this is a real giant */
-        if(!in_array(giant, config.giants)) {
-            this.sendActivity("Oops, there was a problem communicating with the Giants, and you didn't receive some favor when you should have. Please let us know by filing a bug report!");
+        if(!in_array(giant, config.base.giants)) {
+            this.player.sendActivity("Oops, there was a problem communicating with the Giants, and you didn't receive some favor when you should have. Please let us know by filing a bug report!");
             log.error(this+" failed to receive "+value+" favor, because giant "+giant+" is not a real giant.");
             return;
         }
 
-        this.init_prop('favor_points', giant, 0, 0, this.stats_get_max_favor(giant));
+        this.favor_points[giant] = new Prop(0, 0, this.stats_get_max_favor(giant));
         var change = this.favor_points[giant].apiInc(value);
 
         if (change){
-            this.achievements_increment('favor_points', giant, change);
-            this.counters_increment('favor_points', giant, change);
-            this.apiSendAnnouncement({
+            this.player.achievements.achievements_increment('favor_points', giant, change);
+            this.player.counters.counters_increment('favor_points', giant, change);
+            Server.instance.apiSendAnnouncement({
                 type: "favor_stat",
                 giant: giant,
                 delta: change
@@ -1027,7 +1039,7 @@ public function stats_add_favor_points(giant, value, suppress_prompt){
             if (!suppress_prompt && this.stats_has_favor_points(giant, this.stats_get_max_favor(giant))){
 
                 var txt = "You have reached "+this.stats_get_max_favor(giant)+" favor points with "+capitalize(giant.replace("ti", "tii"))+". Get to a shrine and collect your emblem!";
-                this.prompts_add({
+                this.player.prompts.prompts_add({
                     txt     : txt,
                     icon_buttons    : false,
                     timeout     : 10,
@@ -1035,7 +1047,7 @@ public function stats_add_favor_points(giant, value, suppress_prompt){
                         { value : 'ok', label : 'OK' },
                     ]
                 });
-                this.sendActivity(txt);
+                this.player.sendActivity(txt);
             }
         }
 
@@ -1044,11 +1056,11 @@ public function stats_add_favor_points(giant, value, suppress_prompt){
 }
 
 public function stats_remove_favor_points(giant, value){
-    this.init_prop('favor_points', giant, 0, 0, this.stats_get_max_favor(giant));
+    this.favor_points[giant] = new Prop(0, 0, this.stats_get_max_favor(giant));
     var change = this.favor_points[giant].apiDec(value);
 
     if (change){
-        this.apiSendAnnouncement({
+        Server.instance.apiSendAnnouncement({
             type: "favor_stat",
             giant: giant,
             delta: change
@@ -1121,7 +1133,7 @@ public function stats_add_emblem(giant) {
         this.giant_emblems = {};
     }
 
-    this.init_prop('giant_emblems', giant, 0, 0, 100000);
+    this.giant_emblems[giant] = new Prop(0, 0, 100000);
     this.giant_emblems[giant].apiInc(1);
 }
 
@@ -1153,7 +1165,7 @@ public function stats_rube_lure_disabled(){
 }
 
 public function stats_get_daily_count(class_tsid){
-    if (!this.stats.daily_count) this.stats.daily_count = {};
+    if (!this.stats.daily_count) this.stats.daily_count = new Dictionary();
     if (!this.stats.daily_count[class_tsid]) this.stats.daily_count[class_tsid] = 0;
     return this.stats.daily_count[class_tsid];
 }
@@ -1197,7 +1209,7 @@ public function stats_set_credits(num){
     var change = num - this.stats.credits.value;
     this.stats.credits.apiSet(num);
 
-    this.apiSendAnnouncement({
+    Server.instance.apiSendAnnouncement({
         type: "credits_stat",
         delta: change
     });
@@ -1221,9 +1233,9 @@ public function stats_spend_credits(num, args){
     }
 
     // Tell the web app, which will sync back to us eventually
-    args.player = this.tsid;
+    args.player = this.player.tsid;
     args.amount = num;
-    utils.http_post('callbacks/credits_spend.php', args, this.tsid);
+    Utils.http_post('callbacks/credits_spend.php', args, this.player.tsid);
 
     return true;
 }
@@ -1245,7 +1257,7 @@ public function stats_set_sub(is_sub, sub_end){
     this.stats.has_subscription = is_sub ? true : false;
     if (is_sub) this.stats.subscription_end = sub_end;
 
-    this.apiSendAnnouncement({
+    Server.instance.apiSendAnnouncement({
         type: "subscriber_stat",
         status: is_sub ? true : false
     });
@@ -1265,20 +1277,20 @@ public function stats_get_quoin_multiplier(){
 
 public function stats_set_quoin_multiplier(amount){
     this.stats.quoin_multiplier = amount;
-    if (this.stats.quoin_multiplier > config.quoin_capacity_limit) this.stats.quoin_multiplier = config.quoin_capacity_limit;
+    if (this.stats.quoin_multiplier > config.base.quoin_capacity_limit) this.stats.quoin_multiplier = config.base.quoin_capacity_limit;
 }
 
 public function stats_increase_quoin_multiplier(amount){
     this.stats.quoin_multiplier += amount;
-    if (this.stats.quoin_multiplier > config.quoin_capacity_limit) this.stats.quoin_multiplier = config.quoin_capacity_limit;
+    if (this.stats.quoin_multiplier > config.base.quoin_capacity_limit) this.stats.quoin_multiplier = config.base.quoin_capacity_limit;
 }
 
 public function stats_get_all_favor(){
 
     var out = {};
-    for (var i=0; i<config.giants.length; i++){
+    for (var i=0; i<config.base.giants.length; i++){
 
-        var g = config.giants[i];
+        var g = config.base.giants[i];
         var name = g.replace('ti', 'tii');
 
         var max_daily_favor = this.stats_get_max_favor(g);

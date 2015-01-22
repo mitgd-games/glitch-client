@@ -1,5 +1,5 @@
 package com.reversefold.glitch.server.player {
-	import com.reversefold.glitch.server.data.ConfigProd;
+	import com.reversefold.glitch.server.data.Config;
 	
 	import org.osmf.logging.Log;
 	import org.osmf.logging.Logger;
@@ -7,7 +7,7 @@ package com.reversefold.glitch.server.player {
     public class Imagination {
 		private static var log : Logger = Log.getLogger("server.Player");
 
-		public var config : ConfigProd;
+		public var config : Config;
 		public var player : Player;
 		public var label = 'Imagination';
 		public var upgrades = {};
@@ -15,7 +15,7 @@ package com.reversefold.glitch.server.player {
 		public var history = [];
 		public var deck;
 		
-		public function Imagination(config : ConfigProd, player : Player) : void {
+		public function Imagination(config : Config, player : Player) : void {
 			this.config = config;
 			this.player = player;
 			imagination_init();

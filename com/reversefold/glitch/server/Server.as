@@ -1,6 +1,7 @@
 package com.reversefold.glitch.server {
-	import com.reversefold.glitch.server.data.ConfigProd;
+	import com.reversefold.glitch.server.data.Config;
 	import com.reversefold.glitch.server.player.Player;
+	import com.reversefold.glitch.server.player.Utils;
 	import com.tinyspeck.debug.Console;
 	import com.tinyspeck.engine.data.client.Announcement;
 	import com.tinyspeck.engine.model.TSModelLocator;
@@ -12,7 +13,7 @@ package com.reversefold.glitch.server {
 	public class Server {
 		private static var log : Logger = Log.getLogger("server.Player");
 
-		private static var config : ConfigProd = new ConfigProd();
+		private static var config : Config = Config.instance;
 		
 		private static var _instance : Server = null;
 		public static function get instance() : Server {
@@ -34,6 +35,8 @@ package com.reversefold.glitch.server {
 			pc = new Player(config);
 		}
 		
+		// BEGIN api funcs
+		
 		public function apiSendAnnouncement(ann : Object) : void {
 			//We can either store these and add an announcements var to another outgoing message
 			//or directly set them using, say
@@ -43,11 +46,34 @@ package com.reversefold.glitch.server {
 			TSModelLocator.instance.activityModel.announcements = Announcement.parseMultiple([ann]); // fires trigger when set
 		}
 		
+		public function apiSendMsg(msg : Object) : void {
+			sendMessage(msg);
+		}
+		
 		public function apiLogAction(name : String, ... args : Array) : void {
 			//TODO: is this supposed to do something other than log?
 			log.info(name + ' ' + args.join(' '));
 		}
+		
+		public function apiAsyncHttpCall(url : String, ... args : Array) : void {
+			log.warn("apiAsyncHttpCall " + url);
+		}
+		
+		public function apiFindObject(tsid) {
+			throw new Error("apiFindObject " + tsid);
+		}
+		
+		public function apiFindItemPrototype(tsid) {
+			throw new Error("apiFindItemPrototype " + tsid);
+		}
+		
+		public function apiCopyHash(obj) {
+			throw new Error("apiCopyHash " + obj);
+		}
+		
+		// END api funcs
 
+		
 		public function sendMessage(msg : Object) : void {
 			processMessage(msg);
 		}
@@ -836,7 +862,7 @@ package com.reversefold.glitch.server {
 				var tsid = tsids[n];
 				try {
 					var itemProto = apiFindItemPrototype(tsid);
-					rsp.items[tsid] = utils.copy_hash(itemProto.itemDef);
+					rsp.items[tsid] = Utils.copy_hash(itemProto.itemDef);
 
 					rsp.items[tsid].has_infopage = itemProto.has_infopage;
 					if (itemProto.proxy_item) rsp.items[tsid].proxy_item = itemProto.proxy_item;
@@ -941,7 +967,7 @@ package com.reversefold.glitch.server {
 				var r = get_recipe(rid); // get_recipe sets some other stuff up for us, so let's call it
 
 				// Copy the recipe so we don't modify the catalog
-				r = utils.copy_hash(r);
+				r = Utils.copy_hash(r);
 				r.id = rid; // We need recipe id too
 
 				// Discoverable?
