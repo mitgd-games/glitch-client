@@ -88,7 +88,7 @@ public function avatar_set_clothing(map){
     return {
         'hash'      : this.avatar_hash(),
         'base_hash' : base_hash,
-        'checksum'  : sum,
+        'checksum'  : sum
     };
 }
 
@@ -178,7 +178,7 @@ public function avatar_set_face(map){
     return {
         'hash'      : this.avatar_hash(),
         'base_hash' : base_hash,
-        'checksum'  : sum,
+        'checksum'  : sum
     };
 
 }
@@ -190,7 +190,7 @@ public function avatar_admin_get(){
     return {
         'ok'    : 1,
         'base'  : this.a2,
-        'hash'  : this.avatar_hash(),
+        'hash'  : this.avatar_hash()
     };
 }
 
@@ -205,7 +205,7 @@ public function avatar_format_hash(cur){
 
     var out = {
         'ver'           : "01.01.11",
-        'articles'      : {},
+        'articles'      : {}
     };
 
 
@@ -231,7 +231,7 @@ public function avatar_format_hash(cur){
 
         out.articles[slot] = {
             'package_swf_url'   : '',
-            'article_class_name'    : 'none',
+            'article_class_name'    : 'none'
         };
 
         var id = cur[slot];
@@ -261,7 +261,7 @@ public function avatar_format_hash(cur){
 
         out.articles[slot] = {
             'package_swf_url'   : '',
-            'article_class_name'    : 'none',
+            'article_class_name'    : 'none'
         };
 
         var id = cur[slot];
@@ -320,7 +320,7 @@ public function clothing_admin_add_multi(args){
 
     return {
         ok: 1,
-        items: out,
+        items: out
     };
 }
 
@@ -336,7 +336,7 @@ public function clothing_add(id, info){
     }
 
     this.clothing.slots[item.slot][id] = {
-        'when' : time(),
+        'when' : time()
     };
 
 
@@ -361,7 +361,7 @@ public function clothing_admin_get_owned(args){
 
     return {
         'ok'    : 1,
-        'items' : this.clothing_get_owned(args.slot),
+        'items' : this.clothing_get_owned(args.slot)
     };
 }
 
@@ -413,7 +413,7 @@ public function clothing_expand(){
             if (typeof this.clothing.slots[slot][id] != 'object'){
 
                 this.clothing.slots[slot][id] = {
-                    'when' : this.clothing.slots[slot][id],
+                    'when' : this.clothing.slots[slot][id]
                 };
             }
         }
@@ -426,7 +426,7 @@ public function clothing_expand(){
             this.clothing.recycled[key] = {
                 'when'      : 0,
                 'id'        : key,
-                'recycled'  : this.clothing.recycled[key],
+                'recycled'  : this.clothing.recycled[key]
             };
         }
     }
@@ -491,7 +491,7 @@ public function clothing_admin_remove(args){
         'paid_credits'  : ret.paid_credits,
         'hash'      : this.avatar_hash(),
         'base_hash' : base_hash,
-        'checksum'  : sum,
+        'checksum'  : sum
     };
 }
 
@@ -501,7 +501,7 @@ public function clothing_remove(id, info){
     if (!item){
         return {
             ok: 0,
-            error: 'item_not_found',
+            error: 'item_not_found'
         };
     }
 
@@ -510,7 +510,7 @@ public function clothing_remove(id, info){
     if (!this.clothing.slots[item.slot]){
         return {
             ok: 0,
-            error: 'not_owned',
+            error: 'not_owned'
         };
     }
 
@@ -554,7 +554,7 @@ public function clothing_remove(id, info){
 
     return {
         ok: 1,
-        paid_credits: paid_credits,
+        paid_credits: paid_credits
     };
 }
 
@@ -611,7 +611,7 @@ public function avatar_format_base_hash(a){
         'nose_scale'        : 'float',
         'nose_height'       : 'float',
         'mouth_scale'       : 'float',
-        'mouth_height'      : 'float',
+        'mouth_height'      : 'float'
     };
 
     var out = {};
@@ -636,7 +636,7 @@ public function avatar_get_hashes(){
     return {
         'hash'      : this.avatar_hash(),
         'base_hash' : base_hash,
-        'checksum'  : sum,
+        'checksum'  : sum
     };
 }
 
@@ -692,7 +692,7 @@ public function avatar_get_pc_msg_props(){
     // the GS sends to the client.
 
     var out = {
-        a2011   : this.avatar_hash(),
+        a2011   : this.avatar_hash()
     };
 
     //
@@ -726,7 +726,7 @@ public function avatar_set_sheets(args){
 
         var msg = {
             'type' : 'avatar_update',
-            'tsid' : this.tsid,
+            'tsid' : this.tsid
         };
 
         var props = this.avatar_get_pc_msg_props();
@@ -790,7 +790,7 @@ public function avatar_preview(args){
     return {
         'hash'      : hash,
         'base_hash' : base_hash,
-        'checksum'  : checksum,
+        'checksum'  : checksum
     };
 }
 
@@ -889,7 +889,7 @@ public function clothing_expire_sub(){
         var id = remove_ids[i];
 
         this.clothing_remove(id, {
-            'sub_expired' : 1,
+            'sub_expired' : 1
         });
     }
 
@@ -900,7 +900,7 @@ public function clothing_expire_sub(){
         'ok'        : 1,
         'num_removed'   : remove_ids.length,
         'avatar_update' : pre_sum == post_sum ? false : true,
-        'checksum'  : post_sum,
+        'checksum'  : post_sum
     };
 }
 
@@ -980,7 +980,7 @@ public function avatar_build_default(args){
 
     return this.avatar_initial_setup({
         'base' : hash,
-        'owned' : owned,
+        'owned' : owned
     });
 }
 
@@ -997,7 +997,7 @@ public function avatar_default_choices(){
 
             var idx2 = 'choice'+idx;
             out[slot][idx2] = {
-                'articles' : {},
+                'articles' : {}
             };
 
             var temp = this.avatar_format_hash(choices[slot][idx]);
@@ -1045,11 +1045,11 @@ public function avatar_admin_set_default(args){
 
     this.avatar_set_singles({
         'url'       : args.singles,
-        'version'   : args.version,
+        'version'   : args.version
     });
     this.avatar_set_sheets({
         'url'       : args.sheets,
-        'version'   : args.version,
+        'version'   : args.version
     });
 
     if (this.location.class_tsid == 'newxp_training1'){

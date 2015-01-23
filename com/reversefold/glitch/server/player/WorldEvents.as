@@ -146,7 +146,7 @@ public function showLonelinessPrompt() {
             { value : 'yes', label : 'Yes' },
             { value : 'no', label : 'No' }
         ],
-        callback    : 'prompts_loneliness_callback',
+        callback    : 'prompts_loneliness_callback'
     });
 }
 

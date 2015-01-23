@@ -248,7 +248,7 @@ public function furniture_get_wall_options(){
 
             this.furniture.walls[i] = {
                 'free_default'  : true,
-                'when'      : time(),
+                'when'      : time()
             };
         }
 
@@ -266,7 +266,7 @@ public function furniture_get_wall_options(){
             'date_purchased': this.furniture.walls[i] ? intval(this.furniture.walls[i].when) : 0,
             'cost_credits'  : conf.cost_credits,
             'is_new'    : conf.is_new,
-            'is_subscriber' : conf.is_subscriber,
+            'is_subscriber' : conf.is_subscriber
         };
 
         if (!conf.is_visible) out[i].admin_only = true;
@@ -289,7 +289,7 @@ public function furniture_get_floor_options(){
 
             this.furniture.floors[i] = {
                 'free_default'  : true,
-                'when'      : time(),
+                'when'      : time()
             };
         }
 
@@ -307,7 +307,7 @@ public function furniture_get_floor_options(){
             'date_purchased': this.furniture.floors[i] ? intval(this.furniture.floors[i].when) : 0,
             'cost_credits'  : conf.cost_credits,
             'is_new'    : conf.is_new,
-            'is_subscriber' : conf.is_subscriber,
+            'is_subscriber' : conf.is_subscriber
         };
 
         if (!conf.is_visible) out[i].admin_only = true;
@@ -330,7 +330,7 @@ public function furniture_get_ceiling_options(){
 
             this.furniture.ceilings[i] = {
                 'free_default'  : true,
-                'when'      : time(),
+                'when'      : time()
             };
         }
 
@@ -348,7 +348,7 @@ public function furniture_get_ceiling_options(){
             'date_purchased': this.furniture.ceilings[i] ? intval(this.furniture.ceilings[i].when) : 0,
             'cost_credits'  : conf.cost_credits,
             'is_new'    : conf.is_new,
-            'is_subscriber' : conf.is_subscriber,
+            'is_subscriber' : conf.is_subscriber
         };
 
         if (!conf.is_visible) out[i].admin_only = true;
@@ -367,7 +367,7 @@ public function furniture_set_wall(wp_key, wp_type){
     if (!this.furniture.walls[wp_type]){
         return {
             'ok' : 0,
-            'error' : 'wallpaper_not_owned',
+            'error' : 'wallpaper_not_owned'
         };
     }
 
@@ -386,7 +386,7 @@ public function furniture_set_floor(floor_key, floor_type){
     if (!this.furniture.floors[floor_type]){
         return {
             'ok' : 0,
-            'error' : 'floor_not_owned',
+            'error' : 'floor_not_owned'
         };
     }
 
@@ -405,7 +405,7 @@ public function furniture_set_ceiling(ceiling_key, ceiling_type){
     if (!this.furniture.ceilings[ceiling_type]){
         return {
             'ok' : 0,
-            'error' : 'ceiling_not_owned',
+            'error' : 'ceiling_not_owned'
         };
     }
 
@@ -460,7 +460,7 @@ public function furniture_buy_wall(wp_type){
 
         this.stats_spend_credits(ret.cost, {
             'callback'  : 'furniture_buy_wall_do',
-            'wp_type'   : wp_type,
+            'wp_type'   : wp_type
         });
     }
 
@@ -481,7 +481,7 @@ public function furniture_can_buy_wall(wp_type){
     if (this.furniture.walls[wp_type]){
         return {
             'ok' : 0,
-            'error' : 'already_owned',
+            'error' : 'already_owned'
         };
     }
 
@@ -491,7 +491,7 @@ public function furniture_can_buy_wall(wp_type){
         if (config.homes_wallpaper_configs[wp_type].is_subscriber && !this.stats_is_sub()){
             return {
                 'ok' : 0,
-                'error' : 'not_a_subscriber',
+                'error' : 'not_a_subscriber'
             };
         }
 
@@ -499,14 +499,14 @@ public function furniture_can_buy_wall(wp_type){
         if (cost && !this.stats_has_credits(cost)){
             return {
                 'ok' : 0,
-                'error' : 'not_enough_credits',
+                'error' : 'not_enough_credits'
             };
         }
     }
 
     return {
         'ok': 1,
-        'cost': cost,
+        'cost': cost
     };
 }
 
@@ -525,14 +525,14 @@ public function furniture_buy_wall_do(args){
 
     this.furniture.walls[args.wp_type] = {
         'paid_credits'  : args.amount,
-        'when'      : time(),
+        'when'      : time()
     };
 
     this.furniture_buy_wall_done(true, args.wp_type);
 
     return {
         'type'      : 'wallpaper_purchase',
-        'wp_type'   : args.wp_type,
+        'wp_type'   : args.wp_type
     };
 }
 
@@ -541,7 +541,7 @@ public function furniture_buy_wall_done(success, wp_type, error){
     this.apiSendMsg({
         'type'      : 'houses_wall_purchased',
         'wp_type'   : wp_type,
-        'error'     : error,
+        'error'     : error
     });
 
     if (success) apiLogAction('WALL_PURCHASE', 'pc='+this.tsid, 'type='+wp_type);
@@ -561,7 +561,7 @@ public function furniture_buy_floor(floor_type){
 
         this.stats_spend_credits(ret.cost, {
             'callback'  : 'furniture_buy_floor_do',
-            'floor_type'    : floor_type,
+            'floor_type'    : floor_type
         });
     }
 
@@ -582,7 +582,7 @@ public function furniture_can_buy_floor(floor_type){
     if (this.furniture.floors[floor_type]){
         return {
             'ok' : 0,
-            'error' : 'already_owned',
+            'error' : 'already_owned'
         };
     }
 
@@ -593,7 +593,7 @@ public function furniture_can_buy_floor(floor_type){
         if (config.homes_floor_configs[floor_type].is_subscriber && !this.stats_is_sub()){
             return {
                 'ok' : 0,
-                'error' : 'not_a_subscriber',
+                'error' : 'not_a_subscriber'
             };
         }
 
@@ -601,14 +601,14 @@ public function furniture_can_buy_floor(floor_type){
         if (cost && !this.stats_has_credits(cost)){
             return {
                 'ok' : 0,
-                'error' : 'not_enough_credits',
+                'error' : 'not_enough_credits'
             };
         }
     }
 
     return {
         'ok': 1,
-        'cost': cost,
+        'cost': cost
     };
 }
 
@@ -627,14 +627,14 @@ public function furniture_buy_floor_do(args){
 
     this.furniture.floors[args.floor_type] = {
         'paid_credits'  : args.amount,
-        'when'      : time(),
+        'when'      : time()
     };
 
     this.furniture_buy_floor_done(true, args.floor_type);
 
     return {
         'type'      : 'floor_purchase',
-        'floor_type'    : args.floor_type,
+        'floor_type'    : args.floor_type
     };
 }
 
@@ -643,7 +643,7 @@ public function furniture_buy_floor_done(success, floor_type, error){
     this.apiSendMsg({
         'type'      : 'houses_floor_purchased',
         'floor_type'    : floor_type,
-        'error'     : error,
+        'error'     : error
     });
 
     if (success) apiLogAction('FLOOR_PURCHASE', 'pc='+this.tsid, 'type='+floor_type);
@@ -661,7 +661,7 @@ public function furniture_buy_ceiling(ceiling_type){
 
         this.stats_spend_credits(ret.cost, {
             'callback'  : 'furniture_buy_ceiling_do',
-            'ceiling_type'  : ceiling_type,
+            'ceiling_type'  : ceiling_type
         });
     }
 
@@ -682,7 +682,7 @@ public function furniture_can_buy_ceiling(ceiling_type){
     if (this.furniture.ceilings[ceiling_type]){
         return {
             'ok' : 0,
-            'error' : 'already_owned',
+            'error' : 'already_owned'
         };
     }
 
@@ -692,7 +692,7 @@ public function furniture_can_buy_ceiling(ceiling_type){
         if (config.homes_ceiling_configs[ceiling_type].is_subscriber && !this.stats_is_sub()){
             return {
                 'ok' : 0,
-                'error' : 'not_a_subscriber',
+                'error' : 'not_a_subscriber'
             };
         }
 
@@ -700,14 +700,14 @@ public function furniture_can_buy_ceiling(ceiling_type){
         if (cost && !this.stats_has_credits(cost)){
             return {
                 'ok' : 0,
-                'error' : 'not_enough_credits',
+                'error' : 'not_enough_credits'
             };
         }
     }
 
     return {
         'ok': 1,
-        'cost': cost,
+        'cost': cost
     };
 }
 
@@ -726,14 +726,14 @@ public function furniture_buy_ceiling_do(args){
 
     this.furniture.ceilings[args.ceiling_type] = {
         'paid_credits'  : args.amount,
-        'when'      : time(),
+        'when'      : time()
     };
 
     this.furniture_buy_ceiling_done(true, args.ceiling_type);
 
     return {
         'type'      : 'ceiling_purchase',
-        'ceiling_type'  : args.ceiling_type,
+        'ceiling_type'  : args.ceiling_type
     };
 }
 
@@ -742,7 +742,7 @@ public function furniture_buy_ceiling_done(success, ceiling_type, error){
     this.apiSendMsg({
         'type'      : 'houses_ceiling_purchased',
         'ceiling_type'  : ceiling_type,
-        'error'     : error,
+        'error'     : error
     });
 
     if (success) apiLogAction('CEILING_PURCHASE', 'pc='+this.tsid, 'type='+ceiling_type);
@@ -874,7 +874,7 @@ public function furniture_admin_get_textures(){
         ok: 1,
         walls: {},
         floors: {},
-        ceilings: {},
+        ceilings: {}
     };
 
     for (var i in config.homes_wallpaper_configs){
@@ -1014,7 +1014,7 @@ public function furniture_owns_chassis(upgrade_id){
 public function furniture_add_chassis(upgrade_id, amount){
     this.furniture.chassis[upgrade_id] = {
         'paid_credits'  : amount,
-        'when'      : time(),
+        'when'      : time()
     };
 }
 

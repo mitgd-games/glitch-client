@@ -68,7 +68,7 @@ public function groups_create(name, desc, mode){
     if (info.mode != 'private'){
         this.activity_notify({
             type    : 'group_join',
-            group   : group.tsid,
+            group   : group.tsid
         });
     }
 
@@ -85,7 +85,7 @@ public function groups_create(name, desc, mode){
 
     utils.http_get('callbacks/groups_joined.php', {
         group_tsid: group.tsid,
-        pc_tsid: this.tsid,
+        pc_tsid: this.tsid
     });
 
     return group.tsid;
@@ -131,7 +131,7 @@ public function groups_join(tsid){
     if (info.mode != 'private'){
         this.activity_notify({
             type    : 'group_join',
-            group   : group.tsid,
+            group   : group.tsid
         });
     }
 
@@ -148,7 +148,7 @@ public function groups_join(tsid){
 
     utils.http_get('callbacks/groups_joined.php', {
         group_tsid: group.tsid,
-        pc_tsid: this.tsid,
+        pc_tsid: this.tsid
     });
 
     return ret;
@@ -204,12 +204,12 @@ public function groups_leave(tsid, promote_tsid){
 
     this.sendMsgOnline({
         type: 'groups_leave',
-        tsid: tsid,
+        tsid: tsid
     });
 
     utils.http_get('callbacks/groups_left.php', {
         group_tsid: tsid,
-        pc_tsid: this.tsid,
+        pc_tsid: this.tsid
     });
 
     return 1;
@@ -236,12 +236,12 @@ public function groups_left(tsid){
 
     this.sendMsgOnline({
         type: 'groups_leave',
-        tsid: tsid,
+        tsid: tsid
     });
 
     utils.http_get('callbacks/groups_left.php', {
         group_tsid: tsid,
-        pc_tsid: this.tsid,
+        pc_tsid: this.tsid
     });
 
     return 1;
@@ -251,7 +251,7 @@ public function adminGetGroups(){
 
     var out = {
         groups: [],
-        invites: [],
+        invites: []
     };
 
     if (this.groups){
@@ -436,7 +436,7 @@ public function groups_uninvited(group){
 
     utils.http_get('callbacks/groups_declined.php', {
         group_tsid: group.tsid,
-        pc_tsid: this.tsid,
+        pc_tsid: this.tsid
     });
 }
 
@@ -464,19 +464,19 @@ public function groups_get_all(){
     for (var i in this.groups.groups){
         tsids.push(i);
         out[i] = {
-            rel : 'member',
+            rel : 'member'
         };
     }
     for (var i in this.group_invites){
         tsids.push(i);
         out[i] = {
-            rel : 'invite',
+            rel : 'invite'
         };
     }
     for (var i in this.group_applied){
         tsids.push(i);
         out[i] = {
-            rel : 'applied',
+            rel : 'applied'
         };
     }
 

@@ -262,7 +262,7 @@ public function getReviveEffects(pc){
         mood: -25,
         xp: 25,
         seconds: 10,
-        itemclass: this.name_single,
+        itemclass: this.name_single
     };
 }
 

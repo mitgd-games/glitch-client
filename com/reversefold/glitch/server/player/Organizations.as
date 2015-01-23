@@ -127,7 +127,7 @@ public function organizations_join(tsid){
 
     utils.http_get('callbacks/organizations_joined.php', {
         organization_tsid: org.tsid,
-        pc_tsid: this.tsid,
+        pc_tsid: this.tsid
     });
 
     return ret;
@@ -157,12 +157,12 @@ public function organizations_left(organization){
 
     this.sendMsgOnline({
         type: 'organizations_leave',
-        tsid: organization.tsid,
+        tsid: organization.tsid
     });
 
     utils.http_get('callbacks/organizations_left.php', {
         organization_tsid: organization.tsid,
-        pc_tsid: this.tsid,
+        pc_tsid: this.tsid
     });
 }
 

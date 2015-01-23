@@ -103,12 +103,12 @@ public function profile_get_metabolics(){
 
     out.energy = {
         'value' : this.metabolics.energy.value,
-        'max'   : this.metabolics.energy.top,
+        'max'   : this.metabolics.energy.top
     };
 
     out.mood = {
         'value' : this.metabolics.mood.value,
-        'max'   : this.metabolics.mood.top,
+        'max'   : this.metabolics.mood.top
     };
 
     return out;
@@ -130,7 +130,7 @@ public function profile_get_inventory(){
         out.push({
             'tsid'      : item.tsid,
             'class_tsid'    : item.class_tsid,
-            'stack_size'    : item.count,
+            'stack_size'    : item.count
         });
     }
 

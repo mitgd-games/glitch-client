@@ -111,7 +111,7 @@ public function house_set_auth(key){
         timeout: 20,
         choices     : [
             { value : 'ok', label : 'Very well' }
-        ],
+        ]
     });
 }
 
@@ -167,7 +167,7 @@ public function houses_auth_request(loc, pc){
         'choices'   : [
             { label: "Ok, let them in.", value: 'allow' },
             { label: "Nope, don't answer the door", value: 'dismiss' },
-        ],
+        ]
     });
 }
 
@@ -985,7 +985,7 @@ public function houses_visit(player_tsid){
     if (!player){
         return {
             ok: 0,
-            error: 'player_not_found',
+            error: 'player_not_found'
         };
     }
 
@@ -993,7 +993,7 @@ public function houses_visit(player_tsid){
     if (this.buddies_is_ignored_by(player)){
         return {
             ok: 0,
-            error: 'blocked',
+            error: 'blocked'
         };
     }
 
@@ -1002,7 +1002,7 @@ public function houses_visit(player_tsid){
     if (!house){
         return {
             ok: 0,
-            error: 'house_not_found',
+            error: 'house_not_found'
         };
     }
 
@@ -1030,7 +1030,7 @@ public function houses_visit(player_tsid){
         if (!followers_have_clearance){
             return {
                 ok: 0,
-                error: 'followers_cant_visit',
+                error: 'followers_cant_visit'
             };
         }
     }
@@ -1039,7 +1039,7 @@ public function houses_visit(player_tsid){
     if (!house.pols_is_owner(this) && (!player.has_done_intro || player.getQuestStatus('leave_gentle_island') == 'todo')){
         return {
             ok: 0,
-            error: 'newxp',
+            error: 'newxp'
         };
     }
 
@@ -1047,7 +1047,7 @@ public function houses_visit(player_tsid){
     if (!house.pols_is_owner(this) && (!this.has_done_intro || this.getQuestStatus('leave_gentle_island') == 'todo')){
         return {
             ok: 0,
-            error: 'newxp_us',
+            error: 'newxp_us'
         };
     }
 
@@ -1392,7 +1392,7 @@ public function houses_expand_costs(){
     if (!this.houses_is_at_home()){
         return {
             ok: 0,
-            error: 'not_at_home',
+            error: 'not_at_home'
         };
     }
 
@@ -1401,20 +1401,20 @@ public function houses_expand_costs(){
     if (house_type == 'tower'){
         return {
             ok: 1,
-            costs: this.location.tower_get_expand_costs(),
+            costs: this.location.tower_get_expand_costs()
         };
     }
 
     if (house_type == 'interior' || house_type == 'exterior'){
         return {
             ok: 1,
-            costs: this.location.homes_get_expand_costs(),
+            costs: this.location.homes_get_expand_costs()
         };
     }
 
     return {
         ok: 0,
-        error: 'cant_expand_here',
+        error: 'cant_expand_here'
     };
 }
 
@@ -1423,14 +1423,14 @@ public function houses_extend(){
     if (!this.home.interior){
         return {
             ok: 0,
-            error: 'no_new_house',
+            error: 'no_new_house'
         };
     }
 
     if (this.home.interior.home_has_active_expansion()){
         return {
             ok: 0,
-            error: 'busy_adding_floor',
+            error: 'busy_adding_floor'
         };
     }
 
@@ -1439,7 +1439,7 @@ public function houses_extend(){
     if (!costs.wall.count){
         return {
             ok: 0,
-            error: 'no_expansions_left',
+            error: 'no_expansions_left'
         };
     }
 
@@ -1455,7 +1455,7 @@ public function houses_extend(){
             return {
                 ok: 0,
                 error: 'missing_mats',
-                mats: costs.wall.items,
+                mats: costs.wall.items
             };
         }
     }
@@ -1464,12 +1464,12 @@ public function houses_extend(){
     if (!ret){
         return {
             ok: 0,
-            error: 'expand_failed',
+            error: 'expand_failed'
         };
     }
 
     return {
-        ok: 1,
+        ok: 1
     };
 }
 
@@ -1485,13 +1485,13 @@ public function houses_expand_yard(side){
         var costs = this.location.home_get_yard_expansion_costs();
         var context = {
             'type'      : 'expand_backyard',
-            'remaining' : costs.count,
+            'remaining' : costs.count
         };
 
         if (costs.count <= 0){
             return {
                 ok: 0,
-                error: 'max_size_already',
+                error: 'max_size_already'
             };
         }
 
@@ -1499,7 +1499,7 @@ public function houses_expand_yard(side){
             if (!this.stats_try_remove_imagination(costs.img_cost, context)){
                 return {
                     ok: 0,
-                    error: 'not_enough_img',
+                    error: 'not_enough_img'
                 };
             }
         }
@@ -1523,13 +1523,13 @@ public function houses_expand_yard(side){
             'type'      : 'expand_frontyard',
             'side'      : side,
             'remaining_l'   : costs.count_left,
-            'remaining_r'   : costs.count_right,
+            'remaining_r'   : costs.count_right
         };
 
         if (side_count <= 0){
             return {
                 ok: 0,
-                error: 'max_size_already',
+                error: 'max_size_already'
             };
         }
 
@@ -1537,7 +1537,7 @@ public function houses_expand_yard(side){
             if (!this.stats_try_remove_imagination(costs.img_cost, context)){
                 return {
                     ok: 0,
-                    error: 'not_enough_img',
+                    error: 'not_enough_img'
                 };
             }
         }
@@ -1547,7 +1547,7 @@ public function houses_expand_yard(side){
 
     return {
         ok: 0,
-        error: 'not_at_home',
+        error: 'not_at_home'
     };
 }
 
@@ -1556,14 +1556,14 @@ public function houses_unexpand(){
     if (!this.home.interior){
         return {
             ok: 0,
-            error: 'no_new_house',
+            error: 'no_new_house'
         };
     }
 
     if (this.home.interior.home_has_active_expansion()){
         return {
             ok: 0,
-            error: 'busy_adding_floor',
+            error: 'busy_adding_floor'
         };
     }
 
@@ -1572,7 +1572,7 @@ public function houses_unexpand(){
     if (!costs.unexpand.count){
         return {
             ok: 0,
-            error: 'no_unexpansions_left',
+            error: 'no_unexpansions_left'
         };
     }
 
@@ -1587,12 +1587,12 @@ public function houses_unexpand(){
     if (!ret){
         return {
             ok: 0,
-            error: 'unexpand_failed',
+            error: 'unexpand_failed'
         };
     }
 
     return {
-        ok: 1,
+        ok: 1
     };
 }
 
@@ -1601,7 +1601,7 @@ public function houses_expand_tower(side){
     if (this.location.tsid != this.home.tower.tsid){
         return {
             ok: 0,
-            error: 'not_in_tower',
+            error: 'not_in_tower'
         };
     }
 
@@ -1613,7 +1613,7 @@ public function houses_set_tower_floor_name(connect_id, custom_label){
     if (this.location.tsid != this.home.tower.tsid){
         return {
             ok: 0,
-            error: 'not_in_tower',
+            error: 'not_in_tower'
         };
     }
 
@@ -1626,14 +1626,14 @@ public function houses_style_choices(){
 
         return {
             ok: 0,
-            error: 'not_at_home',
+            error: 'not_at_home'
         };
     }
 
     return {
         ok: 1,
         cost: this.house_style_switch_cost(),
-        choices: this.location.homes_get_style_choices(!!this.is_god),
+        choices: this.location.homes_get_style_choices(!!this.is_god)
     };
 }
 
@@ -1654,7 +1654,7 @@ public function houses_style_set(t){
     if (!choice){
         return {
             ok: 0,
-            error: 'style_not_found',
+            error: 'style_not_found'
         };
     }
 
@@ -1667,14 +1667,14 @@ public function houses_style_set(t){
         'type'      : 'home_style_switch',
         'street'    : s,
         'from_style'    : this.location.style,
-        'to_style'  : t,
+        'to_style'  : t
     };
 
     if (!config.home_limits.UPGRADES_ARE_FREE){
         if (!this.stats_try_remove_imagination(this.house_style_switch_cost(), context)){
             return {
                 ok: 0,
-                error: 'not_enough_img',
+                error: 'not_enough_img'
             };
         }
     }
@@ -1685,7 +1685,7 @@ public function houses_style_set(t){
     this.location.homes_set_style(t);
 
     return {
-        ok: 1,
+        ok: 1
     };
 }
 
@@ -1716,7 +1716,7 @@ public function houses_set_name(name){
 
         return {
             ok: 0,
-            error: 'not_at_home',
+            error: 'not_at_home'
         };
     }
 

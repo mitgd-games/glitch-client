@@ -1482,7 +1482,7 @@ public function games_start_quoin_grab(game, start_time) {
 
     this.quoin_grab = {
         game: game,
-        start_time: start_time,
+        start_time: start_time
     };
 
     this.quoin_grab_show_overlays();
@@ -1682,7 +1682,7 @@ public function games_start_cloudhopolis(game, start_time) {
 
     this.cloudhopolis = {
         game: game,
-        start_time: start_time,
+        start_time: start_time
     };
 
     this.cloudhopolis_show_overlays();

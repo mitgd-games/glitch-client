@@ -286,7 +286,7 @@ public function adminGetProfile(args){
         'tsid' : this.location.tsid,
         'x' : this.x,
         'y' : this.y,
-        'is_hidden' : this.location.is_hidden(),
+        'is_hidden' : this.location.is_hidden()
     };
 
     out.a2 = this.avatar_hash();
@@ -491,7 +491,7 @@ public function adminSkillsCancelUnlearn(args){
 
 public function adminGetCurrants(args){
     return {
-        'currants': this.stats.currants.value,
+        'currants': this.stats.currants.value
     };
 }
 
@@ -531,12 +531,12 @@ public function adminGetGodProfile(args){
 
     out.metabolics.energy = {
         'value' : this.metabolics.energy.value,
-        'max'   : this.metabolics.energy.top,
+        'max'   : this.metabolics.energy.top
     };
 
     out.metabolics.mood = {
         'value' : this.metabolics.mood.value,
-        'max'   : this.metabolics.mood.top,
+        'max'   : this.metabolics.mood.top
     };
 
 
@@ -548,7 +548,7 @@ public function adminGetGodProfile(args){
         'name' : this.location.label,
         'tsid' : this.location.tsid,
         'x' : this.x,
-        'y' : this.y,
+        'y' : this.y
     };
 
     //
@@ -593,7 +593,7 @@ public function adminGetGodProfile(args){
                 'skill'   : recipe.skill,
                 'outputs' : recipe.outputs,
                 'learnt'  : recipe.learnt,
-                'when'    : recipes[r],
+                'when'    : recipes[r]
             }
         }
     }
@@ -731,7 +731,7 @@ public function admin_test_data(){
         for (var i in this.quests.done.quests) {
             out.quests_complete[i] = {
                 'ts_start' : this.quests.done.quests[i].ts_start,
-                'ts_done' : this.quests.done.quests[i].ts_done,
+                'ts_done' : this.quests.done.quests[i].ts_done
             }
         }
         for (var i in this.quests.todo.quests) {
@@ -847,7 +847,7 @@ public function admin_reset_skills(){
 public function admin_place_pol(){
 
     this.familiar_send_alert_now({
-        'callback' : 'admin_place_pol_callback',
+        'callback' : 'admin_place_pol_callback'
     });
 }
 
@@ -866,18 +866,18 @@ public function admin_place_pol_callback(choice, details){
 
             choices[c++] = {
                 txt : config.pol_types[i].label,
-                value   : 'pick_template_'+config.pol_types[i].uid,
+                value   : 'pick_template_'+config.pol_types[i].uid
             };
         }
 
         choices[c++] = {
             txt : "Cancel",
-            value   : 'dismiss',
+            value   : 'dismiss'
         };
 
         return {
             txt: "Choose a POL template to clone:",
-            choices: choices,
+            choices: choices
         };
     }
 
@@ -897,13 +897,13 @@ public function admin_place_pol_callback(choice, details){
 
             return {
                 txt: "OK! A POL has been created right where you're standing. Reload the client to show it.",
-                done: true,
+                done: true
             };
         }else{
 
             return {
                 txt: "Error creating POL: "+ret.error,
-                done: true,
+                done: true
             };
         }
     }
@@ -914,7 +914,7 @@ public function admin_place_pol_callback(choice, details){
     //
 
     return {
-        done: true,
+        done: true
     };
 }
 
@@ -962,7 +962,7 @@ public function admin_get_leaderboards(){
             'currants'  : this.stats_get_currants(),
             'locations' : this.counters_get_group_count('locations_visited'),
             'achievements'  : this.achievements_get_leaderboard_count(),
-            'quests'    : this.quests_get_complete_count(),
+            'quests'    : this.quests_get_complete_count()
         }
     };
 
@@ -1043,12 +1043,12 @@ public function admin_get_stats(){
 
     out.energy = {
         value: this.metabolics.energy.value,
-        max: this.metabolics.energy.top,
+        max: this.metabolics.energy.top
     };
 
     out.mood = {
         value: this.metabolics.mood.value,
-        max: this.metabolics.mood.top,
+        max: this.metabolics.mood.top
     };
     out.mail_unread = this.mail_count_unread();
 
@@ -1164,7 +1164,7 @@ public function adminGetGodExtras(args){
         is_in_coneofsilence: this.isInConeOfSilence(),
         is_in_help_coneofsilence: this.isInConeOfSilence('help'),
         img_migrated: (this.imagination && this.imagination.converted_at) ? this.imagination.converted_at : 0,
-        is_online: apiIsPlayerOnline(this.tsid),
+        is_online: apiIsPlayerOnline(this.tsid)
     };
 }
 
@@ -1272,7 +1272,7 @@ public function admin_mail_get_inbox(args){
         'ok'        : 1,
         'inbox'     : args.fetch_all ? this.build_mail_check_msg(null, null, true) : this.build_mail_check_msg(null),
         'unread_count'  : this.mail_count_unread(),
-        'replied_count' : this.mail_count_replied(),
+        'replied_count' : this.mail_count_replied()
     };
 }
 
@@ -1527,7 +1527,7 @@ public function admin_craftytasking_robot_queue(args){
                 'ingredients': queue_data.ingredients,
                 'missing_ingredients': queue_data.missing_ingredients,
                 'tools': queue_data.tools,
-                'missing_tools': queue_data.missing_tools,
+                'missing_tools': queue_data.missing_tools
             });
         }
     }
@@ -1785,7 +1785,7 @@ public function adminGetFriends(args){
 
     var out = {
         'fwd' : this.buddies_get_tsids(),
-        'rev' : this.buddies_get_reverse_tsids(),
+        'rev' : this.buddies_get_reverse_tsids()
     };
 
     if (args.fetch_online){
@@ -1938,7 +1938,7 @@ public function admin_quickstart_flags(){
     return {
         name    : !!this.quickstart_needs_player,
         avatar  : !!this.quickstart_needs_avatar,
-        account : !!this.quickstart_needs_account,
+        account : !!this.quickstart_needs_account
     };
 }
 

@@ -89,7 +89,7 @@ public function openStoreInterface(item, verb){
         item_class: item.class_id,
         item_tsid: item.tsid,
         verb: verb,
-        store: store_info,
+        store: store_info
     };
 
     if (item.instanceProps && item.instanceProps.store_id > 0){

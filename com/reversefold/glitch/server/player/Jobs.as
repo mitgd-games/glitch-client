@@ -229,7 +229,7 @@ public function jobs_familiar_turnin(job_location, job_id, class_id, is_winner){
         'job_location'  : job_location,
         'job_id'    : job_id,
         'class_id'  : class_id,
-        'is_winner' : is_winner,
+        'is_winner' : is_winner
     });
 }
 
@@ -294,7 +294,7 @@ public function jobs_familiar_turnin_do(choice, details){
                     job_location: details.job_location
                 },
                 txt : "Nevermind!",
-                done : true,
+                done : true
             };
         }
 
@@ -313,7 +313,7 @@ public function jobs_familiar_turnin_do(choice, details){
                     job_location: details.job_location
                 },
                 txt : "Nevermind!",
-                done : true,
+                done : true
             };
         }
 

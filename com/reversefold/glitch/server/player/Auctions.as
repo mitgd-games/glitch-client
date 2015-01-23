@@ -201,12 +201,12 @@ public function auctions_start(stack, count, cost, fee_percent, fee_min){
     // do we need to split the stack off?
     //
 
-    var use = this.removeItemStack(stack.path);
+    var _use = this.removeItemStack(stack.path);
 
     if (count < stack.count){
 
-        use = stack.apiSplit(count);
-        if (!use){
+        _use = stack.apiSplit(count);
+        if (!_use){
             return {
                 ok: 0,
                 error: 'cant_split'
@@ -220,18 +220,18 @@ public function auctions_start(stack, count, cost, fee_percent, fee_min){
     // create the auction
     //
 
-    apiLogAction('AUCTION_START', 'pc='+this.tsid, 'stack='+use.tsid, 'count='+count);
+    apiLogAction('AUCTION_START', 'pc='+this.tsid, 'stack='+_use.tsid, 'count='+count);
 
-    if (use.onAuctionList) use.onAuctionList(this);
+    if (_use.onAuctionList) _use.onAuctionList(this);
 
     var storage = this.auctions_find_container();
 
-    storage.apiAddHiddenStack(use);
+    storage.apiAddHiddenStack(_use);
 
     var key = this.auctions_get_uid();
 
     this.auctions.active[key] = {
-        stack   : use,
+        stack   : _use,
         created : time(),
         expires : config.is_dev ? time() + (60 * 60 * 24) : time() + (60 * 60 * 72), // only 72h auctions for now
         cost    : cost
@@ -259,7 +259,7 @@ public function auctions_cancel(uid, destroy_items){
     if (!this.auctions.active[uid]){
         return {
             ok: 0,
-            error: 'not_found',
+            error: 'not_found'
         };
     }
 
@@ -292,7 +292,7 @@ public function auctions_cancel(uid, destroy_items){
     }
 
     return {
-        ok: 1,
+        ok: 1
     };
 }
 
@@ -307,7 +307,7 @@ public function auctions_expire(uid){
     if (!this.auctions.active[uid]){
         return {
             ok: 0,
-            error: 'not_found',
+            error: 'not_found'
         };
     }
 
@@ -325,7 +325,7 @@ public function auctions_expire(uid){
         type    : 'auction_expire',
         item    : stack.class_tsid,
         qty : stack.count,
-        cost    : details.cost,
+        cost    : details.cost
     });
 
     this.auctions_flatten(details, "expired");
@@ -338,7 +338,7 @@ public function auctions_expire(uid){
     this.mail_add_auction_delivery(stack.tsid, config.auction_delivery_time, uid, this.tsid, 'expired');
 
     return {
-        ok: 1,
+        ok: 1
     };
 }
 
@@ -357,7 +357,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
     if (!details){
         return {
             ok: 0,
-            error: 'not_found',
+            error: 'not_found'
         };
     }
 
@@ -370,7 +370,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
 
         return {
             ok: 0,
-            error: 'is_ours',
+            error: 'is_ours'
         };
     }
 
@@ -383,7 +383,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
 
         return {
             ok: 0,
-            error: 'no_cash',
+            error: 'no_cash'
         };
     }
 
@@ -396,14 +396,14 @@ public function auctions_purchase(uid, buyer, commission, preflight){
 
         return {
             ok: 0,
-            error: 'no_space',
+            error: 'no_space'
         };
     }
 
     if (buyer.mail_count_uncollected_auctions() > 50){
         return {
             ok: 0,
-            error: 'mailbox_full',
+            error: 'mailbox_full'
         };
     }
 
@@ -439,7 +439,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
         who : buyer.tsid,
         item    : stack.class_tsid,
         qty : stack.count,
-        cost    : details.cost,
+        cost    : details.cost
     });
 
 
@@ -452,7 +452,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
         buyer_tsid  : buyer.tsid,
         item_class_tsid : stack.class_tsid,
         qty     : stack.count,
-        total_price : details.cost,
+        total_price : details.cost
     });
 
 
@@ -562,7 +562,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
     }
 
     return {
-        ok: 1,
+        ok: 1
     };
 }
 
@@ -611,14 +611,14 @@ public function auctions_sync(uid){
 
     utils.http_get('callbacks/auctions_update.php', {
         'player_tsid'   : this.tsid,
-        'auction_uid'   : uid,
+        'auction_uid'   : uid
     });
 }
 
 public function auctions_sync_all(){
 
     utils.http_get('callbacks/auctions_update.php', {
-        'player_tsid'   : this.tsid,
+        'player_tsid'   : this.tsid
     });
 }
 
@@ -692,14 +692,14 @@ public function admin_auctions_get(args){
 
         return {
             ok  : 0,
-            error   : 'not_found',
+            error   : 'not_found'
         };
 
     }else{
         return {
             ok  : 1,
             status  : status,
-            data    : data,
+            data    : data
         };
     }
 }
@@ -710,7 +710,7 @@ public function admin_auctions_get_all(){
          active   : this.auctions.active,
          done     : this.auctions.done,
          cancelled: this.auctions.cancelled,
-         expired  : this.auctions.expired,
+         expired  : this.auctions.expired
         };
 }
 
@@ -724,14 +724,14 @@ public function admin_auctions_relist_broken(args){
     if (!stack){
         return {
             ok: 0,
-            error: 'no_stack',
+            error: 'no_stack'
         };
     }
 
     if (!stack.isHidden){
         return {
             ok: 0,
-            error: 'not_hidden',
+            error: 'not_hidden'
         };
     }
 
@@ -739,7 +739,7 @@ public function admin_auctions_relist_broken(args){
         if (this.auctions.active[i].stack.tsid == args.stack_tsid){
             return {
                 ok: 0,
-                error: 'already_listed',
+                error: 'already_listed'
             };
         }
     }
@@ -749,7 +749,7 @@ public function admin_auctions_relist_broken(args){
 
         return {
             ok: 0,
-            error: 'not_yours',
+            error: 'not_yours'
         };
     }
 
@@ -786,14 +786,14 @@ public function admin_auctions_start(args){
     if (this.isInTimeout()){
         return {
             ok: 0,
-            error: 'account_suspended',
+            error: 'account_suspended'
         };
     }
 
     if (!args.cost || args.cost < 1){
         return {
             ok: 0,
-            error: 'no_cost',
+            error: 'no_cost'
         };
     }
 
@@ -802,21 +802,21 @@ public function admin_auctions_start(args){
     if (!stack){
         return {
             ok: 0,
-            error: 'no_stack',
+            error: 'no_stack'
         };
     }
 
     if (stack.hasTag('no_auction') || stack.hasTag('bag')){
         return {
             ok: 0,
-            error: 'not_allowed',
+            error: 'not_allowed'
         };
     }
 
     if (stack.isSoulbound()){
         return {
             ok: 0,
-            error: 'not_allowed',
+            error: 'not_allowed'
         };
     }
 
@@ -838,7 +838,7 @@ public function admin_auctions_purchase(args){
     if (!buyer){
         return {
             ok: 0,
-            error: 'no_buyer',
+            error: 'no_buyer'
         };
     }
 

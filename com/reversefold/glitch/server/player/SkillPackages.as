@@ -509,9 +509,9 @@ public function finishSkillPackage(){
     }
 
     if (args.tool_item && details.tool_wear){
-        if (args.tool_item && args.tool_item.use){
+        if (args.tool_item && args.tool_item._use){
             if (!args.tool_wear_multiplier) args.tool_wear_multiplier = 1;
-            args.tool_item.use(this, details.tool_wear * args.tool_wear_multiplier);
+            args.tool_item._use(this, details.tool_wear * args.tool_wear_multiplier);
         }
     }
 
@@ -572,7 +572,7 @@ public function finishSkillPackage(){
                     slugs.items.push({
                         class_tsid  : it.class_id,
                         label       : item_prot.label,
-                        count       : it.count,
+                        count       : it.count
                         //itemstack_tsid    : 'IWESKDJF345' //sent when applicable
                     });
                 }
