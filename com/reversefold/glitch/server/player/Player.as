@@ -40,6 +40,8 @@ package com.reversefold.glitch.server.player {
 			//init();
 			this.config = config;
 
+			events = new Events(config, this);
+			
 			making = new Making(config, this);
 			skills = new Skills(config, this);
 			buffs = new Buffs(config, this);
@@ -63,8 +65,9 @@ package com.reversefold.glitch.server.player {
 			bag = new Bag();
 		}
 		
-//RVRS: TODO: include items/include/events.js? Buffs, Announcements, Quests need it...
-		
+//RVRS: include items/include/events.js? 
+		public var events : Events;
+
 		
 //#include inc_admin.js,
 //inc_groups.js,
