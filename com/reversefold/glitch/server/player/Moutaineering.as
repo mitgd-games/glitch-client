@@ -21,7 +21,7 @@ package com.reversefold.glitch.server.player {
 // Overlay display
 // If isFaded is true, the overlay will fade in for the 1.5 * the number of seconds specified in
 // this.rungs[rung].freezeTime (see config.party_spaces).
-public function displayFreeze(rung, isFaded){
+public function displayFreeze(rung, isFaded=false){
     //log.info("MT displaying freeze for "+rung);
 
     if (!this.party || !this.party.get_space()) {
