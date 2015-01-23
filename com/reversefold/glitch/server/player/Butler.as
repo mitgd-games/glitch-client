@@ -20,7 +20,7 @@ package com.reversefold.glitch.server.player {
         }
 
 
-function createButler(x_pos) {
+public function createButler(x_pos) {
 
     if (this.butler_tsid) {
 
@@ -73,7 +73,7 @@ function createButler(x_pos) {
     }
 }
 
-function removeButler(){
+public function removeButler(){
     if (!this.butler_tsid) { return; }
 
     var butler = apiFindObject(this.butler_tsid);
@@ -88,11 +88,11 @@ function removeButler(){
     delete this.butler_tsid;
 }
 
-function has_butler(){
+public function has_butler(){
     return this.butler_tsid ? true : false;
 }
 
-function giveButlerBox() {
+public function giveButlerBox() {
 
     if (this.has_butler()) {
         return;
@@ -115,7 +115,7 @@ function giveButlerBox() {
     }
 }
 
-function getButler(){
+public function getButler(){
     if (this.butler_tsid) {
         return apiFindObject(this.butler_tsid);
     }
@@ -125,7 +125,7 @@ function getButler(){
 
 // Transmit info to butlers for improved buttling
 
-function notifyButlersAboutTower(){
+public function notifyButlersAboutTower(){
 
     var tower_data = {  player: this.tsid,
                         completion_time: time()        // timestamp in seconds

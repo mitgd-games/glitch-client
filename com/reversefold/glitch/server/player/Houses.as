@@ -18,12 +18,12 @@ package com.reversefold.glitch.server.player {
         }
 
 
-function houses_login(){
+public function houses_login(){
     this.house_auth = {};
     this.house_auth_req = {};
 }
 
-function houses_logout(){
+public function houses_logout(){
     delete this.house_auth;
     delete this.house_auth_req;
 
@@ -78,7 +78,7 @@ function houses_logout(){
 
 }
 
-function houses_has_authed(loc, pc){
+public function houses_has_authed(loc, pc){
 
     if (!this.house_auth) return false;
 
@@ -86,7 +86,7 @@ function houses_has_authed(loc, pc){
     return this.house_auth[key] ? true : false;
 }
 
-function houses_has_requested(loc, pc){
+public function houses_has_requested(loc, pc){
 
     if (!this.house_auth_req) return false;
 
@@ -94,7 +94,7 @@ function houses_has_requested(loc, pc){
     return this.house_auth_req[key] ? true : false;
 }
 
-function house_set_auth(key){
+public function house_set_auth(key){
 
     this.house_auth[key] = 1;
 
@@ -115,14 +115,14 @@ function house_set_auth(key){
     });
 }
 
-function houses_remove_auth(loc, pc){
+public function houses_remove_auth(loc, pc){
     var key = loc.tsid + '!' + pc.tsid;
 
     if (this.house_auth) delete this.house_auth[key];
     if (this.house_auth_req) delete this.house_auth_req[key];
 }
 
-function houses_remove_all_auth(pc){
+public function houses_remove_all_auth(pc){
 
     if (!this.houses) this.houses = {};
 
@@ -136,7 +136,7 @@ function houses_remove_all_auth(pc){
     }
 }
 
-function houses_auth_request(loc, pc){
+public function houses_auth_request(loc, pc){
 
     var key = loc.tsid + '!' + pc.tsid;
 
@@ -171,7 +171,7 @@ function houses_auth_request(loc, pc){
     });
 }
 
-function houses_auth_req(choice, details){
+public function houses_auth_req(choice, details){
 
     if (choice == 'allow'){
 
@@ -184,21 +184,21 @@ function houses_auth_req(choice, details){
     return;
 }
 
-function houses_add_property(tsid){
+public function houses_add_property(tsid){
 
     if (!this.houses) this.houses = {};
     this.houses[tsid] = 1;
     this.houses_update_client();
 }
 
-function houses_remove_property(tsid){
+public function houses_remove_property(tsid){
 
     if (!this.houses) this.houses = {};
     delete this.houses[tsid];
     this.houses_update_client();
 }
 
-function houses_has_house(){
+public function houses_has_house(){
 
     if (!this.houses) this.houses = {};
     //return num_keys(this.houses) || num_keys(this.home) ? 1 : 0;
@@ -211,7 +211,7 @@ function houses_has_house(){
     return false;
 }
 
-function houses_get_login(){
+public function houses_get_login(){
 
     if (!this.houses) this.houses = {};
     for (var i in this.houses){
@@ -224,7 +224,7 @@ function houses_get_login(){
     return null;
 }
 
-function houses_get_login_new(){
+public function houses_get_login_new(){
 
     var ret = {};
     if (this.home){
@@ -243,14 +243,14 @@ function houses_get_login_new(){
     return ret;
 }
 
-function houses_get(){
+public function houses_get(){
     var new_house = this.houses_get_new();
     if (new_house && new_house[0]) return new_house[0];
 
     return null;
 }
 
-function houses_get_all(){
+public function houses_get_all(){
     var ret = [];
     for (var i in this.houses){
         var loc = apiFindObject(i);
@@ -262,7 +262,7 @@ function houses_get_all(){
     return ret;
 }
 
-function houses_get_old(){
+public function houses_get_old(){
     var ret = [];
     for (var i in this.houses){
         var house = apiFindObject(i);
@@ -272,12 +272,12 @@ function houses_get_old(){
     return ret;
 }
 
-function houses_get_new(){
+public function houses_get_new(){
     if (this.home && this.home.interior) return [this.home.interior];
     return [];
 }
 
-function houses_get_with_streets(){
+public function houses_get_with_streets(){
 
     try{
         return {
@@ -289,7 +289,7 @@ function houses_get_with_streets(){
     }
 }
 
-function houses_get_entrances(){
+public function houses_get_entrances(){
     if (!this.houses) this.houses = {};
 
     var entrances = {};
@@ -326,7 +326,7 @@ function houses_get_entrances(){
     return entrances;
 }
 
-function houses_update_client(){
+public function houses_update_client(){
     this.sendMsgOnline({
         'type'      : 'pol_change',
         'pol_info'  : this.houses_get_login(),
@@ -335,7 +335,7 @@ function houses_update_client(){
 }
 
 
-function houses_familiar_no_owner(choice, details){
+public function houses_familiar_no_owner(choice, details){
 
     //
     // offer the various options
@@ -448,7 +448,7 @@ function houses_familiar_no_owner(choice, details){
     return {done: true};
 }
 
-function houses_familiar_owner_offline(choice, details){
+public function houses_familiar_owner_offline(choice, details){
 
     return {
         txt: "The owner of this location ("+details.owner.linkifyLabel()+") is currently offline",
@@ -456,14 +456,14 @@ function houses_familiar_owner_offline(choice, details){
     };
 }
 
-function houses_familiar_owner_not_at_home(choice, details){
+public function houses_familiar_owner_not_at_home(choice, details){
     return {
         txt: "The owner of this location ("+details.owner.linkifyLabel()+") is not at home right now",
         done: true
     };
 }
 
-function houses_familiar_knock(choice, details){
+public function houses_familiar_knock(choice, details){
 
     if (choice == 'start'){
 
@@ -514,7 +514,7 @@ function houses_familiar_knock(choice, details){
     return {done: true};
 }
 
-function houses_familiar_private_group(choice, details){
+public function houses_familiar_private_group(choice, details){
 
     return {
         txt: "The location is the property of <b>"+(details.owner.mode == 'private' ? 'A Private Organization' : details.owner.label)+"</b>, and you are not a member.",
@@ -522,7 +522,7 @@ function houses_familiar_private_group(choice, details){
     };
 }
 
-function houses_familiar_has_org(choice, details){
+public function houses_familiar_has_org(choice, details){
 
     return {
         txt: "This location is unowned, but you are already in an Organization",
@@ -531,7 +531,7 @@ function houses_familiar_has_org(choice, details){
 }
 
 
-function houses_familiar_org_create(choice, details){
+public function houses_familiar_org_create(choice, details){
 
     //
     // offer the various options
@@ -636,7 +636,7 @@ function houses_familiar_org_create(choice, details){
     return {done: true};
 }
 
-function houses_familiar_unnamed_org(choice, details){
+public function houses_familiar_unnamed_org(choice, details){
     var loc = apiFindObject(details.loc_tsid);
     var org = loc.owner;
     if (!org) return {done: true};
@@ -718,7 +718,7 @@ function houses_familiar_unnamed_org(choice, details){
     return {done: true};
 }
 
-function houses_familiar_newxp_locked(choice, details){
+public function houses_familiar_newxp_locked(choice, details){
 
     return {
         txt: "Oops - looks like you need to go talk to your rock first!",
@@ -727,7 +727,7 @@ function houses_familiar_newxp_locked(choice, details){
 }
 
 
-function houses_familiar_newxp_wait(choice, details){
+public function houses_familiar_newxp_wait(choice, details){
 
     return {
         txt: "That player cannot be visited yet.",
@@ -735,7 +735,7 @@ function houses_familiar_newxp_wait(choice, details){
     };
 }
 
-function houses_remove_all(){
+public function houses_remove_all(){
 
     if (!this.houses) this.houses = {};
 
@@ -775,7 +775,7 @@ function houses_remove_all(){
     delete this.home;
 }
 
-function houses_remove_new(){
+public function houses_remove_new(){
     if (this.home){
 
         // Backup keys
@@ -824,7 +824,7 @@ function houses_remove_new(){
     }
 }
 
-function houses_go_to_new_house(force_recreate, no_teleport, go_inside){
+public function houses_go_to_new_house(force_recreate, no_teleport, go_inside){
 
 
     //
@@ -937,7 +937,7 @@ function houses_go_to_new_house(force_recreate, no_teleport, go_inside){
     return {ok: 1};
 }
 
-function houses_go_to_tower(){
+public function houses_go_to_tower(){
     if (!this.home || !this.home.tower) return {ok: 0, error: "You don't have a tower!"};
     if (this.location.is_skillquest){
         return {ok: 0, error: "Just finish the quest first! It's easy!"};
@@ -950,7 +950,7 @@ function houses_go_to_tower(){
     return {ok: 1};
 }
 
-function admin_houses_visit(args){
+public function admin_houses_visit(args){
     var ret = this.houses_visit(args.player_tsid);
     if (!ret.ok){
         switch (ret.error){
@@ -978,7 +978,7 @@ function admin_houses_visit(args){
     return ret;
 }
 
-function houses_visit(player_tsid){
+public function houses_visit(player_tsid){
 
     // find player
     var player = apiFindObject(player_tsid);
@@ -1054,7 +1054,7 @@ function houses_visit(player_tsid){
     return this.houses_teleport_to(house);
 }
 
-function houses_teleport_to(target_house, x, y){
+public function houses_teleport_to(target_house, x, y){
 
     if (this.is_dead) return {ok: 0, error: "You are dead."};
 
@@ -1080,7 +1080,7 @@ function houses_teleport_to(target_house, x, y){
     return {ok: 1};
 }
 
-function houses_record_leave(){
+public function houses_record_leave(){
     if (this.location.isInstance() && this.location.class_tsid != 'newbie_island'){
         var exit = this.instances_unwind_exit();
         if (exit && exit.tsid){
@@ -1118,7 +1118,7 @@ function houses_record_leave(){
     }
 }
 
-function houses_create_location(label, type, db_sync){
+public function houses_create_location(label, type, db_sync){
 
     var pol_cfg = {};
     if (type == 'home_interior') pol_cfg = config.homes_interior_configs[config.home_limits.START_INT_TEMPLATE];
@@ -1171,7 +1171,7 @@ function houses_create_location(label, type, db_sync){
 }
 
 // The position of the signpost (?) on our external street
-function houses_get_external_entrance(){
+public function houses_get_external_entrance(){
     if (!this.home || !this.home.exterior) return null;
 
     var post = this.home.exterior.geo_links_get_all_signposts()[0];
@@ -1184,17 +1184,17 @@ function houses_get_external_entrance(){
     };
 }
 
-function houses_is_at_home(){
+public function houses_is_at_home(){
     return this.location.homes_belongs_to(this.tsid);
 }
 
-function houses_is_our_home(tsid){
+public function houses_is_our_home(tsid){
     var loc = apiFindObject(tsid);
     if (!loc) return false;
     return loc.homes_belongs_to(this.tsid);
 }
 
-function houses_check_inside_home(){
+public function houses_check_inside_home(){
     if (!this.home || !this.home.exterior || !this.home.interior){
         this.sendActivity('Only works in your own house');
         return false;
@@ -1213,19 +1213,19 @@ function houses_check_inside_home(){
 // THESE ARE DEBUGGING FUNCTIONS!
 //
 
-function houses_reset(){
+public function houses_reset(){
     if (!this.houses_check_inside_home()) return false;
 
     return this.location.homes_reset();
 }
 
-function houses_rebuild(){
+public function houses_rebuild(){
     if (!this.houses_check_inside_home()) return false;
 
     return this.location.homes_rebuild_rooms();
 }
 
-function houses_add_floor(){
+public function houses_add_floor(){
     if (!this.houses_check_inside_home()) return false;
 
     return this.location.homes_add_floor_at(this.location.homes_guess_door_pos());
@@ -1237,27 +1237,27 @@ function houses_add_floor(){
 ////////////////////////////////////////////////////////////////
 
 
-function houses_get_external_street(){
+public function houses_get_external_street(){
     return this.home ? this.home.exterior : null;
 }
 
-function houses_get_interior_street(){
+public function houses_get_interior_street(){
     return this.home ? this.home.interior : null;
 }
 
-function houses_get_external_tsid(){
+public function houses_get_external_tsid(){
     return this.home && this.home.exterior ? this.home.exterior.tsid : null;
 }
 
-function houses_get_interior_tsid(){
+public function houses_get_interior_tsid(){
     return this.home && this.home.interior ? this.home.interior.tsid : null;
 }
 
-function houses_get_tower_tsid(){
+public function houses_get_tower_tsid(){
     return this.home && this.home.tower ? this.home.tower.tsid : null;
 }
 
-function houses_do_moving_boxes(){
+public function houses_do_moving_boxes(){
     try{
         if (this.home){
             if (this.home.interior){
@@ -1279,7 +1279,7 @@ function houses_do_moving_boxes(){
     }
 }
 
-function houses_undo_moving_boxes(){
+public function houses_undo_moving_boxes(){
     if (!this.home || !this.home.interior) return false;
 
     var offset = 200;
@@ -1307,7 +1307,7 @@ function houses_undo_moving_boxes(){
     return true;
 }
 
-function houses_leave(){
+public function houses_leave(){
     if (!this.location.getProp('is_home')) return this.sendActivity("To leave, you must first go /home");
 
     var target = this.houses_get_previous_location();
@@ -1325,7 +1325,7 @@ function houses_leave(){
     delete this.home_leave;
 }
 
-function houses_get_previous_location(){
+public function houses_get_previous_location(){
     var target = this.home_leave;
     var loc;
 
@@ -1364,14 +1364,14 @@ function houses_get_previous_location(){
     return target;
 }
 
-function houses_get_previous_location_client(){
+public function houses_get_previous_location_client(){
     var target = this.houses_get_previous_location();
     if (!target.tsid) return {};
 
     return apiFindObject(target.tsid).getMapInfo();
 }
 
-function admin_reset_house(args){
+public function admin_reset_house(args){
     if (this.home){
         this.houses_go_to_new_house(true, true);
 
@@ -1381,13 +1381,13 @@ function admin_reset_house(args){
     return {ok:1};
 }
 
-function houses_get_bags(){
+public function houses_get_bags(){
     var old = this.houses_get_old();
 
     if (old && old[0]) return old[0].getBags();
 }
 
-function houses_expand_costs(){
+public function houses_expand_costs(){
 
     if (!this.houses_is_at_home()){
         return {
@@ -1418,7 +1418,7 @@ function houses_expand_costs(){
     };
 }
 
-function houses_extend(){
+public function houses_extend(){
 
     if (!this.home.interior){
         return {
@@ -1473,7 +1473,7 @@ function houses_extend(){
     };
 }
 
-function houses_expand_yard(side){
+public function houses_expand_yard(side){
 
 
     //
@@ -1551,7 +1551,7 @@ function houses_expand_yard(side){
     };
 }
 
-function houses_unexpand(){
+public function houses_unexpand(){
 
     if (!this.home.interior){
         return {
@@ -1596,7 +1596,7 @@ function houses_unexpand(){
     };
 }
 
-function houses_expand_tower(side){
+public function houses_expand_tower(side){
 
     if (this.location.tsid != this.home.tower.tsid){
         return {
@@ -1608,7 +1608,7 @@ function houses_expand_tower(side){
     return this.location.tower_start_expand();
 }
 
-function houses_set_tower_floor_name(connect_id, custom_label){
+public function houses_set_tower_floor_name(connect_id, custom_label){
 
     if (this.location.tsid != this.home.tower.tsid){
         return {
@@ -1620,7 +1620,7 @@ function houses_set_tower_floor_name(connect_id, custom_label){
     return this.location.tower_set_floor_name(connect_id, custom_label);
 }
 
-function houses_style_choices(){
+public function houses_style_choices(){
 
     if (this.location.tsid != this.home.interior.tsid && this.location.tsid != this.home.exterior.tsid){
 
@@ -1637,7 +1637,7 @@ function houses_style_choices(){
     };
 }
 
-function house_style_switch_cost(){
+public function house_style_switch_cost(){
 
     var cost = this.stats_get_level() * 10;
     if (cost < 40) cost = 40;
@@ -1645,7 +1645,7 @@ function house_style_switch_cost(){
     return cost;
 }
 
-function houses_style_set(t){
+public function houses_style_set(t){
 
     var ret = this.houses_style_choices();
     if (!ret.ok) return ret;
@@ -1689,7 +1689,7 @@ function houses_style_set(t){
     };
 }
 
-function houses_reset_for_r2(){
+public function houses_reset_for_r2(){
 
     if (this.home && this.home.exterior){
 
@@ -1710,7 +1710,7 @@ function houses_reset_for_r2(){
     }
 }
 
-function houses_set_name(name){
+public function houses_set_name(name){
 
     if (this.location.tsid != this.home.interior.tsid && this.location.tsid != this.home.exterior.tsid){
 
@@ -1723,18 +1723,18 @@ function houses_set_name(name){
     return this.location.homes_set_name(name);
 }
 
-function houses_get_img_rewards(){
+public function houses_get_img_rewards(){
     if (!this.home || !this.home.exterior) return 0;
 
     return this.home.exterior.cultivation_get_img_rewards(this);
 }
 
-function houses_reset_img_rewards(){
+public function houses_reset_img_rewards(){
     if (!this.home || !this.home.exterior) return false;
     return this.home.exterior.cultivation_reset_img_rewards(this);
 }
 
-function houses_get_currants_to_collect(){
+public function houses_get_currants_to_collect(){
     if (!this.home || !this.home.interior) return 0;
 
     var currants = 0;
@@ -1764,19 +1764,19 @@ function houses_get_currants_to_collect(){
     return currants;
 }
 
-function houses_replace_sign_with_rock(){
+public function houses_replace_sign_with_rock(){
 
     if (this.home && this.home.exterior) this.home.exterior.homes_replace_sign_with_rock();
 
     if (this.home && this.home.interior) this.home.interior.homes_replace_sign_with_rock();
 }
 
-function houses_rebuild_from_template(){
+public function houses_rebuild_from_template(){
     if (this.home && this.home.exterior) this.home.exterior.homes_rebuild_from_template();
     if (this.home && this.home.interior) this.home.interior.homes_rebuild_from_template();
 }
 
-function houses_signpost(player_tsid){
+public function houses_signpost(player_tsid){
     // find player
     var player = apiFindObject(player_tsid);
     if (!player){
@@ -1823,7 +1823,7 @@ function houses_signpost(player_tsid){
     return rsp;
 }
 
-function houses_sync_visitors(){
+public function houses_sync_visitors(){
 
     var num = 0;
 

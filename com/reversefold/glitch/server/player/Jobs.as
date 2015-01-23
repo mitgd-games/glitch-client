@@ -18,7 +18,7 @@ package com.reversefold.glitch.server.player {
         }
 
 
-function jobs_init(){
+public function jobs_init(){
     if (!this.jobs) this.jobs = {};
     if (this.jobs.todo === undefined || this.jobs.todo === null){
         this.jobs.todo = apiNewOwnedDC(this);
@@ -35,7 +35,7 @@ function jobs_init(){
     if (!this.jobs.done.jobs) this.jobs.done.jobs = {};
 }
 
-function jobs_reset(){
+public function jobs_reset(){
     if (this.jobs){
         if (this.jobs.todo) this.jobs.todo.apiDelete();
         if (this.jobs.done) this.jobs.done.apiDelete();
@@ -44,11 +44,11 @@ function jobs_reset(){
     this.jobs_init();
 }
 
-function jobs_has(job_location, job_id, class_id){
+public function jobs_has(job_location, job_id, class_id){
     return this.jobs_get_status(job_location, job_id, class_id) == null ? false : true;
 }
 
-function jobs_get_status(job_location, job_id, class_id){
+public function jobs_get_status(job_location, job_id, class_id){
     // Port old format to new format
     if (this.jobs.todo.jobs[job_id] == job_location){
         if (!this.jobs.todo.jobs[job_location]) this.jobs.todo.jobs[job_location] = {};
@@ -73,7 +73,7 @@ function jobs_get_status(job_location, job_id, class_id){
     return null;
 }
 
-function jobs_mark_complete(job_location, job_id, class_id, actual_rewards, performance_rewards){
+public function jobs_mark_complete(job_location, job_id, class_id, actual_rewards, performance_rewards){
     var status = this.jobs_get_status(job_location, job_id, class_id);
     if (status != 'todo') return false;
 
@@ -110,7 +110,7 @@ function jobs_mark_complete(job_location, job_id, class_id, actual_rewards, perf
     return true;
 }
 
-function jobs_delete(job_location, job_id){
+public function jobs_delete(job_location, job_id){
     delete this.jobs.todo.jobs[job_id];
     if (this.jobs.todo.jobs[job_location]){
         delete this.jobs.todo.jobs[job_location][job_id];
@@ -128,7 +128,7 @@ function jobs_delete(job_location, job_id){
 // We simply store a pointer to the location that owns the job
 //
 
-function jobs_accept(job_id, location, class_id){
+public function jobs_accept(job_id, location, class_id){
     if (this.jobs_has(location.tsid, job_id, class_id)) return false;
 
     if (!this.jobs.todo.jobs[location.tsid]) this.jobs.todo.jobs[location.tsid] = {};
@@ -142,7 +142,7 @@ function jobs_accept(job_id, location, class_id){
 // Fetch the location_id from ourselves and then the job data from there
 //
 
-function jobs_get(job_location, job_id, class_id){
+public function jobs_get(job_location, job_id, class_id){
     if (!job_id) return null;
 
     if (!job_location){
@@ -219,7 +219,7 @@ function jobs_get(job_location, job_id, class_id){
     return null;
 }
 
-function jobs_familiar_turnin(job_location, job_id, class_id, is_winner){
+public function jobs_familiar_turnin(job_location, job_id, class_id, is_winner){
 
     this.jobs_familiar_turnin_cancel(job_location, job_id, class_id);
 
@@ -233,7 +233,7 @@ function jobs_familiar_turnin(job_location, job_id, class_id, is_winner){
     });
 }
 
-function jobs_familiar_turnin_cancel(job_location, job_id, class_id){
+public function jobs_familiar_turnin_cancel(job_location, job_id, class_id){
 
     // remove any turnin alert about this job from the queue
 
@@ -247,7 +247,7 @@ function jobs_familiar_turnin_cancel(job_location, job_id, class_id){
     }
 }
 
-function jobs_familiar_turnin_do(choice, details){
+public function jobs_familiar_turnin_do(choice, details){
 
     //log.info(this+' jobs_familiar_turnin_do(): '+choice+' - '+details);
 
@@ -348,7 +348,7 @@ function jobs_familiar_turnin_do(choice, details){
     }
 }
 
-function jobs_familiar_job_complete(job_location, job_id, multiplier){
+public function jobs_familiar_job_complete(job_location, job_id, multiplier){
 
     this.jobs_familiar_job_complete_cancel(job_location, job_id);
 
@@ -361,7 +361,7 @@ function jobs_familiar_job_complete(job_location, job_id, multiplier){
     }, 2);
 }
 
-function jobs_familiar_job_complete_cancel(job_location, job_id){
+public function jobs_familiar_job_complete_cancel(job_location, job_id){
 
     // remove any turnin alert about this job from the queue
 
@@ -375,7 +375,7 @@ function jobs_familiar_job_complete_cancel(job_location, job_id){
     }
 }
 
-function jobs_familiar_job_complete_do(choice, details){
+public function jobs_familiar_job_complete_do(choice, details){
 
     var job_location = apiFindObject(details.job_location);
     var job = job_location.jobs_get(details.job_id);

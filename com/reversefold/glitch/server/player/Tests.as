@@ -18,7 +18,7 @@ package com.reversefold.glitch.server.player {
         }
 
 
-function tests_bag_contents_empty(){
+public function tests_bag_contents_empty(){
     this.emptyBag();
     var contents = this.getContents();
 
@@ -35,7 +35,7 @@ function tests_bag_contents_empty(){
     return tests_ok();
 }
 
-function tests_bag_add_apple(){
+public function tests_bag_add_apple(){
     this.addItemStack(apiNewItemStack('apple', 2));
 
     var contents = this.getContents();
@@ -57,7 +57,7 @@ function tests_bag_add_apple(){
     return tests_ok();
 }
 
-function tests_bag_add_apple_stackable(){
+public function tests_bag_add_apple_stackable(){
     this.addItemStack(apiNewItemStack('apple', 2));
 
     var contents = this.getContents();
@@ -79,7 +79,7 @@ function tests_bag_add_apple_stackable(){
     return tests_ok();
 }
 
-function tests_bag_add_apple_overflow(){
+public function tests_bag_add_apple_overflow(){
     this.addItemStack(apiNewItemStack('apple', 100));
 
     var contents = this.getContents();
@@ -111,7 +111,7 @@ function tests_bag_add_apple_overflow(){
     return tests_ok();
 }
 
-function tests_bag_add_apple_slot(){
+public function tests_bag_add_apple_slot(){
     this.addItemStack(apiNewItemStack('apple', 5), 10);
 
     var contents = this.getContents();
@@ -133,7 +133,7 @@ function tests_bag_add_apple_slot(){
     return tests_ok();
 }
 
-function tests_bag_remove_item_slot(){
+public function tests_bag_remove_item_slot(){
     var stack = this.removeItemStackSlot(10);
     stack.apiDelete();
 
@@ -146,7 +146,7 @@ function tests_bag_remove_item_slot(){
     return tests_ok();
 }
 
-function tests_bag_remove_partial_item(){
+public function tests_bag_remove_partial_item(){
     var stack = this.removeItemStackSlot(0, 1);
     stack.apiDelete();
 
@@ -170,7 +170,7 @@ function tests_bag_remove_partial_item(){
     return tests_ok();
 }
 
-function tests_bag_fill(){
+public function tests_bag_fill(){
     for (var i=this.size; i<=this.capacity; i++){
         this.addItemStack(apiNewItemStack('apple', 5), i-1);
     }
@@ -184,7 +184,7 @@ function tests_bag_fill(){
     return tests_ok();
 }
 
-function tests_bag_add_item_fail(){
+public function tests_bag_add_item_fail(){
     var remaining = this.addItemStack(apiNewItemStack('banana', 1));
     var ret = tests_assert_equals('Returned stack count', 1, remaining);
     if (!ret.ok){
@@ -200,7 +200,7 @@ function tests_bag_add_item_fail(){
     return tests_ok();
 }
 
-function tests_bag_add_subbag(){
+public function tests_bag_add_subbag(){
     var stack = this.removeItemStackSlot(0);
     stack.apiDelete();
 
@@ -224,7 +224,7 @@ function tests_bag_add_subbag(){
     return tests_ok();
 }
 
-function tests_bag_add_banana_subbag(){
+public function tests_bag_add_banana_subbag(){
     var remaining = this.addItemStack(apiNewItemStack('banana', 1));
     var ret = tests_assert_equals('Returned stack count', 0, remaining);
     if (!ret.ok){
@@ -257,7 +257,7 @@ function tests_bag_add_banana_subbag(){
     return tests_ok();
 }
 
-function tests_bag_remove_banana_subbag(){
+public function tests_bag_remove_banana_subbag(){
     log.info('Starting test: tests_bag_remove_banana_subbag');
     var contents = this.getContents();
     var subbag = contents[0];
@@ -273,7 +273,7 @@ function tests_bag_remove_banana_subbag(){
     return tests_ok();
 }
 
-function tests_bag_serguei(){
+public function tests_bag_serguei(){
     log.info('Adding subbag');
     var remaining = this.addItemStack(apiNewItemStack('bag_generic', 1), this.capacity-1);
 
@@ -294,7 +294,7 @@ function tests_bag_serguei(){
     log.info('contents: '+contents);
 }
 
-function tests_bag_add_banana_subbag_slot(){
+public function tests_bag_add_banana_subbag_slot(){
     var contents = this.getContents();
     var ret = tests_assert_equals('Bag size', this.capacity, this.size);
     if (!ret.ok){
@@ -327,7 +327,7 @@ function tests_bag_add_banana_subbag_slot(){
     return tests_ok();
 }
 
-function tests_bag_delete_subbag(){
+public function tests_bag_delete_subbag(){
     var stack = this.removeItemStackSlot(0);
     stack.apiDelete();
 
@@ -339,7 +339,7 @@ function tests_bag_delete_subbag(){
     return tests_ok();
 }
 
-function tests_bag_add_spicerack(){
+public function tests_bag_add_spicerack(){
     var remaining = this.addItemStack(apiNewItemStack('bag_spicerack', 1));
     var ret = tests_assert_equals('Returned stack count', 0, remaining);
     if (!ret.ok){
@@ -360,7 +360,7 @@ function tests_bag_add_spicerack(){
     return tests_ok();
 }
 
-function tests_bag_add_banana_spicerack_auto_fail(){
+public function tests_bag_add_banana_spicerack_auto_fail(){
     var remaining = this.addItemStack(apiNewItemStack('banana', 1));
     var ret = tests_assert_equals('Returned stack count', 1, remaining);
     if (!ret.ok){
@@ -383,7 +383,7 @@ function tests_bag_add_banana_spicerack_auto_fail(){
     return tests_ok();
 }
 
-function tests_bag_add_banana_spicerack_direct_fail(){
+public function tests_bag_add_banana_spicerack_direct_fail(){
     var contents = this.getContents();
     var subbag = contents[0];
     var ret = tests_assert_equals('Subbag size', 0, subbag.size);
@@ -400,7 +400,7 @@ function tests_bag_add_banana_spicerack_direct_fail(){
     return tests_ok();
 }
 
-function tests_bag_add_cumin_spicerack_auto(){
+public function tests_bag_add_cumin_spicerack_auto(){
     var remaining = this.addItemStack(apiNewItemStack('cumin', 1));
     var ret = tests_assert_equals('Returned stack count', 0, remaining);
     if (!ret.ok){
@@ -433,7 +433,7 @@ function tests_bag_add_cumin_spicerack_auto(){
     return tests_ok();
 }
 
-function tests_bag_remove_spicerack_item(){
+public function tests_bag_remove_spicerack_item(){
     var contents = this.getContents();
     var subbag = contents[0];
     var ret = tests_assert_equals('Subbag size', 1, subbag.size);
@@ -455,7 +455,7 @@ function tests_bag_remove_spicerack_item(){
     return tests_ok();
 }
 
-function tests_assert_equals(name, expects, actual){
+public function tests_assert_equals(name, expects, actual){
     if (expects != actual){
         return tests_fail(name+' was '+actual+', expecting '+expects);
     }
@@ -464,27 +464,27 @@ function tests_assert_equals(name, expects, actual){
     }
 }
 
-function tests_ok(){
+public function tests_ok(){
     return { 'ok' : 1 };
 }
 
-function tests_fail(msg){
+public function tests_fail(msg){
     return {
         'ok' : 0,
         'error' : msg
     };
 }
 
-function tests_instance_my_location() {
+public function tests_instance_my_location() {
     this.instances_create('test_instance', this.location.tsid);
     this.instances_enter('test_instance', this.x, this.y);
 }
 
-function tests_leave_test_instance() {
+public function tests_leave_test_instance() {
     this.instances_exit('test_instance');
 }
 
-function tests_increment_grapes_squished(){
+public function tests_increment_grapes_squished(){
     if (!this.grapes_squished) this.grapes_squished = 0;
 
     this.grapes_squished += 1;

@@ -22,7 +22,7 @@ package com.reversefold.glitch.server.player {
 // Baqala Buff Stuff!
 //--------------------------------
 
-function baqala_setup() {
+public function baqala_setup() {
     if(!this.baqala_times) {
         this.baqala_times = {};
     }
@@ -32,7 +32,7 @@ function baqala_setup() {
     }
 }
 
-function start_baqala_buff() {
+public function start_baqala_buff() {
 
     // Have we logged in right when our timer runs out.
 /*  if(this.get_baqala_buff_time() > 595) {
@@ -91,7 +91,7 @@ function start_baqala_buff() {
     }
 }
 
-function reset_baqala_times() {
+public function reset_baqala_times() {
     if(!this.baqala_times) {
         this.baqala_times = {};
     }
@@ -105,7 +105,7 @@ function reset_baqala_times() {
     }
 }
 
-function leave_savanna(logout) {
+public function leave_savanna(logout) {
     // if we have the ancestral nostalogia buff, remove it.
     if(this.buffs_has('ancestral_nostalgia') && !logout) {
         this.buffs_remove('ancestral_nostalgia');
@@ -131,11 +131,11 @@ function leave_savanna(logout) {
     }
 }
 
-function get_baqala_buff_time() {
+public function get_baqala_buff_time() {
     return this.baqala_times ? (this.baqala_times.time_spent + time() - this.baqala_times.entry_time) : 0;
 }
 
-function set_baqala_times(times) {
+public function set_baqala_times(times) {
     if(!this.baqala_times) {
         this.baqala_times = {};
     }
@@ -145,7 +145,7 @@ function set_baqala_times(times) {
     }
 }
 
-function give_baqala_time(amount) {
+public function give_baqala_time(amount) {
     if(!this.buffs_has("ancestral_nostalgia")) {
         return;
     }
@@ -168,7 +168,7 @@ function give_baqala_time(amount) {
     this.baqala_times.time_spent -= result;
 }
 
-function check_baqala_boot() {
+public function check_baqala_boot() {
     if(!this.baqala_times.time_spent) {
         this.baqala_times.time_spent = 0;
     }
@@ -187,7 +187,7 @@ function check_baqala_boot() {
     }
 }
 
-function do_baqala_boot() {
+public function do_baqala_boot() {
     if(this['on_overwhelmed_prompt']) {
         delete this['on_overwhelmed_prompt'];
     }
@@ -259,13 +259,13 @@ function do_baqala_boot() {
     return this.teleportToLocationDelayed(target.tsid, targets[choice].x, targets[choice].y);
 }
 
-function overwhelmed_prompt_callback() {
+public function overwhelmed_prompt_callback() {
     if(!this['too_much_nostalgia_prompt']) {
         delete this['too_much_nostalgia_prompt'];
     }
 }
 
-function juju_bandit_curse() {
+public function juju_bandit_curse() {
     // Jujus will only appear in savanna hubs
     if(this.location.hub_region() != "Savanna") {
         return;
@@ -316,11 +316,11 @@ function juju_bandit_curse() {
     }
 }
 
-function is_in_savanna() {
+public function is_in_savanna() {
     return this.location.is_savanna();
 }
 
-function last_region() {
+public function last_region() {
     if(this.last_hub_visited && config.hubs[this.last_hub_visited]) {
         return config.regions[config.hubs[this.last_hub_visited]];
     } else {
@@ -329,7 +329,7 @@ function last_region() {
 }
 
 /* Stuff for the Purple Journey */
-function begin_purple_journey(stage) {
+public function begin_purple_journey(stage) {
     var vogText = null;
     var vogClass = "nuxp_vog_smaller";
     var vogUID = null;
@@ -465,7 +465,7 @@ function begin_purple_journey(stage) {
 }
 
 /***************** Mountaineering ***********************/
-function mountaineering_start(expedition_id, duration, difficulty){
+public function mountaineering_start(expedition_id, duration, difficulty){
     if (!this.party) return {ok: 0, error: "You are not in a party."};
     if (this.party_has_space()) return {ok: 0, error: "There's already a space!"};
 
@@ -474,7 +474,7 @@ function mountaineering_start(expedition_id, duration, difficulty){
     return {ok: 1};
 }
 
-function displayFreeze(y_pos, height, rung){
+public function displayFreeze(y_pos, height, rung){
     var width = Math.abs(this.location.geometry.l);
 
     var y = y_pos;
@@ -493,7 +493,7 @@ function displayFreeze(y_pos, height, rung){
     });
 }
 
-function removeFreeze(rung) {
+public function removeFreeze(rung) {
     this.location.apiSendMsg({type: 'overlay_cancel', uid: 'freeze_tile_'+rung});
 }
 

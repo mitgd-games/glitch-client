@@ -26,12 +26,12 @@ package com.reversefold.glitch.server.player {
 var can_be_rooked = true; // By including this file, you've made this object rookable!
 
 // Is this object currently rooked?
-function isRooked(){
+public function isRooked(){
     return this.is_rooked ? true : false;
 }
 
 // Attempt to rook this object, applying any necessary effects
-function rookAttack(force){
+public function rookAttack(force){
     // Each player in a location at the time of an attack loses 20 energy and 20 mood, even if they are not rooked.
     if (this.is_player){
         var energy_modifier = 1;
@@ -98,7 +98,7 @@ function rookAttack(force){
     }
 }
 
-function unRook(){
+public function unRook(){
     this.is_rooked = false;
     delete this.rook_healers;
 
@@ -110,7 +110,7 @@ function unRook(){
     }
 }
 
-function broadcastPCRSChange(){
+public function broadcastPCRSChange(){
     var rsp = {
         type: 'pc_rs_change',
         pc: {
@@ -128,7 +128,7 @@ function broadcastPCRSChange(){
     this.reverseBuddiesSendMsg(rsp);
 }
 
-function startRevive(pc, msg){
+public function startRevive(pc, msg){
     this.cancelRookConversation(pc);
 
     if(!this.canRevive(pc)) {
@@ -157,7 +157,7 @@ function startRevive(pc, msg){
     }
 }
 
-function doReviveCancel(pc) {
+public function doReviveCancel(pc) {
     if(!this.is_rooked || !this.rook_healers[pc.tsid] || !this.rook_healers[pc.tsid].in_progress) {
         log.info(this+' [ROOK] doReviveCancel not an in-progress healer: '+pc);
         // Couldn't find this player or item isn't rooked
@@ -170,7 +170,7 @@ function doReviveCancel(pc) {
     this.rook_healers[pc.tsid].in_progress = false;
 }
 
-function doReviveComplete(pc, ret, force_full_revive){
+public function doReviveComplete(pc, ret, force_full_revive){
     var total_xp = 25;
     var slugs = {xp: 0};
     if (force_full_revive){
@@ -247,7 +247,7 @@ function doReviveComplete(pc, ret, force_full_revive){
     }
 }
 
-function isReviving(pc){
+public function isReviving(pc){
     if ((this.rook_healers[pc.tsid] && this.rook_healers[pc.tsid].in_progress)){
         log.info('isReviving: true');
     }else{
@@ -256,7 +256,7 @@ function isReviving(pc){
     return (this.rook_healers[pc.tsid] && this.rook_healers[pc.tsid].in_progress);
 }
 
-function getReviveEffects(pc){
+public function getReviveEffects(pc){
     return {
         energy_cost: 25,
         mood: -25,
@@ -266,7 +266,7 @@ function getReviveEffects(pc){
     };
 }
 
-function countSuccessfulHealers() {
+public function countSuccessfulHealers() {
     var healers = 0;
     for(var i in this.rook_healers) {
         if(this.rook_healers[i].successful) {
@@ -277,7 +277,7 @@ function countSuccessfulHealers() {
     return healers;
 }
 
-function playerIsHealer(pc) {
+public function playerIsHealer(pc) {
     if(!this.is_rooked || !this.rook_healers || !this.rook_healers[pc.tsid] || !this.rook_healers[pc.tsid].successful) {
         return false;
     }
@@ -285,7 +285,7 @@ function playerIsHealer(pc) {
     return true;
 }
 
-function rookedCollision(pc) {
+public function rookedCollision(pc) {
     log.info("Rooked collision between "+pc+" and "+this+".");
     if(!this.is_rooked || !this.rook_healers || (this.rook_healers[pc.tsid] && this.rook_healers[pc.tsid].successful) || !this.canRevive(pc) || this.isReviving(pc) || pc.isRunningSkillPackage()) {
         this.cancelRookConversation(pc);
@@ -305,7 +305,7 @@ function rookedCollision(pc) {
     return true;
 }
 
-function cancelRookConversation(pc) {
+public function cancelRookConversation(pc) {
     if(!this.talk_pcs || !this.talk_pcs[pc.tsid]) {
         return;
     }
@@ -314,12 +314,12 @@ function cancelRookConversation(pc) {
     delete this.talk_pcs[pc.tsid];
 }
 
-function cancelAllRookConversations(pc) {
+public function cancelAllRookConversations(pc) {
     this.talk_pcs = {};
     this.apiCancelTimer('checkConversations');
 }
 
-function checkConversations() {
+public function checkConversations() {
     if(!this.talk_pcs) {
         return;
     }
@@ -340,12 +340,12 @@ function checkConversations() {
     }
 }
 
-function conversation_run_rooked_collision_response(pc, msg) {
+public function conversation_run_rooked_collision_response(pc, msg) {
     this.conversation_end(pc, msg);
     this.startRevive(pc);
 }
 
-function onRookedTalkback(){
+public function onRookedTalkback(){
     if (this.is_rooked && !this.silent_rooking){
         if (is_chance(0.35)){
             this.sendResponse('rooked');
@@ -355,7 +355,7 @@ function onRookedTalkback(){
     }
 }
 
-function adminRook(pc) {
+public function adminRook(pc) {
     pc.prompts_add({
         txt: "This is an admin command to rook this animal. By proceeding you confirm that you are an admin and know what you're doing. If you do this when you shouldn't, we will send rooks to eat your eyeballs. We know who you are.",
         title: "ATTENTION!",
@@ -368,7 +368,7 @@ function adminRook(pc) {
     this.adminRooker = pc;
 }
 
-function adminRookCallback(value, details) {
+public function adminRookCallback(value, details) {
     if(value == 'ok' && details.itemstack) {
         details.itemstack.rookAttack(true);
     } else if(this.adminRooker) {
@@ -376,7 +376,7 @@ function adminRookCallback(value, details) {
     }
 }
 
-function canRevive(pc) {
+public function canRevive(pc) {
     if(!this.rook_healers || !this.isRooked()) {
         return false;
     }
@@ -395,7 +395,7 @@ function canRevive(pc) {
     return true;
 }
 
-function getRookedStatus(args){
+public function getRookedStatus(args){
 
     if (!this.rook_status){
         return {status:{rooked: false}};

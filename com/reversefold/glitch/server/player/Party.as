@@ -22,7 +22,7 @@ package com.reversefold.glitch.server.player {
 // invite someone to join our party
 //
 
-function party_invite(pc, silent){
+public function party_invite(pc, silent){
 
     if (!this.has_done_intro){
         return false;
@@ -93,7 +93,7 @@ function party_invite(pc, silent){
 // leave our current party
 //
 
-function party_leave(){
+public function party_leave(){
 
     //log.info(this.tsid+'.party_leave()');
 
@@ -105,16 +105,16 @@ function party_leave(){
 // are we in a party?
 //
 
-function party_is_in(){
+public function party_is_in(){
 
     return this.party ? true: false;
 }
 
-function party_get(){
+public function party_get(){
     return this.party;
 }
 
-function party_is_full(){
+public function party_is_full(){
     return this.party && this.party.is_full();
 }
 
@@ -124,7 +124,7 @@ function party_is_full(){
 // invitation and maybe join.
 //
 
-function party_invited(party, inviter){
+public function party_invited(party, inviter){
 
     var txt = utils.escape(inviter.label)+" has invited you to join their ";
 
@@ -156,7 +156,7 @@ function party_invited(party, inviter){
     });
 }
 
-function familiar_invite_read(choice, details){
+public function familiar_invite_read(choice, details){
 
     if (choice == 'accept'){
         details.inviter.party_invite_accepted(this);
@@ -174,12 +174,12 @@ function familiar_invite_read(choice, details){
 // change while the invite is outstanding
 //
 
-function party_invite_accepted(pc, auto_space){
+public function party_invite_accepted(pc, auto_space){
     if (!this.party) this.party_create();
     this.party.accept_invite(pc, this, auto_space);
 }
 
-function party_invite_declined(pc){
+public function party_invite_declined(pc){
     if (!this.party) this.party_create();
     this.party.decline_invite(pc, this);
 }
@@ -189,7 +189,7 @@ function party_invite_declined(pc){
 // our party invite has expired
 //
 
-function party_uninvited(party, inviter){
+public function party_uninvited(party, inviter){
 
     // TODO: remove any invites from this player from the familiar queue
 
@@ -201,7 +201,7 @@ function party_uninvited(party, inviter){
 // we are no longer in a party
 //
 
-function party_left(reason){
+public function party_left(reason){
 
     //log.error('party_left for '+this.tsid);
 
@@ -235,7 +235,7 @@ function party_left(reason){
 // we're now the leader of the party
 //
 
-function party_now_leader(){
+public function party_now_leader(){
 
     this.party_activity('now leader of party');
 }
@@ -245,7 +245,7 @@ function party_now_leader(){
 // we have joined a party
 //
 
-function party_joined(party, reason, pc){
+public function party_joined(party, reason, pc){
 
     //log.error("party_joined for "+this.tsid);
 
@@ -281,7 +281,7 @@ function party_joined(party, reason, pc){
 // some one declined our invite
 //
 
-function party_declined(pc, expired){
+public function party_declined(pc, expired){
 
     if (expired){
         this.party_activity(utils.escape(pc.label)+' has declined your invitation (expired)');
@@ -295,7 +295,7 @@ function party_declined(pc, expired){
 // someone else joined or left our party
 //
 
-function party_member_joined(pc, invited){
+public function party_member_joined(pc, invited){
 
     if (invited){
         this.party_activity(utils.escape(pc.label)+' accepted your party invite.');
@@ -310,7 +310,7 @@ function party_member_joined(pc, invited){
     });
 }
 
-function party_member_left(pc, reason){
+public function party_member_left(pc, reason){
 
     this.party_activity(utils.escape(pc.label)+" has left the party");
 
@@ -326,7 +326,7 @@ function party_member_left(pc, reason){
 // party member changed online status
 //
 
-function party_member_online(pc){
+public function party_member_online(pc){
 
     this.party_activity("Party member "+utils.escape(pc.label)+" has come online");
 
@@ -337,7 +337,7 @@ function party_member_online(pc){
     });
 }
 
-function party_member_offline(pc){
+public function party_member_offline(pc){
 
     this.party_activity("Party member "+utils.escape(pc.label)+" has gone offline");
 
@@ -353,12 +353,12 @@ function party_member_offline(pc){
 // player going offline and coming online
 //
 
-function party_logout(){
+public function party_logout(){
 
     if (this.party) this.party.player_logout(this);
 }
 
-function party_login(){
+public function party_login(){
 
     if (this.party) this.party.player_login(this);
 }
@@ -368,7 +368,7 @@ function party_login(){
 // chatting
 //
 
-function party_chat(txt){
+public function party_chat(txt){
 
     if (this.party){
 
@@ -386,7 +386,7 @@ function party_chat(txt){
 // know about
 //
 
-function party_members(){
+public function party_members(){
 
     if (this.party){
         var m = this.party.get_members();
@@ -402,7 +402,7 @@ function party_members(){
 // sent by us. used for moving invites to a new group with us.
 //
 
-function party_get_invites_sent(){
+public function party_get_invites_sent(){
 
     if (this.party) return this.party.remove_invites_from(this.tsid);
 
@@ -415,11 +415,11 @@ function party_get_invites_sent(){
 // Party Space code
 //
 
-function party_has_space(){
+public function party_has_space(){
     if (this.party && this.party.get_space()) return true;
 }
 
-function party_start_space(template, duration){
+public function party_start_space(template, duration){
     if (!this.party) return {ok: 0, error: "You are not in a party."};
     if (this.party_has_space()) return {ok: 0, error: "There's already a space!"};
 
@@ -428,7 +428,7 @@ function party_start_space(template, duration){
     return {ok: 1};
 }
 
-function party_enter_space(){
+public function party_enter_space(){
     if (!this.party) return {ok: 0, error: "You are not in a party."};
 
     if (this.party.enter_space(this)){
@@ -450,7 +450,7 @@ function party_enter_space(){
 // create a new party with just us in it
 //
 
-function party_create(){
+public function party_create(){
 
     //log.error('party_create for '+this.tsid);
 
@@ -464,7 +464,7 @@ function party_create(){
 // send a party activity notice
 //
 
-function party_activity(msg){
+public function party_activity(msg){
 
     this.sendMsgOnline({
         type: 'party_activity',
@@ -472,7 +472,7 @@ function party_activity(msg){
     });
 }
 
-function party_space_prompt(){
+public function party_space_prompt(){
     if (!this.party) return;
 
     var ret = this.party.get_space_details();
@@ -493,7 +493,7 @@ function party_space_prompt(){
     });
 }
 
-function party_space_prompt_callback(choice, details){
+public function party_space_prompt_callback(choice, details){
     if (!this.party || !this.party.get_space()) {
         this.sendActivity("Sorry, but the party space has already expired.");
         return;
@@ -525,7 +525,7 @@ function party_space_prompt_callback(choice, details){
     }
 }
 
-function party_create_teleporter(){
+public function party_create_teleporter(){
     //log.info(this+' Creating party teleporter');
     var tp = this.location.createAndReturnItem('teleporter_visible', 1, this.x+100, this.y+40, 0, this.tsid);
     if (tp){
@@ -542,7 +542,7 @@ function party_create_teleporter(){
     }
 }
 
-function party_find_teleporter(){
+public function party_find_teleporter(){
     var is_tp = function(it, args){ return it.class_tsid == 'teleporter_visible' && it.only_visible_to == args; };
 
     var tp = this.location.find_items(is_tp, this.tsid)[0];
@@ -554,7 +554,7 @@ function party_find_teleporter(){
     return false;
 }
 
-function party_extend_space_time(duration, cost){
+public function party_extend_space_time(duration, cost){
     if (this.party){
         if (this.stats_try_remove_currants(cost, {type: 'party_space_extend', party: this.party.tsid, space_type: this.party.get_space().getProp('party_template')})){
             this.party.extend_space_time(this, duration);

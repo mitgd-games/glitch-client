@@ -18,7 +18,7 @@ package com.reversefold.glitch.server.player {
         }
 
 
-function avatar_init(){
+public function avatar_init(){
 
     if (this.clothing === null || this.clothing === undefined){
         this.clothing = apiNewOwnedDC(this);
@@ -30,7 +30,7 @@ function avatar_init(){
     }
 }
 
-function avatar_delete_all(){
+public function avatar_delete_all(){
 
     if (this.clothing){
         this.clothing.apiDelete();
@@ -38,7 +38,7 @@ function avatar_delete_all(){
     }
 }
 
-function avatar_reset(){
+public function avatar_reset(){
 
     this.clothing.slots = {};
     this.a2 = {};
@@ -52,7 +52,7 @@ function avatar_reset(){
 // ID for clothing in that slot and that we own it.
 //
 
-function avatar_set_clothing(map){
+public function avatar_set_clothing(map){
 
     this.avatar_init();
 
@@ -97,7 +97,7 @@ function avatar_set_clothing(map){
 // use the articles passed in (subscriber-only, admin-only, etc)
 //
 
-function avatar_set_face(map){
+public function avatar_set_face(map){
 
     this.avatar_init();
 
@@ -183,7 +183,7 @@ function avatar_set_face(map){
 
 }
 
-function avatar_admin_get(){
+public function avatar_admin_get(){
 
     this.avatar_init();
 
@@ -194,14 +194,14 @@ function avatar_admin_get(){
     };
 }
 
-function avatar_hash(){
+public function avatar_hash(){
 
     this.avatar_init();
 
     return this.avatar_format_hash(this.a2);
 }
 
-function avatar_format_hash(cur){
+public function avatar_format_hash(cur){
 
     var out = {
         'ver'           : "01.01.11",
@@ -310,7 +310,7 @@ function avatar_format_hash(cur){
 
 ////////////////////////////////////////////////////////////////
 
-function clothing_admin_add_multi(args){
+public function clothing_admin_add_multi(args){
 
     var out = {};
 
@@ -324,7 +324,7 @@ function clothing_admin_add_multi(args){
     };
 }
 
-function clothing_add(id, info){
+public function clothing_add(id, info){
 
     var item = config.data_clothing[id];
     if (!item) return false;
@@ -347,7 +347,7 @@ function clothing_add(id, info){
     return true;
 }
 
-function clothing_is_owned(slot, id){
+public function clothing_is_owned(slot, id){
 
     this.avatar_init();
 
@@ -357,7 +357,7 @@ function clothing_is_owned(slot, id){
     return true;
 }
 
-function clothing_admin_get_owned(args){
+public function clothing_admin_get_owned(args){
 
     return {
         'ok'    : 1,
@@ -365,7 +365,7 @@ function clothing_admin_get_owned(args){
     };
 }
 
-function clothing_admin_get_owned_when(){
+public function clothing_admin_get_owned_when(){
 
     this.avatar_init();
 
@@ -392,7 +392,7 @@ function clothing_admin_get_owned_when(){
     return flat;
 }
 
-function clothing_admin_get_recycled(){
+public function clothing_admin_get_recycled(){
     this.avatar_init();
 
     if (this.clothing.recycled){
@@ -402,7 +402,7 @@ function clothing_admin_get_recycled(){
     }
 }
 
-function clothing_expand(){
+public function clothing_expand(){
 
     this.avatar_init();
 
@@ -432,7 +432,7 @@ function clothing_expand(){
     }
 }
 
-function clothing_get_owned(slot){
+public function clothing_get_owned(slot){
 
     this.avatar_init();
 
@@ -473,7 +473,7 @@ function clothing_get_owned(slot){
     return list;
 }
 
-function clothing_admin_remove(args){
+public function clothing_admin_remove(args){
 
     var ret = this.clothing_remove(args.id, args.info);
 
@@ -495,7 +495,7 @@ function clothing_admin_remove(args){
     };
 }
 
-function clothing_remove(id, info){
+public function clothing_remove(id, info){
 
     var item = config.data_clothing[id];
     if (!item){
@@ -564,7 +564,7 @@ function clothing_remove(id, info){
 // we use this to checksum the avatar thumbnail
 //
 
-function avatar_checksum(hash){
+public function avatar_checksum(hash){
 
     var pairs = [];
     for (var i in hash){
@@ -576,14 +576,14 @@ function avatar_checksum(hash){
     return apiMD5(base);
 }
 
-function avatar_base_hash(){
+public function avatar_base_hash(){
 
     this.avatar_init();
 
     return this.avatar_format_base_hash(this.a2);
 }
 
-function avatar_format_base_hash(a){
+public function avatar_format_base_hash(a){
 
     var keys = {
         "hat"           : 'int',
@@ -628,7 +628,7 @@ function avatar_format_base_hash(a){
     return out;
 }
 
-function avatar_get_hashes(){
+public function avatar_get_hashes(){
 
     var base_hash = this.avatar_base_hash();
     var sum = this.avatar_checksum(base_hash);
@@ -640,7 +640,7 @@ function avatar_get_hashes(){
     };
 }
 
-function avatar_initial_setup(args){
+public function avatar_initial_setup(args){
 
     this.avatar_init();
     this.avatar_reset();
@@ -664,7 +664,7 @@ function avatar_initial_setup(args){
     return r3;
 }
 
-function avatar_is_valid_facial_feature(id, slot){
+public function avatar_is_valid_facial_feature(id, slot){
 
     if (!id) return true;
 
@@ -676,7 +676,7 @@ function avatar_is_valid_facial_feature(id, slot){
     return false;
 }
 
-function avatar_is_valid_color(id, slot){
+public function avatar_is_valid_color(id, slot){
 
     var item = config.data_avatar_colors[id];
     if (item && item.slot+'_color' == slot){
@@ -686,7 +686,7 @@ function avatar_is_valid_color(id, slot){
     return false;
 }
 
-function avatar_get_pc_msg_props(){
+public function avatar_get_pc_msg_props(){
 
     // props returned from this function get inserted into the 'pc' object that
     // the GS sends to the client.
@@ -708,7 +708,7 @@ function avatar_get_pc_msg_props(){
     return out;
 }
 
-function avatar_set_sheets(args){
+public function avatar_set_sheets(args){
 
     delete this.avatar_sheets; // legacy cleanup
     delete this.avatar_pending; // legacy cleanup
@@ -743,13 +743,13 @@ function avatar_set_sheets(args){
     if (!this.apiTimerExists('buddies_update_reverse_cache')) this.apiSetTimer('buddies_update_reverse_cache', 1000);
 }
 
-function avatar_get_singles() {
+public function avatar_get_singles() {
     if (this.av_meta) {
         return this.av_meta.singles;
     }
 }
 
-function avatar_set_singles(args){
+public function avatar_set_singles(args){
 
     if (!this.av_meta) this.av_meta = {};
 
@@ -760,11 +760,11 @@ function avatar_set_singles(args){
     }
 }
 
-function avatar_get_meta(){
+public function avatar_get_meta(){
     return this.av_meta;
 }
 
-function avatar_is_nekkid(){
+public function avatar_is_nekkid(){
     var hash = this.avatar_base_hash();
     return (hash.coat + (in_array_real(hash.shirt, [553, 557, 558]) ? 0 : hash.shirt) + hash.pants + (in_array_real(hash.dress, [248, 278]) ? 0 : hash.dress) + hash.skirt > 0) ? false : true;
 }
@@ -775,7 +775,7 @@ function avatar_is_nekkid(){
 // rendering outfits, preset choices, etc etc
 //
 
-function avatar_preview(args){
+public function avatar_preview(args){
 
     this.avatar_init();
 
@@ -795,7 +795,7 @@ function avatar_preview(args){
 }
 
 
-function clothing_fix_state(args){
+public function clothing_fix_state(args){
 
     this.avatar_init();
 
@@ -837,7 +837,7 @@ function clothing_fix_state(args){
 // a subscription ends
 //
 
-function clothing_find_sub_only(){
+public function clothing_find_sub_only(){
 
     //
     // first build a lookup hash of everything they own,
@@ -878,7 +878,7 @@ function clothing_find_sub_only(){
     return matches;
 }
 
-function clothing_expire_sub(){
+public function clothing_expire_sub(){
 
     var remove_ids = this.clothing_find_sub_only();
 
@@ -904,14 +904,14 @@ function clothing_expire_sub(){
     };
 }
 
-function avatar_admin_set_full(args){
+public function avatar_admin_set_full(args){
 
     var r1 = this.avatar_set_clothing(args.hash);
     var r2 = this.avatar_set_face(args.hash);
     return r2;
 }
 
-function avatar_build_default(args){
+public function avatar_build_default(args){
 
     var def = config.default_avatars;
 
@@ -984,7 +984,7 @@ function avatar_build_default(args){
     });
 }
 
-function avatar_default_choices(){
+public function avatar_default_choices(){
 
     var choices = config.default_avatars;
     var out = {};
@@ -1022,7 +1022,7 @@ function avatar_default_choices(){
     return out;
 }
 
-function avatar_admin_set_default(args){
+public function avatar_admin_set_default(args){
 
     var hash = {};
     var code = {};

@@ -18,7 +18,7 @@ package com.reversefold.glitch.server.player {
         }
 
 
-function storeGetID(item, verb){
+public function storeGetID(item, verb){
     if (item.instanceProps && item.instanceProps.store_id){
         return intval(item.instanceProps.store_id);
     }
@@ -30,7 +30,7 @@ function storeGetID(item, verb){
 }
 
 
-function storeAdjustPrices(store_info){
+public function storeAdjustPrices(store_info){
 
     var multiplier = 0.0;
 
@@ -67,7 +67,7 @@ function storeAdjustPrices(store_info){
 // we need to send the list of stuff we're selling.
 //
 
-function openStoreInterface(item, verb){
+public function openStoreInterface(item, verb){
 
     var store_id = intval(this.storeGetID(item, verb));
 
@@ -117,7 +117,7 @@ function openStoreInterface(item, verb){
 //
 
 var generic_bag_classes = ['bag_generic', 'bag_generic_blue', 'bag_generic_gray', 'bag_generic_green', 'bag_generic_pink', 'bag_bigger', 'bag_bigger_blue', 'bag_bigger_gray', 'bag_bigger_green', 'bag_bigger_pink'];
-function storeBuy(msg, item){
+public function storeBuy(msg, item){
 
     var store_id = intval(this.storeGetID(item, msg.verb));
     var store_info = get_store(store_id);
@@ -269,7 +269,7 @@ function storeBuy(msg, item){
 
 var watering_can_stores = [6,11,12];
 var hatchet_stores = [4,6,11,12];
-function storeSell(msg, item){
+public function storeSell(msg, item){
 
     var store_id = this.storeGetID(item, msg.verb);
     var store_info = get_store(intval(store_id));
@@ -416,7 +416,7 @@ function storeSell(msg, item){
 }
 
 // Handle Wheeler Dealer imagination upgrades
-function storeAdjustBuyPrice(cost){
+public function storeAdjustBuyPrice(cost){
     if (this.imagination_has_upgrade("vendors_higher_buy_price_4")){
         return (cost + 0.1 * cost);
     }
@@ -434,7 +434,7 @@ function storeAdjustBuyPrice(cost){
 }
 
 // Handle Wheeler Dealer imagination upgrades
-function storeGetUpgradeMultiplier(){
+public function storeGetUpgradeMultiplier(){
     if (this.imagination_has_upgrade("vendors_higher_buy_price_4")){
         return 0.1;
     }
@@ -453,7 +453,7 @@ function storeGetUpgradeMultiplier(){
 
 
 // Handle Wheeler Dealer imagination upgrades
-function storeGetUpgradeName(){
+public function storeGetUpgradeName(){
     if (this.imagination_has_upgrade("vendors_higher_buy_price_4")){
         var upgrade = config.data_imagination_upgrades["vendors_higher_buy_price_4"];
         return upgrade.name;
@@ -478,7 +478,7 @@ function storeGetUpgradeName(){
 // check how much the store will pay for this item
 //
 
-function storeSellCheck(msg, item){
+public function storeSellCheck(msg, item){
 
     var store_id = this.storeGetID(item, msg.verb);
     var store_info = get_store(intval(store_id));
@@ -536,7 +536,7 @@ function storeSellCheck(msg, item){
 
 // Finds the item in either the store's inventory of player-sold items or its own reserve
 // Returns a hash of items from inventory+reserve up to 'count'
-function getStoreItems(item, store_info, class_id, count){
+public function getStoreItems(item, store_info, class_id, count){
     var items = [];
 
     var orig_count = count;
@@ -565,7 +565,7 @@ function getStoreItems(item, store_info, class_id, count){
 }
 
 // Finds the closest vendor of a given type and returns the location tsid.
-function findClosestVendor(type) {
+public function findClosestVendor(type) {
     var locs = [];
 
     // This is not terribly efficient, but what are you going to do?
@@ -586,7 +586,7 @@ function findClosestVendor(type) {
     return path[path.length - 1].tsid;
 }
 
-function storeAdjustInventory(item, store_info){
+public function storeAdjustInventory(item, store_info){
     for (var i in store_info.items){
         var it = store_info.items[i];
         if (it && it.total_quantity){

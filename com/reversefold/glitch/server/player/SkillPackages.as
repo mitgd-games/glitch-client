@@ -18,7 +18,7 @@ package com.reversefold.glitch.server.player {
         }
 
 
-function runDropTable(class_id, source, preface, offsets, props, combine_messages){
+public function runDropTable(class_id, source, preface, offsets, props, combine_messages){
     //log.info('runDropTable: '+class_id);
 
     var prot = apiFindItemPrototype('catalog_drop_tables');
@@ -172,7 +172,7 @@ function runDropTable(class_id, source, preface, offsets, props, combine_message
 //  The callback is called with a single argument, which is a hash indicating success and the values from the skill package
 // 'no_timers': optional, true if you want to ignore duration and just run the whole skill package serially. The callback, if any, will still be called
 // 'no_img_upgrades': optional, true if you want to ignore any imagination upgrades that affect this skill package
-function runSkillPackage(class_id, source_item, args){
+public function runSkillPackage(class_id, source_item, args){
     log.info(this+' runSkillPackage: '+class_id+', '+args);
     if (!args) args = {};
 
@@ -416,7 +416,7 @@ function runSkillPackage(class_id, source_item, args){
     }
 }
 
-function finishSkillPackage(){
+public function finishSkillPackage(){
     //log.info(this+' finishSkillPackage');
 
     if (!num_keys(this.skill_package)){
@@ -602,7 +602,7 @@ function finishSkillPackage(){
     return ret;
 }
 
-function getSkillPackageDetails(class_id, no_img_upgrades){
+public function getSkillPackageDetails(class_id, no_img_upgrades){
     var skill_package = get_skill_package(class_id);
 
     if (!skill_package){
@@ -698,7 +698,7 @@ function getSkillPackageDetails(class_id, no_img_upgrades){
     return details;
 }
 
-function checkSkillPackageOverLimit(class_id, limit, source_item){
+public function checkSkillPackageOverLimit(class_id, limit, source_item){
 
     if (this.getSkillPackageLimitUses(class_id, source_item) >= limit){
         return true;
@@ -707,12 +707,12 @@ function checkSkillPackageOverLimit(class_id, limit, source_item){
     return false;
 }
 
-function incrementSkillPackageLimit(class_id, source_item){
+public function incrementSkillPackageLimit(class_id, source_item){
     var today = current_day_key();
     source_item.package_intervals[class_id][today][this.tsid]++;
 }
 
-function getSkillPackageLimitUses(class_id, source_item){
+public function getSkillPackageLimitUses(class_id, source_item){
     //
     // Hold hashes on the item for intervals.
     // Intervals are grouped by class, then by (game) day, then by player.
@@ -738,7 +738,7 @@ function getSkillPackageLimitUses(class_id, source_item){
     return source_item.package_intervals[class_id][today][this.tsid];
 }
 
-function addSkillPackageOverride(class_id, overrides){
+public function addSkillPackageOverride(class_id, overrides){
     if (!this.skill_package_overrides){
         this.skill_package_overrides = {};
     }
@@ -753,18 +753,18 @@ function addSkillPackageOverride(class_id, overrides){
     }
 }
 
-function removeSkillPackageOverride(class_id){
+public function removeSkillPackageOverride(class_id){
     if (!this.skill_package_overrides) return;
     delete this.skill_package_overrides[class_id];
 }
 
-function getSkillPackageOverride(class_id){
+public function getSkillPackageOverride(class_id){
     if (!this.skill_package_overrides) this.skill_package_overrides = {};
     return this.skill_package_overrides[class_id];
 }
 
 // Just returns a flat hash of the constant costs and rewards
-function trySkillPackage(class_id, no_img_upgrades){
+public function trySkillPackage(class_id, no_img_upgrades){
     var details = this.getSkillPackageDetails(class_id, no_img_upgrades);
     if (!details) return {};
 
@@ -780,11 +780,11 @@ function trySkillPackage(class_id, no_img_upgrades){
     return ret;
 }
 
-function isRunningSkillPackage(){
+public function isRunningSkillPackage(){
     return num_keys(this.skill_package) ? true : false;
 }
 
-function cancelSkillPackage(){
+public function cancelSkillPackage(){
     if (!this.isRunningSkillPackage()) return;
 
     this.apiCancelTimer('finishSkillPackage');

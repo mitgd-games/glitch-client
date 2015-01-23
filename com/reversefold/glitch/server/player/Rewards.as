@@ -18,7 +18,7 @@ package com.reversefold.glitch.server.player {
         }
 
 
-function rewards_init(){
+public function rewards_init(){
     if (!this.rewards){
     //if (this.rewards === undefined || this.rewards === null){
         this.rewards = apiNewOwnedDC(this);
@@ -33,7 +33,7 @@ function rewards_init(){
     }
 }
 
-function rewards_create_bag(){
+public function rewards_create_bag(){
     // Create a new private storage bag for holding overflow items
     var it = apiNewItemStack('bag_private', 1);
     it.label = 'Private Rewards Overflow Storage';
@@ -43,7 +43,7 @@ function rewards_create_bag(){
     this.rewards.storage_tsid = it.tsid;
 }
 
-function rewards_reset(){
+public function rewards_reset(){
     if (this.rewards){
         var bag = this.rewards_get_bag();
         if (bag){
@@ -55,7 +55,7 @@ function rewards_reset(){
     }
 }
 
-function rewards_delete(){
+public function rewards_delete(){
     if (this.rewards){
         var bag = this.rewards_get_bag();
         if (bag){
@@ -73,17 +73,17 @@ function rewards_delete(){
     }
 }
 
-function rewards_get_bag(){
+public function rewards_get_bag(){
     return this.hiddenItems[this.rewards.storage_tsid];
 }
 
-function rewards_has_items(){
+public function rewards_has_items(){
     var bag = this.rewards_get_bag();
 
     return bag.countContents() > 0 ? true : false;
 }
 
-function rewards_store(stack, msg){
+public function rewards_store(stack, msg){
     this.rewards_init();
 
     var bag = this.rewards_get_bag();
@@ -113,7 +113,7 @@ function rewards_store(stack, msg){
     return true;
 }
 
-function rewards_return(){
+public function rewards_return(){
     this.rewards_init();
 
     var bag = this.rewards_get_bag();

@@ -18,7 +18,7 @@ package com.reversefold.glitch.server.player {
         }
 
 
-function groups_init(){
+public function groups_init(){
 
     if (this.groups === undefined || this.groups === null){
         this.groups = apiNewOwnedDC(this);
@@ -43,7 +43,7 @@ function groups_init(){
     }
 }
 
-function groups_delete_all(){
+public function groups_delete_all(){
 
     // TODO: clean up!
 }
@@ -54,7 +54,7 @@ function groups_delete_all(){
 // create a new group
 //
 
-function groups_create(name, desc, mode){
+public function groups_create(name, desc, mode){
 
     var group = apiNewGroup('group');
 
@@ -96,7 +96,7 @@ function groups_create(name, desc, mode){
 // delete a group
 //
 
-function groups_delete(tsid){
+public function groups_delete(tsid){
 
     var group = apiFindObject(tsid);
 
@@ -114,7 +114,7 @@ function groups_delete(tsid){
 // join a group
 //
 
-function groups_join(tsid){
+public function groups_join(tsid){
 
     var group = apiFindObject(tsid);
 
@@ -154,7 +154,7 @@ function groups_join(tsid){
     return ret;
 }
 
-function groups_apply(tsid){
+public function groups_apply(tsid){
 
     var group = apiFindObject(tsid);
 
@@ -163,13 +163,13 @@ function groups_apply(tsid){
     return group.apply(this);
 }
 
-function groups_applied(group){
+public function groups_applied(group){
 
     this.groups_init();
     this.group_applied[group.tsid] = 1;
 }
 
-function groups_unapplied(group){
+public function groups_unapplied(group){
 
     this.groups_init();
     delete this.group_applied[group.tsid];
@@ -179,7 +179,7 @@ function groups_unapplied(group){
 // leave a group
 //
 
-function groups_leave(tsid, promote_tsid){
+public function groups_leave(tsid, promote_tsid){
 
     var group = apiFindObject(tsid);
 
@@ -219,7 +219,7 @@ function groups_leave(tsid, promote_tsid){
 // The group told us we left, not the other way around
 //
 
-function groups_left(tsid){
+public function groups_left(tsid){
     //
     // remove pointer from pc->group
     //
@@ -247,7 +247,7 @@ function groups_left(tsid){
     return 1;
 }
 
-function adminGetGroups(){
+public function adminGetGroups(){
 
     var out = {
         groups: [],
@@ -285,27 +285,27 @@ function adminGetGroups(){
     return out;
 }
 
-function adminDeleteGroup(args){
+public function adminDeleteGroup(args){
     return this.groups_delete(args.tsid);
 }
 
-function adminCreateGroup(args){
+public function adminCreateGroup(args){
     return this.groups_create(args.name, args.desc, args.mode);
 }
 
-function adminJoinGroup(args){
+public function adminJoinGroup(args){
     return this.groups_join(args.tsid);
 }
 
-function adminLeaveGroup(args){
+public function adminLeaveGroup(args){
     return this.groups_leave(args.tsid);
 }
 
-function adminApplyGroup(args){
+public function adminApplyGroup(args){
     return this.groups_apply(args.tsid);
 }
 
-function adminGetGroupPromotionCandidate(args){
+public function adminGetGroupPromotionCandidate(args){
 
     var group = apiFindObject(args.tsid);
 
@@ -314,12 +314,12 @@ function adminGetGroupPromotionCandidate(args){
     return group.get_promote_candidate();
 }
 
-function groups_count(){
+public function groups_count(){
 
     return this.groups ? num_keys(this.groups.groups) : 0;
 }
 
-function groups_get_login(){
+public function groups_get_login(){
 
     var out = {};
 
@@ -335,7 +335,7 @@ function groups_get_login(){
 }
 
 
-function groups_chat(tsid, txt){
+public function groups_chat(tsid, txt){
 
     // Handle chat-only groups first
     if (in_array_real(tsid, config.live_help_groups) || in_array_real(tsid, config.newbie_live_help_groups) || in_array_real(tsid, config.global_chat_groups) || in_array_real(tsid, config.trade_chat_groups)){
@@ -349,7 +349,7 @@ function groups_chat(tsid, txt){
     }
 }
 
-function groups_chat_join(tsid){
+public function groups_chat_join(tsid){
 
     // Handle chat-only groups first
     if (in_array_real(tsid, config.live_help_groups) || in_array_real(tsid, config.newbie_live_help_groups) || in_array_real(tsid, config.global_chat_groups) || in_array_real(tsid, config.trade_chat_groups)){
@@ -367,7 +367,7 @@ function groups_chat_join(tsid){
 
 }
 
-function groups_chat_leave(tsid){
+public function groups_chat_leave(tsid){
     log.info(this+' groups_chat_leave: '+tsid);
 
     // Handle chat-only groups first
@@ -387,7 +387,7 @@ function groups_chat_leave(tsid){
 
 }
 
-function groups_logout(){
+public function groups_logout(){
     log.info(this+' groups_logout');
 
     if (this.groups){
@@ -409,7 +409,7 @@ function groups_logout(){
     }
 }
 
-function groups_is_in_chat(tsid){
+public function groups_is_in_chat(tsid){
     // Handle chat-only groups first
     if (in_array_real(tsid, config.live_help_groups) || in_array_real(tsid, config.newbie_live_help_groups) || in_array_real(tsid, config.global_chat_groups) || in_array_real(tsid, config.trade_chat_groups)){
         return in_array_real(tsid, this.group_chats);
@@ -423,13 +423,13 @@ function groups_is_in_chat(tsid){
 }
 
 
-function groups_invited(group){
+public function groups_invited(group){
 
     this.groups_init();
     this.group_invites[group.tsid] = 1;
 }
 
-function groups_uninvited(group){
+public function groups_uninvited(group){
 
     this.groups_init();
     delete this.group_invites[group.tsid];
@@ -441,7 +441,7 @@ function groups_uninvited(group){
 }
 
 
-function groups_get_status(tsid){
+public function groups_get_status(tsid){
 
     this.groups_init();
 
@@ -454,7 +454,7 @@ function groups_get_status(tsid){
     return 'none';
 }
 
-function groups_get_all(){
+public function groups_get_all(){
 
     // used for the player's god groups page
 
@@ -488,13 +488,13 @@ function groups_get_all(){
     return out;
 }
 
-function groups_has(tsid){
+public function groups_has(tsid){
     if (in_array_real(tsid, config.live_help_groups) || in_array_real(tsid, config.newbie_live_help_groups) || in_array_real(tsid, config.global_chat_groups) || in_array_real(tsid, config.trade_chat_groups)) return true;
 
     return this.groups.groups[tsid] ? true : false;
 }
 
-function groups_get(tsid){
+public function groups_get(tsid){
     if (in_array_real(tsid, config.live_help_groups) || in_array_real(tsid, config.newbie_live_help_groups) || in_array_real(tsid, config.global_chat_groups) || in_array_real(tsid, config.trade_chat_groups)){
         return apiFindObject(tsid);
     }
@@ -503,7 +503,7 @@ function groups_get(tsid){
     }
 }
 
-function groups_check_pointers(){
+public function groups_check_pointers(){
     if (!this.groups || !this.groups.groups) return 0;
 
     var gg = this.groups.groups;

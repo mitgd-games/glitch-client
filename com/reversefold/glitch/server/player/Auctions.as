@@ -21,7 +21,7 @@ package com.reversefold.glitch.server.player {
 // yeah!
 
 
-function auctions_init(){
+public function auctions_init(){
 
     if (this.auctions === undefined || this.auctions === null){
         this.auctions = apiNewOwnedDC(this);
@@ -37,7 +37,7 @@ function auctions_init(){
     this.auctions_check_expired();
 }
 
-function auctions_find_container(){
+public function auctions_find_container(){
     for (var i in this.hiddenItems){
         var it = this.hiddenItems[i];
         if (it.is_auctioncontainer){
@@ -55,7 +55,7 @@ function auctions_find_container(){
     return it;
 }
 
-function auctions_delete(destroy_items){
+public function auctions_delete(destroy_items){
     if (this.auctions){
 
         for (var i in this.auctions.active){
@@ -67,7 +67,7 @@ function auctions_delete(destroy_items){
     }
 }
 
-function auctions_get_uid_for_item(item_tsid){
+public function auctions_get_uid_for_item(item_tsid){
     if (this.auctions){
         for (var i in this.auctions.active){
             var details = this.auctions.active[i];
@@ -77,7 +77,7 @@ function auctions_get_uid_for_item(item_tsid){
     return null;
 }
 
-function auctions_reset(destroy_items){
+public function auctions_reset(destroy_items){
     if (this.auctions){
 
         for (var i in this.auctions.active){
@@ -91,7 +91,7 @@ function auctions_reset(destroy_items){
     }
 }
 
-function auctions_start(stack, count, cost, fee_percent, fee_min){
+public function auctions_start(stack, count, cost, fee_percent, fee_min){
 
     fee_percent = typeof(fee_percent) != 'undefined' ? fee_percent : 0;
     fee_min  = typeof(fee_min) != 'undefined' ? fee_min : 0;
@@ -246,7 +246,7 @@ function auctions_start(stack, count, cost, fee_percent, fee_min){
     };
 }
 
-function auctions_cancel(uid, destroy_items){
+public function auctions_cancel(uid, destroy_items){
 
     uid = str(uid);
 
@@ -296,7 +296,7 @@ function auctions_cancel(uid, destroy_items){
     };
 }
 
-function auctions_expire(uid){
+public function auctions_expire(uid){
 
     uid = str(uid);
 
@@ -342,7 +342,7 @@ function auctions_expire(uid){
     };
 }
 
-function auctions_purchase(uid, buyer, commission, preflight){
+public function auctions_purchase(uid, buyer, commission, preflight){
 
     commission = typeof(commission) != 'undefined' ? commission : 0;
 
@@ -566,16 +566,16 @@ function auctions_purchase(uid, buyer, commission, preflight){
     };
 }
 
-function auctions_expired_callback(details, choice){
+public function auctions_expired_callback(details, choice){
 }
-function auctions_sold_callback(details, choice){
+public function auctions_sold_callback(details, choice){
     this.auctions.prompts = {};
 }
 
 
 // this function removes the stack ref and replace it with flattened data.
 // we do this because the stack can be destroyed after its returned to a player.
-function auctions_flatten(details, reason){
+public function auctions_flatten(details, reason){
 
     if (!details.stack){
 
@@ -592,7 +592,7 @@ function auctions_flatten(details, reason){
     delete details.stack;
 }
 
-function auctions_get_uid(){
+public function auctions_get_uid(){
 
     var uid = time();
 
@@ -607,7 +607,7 @@ function auctions_get_uid(){
     return str(uid);
 }
 
-function auctions_sync(uid){
+public function auctions_sync(uid){
 
     utils.http_get('callbacks/auctions_update.php', {
         'player_tsid'   : this.tsid,
@@ -615,14 +615,14 @@ function auctions_sync(uid){
     });
 }
 
-function auctions_sync_all(){
+public function auctions_sync_all(){
 
     utils.http_get('callbacks/auctions_update.php', {
         'player_tsid'   : this.tsid,
     });
 }
 
-function auctions_sync_everything(){
+public function auctions_sync_everything(){
 
     for (var i in this.auctions.active  ) this.auctions_sync(i);
     for (var i in this.auctions.done    ) this.auctions_sync(i);
@@ -630,7 +630,7 @@ function auctions_sync_everything(){
     for (var i in this.auctions.expired ) this.auctions_sync(i);
 }
 
-function admin_auctions_get(args){
+public function admin_auctions_get(args){
 
     this.auctions_check_expired();
 
@@ -704,7 +704,7 @@ function admin_auctions_get(args){
     }
 }
 
-function admin_auctions_get_all(){
+public function admin_auctions_get_all(){
 
     return { ok : 1,
          active   : this.auctions.active,
@@ -714,7 +714,7 @@ function admin_auctions_get_all(){
         };
 }
 
-function admin_auctions_relist_broken(args){
+public function admin_auctions_relist_broken(args){
     //
     // do we own this stack?
     //
@@ -770,18 +770,18 @@ function admin_auctions_relist_broken(args){
     this.auctions_start(stack, args.count, args.cost, 0, 0);
 }
 
-function admin_auctions_private_bag_items(){
+public function admin_auctions_private_bag_items(){
     var cont = this.auctions_find_container();
 
     return cont.hiddenItems;
 }
 
-function admin_auctions_return_expired_item(args){
+public function admin_auctions_return_expired_item(args){
     this.mail_add_auction_delivery(args.tsid, 0, args.uid, this.tsid, 'expired');
     return 1;
 }
 
-function admin_auctions_start(args){
+public function admin_auctions_start(args){
 
     if (this.isInTimeout()){
         return {
@@ -831,7 +831,7 @@ function admin_auctions_start(args){
     return this.auctions_start(stack, args.count, args.cost, args.fee_percent, args.fee_min);
 }
 
-function admin_auctions_purchase(args){
+public function admin_auctions_purchase(args){
 
     var buyer = apiFindObject(args.buyer_tsid);
 
@@ -849,16 +849,16 @@ function admin_auctions_purchase(args){
     return this.auctions_purchase(args.uid, buyer, args.commission, args.preflight);
 }
 
-function admin_auctions_expire(args){
+public function admin_auctions_expire(args){
     return this.auctions_expire(args.uid);
 }
 
-function admin_auctions_cancel(args){
+public function admin_auctions_cancel(args){
 
     return this.auctions_cancel(args.uid);
 }
 
-function admin_auctions_clear_from_history(args){
+public function admin_auctions_clear_from_history(args){
     if (this.auctions.cancelled[args.uid]){
         delete this.auctions.cancelled[args.uid];
     }
@@ -870,7 +870,7 @@ function admin_auctions_clear_from_history(args){
     }
 }
 
-function auctions_check_expired(){
+public function auctions_check_expired(){
 
     for (var i in this.auctions.active){
 

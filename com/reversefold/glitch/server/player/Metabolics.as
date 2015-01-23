@@ -21,7 +21,7 @@ package com.reversefold.glitch.server.player {
         }
 
 
-function metabolics_init(){
+public function metabolics_init(){
 
     if (!this.metabolics){
         this.metabolics = {};
@@ -39,7 +39,7 @@ function metabolics_init(){
 
 
 
-function metabolics_get_login(out){
+public function metabolics_get_login(out){
 
     out.energy = {
         value   : this.metabolics.energy.value,
@@ -55,11 +55,11 @@ function metabolics_get_login(out){
 /* Prevent a player who is low on energy from becoming pooped until
  * they next go above five energy. Used by Wine of the Dead.
  */
-function metabolics_dont_get_pooped() {
+public function metabolics_dont_get_pooped() {
     this.dontGetPooped = true;
 }
 
-function metabolics_add_energy(x, quiet, force){
+public function metabolics_add_energy(x, quiet, force){
 
     if (this.is_dead){
         if (!quiet){
@@ -98,7 +98,7 @@ function metabolics_add_energy(x, quiet, force){
     return change;
 }
 
-function metabolics_add_mood(x, quiet, force){
+public function metabolics_add_mood(x, quiet, force){
 
     if (this.is_dead){
         if (!quiet){
@@ -119,7 +119,7 @@ function metabolics_add_mood(x, quiet, force){
     return change;
 }
 
-function metabolics_try_lose_energy(x){
+public function metabolics_try_lose_energy(x){
     if (this.metabolics_get_energy() > x){
         return this.metabolics_lose_energy(x);
     }
@@ -127,7 +127,7 @@ function metabolics_try_lose_energy(x){
     return 0;
 }
 
-function metabolics_lose_energy(x, quiet, force){
+public function metabolics_lose_energy(x, quiet, force){
 
     // No energy loss during newxp
     if (!force){
@@ -191,7 +191,7 @@ function metabolics_lose_energy(x, quiet, force){
     return change;
 }
 
-function metabolics_try_lose_mood(x){
+public function metabolics_try_lose_mood(x){
     if (this.metabolics_get_mood() > x){
         return this.metabolics_lose_mood(x);
     }
@@ -199,7 +199,7 @@ function metabolics_try_lose_mood(x){
     return 0;
 }
 
-function metabolics_lose_mood(x, quiet, force){
+public function metabolics_lose_mood(x, quiet, force){
 
     // No mood loss during newxp
     if (!force){
@@ -241,15 +241,15 @@ function metabolics_lose_mood(x, quiet, force){
     return change;
 }
 
-function metabolics_get_energy(){
+public function metabolics_get_energy(){
     return this.metabolics.energy.value;
 }
 
-function metabolics_get_mood(){
+public function metabolics_get_mood(){
     return this.metabolics.mood.value;
 }
 
-function metabolics_set_energy(x, quiet = false, force = false){
+public function metabolics_set_energy(x, quiet = false, force = false){
 
     if (this.metabolics.energy.top < x){
         x = this.metabolics.energy.top;
@@ -268,7 +268,7 @@ function metabolics_set_energy(x, quiet = false, force = false){
     }
 }
 
-function metabolics_set_mood(x, quiet = false, force = false){
+public function metabolics_set_mood(x, quiet = false, force = false){
     if (this.metabolics.mood.top < x){
         x = this.metabolics.mood.top;
     }
@@ -285,7 +285,7 @@ function metabolics_set_mood(x, quiet = false, force = false){
     }
 }
 
-function metabolics_recalc_limits(set_to_max){
+public function metabolics_recalc_limits(set_to_max){
 
     //log.info(this+' metabolics_recalc_limits 1: '+set_to_max);
     if (set_to_max === undefined){
@@ -314,7 +314,7 @@ function metabolics_recalc_limits(set_to_max){
 }
 
 // This will currently be reset any time metabolics_recalc_limits is called
-function metabolics_set_max(metabolic, max){
+public function metabolics_set_max(metabolic, max){
     if (!this.metabolics[metabolic]) return false;
 
     if (this.metabolics[metabolic].top != max){
@@ -328,11 +328,11 @@ function metabolics_set_max(metabolic, max){
     return true;
 }
 
-function metabolics_get_percentage(stat){
+public function metabolics_get_percentage(stat){
     return this.metabolics[stat].value / this.metabolics[stat].top * 100;
 }
 
-function metabolics_calc_max(level, ignore_buffs){
+public function metabolics_calc_max(level, ignore_buffs){
 
     // Some buffs artificially restrict your max amounts
     if (!ignore_buffs){
@@ -373,7 +373,7 @@ function metabolics_calc_max(level, ignore_buffs){
     return max;
 }
 
-function metabolics_test(){
+public function metabolics_test(){
 
     for (var i=1; i<30; i++){
 
@@ -385,41 +385,41 @@ function metabolics_test(){
 }
 
 
-function metabolics_try_set(stat, val){
+public function metabolics_try_set(stat, val){
     if (this.metabolics[stat].top < val){
         val = this.metabolics[stat].top;
     }
     return val;
 }
 
-function metabolics_try_inc(stat, val){
+public function metabolics_try_inc(stat, val){
     if (this.is_dead) return 0;
     if (this.buffs_has('super_pooped')) return 0;
     var remain = this.metabolics[stat].top - this.metabolics[stat].value;
     return val > remain ? remain : val;
 }
 
-function metabolics_try_dec(stat, val){
+public function metabolics_try_dec(stat, val){
     if (this.is_dead) return 0;
     var cur = this.metabolics[stat].value;
     return val > cur ? cur : val;
 }
 
-function metabolics_get_max_energy(){
+public function metabolics_get_max_energy(){
     this.metabolics_init();
     return this.metabolics.energy.top;
 }
 
-function metabolics_get_max_mood(){
+public function metabolics_get_max_mood(){
     this.metabolics_init();
     return this.metabolics.mood.top;
 }
 
-function metabolics_get_tank(){
+public function metabolics_get_tank(){
     return this.metabolics.tank;
 }
 
-function metabolics_set_tank(tank){
+public function metabolics_set_tank(tank){
     this.metabolics.tank = tank;
 }
 

@@ -30,7 +30,7 @@ package com.reversefold.glitch.server.player {
 // remote call to its parent street.
 //
 
-function profile_get_houses(){
+public function profile_get_houses(){
     if (!this.home_profile) this.profile_update_house_info();
 
     if (this.home_profile){
@@ -40,7 +40,7 @@ function profile_get_houses(){
     }
 }
 
-function profile_get_home_street(){
+public function profile_get_home_street(){
     if (!this.home_profile) this.profile_update_house_info();
 
     if (this.home_profile && this.home_profile.exterior){
@@ -50,7 +50,7 @@ function profile_get_home_street(){
     }
 }
 
-function profile_update_house_info(){
+public function profile_update_house_info(){
     if (!this.home_profile) this.home_profile = {};
 
     if (!this.home) return;
@@ -73,7 +73,7 @@ function profile_update_house_info(){
 // one remote call per group
 //
 
-function profile_get_groups(is_self){
+public function profile_get_groups(is_self){
 
     var out = [];
 
@@ -97,7 +97,7 @@ function profile_get_groups(is_self){
 // no remote calls, no IO
 //
 
-function profile_get_metabolics(){
+public function profile_get_metabolics(){
 
     var out = {};
 
@@ -119,7 +119,7 @@ function profile_get_metabolics(){
 // no remote calls, loads all items in pack
 //
 
-function profile_get_inventory(){
+public function profile_get_inventory(){
 
     var out = [];
 

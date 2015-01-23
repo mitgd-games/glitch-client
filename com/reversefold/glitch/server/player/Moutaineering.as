@@ -21,7 +21,7 @@ package com.reversefold.glitch.server.player {
 // Overlay display
 // If isFaded is true, the overlay will fade in for the 1.5 * the number of seconds specified in
 // this.rungs[rung].freezeTime (see config.party_spaces).
-function displayFreeze(rung, isFaded){
+public function displayFreeze(rung, isFaded){
     //log.info("MT displaying freeze for "+rung);
 
     if (!this.party || !this.party.get_space()) {
@@ -46,7 +46,7 @@ function displayFreeze(rung, isFaded){
 }
 
 // Overlay removal
-function removeFreeze(rung) {
+public function removeFreeze(rung) {
 
     if (!this.party || !this.party.get_space()) {
         log.error("MT mountain function called on player who's not in a party space");
@@ -64,7 +64,7 @@ function removeFreeze(rung) {
 }
 
 // Called at end of intro sequence
-function displayAllRungs() {
+public function displayAllRungs() {
     var rungs = this.party.get_space().getProp('rungs');
     var current_freeze_rung = this.location.getCurrentFreezeRung();
 
@@ -82,7 +82,7 @@ function displayAllRungs() {
 
 // Pan the camera to a rung and turn the deco on for that rung if necessary.
 // Then schedule a timer to show the next rung.
-function showRung(rung) {
+public function showRung(rung) {
     //this.sendActivity("Showing rung "+rung+" current freeze at "+current_freeze_rung);
 
     if (!this.party || !this.party.get_space()) {
@@ -113,7 +113,7 @@ function showRung(rung) {
     }*/
 }
 
-function onColdZone(box) {
+public function onColdZone(box) {
     var player_height = Math.round(60);
     var player_width =  Math.round(50);
     log.info("MT coldzone player pos "+this.x+" "+this.y+" dims "+player_height+" "+player_width+" box pos "+box.x+" "+box.y+" dims "+box.w+" "+box.h);
@@ -154,7 +154,7 @@ function onColdZone(box) {
     }
 }
 
-function onEnterVWindZone(id) {
+public function onEnterVWindZone(id) {
     this.addCTPCPhysics({   gravity: 4,
                             vx_max: 1.0
                         }, this.tsid
@@ -165,7 +165,7 @@ function onEnterVWindZone(id) {
     this.onWindZone(id);
 }
 
-function onEnterHWindZone(id) {
+public function onEnterHWindZone(id) {
     this.addCTPCPhysics({
                         //gravity: 4,
                         vx_accel_add_in_air : 2,
@@ -179,7 +179,7 @@ function onEnterHWindZone(id) {
     this.onWindZone(id);
 }
 
-function onSendWindMessage() {
+public function onSendWindMessage() {
     var messages = ["The wind is so strong here that it's like walking into a wall of air.",
                         'You are suddenly blown around like a ragdoll.',
                         'Urg. A sudden gust of wind hits you.',
@@ -190,13 +190,13 @@ function onSendWindMessage() {
     this.sendActivity(choose_one(messages));
 }
 
-function onExitWindZone(id) {
+public function onExitWindZone(id) {
     this.removePhysics(this.tsid, true);
 
     this.location.removePlayerFromWind(this.tsid, id);
 }
 
-function onWindZone(id, box) {
+public function onWindZone(id, box) {
     //log.info("MT checking windzone");
 
     // If it's not a mountaineering level, bail out.

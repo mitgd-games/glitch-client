@@ -18,14 +18,14 @@ package com.reversefold.glitch.server.player {
         }
 
 
-function world_events_init() {
+public function world_events_init() {
     if (!this.world_events) {
         this.world_events = apiNewOwnedDC(this);
         this.world_events.label = "WorldEvents";
     }
 }
 
-function getLoneliness() {
+public function getLoneliness() {
     if (!this.world_events) {
         return;
     }
@@ -33,7 +33,7 @@ function getLoneliness() {
     return this.world_events.loneliness;
 }
 
-function startLoneliness(source_item, type, test_only, uid) {
+public function startLoneliness(source_item, type, test_only, uid) {
     if (!this.world_events) {
         this.world_events_init();
     }
@@ -91,7 +91,7 @@ function startLoneliness(source_item, type, test_only, uid) {
     var loc = source_item.container;
 }
 
-function cancelLoneliness() {
+public function cancelLoneliness() {
     if (this.world_events.loneliness && this.world_events.loneliness.running) {
         this.world_events.loneliness.running = false;
 
@@ -104,13 +104,13 @@ function cancelLoneliness() {
     }
 }
 
-function endLoneliness() {
+public function endLoneliness() {
     if (this.world_events.loneliness) {
         this.world_events.loneliness.running = false;
     }
 }
 
-function canDoLoneliness(loneliness_location) {
+public function canDoLoneliness(loneliness_location) {
     if ((!this.world_events || !this.world_events.loneliness || !this.world_events.loneliness.running) && !this.location.isInstance() && !this.is_dead) {
         log.info("Checking player "+this+" for loneliness.");
         if (loneliness_location == this.location) {
@@ -132,11 +132,11 @@ function canDoLoneliness(loneliness_location) {
     return false;
 }
 
-function world_events_clear() {
+public function world_events_clear() {
     delete this.world_events.loneliness;
 }
 
-function showLonelinessPrompt() {
+public function showLonelinessPrompt() {
     if (!this.world_events || !this.world_events.loneliness || !this.world_events.loneliness.running) {
         return;
     }
@@ -150,7 +150,7 @@ function showLonelinessPrompt() {
     });
 }
 
-function prompts_loneliness_callback(value, details) {
+public function prompts_loneliness_callback(value, details) {
     if (value == 'yes') {
         var ret = this.buildPath(this.world_events.loneliness.location.tsid, this.location.tsid);
 

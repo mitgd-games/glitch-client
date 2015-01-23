@@ -23,7 +23,7 @@ package com.reversefold.glitch.server.player {
 // inc_groups.js can do much of what we do here -- we only define/use functions here where we want different behavior
 //
 
-function organizations_init(){
+public function organizations_init(){
 
     if (this.organizations === undefined || this.organizations === null){
         this.organizations = apiNewOwnedDC(this);
@@ -32,7 +32,7 @@ function organizations_init(){
     }
 }
 
-function organizations_delete_all(){
+public function organizations_delete_all(){
 
     // TODO: clean up!
     if (this.organizations){
@@ -46,7 +46,7 @@ function organizations_delete_all(){
 // create a new group
 //
 
-function organizations_create(name, desc){
+public function organizations_create(name, desc){
 
     var organization = apiNewGroup('organization');
 
@@ -62,7 +62,7 @@ function organizations_create(name, desc){
 // delete a group
 //
 
-function organizations_delete(tsid){
+public function organizations_delete(tsid){
     if (!tsid) return null;
 
     var organization = apiFindObject(tsid);
@@ -79,7 +79,7 @@ function organizations_delete(tsid){
 // log us out of chat when we log out of the game
 //
 
-function organizations_logout(){
+public function organizations_logout(){
 
     if (this.organizations){
         for (var i in this.organizations.organizations){
@@ -93,7 +93,7 @@ function organizations_logout(){
 // join an org
 //
 
-function organizations_join(tsid){
+public function organizations_join(tsid){
 
     var org = apiFindObject(tsid);
 
@@ -139,7 +139,7 @@ function organizations_join(tsid){
 // this function just removes pointers - it doesn't deal with auto-promotion, deletion, etc
 //
 
-function organizations_left(organization){
+public function organizations_left(organization){
 
     //
     // remove pointer from pc->organization
@@ -170,7 +170,7 @@ function organizations_left(organization){
 // Do we have an organization?
 //
 
-function organizations_has(){
+public function organizations_has(){
     this.organizations_init();
     return num_keys(this.organizations.organizations) ? true : false;
 }
@@ -179,7 +179,7 @@ function organizations_has(){
 // Return our organization. This only works if everyone only has one, which is true for now
 //
 
-function organizations_get(){
+public function organizations_get(){
     this.organizations_init();
 
     for (var i in this.organizations.organizations){

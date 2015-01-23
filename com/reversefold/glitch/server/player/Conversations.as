@@ -18,7 +18,7 @@ package com.reversefold.glitch.server.player {
         }
 
 
-function conversations_init(){
+public function conversations_init(){
     if (this.conversations === undefined || this.conversations === null){
         this.conversations = apiNewOwnedDC(this);
         this.conversations.label = 'Conversations';
@@ -31,14 +31,14 @@ function conversations_init(){
     if (!this.conversations.chains_inprogress) this.conversations.chains_inprogress = {};
 }
 
-function conversations_delete(){
+public function conversations_delete(){
     if (this.conversations){
         this.conversations.apiDelete();
         delete this.conversations;
     }
 }
 
-function conversations_reset(){
+public function conversations_reset(){
     if (this.conversations){
         this.conversations.completed = {};
         this.conversations.offered = {};
@@ -48,7 +48,7 @@ function conversations_reset(){
     }
 }
 
-function conversations_has(class_id, id){
+public function conversations_has(class_id, id){
     if (this.conversations_has_completed(class_id, id)) return true;
 
     if (this.conversations_has_offered(class_id, id)) return true;
@@ -56,7 +56,7 @@ function conversations_has(class_id, id){
     return false;
 }
 
-function conversations_has_completed(class_id, id){
+public function conversations_has_completed(class_id, id){
     this.conversations_init();
 
     // Completed?
@@ -72,7 +72,7 @@ function conversations_has_completed(class_id, id){
     return false;
 }
 
-function conversations_has_offered(class_id, id){
+public function conversations_has_offered(class_id, id){
     this.conversations_init();
 
     // Time out after 30 minutes
@@ -99,7 +99,7 @@ function conversations_has_offered(class_id, id){
     return false;
 }
 
-function conversations_offer(source_item, id){
+public function conversations_offer(source_item, id){
     if (this.conversations_has(null, id)) return false;
     if (source_item.can_be_rooked && source_item.isRooked()) return false;
     if (source_item.is_poisoned) return false;
@@ -132,12 +132,12 @@ function conversations_offer(source_item, id){
     return true;
 }
 
-function conversations_force_offer(class_tsid, id){
+public function conversations_force_offer(class_tsid, id){
     if (!this.conversations.offered[class_tsid]) this.conversations.offered[class_tsid] = {};
     this.conversations.offered[class_tsid][id] = time();
 }
 
-function conversations_complete(class_id, id, chain){
+public function conversations_complete(class_id, id, chain){
     this.conversations_init();
 
     for (var i in this.conversations.offered){
@@ -163,7 +163,7 @@ function conversations_complete(class_id, id, chain){
     return true;
 }
 
-function conversations_offered_for_class(class_id){
+public function conversations_offered_for_class(class_id){
     if (!this.conversations.offered[class_id]) return [];
 
     var convos = [];
@@ -174,7 +174,7 @@ function conversations_offered_for_class(class_id){
     return convos;
 }
 
-function conversations_offered_for_item(item){
+public function conversations_offered_for_item(item){
 
     var convos = [];
     for (var i in item.conversations){
@@ -184,7 +184,7 @@ function conversations_offered_for_item(item){
     return convos;
 }
 
-function conversations_get_last_completed_conversation(){
+public function conversations_get_last_completed_conversation(){
     var highest = 0;
     for (var i in this.conversations.completed){
         for (var j in this.conversations.completed[i]){
@@ -195,13 +195,13 @@ function conversations_get_last_completed_conversation(){
     return highest;
 }
 
-function conversations_set_current_state(itemstack_tsid, conversation_name, choice) {
+public function conversations_set_current_state(itemstack_tsid, conversation_name, choice) {
     this.conversations_init();
 
     this.conversations.state = {itemstack_tsid: itemstack_tsid, conversation_name: conversation_name, choice: choice};
 }
 
-function conversations_clear_current_state() {
+public function conversations_clear_current_state() {
     this.conversations_init();
 
     if(this.conversations.state) {
@@ -209,7 +209,7 @@ function conversations_clear_current_state() {
     }
 }
 
-function conversations_login(){
+public function conversations_login(){
     if (!this.conversations || !this.conversations.state){
         return;
     }
@@ -239,7 +239,7 @@ function conversations_login(){
     this.conversations_clear_current_state();
 }
 
-function conversations_can_do_chain(chain){
+public function conversations_can_do_chain(chain){
     this.conversations_init();
 
     // This isn't part of a chain, and we aren't in the middle of another
@@ -270,7 +270,7 @@ var convo_bubble_choices = [
     "{pc_label}! Pssssst! Talk to me! {pc_label}!"
 ];
 
-function conversations_offer_bubble(source){
+public function conversations_offer_bubble(source){
     if (!this.do_not_disturb){
         var choice = choose_one(this.convo_bubble_choices);
         choice = choice.replace(/{pc_label}/g, this.getLabel());

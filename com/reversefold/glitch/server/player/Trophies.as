@@ -18,7 +18,7 @@ package com.reversefold.glitch.server.player {
         }
 
 
-function trophies_reset(){
+public function trophies_reset(){
     var container = this.trophies_find_container();
 
     var items = container.apiGetAllItems();
@@ -31,7 +31,7 @@ function trophies_reset(){
     //container.apiDelete();
 }
 
-function trophies_find_container(){
+public function trophies_find_container(){
     for (var i in this.hiddenItems){
         var it = this.hiddenItems[i];
         if (it.is_trophycontainer){
@@ -69,7 +69,7 @@ function trophies_find_container(){
     return it;
 }
 
-function trophies_add_hidden(trophy){
+public function trophies_add_hidden(trophy){
     // If we have one already, pretend it worked
     if (this.trophies_has(trophy.class_tsid)){
         trophy.apiDelete();
@@ -84,13 +84,13 @@ function trophies_add_hidden(trophy){
     return ret;
 }
 
-function trophies_get_hidden(){
+public function trophies_get_hidden(){
     var bag = this.trophies_find_container();
 
     return bag.getAllContents();
 }
 
-function trophies_has(class_tsid){
+public function trophies_has(class_tsid){
 
     var trophies = this.trophies_get_hidden();
     for (var i in trophies){
@@ -119,7 +119,7 @@ function trophies_has(class_tsid){
     return false;
 }
 
-function trophies_clean_and_sync(){
+public function trophies_clean_and_sync(){
 
     //
     // Find all the trophies we have, how many there are, and what the earliest date on them is

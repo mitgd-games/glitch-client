@@ -18,7 +18,7 @@ package com.reversefold.glitch.server.player {
         }
 
 
-function mail_init(){
+public function mail_init(){
     if (this.mail === undefined || this.mail === null){
         this.mail = apiNewOwnedDC(this);
         this.mail.label = 'Mail';
@@ -29,7 +29,7 @@ function mail_init(){
     }
 }
 
-function mail_create_bag(){
+public function mail_create_bag(){
     // Create a new private storage bag for holding mail items
     var it = apiNewItemStack('bag_private', 1);
     it.label = 'Private Mail Storage';
@@ -39,26 +39,26 @@ function mail_create_bag(){
     this.mail.storage_tsid = it.tsid;
 }
 
-function mail_get_bag(){
+public function mail_get_bag(){
     return this.hiddenItems[this.mail.storage_tsid];
 }
 
-function mail_can_send(stack){
+public function mail_can_send(stack){
     if (stack.is_bag && stack.countContents()) return false;
     return true;
 }
 
-function mail_has_items(){
+public function mail_has_items(){
     var bag = this.mail_get_bag();
 
     return bag.countContents() > 0 ? true : false;
 }
 
-function mail_has_messages(){
+public function mail_has_messages(){
     return this.mail_count_messages() > 0 ? true : false;
 }
 
-function mail_get_bag_contents() {
+public function mail_get_bag_contents() {
     var contents = [];
 
     if(!this.mail) {
@@ -80,7 +80,7 @@ function mail_get_bag_contents() {
     }
 }
 
-function mail_count_uncollected_auctions() {
+public function mail_count_uncollected_auctions() {
     var n_items = 0;
 
     if (!this.mail) {
@@ -114,7 +114,7 @@ function mail_count_uncollected_auctions() {
     }
 }
 
-function mail_liquidate_all_auctions(do_it) {
+public function mail_liquidate_all_auctions(do_it) {
     var total = 0;
     if (!this.mail) {
         return false;
@@ -166,7 +166,7 @@ function mail_liquidate_all_auctions(do_it) {
     }
 }
 
-function mail_has_unread() {
+public function mail_has_unread() {
     if(!this.mail) {
         this.mail_init();
         return false;
@@ -183,7 +183,7 @@ function mail_has_unread() {
     return false;
 }
 
-function mail_count_messages(){
+public function mail_count_messages(){
     var n_msgs = 0;
 
     if(!this.mail) {
@@ -200,7 +200,7 @@ function mail_count_messages(){
     return n_msgs;
 }
 
-function mail_count_unread(){
+public function mail_count_unread(){
     var n_msgs = 0;
 
     if(!this.mail) {
@@ -215,7 +215,7 @@ function mail_count_unread(){
     return n_msgs;
 }
 
-function mail_count_replied(){
+public function mail_count_replied(){
 
     if (!this.mail) return 0;
 
@@ -227,7 +227,7 @@ function mail_count_replied(){
     return num;
 }
 
-function mail_can_receive(from){
+public function mail_can_receive(from){
     if (this.buddies_is_ignored_by(from) || this.buddies_is_ignoring(from)){
         return false;
     }
@@ -235,7 +235,7 @@ function mail_can_receive(from){
     return true;
 }
 
-function mail_reset() {
+public function mail_reset() {
     if (this.mail){
 
         // Empty bag
@@ -272,7 +272,7 @@ function mail_reset() {
     delete this.delivery_order;
 }
 
-function mail_delete(){
+public function mail_delete(){
     if (this.mail){
         var bag = this.mail_get_bag();
         if (bag){
@@ -296,13 +296,13 @@ function mail_delete(){
     delete this.delivery_order;
 }
 
-function reschedule_mail() {
+public function reschedule_mail() {
     this.apiCancelTimer('deliver_mail');
     this.apiSetTimer('deliver_mail', 3*60*1000);
     this.next_delivery = time() + 3 * 60;
 }
 
-function has_frog_already() {
+public function has_frog_already() {
     // Find out if a frog is here, here for this player and not done delivering.
     var allFrogs = this.location.find_items('npc_yoga_frog');
     var frogVisiting = false;
@@ -316,7 +316,7 @@ function has_frog_already() {
     return false;
 }
 
-function deliver_mail() {
+public function deliver_mail() {
     // If the player is offline, cancel. It will be sent to mailbox on log-in
     if(!this.isOnline()) {
         return;
@@ -345,7 +345,7 @@ function deliver_mail() {
         }]});
 }
 
-function answer_mail_prompt() {
+public function answer_mail_prompt() {
     if(this['!has_frog_prompt']) {
         delete this['!has_frog_prompt'];
     }
@@ -362,7 +362,7 @@ function answer_mail_prompt() {
     this.frogVisiting = true;
 }
 
-function mail_has_deliveries(mailType) {
+public function mail_has_deliveries(mailType) {
     if(!this.mail) {
         return false;
     }
@@ -392,7 +392,7 @@ function mail_has_deliveries(mailType) {
     return false;
 }
 
-function mail_count_auction_items() {
+public function mail_count_auction_items() {
     var item_count = 0;
 
     if (this.mail) {
@@ -413,13 +413,13 @@ function mail_count_auction_items() {
     return item_count;
 }
 
-function mail_test_mail(num) {
+public function mail_test_mail(num) {
     for (var i = 1; i <= num; i++) {
         this.mail_add_player_delivery(null, null, 0, "Message "+i, config.mail_delivery_time, true, null);
     }
 }
 
-function mail_test_auctions(num) {
+public function mail_test_auctions(num) {
     if (!this.mail) {
         return;
     }
@@ -442,7 +442,7 @@ function mail_test_auctions(num) {
     }
 }
 
-function mail_build_auction_rewards(start, end) {
+public function mail_build_auction_rewards(start, end) {
     var rewards = {};
     rewards.items = [];
     rewards.describe = '';
@@ -495,7 +495,7 @@ function mail_build_auction_rewards(start, end) {
     return rewards;
 }
 
-function mail_build_message_rewards(msg_id) {
+public function mail_build_message_rewards(msg_id) {
     var rewards = {};
     rewards.items = [];
 
@@ -526,7 +526,7 @@ function mail_build_message_rewards(msg_id) {
     }
 }
 
-function mail_get_next_player_message(checkFuture) {
+public function mail_get_next_player_message(checkFuture) {
     if (this.mail) {
         var next_message = -1;
         var next_time = -1;
@@ -549,13 +549,13 @@ function mail_get_next_player_message(checkFuture) {
     }
 }
 
-function mail_get_player_message_data(msg_id) {
+public function mail_get_player_message_data(msg_id) {
     if (this.mail) {
         return this.mail.inbox[msg_id];
     }
 }
 
-function mail_get_player_reply(reply_to) {
+public function mail_get_player_reply(reply_to) {
     if (!this.mail || !this.mail.inbox[reply_to]) {
         return;
     }
@@ -582,7 +582,7 @@ function mail_get_player_reply(reply_to) {
     return reply;
 }
 
-function mail_remove_player_message(msg_id) {
+public function mail_remove_player_message(msg_id) {
     if (this.mail && this.mail.inbox[msg_id]) {
         // delete message data first
         delete this.mail.inbox[msg_id];
@@ -600,12 +600,12 @@ function mail_remove_player_message(msg_id) {
     }
 }
 
-function mail_receive_message_items(msg_id) {
+public function mail_receive_message_items(msg_id) {
     log.info(this+" receiving mail item from message "+msg_id);
     return this.get_mail_items('courier', msg_id);
 }
 
-function mail_read(msg_id, is_read) {
+public function mail_read(msg_id, is_read) {
     if(!this.mail || !this.mail.inbox[msg_id]) {
         return;
     }
@@ -624,7 +624,7 @@ function mail_read(msg_id, is_read) {
     }
 }
 
-function mail_archive_message(msg_id){
+public function mail_archive_message(msg_id){
 
     if (this.mail.inbox[msg_id].items.__count || this.mail.inbox[msg_id].currants) return false;
 
@@ -640,12 +640,12 @@ function mail_archive_message(msg_id){
     }
 }
 
-function mail_dispatch_start(station_tsid) {
+public function mail_dispatch_start(station_tsid) {
     this.apiSendMsg({'type': 'mail_start', 'station_tsid': station_tsid, 'regular_cost': 20, 'expedited_cost': 100});
 }
 
 // Returns the number of items remaining on the message
-function get_message_goodies(msg_id, no_prompts) {
+public function get_message_goodies(msg_id, no_prompts) {
     // First receive currants, and pull them off the message, in case we can't deliver
     if (this.mail) {
         if(this.mail.inbox[msg_id] && this.mail.inbox[msg_id].currants) {
@@ -689,7 +689,7 @@ function get_message_goodies(msg_id, no_prompts) {
     return unsent;
 }
 
-function get_player_message(msg_id) {
+public function get_player_message(msg_id) {
 
     var items_remaining = this.get_message_goodies(msg_id);
 
@@ -702,7 +702,7 @@ function get_player_message(msg_id) {
     }
 }
 
-function new_inbox_growl() {
+public function new_inbox_growl() {
     if(!this.mail) {
         return;
     }
@@ -729,7 +729,7 @@ function new_inbox_growl() {
     this.schedule_inbox_growl();
 }
 
-function fix_broken_mail_item(stack) {
+public function fix_broken_mail_item(stack) {
     var deets = stack.getDeliveryPacket();
     if(deets.waiting_to_be_sent) {
         // Not broken, just waiting to be sent out. Issue a warning in case this is stuck somehow.
@@ -742,7 +742,7 @@ function fix_broken_mail_item(stack) {
     this.send_auction_to_inbox(stack);
 }
 
-function send_auction_to_inbox(stack) {
+public function send_auction_to_inbox(stack) {
     var deets = stack.getDeliveryPacket();
     var broken = false;
 
@@ -795,7 +795,7 @@ function send_auction_to_inbox(stack) {
     this.mail.next_msg_id++;
 }
 
-function send_unsent_auctions_to_inbox() {
+public function send_unsent_auctions_to_inbox() {
     var num_sent = 0;
 
     if(!this.mail) {
@@ -830,7 +830,7 @@ function send_unsent_auctions_to_inbox() {
     return num_sent;
 }
 
-function send_unsent_player_mail_to_inbox() {
+public function send_unsent_player_mail_to_inbox() {
     var num_sent = 0;
     if(!this.mail) {
         return;
@@ -849,7 +849,7 @@ function send_unsent_player_mail_to_inbox() {
     return num_sent;
 }
 
-function send_express_to_inbox(msg_id) {
+public function send_express_to_inbox(msg_id) {
     if(!this.mail) {
         return;
     }
@@ -862,7 +862,7 @@ function send_express_to_inbox(msg_id) {
     }
 }
 
-function send_unsent_mail_to_inbox() {
+public function send_unsent_mail_to_inbox() {
     var num_sent = 0;
     if(!this.mail) {
         return;
@@ -881,7 +881,7 @@ function send_unsent_mail_to_inbox() {
     }
 }
 
-function schedule_inbox_growl() {
+public function schedule_inbox_growl() {
     var next_notification = -1;
 
     // Check and see if we have any messages in our inbox that haven't sent out a notification yet.
@@ -911,7 +911,7 @@ function schedule_inbox_growl() {
     }
 }
 
-function schedule_next_delivery() {
+public function schedule_next_delivery() {
     var next_delivery = -1;
     var next_delivery_type = 'auction';
 
@@ -972,11 +972,11 @@ function schedule_next_delivery() {
     }
 }
 
-function get_auction_mail() {
+public function get_auction_mail() {
     return this.get_mail_items('auction', null);
 }
 
-function get_mail_items(mailType, msg_id) {
+public function get_mail_items(mailType, msg_id) {
     var undelivered = 0;
 
     var mailItems = [];
@@ -1077,7 +1077,7 @@ function get_mail_items(mailType, msg_id) {
     return undelivered;
 }
 
-function mail_has_spam(spam_id) {
+public function mail_has_spam(spam_id) {
     if(!this.mail || ! this.mail.spam || !this.mail.spam[spam_id]) {
         return false;
     }
@@ -1085,7 +1085,7 @@ function mail_has_spam(spam_id) {
     return true;
 }
 
-function mail_send_player_spam(sender_tsid, spam_text, spam_id) {
+public function mail_send_player_spam(sender_tsid, spam_text, spam_id) {
     if (!this.mail) {
         this.mail_init();
     }
@@ -1102,7 +1102,7 @@ function mail_send_player_spam(sender_tsid, spam_text, spam_id) {
     this.mail_add_player_delivery(null, sender_tsid, 0, spam_text, 10, true);
 }
 
-function mail_add_player_delivery_delayed(itemstack_tsid, sender_tsid, currants, text, delay, to_mailbox, in_reply_to, add_delay) {
+public function mail_add_player_delivery_delayed(itemstack_tsid, sender_tsid, currants, text, delay, to_mailbox, in_reply_to, add_delay) {
     if(config.is_dev) {
         delay = 60;
     }
@@ -1126,7 +1126,7 @@ function mail_add_player_delivery_delayed(itemstack_tsid, sender_tsid, currants,
     this.schedule_delayed_player_deliveries();
 }
 
-function schedule_delayed_player_deliveries() {
+public function schedule_delayed_player_deliveries() {
     var next_item = -1;
 
     for(var i in this.mail.delayed_mail_items) {
@@ -1145,7 +1145,7 @@ function schedule_delayed_player_deliveries() {
     }
 }
 
-function mail_do_delayed_player_deliveries() {
+public function mail_do_delayed_player_deliveries() {
     for(var i in this.mail.delayed_mail_items) {
         if(i > time()) {
             continue;
@@ -1177,7 +1177,7 @@ function mail_do_delayed_player_deliveries() {
     this.schedule_delayed_player_deliveries();
 }
 
-function mail_add_player_delivery(itemstack_tsid, sender_tsid, currants, text, delay, to_mailbox, in_reply_to) {
+public function mail_add_player_delivery(itemstack_tsid, sender_tsid, currants, text, delay, to_mailbox, in_reply_to) {
     if (!this.mail) {
         this.mail_init();
     }
@@ -1226,13 +1226,13 @@ function mail_add_player_delivery(itemstack_tsid, sender_tsid, currants, text, d
     this.mail.next_msg_id++;
 }
 
-function mail_add_auction_delivery(itemstack_tsid, delay, uid, sender_tsid, subType) {
+public function mail_add_auction_delivery(itemstack_tsid, delay, uid, sender_tsid, subType) {
     apiResetThreadCPUClock();
     this.mail_add_item(itemstack_tsid, delay, 'auction', uid, sender_tsid, subType);
     apiResetThreadCPUClock("mail_add_auction_delivery");
 }
 
-function mail_add_item(itemstack_tsid, delay, mailType, id, sender_tsid, subType) {
+public function mail_add_item(itemstack_tsid, delay, mailType, id, sender_tsid, subType) {
     if (!this.mail) {
         this.mail_init();
     }
@@ -1278,7 +1278,7 @@ function mail_add_item(itemstack_tsid, delay, mailType, id, sender_tsid, subType
     }
 }
 
-function mail_add_stack(stack, delay, mailType, id, sender_tsid, subType) {
+public function mail_add_stack(stack, delay, mailType, id, sender_tsid, subType) {
     if (!this.mail) {
         this.mail_init();
     }
@@ -1327,7 +1327,7 @@ function mail_add_stack(stack, delay, mailType, id, sender_tsid, subType) {
     }
 }
 
-function mail_get_message_cost(itemstack, count, currants, ignore_currants) {
+public function mail_get_message_cost(itemstack, count, currants, ignore_currants) {
     var cost = 2;
 
     if (itemstack && count) {
@@ -1346,7 +1346,7 @@ function mail_get_message_cost(itemstack, count, currants, ignore_currants) {
     return cost;
 }
 
-function build_mail_check_msg(from_item, to_msg, fetch_all) {
+public function build_mail_check_msg(from_item, to_msg, fetch_all) {
     var num_msg = 0;
 
     if(!this.mail) {
@@ -1476,28 +1476,28 @@ function build_mail_check_msg(from_item, to_msg, fetch_all) {
     return mail_check;
 }
 
-function mail_check(from_item) {
+public function mail_check(from_item) {
     this.apiSendMsg(this.build_mail_check_msg(from_item));
 }
 
-function mail_login() {
+public function mail_login() {
     this.mail_cancel_deliveries();
     this.apiCancelTimer('new_inbox_growl');
     this.send_unsent_mail_to_inbox();
     this.schedule_next_delivery();
 }
 
-function mail_logout() {
+public function mail_logout() {
     this.mail_cancel_deliveries();
     this.apiCancelTimer('new_inbox_growl');
 }
 
-function mail_cancel_deliveries() {
+public function mail_cancel_deliveries() {
     this.apiCancelTimer('deliver_mail');
     this.next_delivery = -1;
 }
 
-function admin_clear_mail() {
+public function admin_clear_mail() {
     if(!this.mail || !this.is_god) {
         return;
     }
@@ -1519,7 +1519,7 @@ function admin_clear_mail() {
     this.mail.delayed_mail_items = {};
 }
 
-function admin_mail_spy(pc_tsid) {
+public function admin_mail_spy(pc_tsid) {
     if(!pc_tsid) {
         return;
     }
@@ -1530,7 +1530,7 @@ function admin_mail_spy(pc_tsid) {
     }
 }
 
-function mail_has_item_pending(class_tsid){
+public function mail_has_item_pending(class_tsid){
     if (!this.mail) return false;
 
     var items = this.mail_get_bag_contents();
@@ -1542,7 +1542,7 @@ function mail_has_item_pending(class_tsid){
 }
 
 
-function mail_replace_mail_item(source_tsid, replacement_item){
+public function mail_replace_mail_item(source_tsid, replacement_item){
     if (!this.mail) return false;
 
     for (var i in this.mail.inbox){
@@ -1560,7 +1560,7 @@ function mail_replace_mail_item(source_tsid, replacement_item){
 }
 
 // Special player rewards that we want to mail to everyone, but that we want everyone to get only once.
-function mail_send_special_item(class_tsid, number, message, min_level) {
+public function mail_send_special_item(class_tsid, number, message, min_level) {
     var n_sending = number ? number : 1;
 
     if(min_level && this.stats_get_level() < min_level) {
@@ -1605,7 +1605,7 @@ function mail_send_special_item(class_tsid, number, message, min_level) {
     this.mail.special_items[class_tsid] = true;
 }
 
-function mail_reset_special_item(class_tsid) {
+public function mail_reset_special_item(class_tsid) {
     if (!this.mail) {
         this.mail_init();
     }

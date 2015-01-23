@@ -20,7 +20,7 @@ package com.reversefold.glitch.server.player {
 
 // http://svn.tinyspeck.com/wiki/SpecTeleportation
 
-function teleportation_init(){
+public function teleportation_init(){
     if (this.teleportation === undefined || this.teleportation === null){
         this.teleportation = apiNewOwnedDC(this);
         this.teleportation.label = 'Teleportation';
@@ -34,7 +34,7 @@ function teleportation_init(){
     }
 }
 
-function teleportation_reset(){
+public function teleportation_reset(){
     if (this.teleportation){
 
         this.teleportation.targets = {};
@@ -49,7 +49,7 @@ function teleportation_reset(){
     }
 }
 
-function teleportation_reset_counters(){
+public function teleportation_reset_counters(){
     this.teleportation_init();
     this.teleportation.map_teleports_today = 0;
     this.teleportation.free_summons_today = 0;
@@ -60,7 +60,7 @@ function teleportation_reset_counters(){
 
 //////////////////////////////////////////////////////////////////////
 
-function teleportation_set_target(teleport_id){
+public function teleportation_set_target(teleport_id){
     if (!teleport_id) teleport_id = 1;
 
     var ret = this.teleportation_can_set_target(teleport_id);
@@ -96,7 +96,7 @@ function teleportation_set_target(teleport_id){
     };
 }
 
-function teleportation_get_target(teleport_id){
+public function teleportation_get_target(teleport_id){
     if (!teleport_id) teleport_id = 1;
 
     if (teleport_id > this.teleportation_get_max_targets()) return {};
@@ -105,7 +105,7 @@ function teleportation_get_target(teleport_id){
     return this.teleportation.targets[teleport_id];
 }
 
-function teleportation_get_all_targets(){
+public function teleportation_get_all_targets(){
     var targets = {};
 
     var count = 0;
@@ -143,7 +143,7 @@ function teleportation_get_all_targets(){
     return targets;
 }
 
-function teleportation_can_teleport(teleport_id, skip_skill, target){
+public function teleportation_can_teleport(teleport_id, skip_skill, target){
     if (this['!teleporting']){
         return {
             ok: 0,
@@ -315,7 +315,7 @@ function teleportation_can_teleport(teleport_id, skip_skill, target){
     return {ok: 1};
 }
 
-function teleportation_can_set_target(teleport_id){
+public function teleportation_can_set_target(teleport_id){
     if (this.is_dead){
         return {
             ok: 0,
@@ -357,7 +357,7 @@ function teleportation_can_set_target(teleport_id){
     return {ok: 1};
 }
 
-function teleportation_teleport(teleport_id, skip_skill, target, skip_costs){
+public function teleportation_teleport(teleport_id, skip_skill, target, skip_costs){
     if (!teleport_id && !target) teleport_id = 1;
 
     var ret = this.teleportation_can_teleport(teleport_id, skip_skill, target);
@@ -436,7 +436,7 @@ function teleportation_teleport(teleport_id, skip_skill, target, skip_costs){
     return {ok: 1};
 }
 
-function teleportation_map_teleport(tsid, use_token){
+public function teleportation_map_teleport(tsid, use_token){
     if (!tsid){
         return {
             ok: 0,
@@ -565,7 +565,7 @@ function teleportation_map_teleport(tsid, use_token){
     return {ok: 1};
 }
 
-function teleportation_random_teleport() {
+public function teleportation_random_teleport() {
     // find a new hub
     var hub = choose_one(config.public_hubs);
 /*  do {
@@ -619,7 +619,7 @@ function teleportation_random_teleport() {
     this.apiSetTimer('teleport_complete', 3000);
 }
 
-function teleportation_accept_summons(value, details){
+public function teleportation_accept_summons(value, details){
     var value_split = value.split('-');
     if (value_split.length != 2) return log.error("teleportation_accept_summons bad value: "+value);
 
@@ -635,7 +635,7 @@ function teleportation_accept_summons(value, details){
     }
 }
 
-function teleportation_summon(pc){
+public function teleportation_summon(pc){
     if (this['!summons_uid']){
         this.prompts_remove(this['!summons_uid']);
         delete this['!summons_uid'];
@@ -723,7 +723,7 @@ function teleportation_summon(pc){
     return {ok: 1};
 }
 
-function teleportation_cancel_summons(target){
+public function teleportation_cancel_summons(target){
     if (this['!summons_uid']){
         this.prompts_remove(this['!summons_uid']);
         delete this['!summons_uid'];
@@ -746,7 +746,7 @@ function teleportation_cancel_summons(target){
     }
 }
 
-function teleportation_can_summon(target){
+public function teleportation_can_summon(target){
     var ret = this.teleportation_can_teleport();
     if (!ret['ok']) return ret;
 
@@ -854,7 +854,7 @@ function teleportation_can_summon(target){
     };
 }
 
-function teleportation_spend_token(reason){
+public function teleportation_spend_token(reason){
     if (this.teleportation_get_token_balance() > 0){
         this.teleportation.token_balance--;
 
@@ -874,7 +874,7 @@ function teleportation_spend_token(reason){
     return 0;
 }
 
-function teleportation_give_tokens(count, reason){
+public function teleportation_give_tokens(count, reason){
     this.teleportation.token_balance += count;
 
     // Tell the web app, which will sync back to us eventually
@@ -892,7 +892,7 @@ function teleportation_give_tokens(count, reason){
 
 //////////////////////////////////////////////////////////////////////
 
-function teleportation_get_status(){
+public function teleportation_get_status(){
     this.teleportation_init();
 
     var can_teleport = this.teleportation_can_teleport();
@@ -914,7 +914,7 @@ function teleportation_get_status(){
     return ret;
 }
 
-function teleportation_notify_client(){
+public function teleportation_notify_client(){
     this.apiSendMsgAsIs({
         type: 'teleportation',
         status: this.teleportation_get_status()
@@ -923,7 +923,7 @@ function teleportation_notify_client(){
 
 //////////////////////////////////////////////////////////////////////
 
-function teleportation_get_max_targets(){
+public function teleportation_get_max_targets(){
     if (this.skills_has('teleportation_3')){
         return 3;
     }
@@ -937,7 +937,7 @@ function teleportation_get_max_targets(){
     return 0;
 }
 
-function teleportation_get_energy_cost(){
+public function teleportation_get_energy_cost(){
     if (this.skills_has('teleportation_5')){
         return Math.round(this.metabolics_get_max_energy() * 0.10);
     }
@@ -957,7 +957,7 @@ function teleportation_get_energy_cost(){
     return null;
 }
 
-function teleportation_get_cooldown_time(){
+public function teleportation_get_cooldown_time(){
 
     // End of the world - reduce all cooldowns by a factor of 60
 
@@ -974,7 +974,7 @@ function teleportation_get_cooldown_time(){
     return null;
 }
 
-function teleportation_get_max_map_teleports(){
+public function teleportation_get_max_map_teleports(){
 
     if (this.skills_has('teleportation_5')){
         return 1000;
@@ -988,7 +988,7 @@ function teleportation_get_max_map_teleports(){
 
 // How many times per game day can this player use the 'summons' functionality?
 // First number is 'free', second number is how many with teleportation tokens
-function teleportation_get_max_summons(){
+public function teleportation_get_max_summons(){
     if (this.skills_has('teleportation_5')){
         return [2, -1];
     }
@@ -996,20 +996,20 @@ function teleportation_get_max_summons(){
     return [0, 0];
 }
 
-function teleportation_get_token_balance(){
+public function teleportation_get_token_balance(){
     return intval(this.teleportation.token_balance);
 }
 
 //////////////////////////////////////////////////////////////////////
 
-function teleportation_add_history(tsid){
+public function teleportation_add_history(tsid){
     if (!this.is_god) return;
 
     if (!this.location_history) this.location_history = {};
     this.location_history[tsid] = time();
 }
 
-function teleportation_get_history(num){
+public function teleportation_get_history(num){
 
     if (!this.location_history) this.location_history = {};
 
@@ -1029,7 +1029,7 @@ function teleportation_get_history(num){
 
 //////////////////////////////////////////////////////////////////////
 
-function teleportation_imbue_script_prompt(value, details){
+public function teleportation_imbue_script_prompt(value, details){
 
     if (value == 'yes'){
         var script = this.removeItemStackTsid(details.tsid, 1);
@@ -1065,7 +1065,7 @@ function teleportation_imbue_script_prompt(value, details){
     }
 }
 
-function teleport_complete(){
+public function teleport_complete(){
     var quest = this.getQuestInstance('teleportation_teleport_in_time_period');
     if (quest && quest.isStarted(this) && !quest.isDone(this)){
         quest.sendGrowl(this);

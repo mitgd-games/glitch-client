@@ -39,7 +39,7 @@ package com.reversefold.glitch.server.player {
 
 ************************************************************************************************************/
 
-function physicsReset(){
+public function physicsReset(){
     delete this.physics_new;
     this.setDefaultPhysics();
 
@@ -56,7 +56,7 @@ function physicsReset(){
     this.imagination_delete_upgrade('jump_wall');
 }
 
-function setDefaultPhysics(){
+public function setDefaultPhysics(){
     if (!this.physics_new) {
         this.physics_new = {};
     }
@@ -128,7 +128,7 @@ function setDefaultPhysics(){
     this.stackPhysicsAndSendToClient();
 }
 
-function getPhysics(){
+public function getPhysics(){
     if (!this.physics_new) {
         this.physics_new = {};
     }
@@ -141,7 +141,7 @@ function getPhysics(){
 }
 
 // this is called from location.onPlayerEnter
-function removeAllTempPhysics(and_send){
+public function removeAllTempPhysics(and_send){
     var physics = this.getPhysics();
     var key;
 
@@ -155,7 +155,7 @@ function removeAllTempPhysics(and_send){
     if (and_send) this.stackPhysicsAndSendToClient();
 }
 
-function removeAllCTPCPhysics(and_send){
+public function removeAllCTPCPhysics(and_send){
     var physics = this.getPhysics();
     var key;
 
@@ -169,7 +169,7 @@ function removeAllCTPCPhysics(and_send){
     if (and_send) this.stackPhysicsAndSendToClient();
 }
 
-function checkForExpiringPhysics(){
+public function checkForExpiringPhysics(){
     var physics = this.getPhysics();
     var now = getTime();
 
@@ -239,14 +239,14 @@ function checkForExpiringPhysics(){
 
 // the only time and_send should be false is if you are doing a batch change to physics
 // and you want to wait until all changes are made before you broadcast the changes. see checkForExpiringPhysics()
-function removePhysics(key, and_send){
+public function removePhysics(key, and_send){
     var physics = this.getPhysics();
     delete physics[key];
     if (and_send) this.stackPhysicsAndSendToClient();
 }
 
 // NEVER CALL THIS DIRECTLY. Use one of the helper functions below to effect physcis changes on the pc
-function addPhysics(hash, key){
+public function addPhysics(hash, key){
     var physics = this.getPhysics();
 
     if (hash.removes_ctpc_effects){
@@ -268,7 +268,7 @@ function addPhysics(hash, key){
 }
 
 // ensures the hash has the correct flag on it to identify it as an imagination adjustment (there can be only one)
-function addImaginationPhysics(hash){
+public function addImaginationPhysics(hash){
     hash.is_permanent = 1; // permanent!
     hash.is_img = 1;
     delete hash.is_cptc;
@@ -285,7 +285,7 @@ function addImaginationPhysics(hash){
 }
 
 // ensures the hash has the correct flag on it to identify it as a CTPC adjustment
-function addCTPCPhysics(hash, key){
+public function addCTPCPhysics(hash, key){
     if (hash.is_permanent != 1) hash.is_permanent = 0; // by default, these should be temporary
     hash.is_cptc = 1;
     delete hash.is_buff;
@@ -294,7 +294,7 @@ function addCTPCPhysics(hash, key){
 }
 
 // ensures the hash has the correct flag on it to identify it as a buff adjustment
-function addBuffPhysics(hash, key){
+public function addBuffPhysics(hash, key){
     if (hash.is_permanent != 0) hash.is_permanent = 1; // by default, these should be permanent
     hash.is_buff = 1;
     delete hash.is_cptc;
@@ -302,7 +302,7 @@ function addBuffPhysics(hash, key){
     this.addPhysics(hash, key);
 }
 
-function getStackedPhysics(){
+public function getStackedPhysics(){
     if (!this.stacked_physics_cache) {
         this.stacked_physics_cache = this.makeStackedPhysics();
     }
@@ -310,7 +310,7 @@ function getStackedPhysics(){
     return this.stacked_physics_cache;
 }
 
-function makeStackedPhysics(){
+public function makeStackedPhysics(){
     var physics = this.getPhysics();
     var adjustments = {keys:{}};
 
@@ -390,12 +390,12 @@ function makeStackedPhysics(){
     return adjustments;
 }
 
-function stackPhysicsAndSendToClient(){
+public function stackPhysicsAndSendToClient(){
     this.stacked_physics_cache = this.makeStackedPhysics();
     this.sendPhysicsAdjustments();
 }
 
-function reducePhysicsAdjustmentsToMinumum(adjustments){
+public function reducePhysicsAdjustmentsToMinumum(adjustments){
     // we only need to pass around pc_scale right for other avatars
     var ob = {};
     ob.pc_scale = adjustments.pc_scale;
@@ -404,7 +404,7 @@ function reducePhysicsAdjustmentsToMinumum(adjustments){
 }
 
 // ONLY EVER TO BE CALLED FROM stackPhysicsAndSendToClient()
-function sendPhysicsAdjustments(){
+public function sendPhysicsAdjustments(){
     // stacked_physics_cache needs to always contain all physics changes for the player
     // after any stacking/merging is done. The client only obeys the latest
     // physics_changes message sent to it. If you send an empty adjustments
@@ -431,7 +431,7 @@ function sendPhysicsAdjustments(){
 
 
 
-function physics_event_run(param, value, duration){
+public function physics_event_run(param, value, duration){
 
     var hash = {};
     hash.is_event = true;
@@ -443,7 +443,7 @@ function physics_event_run(param, value, duration){
     this.addCTPCPhysics(hash, 'events_'+param);
 }
 
-function physics_event_reset(param){
+public function physics_event_reset(param){
 
     if (param == 'all'){
 

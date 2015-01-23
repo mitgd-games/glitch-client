@@ -18,7 +18,7 @@ package com.reversefold.glitch.server.player {
         }
 
 
-function trading_init(){
+public function trading_init(){
     if (!this.trading){
     //if (this.trading === undefined || this.trading === null){
         this.trading = apiNewOwnedDC(this);
@@ -38,7 +38,7 @@ function trading_init(){
     }
 }
 
-function trading_create_escrow_bag(){
+public function trading_create_escrow_bag(){
     // Create a new private storage bag for holding items in escrow
     var it = apiNewItemStack('bag_escrow', 1);
     it.label = 'Private Trading Storage';
@@ -48,7 +48,7 @@ function trading_create_escrow_bag(){
     this.trading.storage_tsid = it.tsid;
 }
 
-function trading_reset(){
+public function trading_reset(){
     this.trading_cancel_auto();
 
     if (this.trading){
@@ -62,7 +62,7 @@ function trading_reset(){
     }
 }
 
-function trading_delete(){
+public function trading_delete(){
     this.trading_cancel_auto();
 
     if (this.trading){
@@ -82,11 +82,11 @@ function trading_delete(){
     }
 }
 
-function trading_get_escrow_bag(){
+public function trading_get_escrow_bag(){
     return this.hiddenItems[this.trading.storage_tsid];
 }
 
-function trading_has_escrow_items(){
+public function trading_has_escrow_items(){
     var escrow = this.trading_get_escrow_bag();
 
     return escrow.countContents() > 0 ? true : false;
@@ -96,7 +96,7 @@ function trading_has_escrow_items(){
 // Attempt to start a trade with player 'target_tsid'
 //
 
-function trading_request_start(target_tsid){
+public function trading_request_start(target_tsid){
     //log.info(this.tsid+' starting trade with '+target_tsid);
 
     this.trading_init();
@@ -233,7 +233,7 @@ function trading_request_start(target_tsid){
 // Cancel an in-progress trade with 'target_tsid'
 //
 
-function trading_cancel(target_tsid){
+public function trading_cancel(target_tsid){
     //log.info(this.tsid+' canceling trade with '+target_tsid);
     //
     // Sanity check
@@ -305,7 +305,7 @@ function trading_cancel(target_tsid){
     };
 }
 
-function trading_rollback(){
+public function trading_rollback(){
     //log.info(this.tsid+' rolling back trade');
     //
     // Refund all the in-progress items
@@ -372,7 +372,7 @@ function trading_rollback(){
 // Cancel any in-progress trade
 //
 
-function trading_cancel_auto(){
+public function trading_cancel_auto(){
     //log.info(this.tsid+' canceling all trades');
     if (this['!is_trading']) this.trading_cancel(this['!is_trading']);
 }
@@ -381,7 +381,7 @@ function trading_cancel_auto(){
 // Add an item to the trade
 //
 
-function trading_add_item(target_tsid, itemstack_tsid, amount){
+public function trading_add_item(target_tsid, itemstack_tsid, amount){
     //log.info(this.tsid+' adding item '+itemstack_tsid+' to trade with '+target_tsid);
     //
     // Sanity check
@@ -439,7 +439,7 @@ function trading_add_item(target_tsid, itemstack_tsid, amount){
     };
 }
 
-function trading_add_item_do(itemstack_tsid, amount, destination_slot){
+public function trading_add_item_do(itemstack_tsid, amount, destination_slot){
     //log.info('trading_add_item_do '+itemstack_tsid+' ('+amount+')');
     var item = this.removeItemStackTsid(itemstack_tsid, amount);
     if (!item){
@@ -602,7 +602,7 @@ function trading_add_item_do(itemstack_tsid, amount, destination_slot){
 // Remove an item from the trade
 //
 
-function trading_remove_item(target_tsid, itemstack_tsid, amount){
+public function trading_remove_item(target_tsid, itemstack_tsid, amount){
     //log.info(this.tsid+' removing item '+itemstack_tsid+' from trade with '+target_tsid);
     //
     // Sanity check
@@ -654,7 +654,7 @@ function trading_remove_item(target_tsid, itemstack_tsid, amount){
     };
 }
 
-function trading_remove_item_do(itemstack_tsid, amount){
+public function trading_remove_item_do(itemstack_tsid, amount){
     var escrow = this.trading_get_escrow_bag();
     if (escrow.items[itemstack_tsid]){
         var slot = escrow.items[itemstack_tsid].slot;
@@ -710,7 +710,7 @@ function trading_remove_item_do(itemstack_tsid, amount){
 // Move items around in the escrow bag in order to keep things in sequential slots
 //
 
-function trading_reorder_escrow(){
+public function trading_reorder_escrow(){
     var escrow = this.trading_get_escrow_bag();
     if (escrow.countContents()){
         var escrow_contents = escrow.getContents();
@@ -732,7 +732,7 @@ function trading_reorder_escrow(){
 // Change the amount of an item to trage
 //
 
-function trading_change_item(target_tsid, itemstack_tsid, amount){
+public function trading_change_item(target_tsid, itemstack_tsid, amount){
     //log.info(this.tsid+' changing item '+itemstack_tsid+' to trade with '+target_tsid+' ('+amount+')');
     //
     // Sanity check
@@ -822,7 +822,7 @@ function trading_change_item(target_tsid, itemstack_tsid, amount){
 // Update the currants on the trade
 //
 
-function trading_update_currants(target_tsid, amount){
+public function trading_update_currants(target_tsid, amount){
     //log.info(this.tsid+' updating currants to '+amount+' on trade with '+target_tsid);
     //
     // Sanity check
@@ -891,7 +891,7 @@ function trading_update_currants(target_tsid, amount){
 // Accept the trade
 //
 
-function trading_accept(target_tsid){
+public function trading_accept(target_tsid){
     //log.info(this.tsid+' accepting trade with '+target_tsid);
     //
     // Sanity check
@@ -944,7 +944,7 @@ function trading_accept(target_tsid){
 // Unlock the trade
 //
 
-function trading_unlock(target_tsid){
+public function trading_unlock(target_tsid){
     //log.info(this.tsid+' unlocking trade with '+target_tsid);
     //
     // Sanity check
@@ -985,7 +985,7 @@ function trading_unlock(target_tsid){
 // Complete the trade
 //
 
-function trading_complete(target_tsid){
+public function trading_complete(target_tsid){
     //log.info(this.tsid+' completing trade with '+target_tsid);
     //
     // Sanity check
@@ -1082,7 +1082,7 @@ function trading_complete(target_tsid){
 // If something goes wrong, oh well!
 //
 
-function trading_transfer(target_tsid){
+public function trading_transfer(target_tsid){
 
     var target = getPlayer(target_tsid);
 

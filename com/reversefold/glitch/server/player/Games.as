@@ -21,7 +21,7 @@ package com.reversefold.glitch.server.player {
 // Games!
 
 // Player-to-player collision for games
-function games_handle_player_collision(pc){
+public function games_handle_player_collision(pc){
     if (this.color_game){
         this.games_infect_player(pc);
     }
@@ -39,7 +39,7 @@ function games_handle_player_collision(pc){
 //
 
 // Start the game for us, assigning a random safe color
-function games_start_color_game(game, color, start_time) {
+public function games_start_color_game(game, color, start_time) {
     this.games_init_general();
 
     if(this.color_game) {
@@ -81,7 +81,7 @@ function games_start_color_game(game, color, start_time) {
 }
 
 // Infect another player
-function games_infect_player(pc) {
+public function games_infect_player(pc) {
     if(!this.color_game || this.color_game.is_done) {
         return;
     }
@@ -122,12 +122,12 @@ function games_infect_player(pc) {
     }
 }
 
-function games_color_get_infections(){
+public function games_color_get_infections(){
     return this.color_game ? this.color_game.infections : 0;
 }
 
 // The game is over for us
-function games_end_color_game() {
+public function games_end_color_game() {
     if(!this.color_game) {
         return;
     }
@@ -176,7 +176,7 @@ function games_end_color_game() {
 }
 
 // The game is over for us on a certain color
-function games_color_finish_on_color(end_color) {
+public function games_color_finish_on_color(end_color) {
     if(!this.color_game) {
         return false;
     }
@@ -243,7 +243,7 @@ function games_color_finish_on_color(end_color) {
 }
 
 // Get colors, based on our current status
-function games_color_get_colors(colors) {
+public function games_color_get_colors(colors) {
     // Compute outgoing colour and secondary colour based on game status:
     if(this.color_game.is_done) {
         colors.out_color = '#888888';
@@ -279,7 +279,7 @@ function games_color_get_colors(colors) {
 }
 
 // Set our colors
-function games_color_game_set_color(color, secondary_color) {
+public function games_color_game_set_color(color, secondary_color) {
     this.color_game.color = color;
     if(secondary_color) {
         this.color_game.safe_color = secondary_color;
@@ -292,7 +292,7 @@ function games_color_game_set_color(color, secondary_color) {
 }
 
 // Tell the client about our colors
-function games_set_color_group(color, secondary_color) {
+public function games_set_color_group(color, secondary_color) {
     this.color_group = color;
 
     var msg = {
@@ -313,7 +313,7 @@ function games_set_color_group(color, secondary_color) {
     this.location.apiSendMsg(msg);
 }
 
-function games_get_color_group() {
+public function games_get_color_group() {
     return this.color_group;
 }
 
@@ -323,7 +323,7 @@ function games_get_color_group() {
 // IT Game stuff
 //
 
-function games_it_game_splash(instance_id) {
+public function games_it_game_splash(instance_id) {
     this.apiSendMsg({
         type:'game_splash_screen',
         tsid:'it_game',
@@ -357,7 +357,7 @@ function games_it_game_splash(instance_id) {
 }
 
 // Start the game for us
-function games_start_it_game(game, start_time){
+public function games_start_it_game(game, start_time){
     this.games_init_general();
 
     if (this.it_game){
@@ -380,7 +380,7 @@ function games_start_it_game(game, start_time){
 }
 
 // Two players tagged
-function games_tag_player(pc){
+public function games_tag_player(pc){
     if (!this.it_game || this.it_game.is_done || !pc.it_game || pc.it_game.is_done){
         return;
     }
@@ -399,7 +399,7 @@ function games_tag_player(pc){
     }
 }
 
-function games_it_is_out(){
+public function games_it_is_out(){
     if (!this.it_game || this.it_game.is_done){
         log.info('[GAMES] '+this+' is out!');
         return true;
@@ -409,7 +409,7 @@ function games_it_is_out(){
 }
 
 // We are it!
-function games_is_it(){
+public function games_is_it(){
     if (!this.it_game){
         return;
     }
@@ -467,7 +467,7 @@ function games_is_it(){
     this.announce_sound('YOU_TAKE_CROWN');
 }
 
-function games_set_it_map(){
+public function games_set_it_map(){
     log.info('[GAMES] '+this+' set it map');
 
     var msg = {
@@ -487,7 +487,7 @@ function games_set_it_map(){
 }
 
 // We are not it!
-function games_is_not_it(){
+public function games_is_not_it(){
     if (!this.it_game){
         return;
     }
@@ -546,7 +546,7 @@ function games_is_not_it(){
     this.announce_sound('YOU_LOSE_CROWN');
 }
 
-function games_set_notit_map(){
+public function games_set_notit_map(){
     log.info('[GAMES] '+this+' set not it map');
 
     var msg = {
@@ -566,7 +566,7 @@ function games_set_notit_map(){
 }
 
 // Player passed through the starting gate
-function games_it_game_gate(){
+public function games_it_game_gate(){
     if (!this.it_game || this.it_game.is_done){
         return;
     }
@@ -630,7 +630,7 @@ function games_it_game_gate(){
 }
 
 // The timer ended, or the game otherwise ended! If we are still it, we win!
-function games_end_it_game(){
+public function games_end_it_game(){
     if (!this.it_game || this.it_game.is_done){
         return;
     }
@@ -756,7 +756,7 @@ function games_end_it_game(){
     this.games_scoreboard_end('it_game');
 }
 
-function games_it_dismiss_overlays(){
+public function games_it_dismiss_overlays(){
     log.info('[GAMES] '+this+' dismissing all overlays');
 
     this.announce_remove_indicator('it_game_crown');
@@ -766,7 +766,7 @@ function games_it_dismiss_overlays(){
     this.games_set_notit_map();
 }
 
-function games_get_it_status(){
+public function games_get_it_status(){
     if (!this.it_game){
         return {};
     }
@@ -779,7 +779,7 @@ function games_get_it_status(){
     }
 }
 
-function games_it_game_lock(duration){
+public function games_it_game_lock(duration){
     if (!this.it_game || this.it_game.is_done){
         return;
     }
@@ -805,7 +805,7 @@ function games_it_game_lock(duration){
     }
 }
 
-function games_it_game_unlock(){
+public function games_it_game_unlock(){
     if (!this.it_game || this.it_game.is_done){
         return;
     }
@@ -826,7 +826,7 @@ function games_it_game_unlock(){
     }
 }
 
-function games_it_game_wiggle1(){
+public function games_it_game_wiggle1(){
     if (!this.it_game || this.it_game.is_done){
         return;
     }
@@ -840,7 +840,7 @@ function games_it_game_wiggle1(){
     }
 }
 
-function games_it_game_wiggle2(){
+public function games_it_game_wiggle2(){
     if (!this.it_game || this.it_game.is_done){
         return;
     }
@@ -852,7 +852,7 @@ function games_it_game_wiggle2(){
     }
 }
 
-function games_it_game_is_locked(){
+public function games_it_game_is_locked(){
     if (!this.it_game || this.it_game.is_done){
         return false;
     }
@@ -860,7 +860,7 @@ function games_it_game_is_locked(){
     return this.it_game.lock_start ? true : false;
 }
 
-function games_it_game_is_started(){
+public function games_it_game_is_started(){
     if (!this.it_game || this.it_game.is_done){
         return false;
     }
@@ -880,7 +880,7 @@ function games_it_game_is_started(){
 }
 
 // Do the score overlays
-function games_it_game_start_scores(it){
+public function games_it_game_start_scores(it){
     if (!this.it_game || this.it_game.is_done){
         return;
     }
@@ -928,7 +928,7 @@ function games_it_game_start_scores(it){
     }
 }
 
-function games_it_game_update_scores(remaining, is_it){
+public function games_it_game_update_scores(remaining, is_it){
     if (!this.it_game || this.it_game.is_done){
         return;
     }
@@ -975,7 +975,7 @@ function games_it_game_update_scores(remaining, is_it){
 //
 
 // Start the game for us
-function games_start_math_mayhem(game, start_time, score, team, target){
+public function games_start_math_mayhem(game, start_time, score, team, target){
     this.games_init_general();
 
     if (this.math_mayhem){
@@ -999,7 +999,7 @@ function games_start_math_mayhem(game, start_time, score, team, target){
 }
 
 // Two players tagged
-function games_do_math(pc){
+public function games_do_math(pc){
     if (!this.math_mayhem || this.math_mayhem.is_done || !pc.math_mayhem || pc.math_mayhem.is_done){
         return;
     }
@@ -1029,7 +1029,7 @@ function games_do_math(pc){
     pc.games_math_mayhem_lock(1);
 }
 
-function games_get_math_mayhem_status(){
+public function games_get_math_mayhem_status(){
     if (!this.math_mayhem){
         return {};
     }
@@ -1041,7 +1041,7 @@ function games_get_math_mayhem_status(){
     }
 }
 
-function games_set_math_mayhem_score(score){
+public function games_set_math_mayhem_score(score){
     if (!this.math_mayhem){
         return;
     }
@@ -1058,14 +1058,14 @@ function games_set_math_mayhem_score(score){
     }
 }
 
-function games_math_mayhem_dismiss_overlays(){
+public function games_math_mayhem_dismiss_overlays(){
     log.info('[GAMES] '+this+' dismissing all overlays');
 
     this.overlay_dismiss('math_mayhem_target');
     this.games_clear_mayhem_score();
 }
 
-function games_end_math_mayhem(){
+public function games_end_math_mayhem(){
     if (!this.math_mayhem || this.math_mayhem.is_done){
         return;
     }
@@ -1174,7 +1174,7 @@ function games_end_math_mayhem(){
 }
 
 // Tell the client about our colors
-function games_show_mayhem_score(color, score){
+public function games_show_mayhem_score(color, score){
     var out_color;
     switch(color) {
         case 'red':
@@ -1206,7 +1206,7 @@ function games_show_mayhem_score(color, score){
     this.location.apiSendMsg(msg);
 }
 
-function games_clear_mayhem_score(){
+public function games_clear_mayhem_score(){
     var msg = {
         type: 'pc_game_flag_change',
         pc: {
@@ -1224,7 +1224,7 @@ function games_clear_mayhem_score(){
     this.location.apiSendMsg(msg);
 }
 
-function games_mayhem_show_target(score){
+public function games_mayhem_show_target(score){
     if (!this.math_mayhem || this.math_mayhem.is_done){
         return;
     }
@@ -1249,7 +1249,7 @@ function games_mayhem_show_target(score){
 }
 
 
-function games_math_mayhem_lock(duration){
+public function games_math_mayhem_lock(duration){
     if (!this.math_mayhem || this.math_mayhem.is_done){
         return;
     }
@@ -1269,7 +1269,7 @@ function games_math_mayhem_lock(duration){
     this.apiSetTimer('games_math_mayhem_unlock', duration * 1000);
 }
 
-function games_math_mayhem_unlock(){
+public function games_math_mayhem_unlock(){
     if (!this.math_mayhem || this.math_mayhem.is_done){
         return;
     }
@@ -1284,7 +1284,7 @@ function games_math_mayhem_unlock(){
     }
 }
 
-function games_math_mayhem_is_locked(){
+public function games_math_mayhem_is_locked(){
     if (!this.math_mayhem || this.math_mayhem.is_done){
         return false;
     }
@@ -1297,7 +1297,7 @@ function games_math_mayhem_is_locked(){
 // Races!
 //
 
-function games_race_splash(instance_id) {
+public function games_race_splash(instance_id) {
     this.apiSendMsg({
         type:'game_splash_screen',
         tsid:'race',
@@ -1327,7 +1327,7 @@ function games_race_splash(instance_id) {
     });
 }
 
-function games_start_race(game, start_time) {
+public function games_start_race(game, start_time) {
     this.games_init_general();
 
     this.race = {
@@ -1336,7 +1336,7 @@ function games_start_race(game, start_time) {
     };
 }
 
-function games_win_race() {
+public function games_win_race() {
     if (!this.race) {
         log.error("Player "+this+" attempting to win race, but does not have race object.");
         return;
@@ -1347,7 +1347,7 @@ function games_win_race() {
 }
 
 // The The race is over!
-function games_end_race(){
+public function games_end_race(){
     if (!this.race || this.race.is_done){
         return;
     }
@@ -1447,7 +1447,7 @@ function games_end_race(){
 // Quoin Graaaaab!
 //
 
-function games_quoin_grab_splash(instance_id) {
+public function games_quoin_grab_splash(instance_id) {
     this.apiSendMsg({
         type:'game_splash_screen',
         tsid:'quoin_grab',
@@ -1477,7 +1477,7 @@ function games_quoin_grab_splash(instance_id) {
     });
 }
 
-function games_start_quoin_grab(game, start_time) {
+public function games_start_quoin_grab(game, start_time) {
     this.games_init_general();
 
     this.quoin_grab = {
@@ -1488,7 +1488,7 @@ function games_start_quoin_grab(game, start_time) {
     this.quoin_grab_show_overlays();
 }
 
-function quoin_grab_show_overlays() {
+public function quoin_grab_show_overlays() {
     if (!this.quoin_grab || this.quoin_grab.is_done) {
         return;
     }
@@ -1519,7 +1519,7 @@ function quoin_grab_show_overlays() {
     });
 }
 
-function quoin_grab_dismiss_overlays() {
+public function quoin_grab_dismiss_overlays() {
     if (!this.quoin_grab) {
         return;
     }
@@ -1529,14 +1529,14 @@ function quoin_grab_dismiss_overlays() {
     this.apiSendMsg({type: 'overlay_cancel', uid: 'game_scores'});
 }
 
-function quoin_grab_update_overlays() {
+public function quoin_grab_update_overlays() {
     log.info("Updating quoin grab overlays");
 
     this.quoin_grab_dismiss_overlays();
     this.quoin_grab_show_overlays();
 }
 
-function quoin_grab_get_quoin() {
+public function quoin_grab_get_quoin() {
     log.info("Quoin grab get quoin!");
     if (!this.quoin_grab) {
         return;
@@ -1546,7 +1546,7 @@ function quoin_grab_get_quoin() {
 }
 
 // Game over!
-function games_end_quoin_grab(){
+public function games_end_quoin_grab(){
     if (!this.quoin_grab || this.quoin_grab.is_done){
         return;
     }
@@ -1647,7 +1647,7 @@ function games_end_quoin_grab(){
 // Cloudhopolis
 //
 
-function games_cloudhopolis_splash(instance_id) {
+public function games_cloudhopolis_splash(instance_id) {
     this.apiSendMsg({
         type:'game_splash_screen',
         tsid:'cloudhopolis',
@@ -1677,7 +1677,7 @@ function games_cloudhopolis_splash(instance_id) {
     });
 }
 
-function games_start_cloudhopolis(game, start_time) {
+public function games_start_cloudhopolis(game, start_time) {
     this.games_init_general();
 
     this.cloudhopolis = {
@@ -1688,7 +1688,7 @@ function games_start_cloudhopolis(game, start_time) {
     this.cloudhopolis_show_overlays();
 }
 
-function cloudhopolis_show_overlays() {
+public function cloudhopolis_show_overlays() {
     if (!this.cloudhopolis || this.cloudhopolis.is_done) {
         return;
     }
@@ -1719,7 +1719,7 @@ function cloudhopolis_show_overlays() {
     });
 }
 
-function cloudhopolis_dismiss_overlays() {
+public function cloudhopolis_dismiss_overlays() {
     if (!this.cloudhopolis) {
         return;
     }
@@ -1729,14 +1729,14 @@ function cloudhopolis_dismiss_overlays() {
     this.apiSendMsg({type: 'overlay_cancel', uid: 'game_scores'});
 }
 
-function cloudhopolis_update_overlays() {
+public function cloudhopolis_update_overlays() {
     log.info("Updating cloudhopolis overlays");
 
     this.cloudhopolis_dismiss_overlays();
     this.cloudhopolis_show_overlays();
 }
 
-function cloudhopolis_get_quoin() {
+public function cloudhopolis_get_quoin() {
     log.info("cloudhopolis get quoin!");
     if (!this.cloudhopolis) {
         return;
@@ -1746,7 +1746,7 @@ function cloudhopolis_get_quoin() {
 }
 
 // Game over!
-function games_end_cloudhopolis(){
+public function games_end_cloudhopolis(){
     if (!this.cloudhopolis || this.cloudhopolis.is_done){
         return;
     }
@@ -1846,7 +1846,7 @@ function games_end_cloudhopolis(){
 // Hogtied piggy race!
 //
 
-function games_hogtie_piggy_splash(instance_id) {
+public function games_hogtie_piggy_splash(instance_id) {
     this.apiSendMsg({
         type:'game_splash_screen',
         tsid:'hogtie_piggy',
@@ -1879,7 +1879,7 @@ function games_hogtie_piggy_splash(instance_id) {
     });
 }
 
-function games_start_hogtie_piggy(game, start_time) {
+public function games_start_hogtie_piggy(game, start_time) {
     this.games_init_general();
 
     this.hogtie_piggy = {
@@ -1890,7 +1890,7 @@ function games_start_hogtie_piggy(game, start_time) {
     this.hogtie_piggy_show_overlays();
 }
 
-function hogtie_piggy_show_overlays() {
+public function hogtie_piggy_show_overlays() {
     if (!this.hogtie_piggy || this.hogtie_piggy.is_done) {
         return;
     }
@@ -1915,7 +1915,7 @@ function hogtie_piggy_show_overlays() {
     });
 }
 
-function hogtie_piggy_dismiss_overlays() {
+public function hogtie_piggy_dismiss_overlays() {
     if (!this.hogtie_piggy) {
         return;
     }
@@ -1923,14 +1923,14 @@ function hogtie_piggy_dismiss_overlays() {
     this.apiSendMsg({type: 'overlay_cancel', uid: 'game_scores'});
 }
 
-function hogtie_piggy_update_overlays() {
+public function hogtie_piggy_update_overlays() {
     log.info("Updating quoin grab overlays");
 
     this.hogtie_piggy_dismiss_overlays();
     this.hogtie_piggy_show_overlays();
 }
 
-function games_hogtie_piggy_pickup_bait() {
+public function games_hogtie_piggy_pickup_bait() {
     if (!this.hogtie_piggy || this.hogtie_piggy.is_done) {
         return false;
     }
@@ -1974,7 +1974,7 @@ function games_hogtie_piggy_pickup_bait() {
     }
 }
 
-function games_hogtie_piggy_pickup_pig() {
+public function games_hogtie_piggy_pickup_pig() {
     if (!this.hogtie_piggy || this.hogtie_piggy.is_done) {
         return false;
     }
@@ -2040,7 +2040,7 @@ function games_hogtie_piggy_pickup_pig() {
     return false;
 }
 
-function games_hogtie_piggy_add_pig() {
+public function games_hogtie_piggy_add_pig() {
     if (!this.hogtie_piggy) {
         log.error("[GAMES] "+this+" returned hogtied piggy, but has no race object!");
         return;
@@ -2095,7 +2095,7 @@ function games_hogtie_piggy_add_pig() {
     if (piggy) piggy.in_pen = true;
 }
 
-function games_win_hogtie_piggy() {
+public function games_win_hogtie_piggy() {
     if (!this.hogtie_piggy) {
         log.error("Player "+this+" attempting to win hogtied piggy race, but does not have race object.")
     }
@@ -2105,7 +2105,7 @@ function games_win_hogtie_piggy() {
 }
 
 // The The race is over!
-function games_end_hogtie_piggy(){
+public function games_end_hogtie_piggy(){
     if (!this.hogtie_piggy || this.hogtie_piggy.is_done){
         return;
     }
@@ -2208,7 +2208,7 @@ function games_end_hogtie_piggy(){
 // May contain game-specific logic, with switching based on type
 //
 
-function games_add_msg_props(msg) {
+public function games_add_msg_props(msg) {
     if(this.color_game) {
         var colors = {};
         this.games_color_get_colors(colors);
@@ -2219,7 +2219,7 @@ function games_add_msg_props(msg) {
 }
 
 // Prompt callback. Should I stay or should I go?
-function games_leave_instance(value, details) {
+public function games_leave_instance(value, details) {
     log.info('[GAMES] '+this+' games_leave_instance: '+value+', '+details);
 
     if (!value || value == 'leave'){
@@ -2254,7 +2254,7 @@ function games_leave_instance(value, details) {
 }
 
 // Go through all players in our location and see if any of them have potential moves.
-function games_has_stalemate() {
+public function games_has_stalemate() {
     var found_color = null;
     if(this.color_game) {
         var players = this.location.getActivePlayers();
@@ -2276,7 +2276,7 @@ function games_has_stalemate() {
 }
 
 // Am I playing a game?
-function games_is_playing() {
+public function games_is_playing() {
     if (this.color_game){
         return !this.color_game.is_done;
     }
@@ -2292,7 +2292,7 @@ function games_is_playing() {
 }
 
 // The player clicked on the start button!
-function games_accept_start_button(payload){
+public function games_accept_start_button(payload){
     log.info('[GAMES] '+this+' games_accept_start_button: '+payload);
 
     if (!payload.instance_id) return;
@@ -2307,7 +2307,7 @@ function games_accept_start_button(payload){
     manager.dismissOverlaysAndStart(this);
 }
 
-function games_leave_instance_overlay(payload){
+public function games_leave_instance_overlay(payload){
     log.info('[GAMES] '+this+' games_leave_instance_overlay: '+payload);
 
     this.overlay_dismiss('game_results');
@@ -2318,25 +2318,25 @@ function games_leave_instance_overlay(payload){
     this.games_leave_instance(payload.choice, payload);
 }
 
-function games_auto_leave(){
+public function games_auto_leave(){
     log.info('[GAMES] '+this+' games_auto_leave');
     this.games_leave_instance_overlay({choice: 'leave', forced: true});
 
     this.sendActivity("You were removed from the game due to inactivity.");
 }
 
-function games_assign_spawn_point(x, y){
+public function games_assign_spawn_point(x, y){
     this.games_spawn_point = {
         x: x,
         y: y
     };
 }
 
-function games_clear_spawn_point(){
+public function games_clear_spawn_point(){
     delete this.games_spawn_point;
 }
 
-function games_get_spawn_point(){
+public function games_get_spawn_point(){
     return this.games_spawn_point;
 }
 
@@ -2345,7 +2345,7 @@ function games_get_spawn_point(){
 // Scoreboard: http://wiki.tinyspeck.com/wiki/SpecScoreBoards
 //
 
-function games_scoreboard_start(game_id, game_title, duration, players){
+public function games_scoreboard_start(game_id, game_title, duration, players){
     var msg = {
         type: "game_start",
         tsid: game_id,
@@ -2361,7 +2361,7 @@ function games_scoreboard_start(game_id, game_title, duration, players){
     this.sendMsgOnline(msg);
 }
 
-function games_scoreboard_update(game_id, duration, is_complete, players){
+public function games_scoreboard_update(game_id, duration, is_complete, players){
     var msg = {
         type: "game_update",
         tsid: game_id,
@@ -2377,7 +2377,7 @@ function games_scoreboard_update(game_id, duration, is_complete, players){
     this.sendMsgOnline(msg);
 }
 
-function games_scoreboard_end(game_id){
+public function games_scoreboard_end(game_id){
     var msg = {
         type: "game_end",
         tsid: game_id
@@ -2391,7 +2391,7 @@ function games_scoreboard_end(game_id){
 // Offering
 //
 
-function games_get_name(class_tsid, location_id) {
+public function games_get_name(class_tsid, location_id) {
     if(location_id == undefined || !config.shared_instances[class_tsid].locations[location_id]) {
         return config.shared_instances[class_tsid].name;
     } else {
@@ -2404,7 +2404,7 @@ function games_get_name(class_tsid, location_id) {
     }
 }
 
-function games_invite_create(class_tsid, ticket_on_cancel, location_id){
+public function games_invite_create(class_tsid, ticket_on_cancel, location_id){
     var q = config.shared_instances[class_tsid];
     if (q){
         var game_name = this.games_get_name(class_tsid, location_id);
@@ -2438,7 +2438,7 @@ function games_invite_create(class_tsid, ticket_on_cancel, location_id){
     }
 }
 
-function games_invite_timeout(details){
+public function games_invite_timeout(details){
     var q = config.shared_instances[details.class_tsid];
     if (q){
         if (!this.games_invite_is_full()){
@@ -2473,7 +2473,7 @@ function games_invite_timeout(details){
     }
 }
 
-function games_accept(value, details){
+public function games_accept(value, details){
     if (value == 'yes'){
         var challenger = getPlayer(details.challenger);
         if (!challenger || challenger.tsid == this.tsid) return;
@@ -2496,7 +2496,7 @@ function games_accept(value, details){
     }
 }
 
-function games_invite_is_full(){
+public function games_invite_is_full(){
     if (!this.games_invite) {
         return true;
     }
@@ -2513,7 +2513,7 @@ function games_invite_is_full(){
     return false;
 }
 
-function games_add_opponent(pc){
+public function games_add_opponent(pc){
     if (!this.games_invite) return false;
 
     var q = config.shared_instances[this.games_invite.class_tsid];
@@ -2599,7 +2599,7 @@ function games_add_opponent(pc){
     }
 }
 
-function games_remove_opponent(pc){
+public function games_remove_opponent(pc){
     if (!this.games_invite) return false;
 
     var q = config.shared_instances[this.games_invite.class_tsid];
@@ -2614,7 +2614,7 @@ function games_remove_opponent(pc){
     pc.prompts_remove(pc['!invite_uid_'+this.tsid]);
 }
 
-function games_invite_start(){
+public function games_invite_start(){
     if (!this.games_invite) return false;
 
     var q = config.shared_instances[this.games_invite.class_tsid];
@@ -2636,7 +2636,7 @@ function games_invite_start(){
     delete this.games_invite;
 }
 
-function games_init_general(){
+public function games_init_general(){
     log.info('games_init_general');
     if (this.buffs_has('hairball_dash')) this.buffs_remove('hairball_dash');
     if (this.buffs_has('hairball_flower')) this.buffs_remove('hairball_flower')
