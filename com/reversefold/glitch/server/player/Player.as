@@ -9,9 +9,9 @@ package com.reversefold.glitch.server.player {
 	import com.reversefold.glitch.server.player.Metabolics;
 	import com.reversefold.glitch.server.player.Skills;
 	import com.reversefold.glitch.server.player.Stats;
-	
+
 	import flash.utils.Dictionary;
-	
+
 	import org.osmf.logging.Log;
 	import org.osmf.logging.Logger;
 
@@ -29,7 +29,7 @@ package com.reversefold.glitch.server.player {
 		public var h : int;
 		public var w : int;
 		public var date_last_login : int;
-		
+
 		public var location;
 		public var bag : Bag;
 		public var already_sorry : Boolean;
@@ -40,41 +40,66 @@ package com.reversefold.glitch.server.player {
 			//init();
 			this.config = config;
 
-			events = new Events(config, this);
-			
+
+			admin = new Admin(config, this);
+			groups = new Groups(config, this);
+			organizations = new Organizations(config, this);
 			making = new Making(config, this);
+			stores = new Stores(config, this);
 			skills = new Skills(config, this);
 			buffs = new Buffs(config, this);
+			tests = new Tests(config, this);
+			houses = new Houses(config, this);
 			stats = new Stats(config, this);
 			metabolics = new Metabolics(config, this);
 			items = new Items(config, this);
 			buddies = new Buddies(config, this);
 			quests = new Quests(config, this);
+			auctions = new Auctions(config, this);
 			achievements = new Achievements(config, this);
 			familiar = new Familiar(config, this);
+			party = new Party(config, this);
 			instances = new Instances(config, this);
 			announcements = new Announcements(config, this);
+			skill_packages = new SkillPackages(config, this);
 			prompts = new Prompts(config, this);
+			trophies = new Trophies(config, this);
+			trading = new Trading(config, this);
+			teleportation = new Teleportation(config, this);
+			jobs = new Jobs(config, this);
 			daily_history = new DailyHistory(config, this);
+			profile = new Profile(config, this);
+			rewards = new Rewards(config, this);
+			avatar = new Avatar(config, this);
+			mail = new Mail(config, this);
+			conversations = new Conversations(config, this);
+			events = new Events(config, this);
+			rook = new Rook(config, this);
+			special_locations = new SpecialLocations(config, this);
+			games = new Games(config, this);
 			counters = new Counters(config, this);
 			imagination = new Imagination(config, this);
+			furniture = new Furniture(config, this);
+			world_events = new WorldEvents(config, this);
 			eleven_secrets = new ElevenSecrets(config, this);
 			requests = new Requests(config, this);
+			moutaineering = new Moutaineering(config, this);
+			physics = new Physics(config, this);
 			butler = new Butler(config, this);
-			
+
 			bag = new Bag();
 		}
-		
-//RVRS: include items/include/events.js? 
-		public var events : Events;
 
-		
 //#include inc_admin.js,
+		public var admin : Admin;
 //inc_groups.js,
+		public var groups : Groups;
 //inc_organizations.js,
+		public var organizations : Organizations;
 //inc_making.js
         public var making : Making;
 //#include inc_stores.js,
+		public var stores : Stores;
 //inc_skills.js,
 		public var skills : Skills;
 //inc_stats.js
@@ -90,20 +115,270 @@ package com.reversefold.glitch.server.player {
 //inc_buffs.js
 		public var buffs : Buffs;
 //#include inc_tests.js,
+		public var tests : Tests;
 //inc_houses.js,
+		public var houses : Houses;
+
 		//inc_acl_keys.js,
+public function acl_keys_init(){
+	if (!this.acl_keys){
+		this.acl_keys = {};
+	}
+}
+
+public function acl_keys_grant(pc){
+	if (this.buddies_is_ignored_by(pc)){
+		return {ok: 0, reason: "You can't give them a key."};
+	} else if (pc.buddies_is_ignored_by(this)){
+		return {ok: 0, reason: "You can't give that player a key because you're blocking them."};
+	}
+	else if (pc.isDeleted()){
+		return {ok: 0, reason: "You can't give that player a key because their account is deleted."};
+	}
+
+	var loc = this.acl_keys_find_my_house();
+
+	if (!loc){
+		return {ok: 0, reason: "You can't give out keys because you don't have a house!"};
+	} else if (config.is_dev){
+		log.info(this+' acl_keys_grant on '+loc);
+	}
+
+	//
+	// check limits
+	//
+
+	if (loc.acl_keys_count_granted() >= config.acl_keys_per_house_limit){
+		return {ok: 0, reason: "You've already given out the maximum number of keys for your house."};
+	}
+
+	if (pc.acl_keys_count_received() >= config.acl_keys_per_player_limit){
+		return {ok: 0, reason: "They already have too many keys on their keyring!"};
+	}
+
+	pc.acl_keys_grant_receive(loc);
+
+	loc.acl_keys_add_key(pc);
+
+	return {ok: true};
+}
+
+public function acl_keys_grant_receive(loc, silent){
+	if (!silent) silent = false;
+
+	this.acl_keys_init();
+
+	this.acl_keys[loc.tsid] = { date_granted: time(),
+		location: loc
+	};
+
+	this.apiSendMsg(this.acl_keys_build_client_msg());
+
+	if (this.isOnline() && !silent){
+		this.prompts_add({
+			txt		: "<b>"+utils.escape(loc.owner.label)+"</b> sent you a key to their house! (Keys can be found at your Magic Rock.)",
+			icon_buttons	: false,
+			timeout		: 0,
+			choices		: [
+				{ value : 'ok', label : 'OK' }
+			]
+		});
+	}
+}
+
+public function acl_keys_remove(pc){
+	var loc = this.acl_keys_find_my_house();
+
+	if (!loc) return {ok: false, error: 'house_not_found'};
+
+	pc.acl_keys_remove_receive(loc);
+
+	if (loc.acl_keys_player_has_key(pc)){
+		loc.acl_keys_remove_key(pc);
+
+		loc.pols_kickPlayer(pc);
+	}
+
+	return {ok: true};
+}
+
+public function acl_keys_remove_receive(loc){
+	this.acl_keys_init();
+
+	if (loc && this.acl_keys[loc.tsid]){
+		delete this.acl_keys[loc.tsid];
+
+		this.apiSendMsg(this.acl_keys_build_client_msg());
+	}
+}
+
+public function acl_keys_handle_ignore(pc){
+	var loc = this.acl_keys_find_my_house();
+
+	if (!loc){
+		return;
+	}
+
+	//
+	// Remove their key, if we gave them one
+	//
+
+	if (loc.acl_keys_player_has_key(pc)){
+		this.acl_keys_remove(pc);
+	}
+
+	//
+	// Remove our key, if they gave us one
+	//
+
+	var their_loc = pc.acl_keys_find_my_house();
+
+	if (their_loc && their_loc.acl_keys_player_has_key(this)){
+		pc.acl_keys_remove(this);
+	}
+}
+
+
+
+public function acl_keys_count_received(){
+	this.acl_keys_init();
+
+	return num_keys(this.acl_keys);
+}
+
+public function acl_keys_build_client_msg(msg){
+	this.acl_keys_init();
+
+	if (!msg){
+		msg = {type: 'acl_key_info'};
+	}
+
+	var house = this.acl_keys_find_my_house();
+
+	if (house){
+		var house_keys = house.acl_keys_get_keys();
+		if (num_keys(house_keys)){
+			msg.keys_given = [];
+			var key;
+			var deets;
+			for (var i in house_keys){
+				deets = house_keys[i];
+				key = {
+					received: deets.date_granted,
+					pc: {
+						tsid: deets.pc.tsid,
+						label: deets.pc.label,
+						singles_url: deets.pc.avatar_get_singles()
+					}
+				};
+				msg.keys_given.push(key);
+			}
+		}
+	}
+
+	if (num_keys(this.acl_keys)){
+		msg.keys_received = [];
+		var key;
+		var deets;
+		var owner;
+		for (var i in this.acl_keys){
+			deets = this.acl_keys[i];
+			owner = deets.location.pols_get_owner();
+			key = {
+				received: deets.date_granted,
+				location: deets.location.get_client_info(),
+				pc: {
+					tsid: owner.tsid,
+					label: owner.label,
+					singles_url: owner.avatar_get_singles()
+				}
+			};
+			msg.keys_received.push(key);
+		}
+	}
+
+	return msg;
+}
+
+public function acl_keys_find_my_house(){
+	if (this.home && this.home.interior){
+		return this.home.interior;
+	} else {
+		log.info('KEY FAIL: could not find new house for '+this.tsid);
+		return false;
+	}
+}
+
+public function acl_keys_get_keys(){
+	return this.acl_keys;
+}
+
+//
+// this is basically a stub so that bits of house migration stuff still work (maybe) on dev.
+//
+public function acl_keys_get_given(include_reverse){
+	var loc = this.acl_keys_find_my_house();
+
+	if (loc){
+		return loc.acl_keys_get_keys();
+	} else {
+		return {};
+	}
+}
+
+public function acl_keys_fix_house_backup(really_fix_it){
+	if (!really_fix_it) really_fix_it = false;
+
+
+        if (!this.home_backup || !this.home_backup.interior) return ['no backup home found'];
+        if (!this.home || !this.home.interior) return ['no home found'];
+
+        var results = [];
+
+        var backup_keys = this.home_backup.interior.acl_keys_get_keys();
+
+        var keys = this.home.interior.acl_keys_get_keys();
+
+        for(var i in backup_keys){
+                if (!keys[i]){
+			var pc = backup_keys[i].pc;
+                        var their_keys = pc.acl_keys_get_keys();
+
+                        if (their_keys[this.home_backup.interior.tsid]){
+                        	if (really_fix_it){
+					pc.acl_keys_grant_receive(this.home.interior, true);
+					pc.acl_keys_remove_receive(this.home_backup.interior);
+				}
+				results.push(i+' key reassigned from backup house to new');
+                        } else {
+				results.push(i+' key found in backup home but not player - ignoring');
+                        }
+                } else {
+                        results.push(i+' already has key to current house');
+                }
+        }
+
+        return results;
+}
+//END acl_keys
+
 		//inc_achievements.js
 		public var achievements : Achievements;
 //#include inc_familiar.js,
 		public var familiar : Familiar;
 		//inc_demo.js,
+// I am not empty
 		//inc_party.js,
+		public var party : Party;
 		//inc_instances.js
 		public var instances : Instances;
 //#include inc_auctions.js,
+		public var auctions : Auctions;
 		//inc_announcements.js,
 		public var announcements : Announcements;
 		//inc_skill_packages.js
+		public var skill_packages : SkillPackages;
+
 //#include inc_activity.js,
 
 //
@@ -121,20 +396,33 @@ public function activity_notify(args){
 		//inc_prompts.js,
 		public var prompts : Prompts;
 		//inc_trophies.js
+		public var trophies : Trophies;
 //#include inc_trading.js,
+		public var trading : Trading;
 		//inc_teleportation.js,
+		public var teleportation : Teleportation;
 		//inc_jobs.js
+		public var jobs : Jobs;
 //#include inc_daily_history.js,
 		public var daily_history : DailyHistory;
 		//inc_profile.js,
+		public var profile : Profile;
 		//inc_rewards.js
+		public var rewards : Rewards;
 //#include inc_avatar.js,
+		public var avatar : Avatar;
 		//inc_mail.js,
+		public var mail : Mail;
 		//inc_conversations.js
+		public var conversations : Conversations;
 //#include ../items/include/events.js
+		public var events : Events;
 		//../items/include/rook.js
+		public var rook : Rook;
 //#include inc_special_locations.js,
+		public var special_locations : SpecialLocations;
 		//inc_games.js,
+		public var games : Games;
 		//inc_eleven_secrets.js
 		public var eleven_secrets : ElevenSecrets;
 //#include inc_requests.js,
@@ -144,12 +432,137 @@ public function activity_notify(args){
 //inc_imagination.js,
 		public var imagination : Imagination;
 //inc_furniture.js
+		public var furniture : Furniture;
 //#include inc_world_events.js,
+		public var world_events : WorldEvents;
 		//inc_mountaineering.js,
+		public var moutaineering : Moutaineering;
 		//inc_physics.js
+		public var physics : Physics;
 //#include inc_butler.js,
 		public var butler : Butler;
+
 		//inc_newxp.js,
+public function newxp_move_along(details){
+	this.prompts_add_simple('Time to move along. Try going right?', 30);
+}
+
+public function newxp_testing_modal_callback(value, details){
+	if (value == 'ok'){
+		this.houses_remove_all();
+		this.imagination_reset();
+		this.stats_reset_imagination();
+		this.stats_reset_xp();
+		this.stats_reset_street_history();
+		this.skills_reset();
+		this.metabolics_set_tank(100);
+		this.metabolics_set_max('energy', 100);
+		this.metabolics_set_energy(95);
+		this.metabolics_set_mood(95);
+		this.stats_set_quoin_multiplier(1.0);
+		this.stats_set_currants(0);
+		this.achievements_reset();
+		this.achievements_reset_daily();
+		this.quests_reset();
+		this.counters_reset();
+		this.setDefaultPhysics();
+		this.emptyBag();
+		//this.furniture_reset(); // This deletes and re-creates your furn bag, which confuses the client. do the next thing instead
+		var furn_bag = this.furniture_get_bag();
+		if (furn_bag) furn_bag.emptyBag();
+		this.physicsReset();
+		this.clearPath();
+
+		this.announce_music_stop(this.location.geometry.music_file, 1);
+		this.goToNewNewStartingLevel();
+	}
+}
+
+public function newxpQuestReminder(){
+	if (this.getQuestStatus('buy_two_bags') != 'done' && this.location.class_tsid == 'newbie_island'){
+		this.sendActivity("You haven't gotten your bags from the vendor. Don't forget!");
+		this.apiSetTimer('newxpQuestReminder', 5*60*1000);
+	}
+}
+
+public function newxpComplete(){
+	this.has_done_intro = true;
+	this.apiSendMsg({type: "has_done_intro", value: true});
+	delete this.intro_steps; // Is this ok?
+	delete this.newbie_island_butterfly_massaged;
+	delete this.newxp_allow_home; // no longer needed
+
+	var exterior = this.houses_get_external_street();
+	if (exterior){
+		exterior.homes_unset_newxp();
+	}
+
+	var interior = this.houses_get_interior_street();
+	if (interior){
+		interior.homes_unset_newxp();
+	}
+
+	this.checkNeighborSignpost();
+
+	/*
+	var level = this.stats_get_level();
+	for (var i=1; i<=level; i++){
+	var rsp = {
+	'type': 'new_level',
+	'sound': 'LEVEL_UP',
+	'stats': {},
+	'rewards': {}
+	};
+
+	this.stats_get_login(rsp.stats);
+	this.metabolics_get_login(rsp.stats);
+
+	this.sendMsgOnline(rsp);
+	}
+	*/
+
+	// Log it
+	apiLogAction('NEWXP_COMPLETE', 'pc='+this.tsid);
+}
+
+public function newxpReturnToGentleIsland(){
+	if (this.return_to_gentle_island) return;
+	this.announce_vog_fade("Though you are on your own now, you are not really alone.//You should find that the other players are pretty helpful, so if you have any questions, just ask.", {width: 600, done_payload: {location_script_name: 'openContacts'}});
+}
+
+public function doNewxpCompleteCallback(){
+	this.checkNeighborSignpost();
+	//utils.http_post('callbacks/finished_newxp.php', {tsid: this.tsid}, this.tsid);
+}
+
+public function newxpGiveGreeterTwig(){
+	this.overlay_dismiss('greeter_twig');
+
+	this.announce_vog_fade("It’s a Greeter Twig! You can use it to summon another player to come and say hi.", {css_class: 'nuxp_big', fade_alpha: 0.7, done_payload: {function_name: 'newxpExplainGreeters'}});
+	this.createItemFromFamiliar('greeter_twig', 1);
+}
+
+public function newxpExplainGreeters(){
+	this.announce_vog_fade("(Greeters are real people — other players who volunteer to welcome new ‘uns — and tend to be nice. Enjoy, and use the twig whenever you want.)", {css_class: 'nuxp_medium', fade_alpha: 0.7});
+}
+
+public function newxpProgressCallback(args){
+	if (!args) return;
+
+	args.pc = this.tsid;
+	Utils.http_post('callbacks/newxp_progress.php', args, this.tsid);
+}
+
+public function checkNeighborSignpost(){
+	if (this.getQuestStatus('leave_gentle_island') == 'done' && this.buddies_count()){
+		var exterior = this.houses_get_external_street();
+		if (exterior){
+			exterior.give_neighbor_signpost();
+		}
+	}
+}
+//END newxp
+
 		//inc_towers.js,
 		//inc_feats.js
 //#include inc_visiting.js,
