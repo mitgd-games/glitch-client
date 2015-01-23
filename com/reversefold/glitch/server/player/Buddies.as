@@ -1,7 +1,9 @@
 package com.reversefold.glitch.server.player {
+    import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -10,7 +12,11 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
-        public var skills;
+		
+		public var friends;
+		public var ignoring;
+		public var ignored_by;
+		public var reverse_buddy_cache;
 
         public function Buddies(config : Config, player : Player) {
             this.config = config;
@@ -25,20 +31,20 @@ public function buddies_init(){
 
     if (this.friends === undefined || this.friends === null) this.friends = {};
     if (this.friends.group1 === undefined || this.friends.group1 === null){
-        this.friends.group1 = apiNewOwnedDC(this);
+        this.friends.group1 = {};//apiNewOwnedDC(this);
         this.friends.group1.label = 'Buddies';
         this.friends.group1.pcs = {};
     }
 
     if (this.friends.cache === undefined || this.friends.cache === null || this.friends.cache.pcs === undefined || this.friends.cache.pcs === null){
         if (this.friends.cache !== undefined && this.friends.cache !== null) delete this.friends.cache;
-        this.friends.cache = apiNewOwnedDC(this);
+        this.friends.cache = {};//apiNewOwnedDC(this);
         this.friends.cache.label = 'Cache';
         this.friends.cache.pcs = {};
     }
 
     if (this.friends.reverse === undefined || this.friends.cache === null){
-        this.friends.reverse = apiNewOwnedDC(this);
+        this.friends.reverse = {};//apiNewOwnedDC(this);
         this.friends.reverse.label = 'Reverse Contacts';
         this.friends.reverse.pcs = {};
     }
@@ -49,7 +55,7 @@ public function buddies_init(){
     }
 
     if (this.ignoring === undefined || this.ignoring === null){
-        this.ignoring = apiNewOwnedDC(this);
+        this.ignoring = {};//apiNewOwnedDC(this);
         this.ignoring.label = 'Ignoring';
         this.ignoring.pcs = {};
     }
@@ -60,7 +66,7 @@ public function buddies_init(){
     }
 
     if (this.ignored_by === undefined || this.ignored_by === null){
-        this.ignored_by = apiNewOwnedDC(this);
+        this.ignored_by = {};//apiNewOwnedDC(this);
         this.ignored_by.label = 'Ignored By';
         this.ignored_by.pcs = {};
     }
@@ -71,7 +77,7 @@ public function buddies_init(){
     }
 
     if (this.reverse_buddy_cache === undefined || this.reverse_buddy_cache === null){
-        this.reverse_buddy_cache = apiNewOwnedDC(this);
+        this.reverse_buddy_cache = {};//apiNewOwnedDC(this);
         this.reverse_buddy_cache.label = 'Reverse Buddy Cache';
         this.reverse_buddy_cache.contents = this.buddies_get_cache_data();
     }
@@ -147,7 +153,7 @@ public function createBuddyGroup(name){
     key = 'group'+key;
 
     // create group
-    this.friends[key] = apiNewOwnedDC(this);
+    this.friends[key] = {};//apiNewOwnedDC(this);
     this.friends[key].label = name;
     this.friends[key].pcs = {};
 
@@ -156,7 +162,7 @@ public function createBuddyGroup(name){
 
 public function addToBuddyGroup(group_id, player_tsid, ignore_limit, skip_notify){
 
-    if (player_tsid == this.tsid) return 'self';
+    if (player_tsid == this.player.tsid) return 'self';
 
     // first, get the player we're adding
     var pc_target = Server.instance.apiFindObject(player_tsid);
@@ -177,7 +183,7 @@ public function addToBuddyGroup(group_id, player_tsid, ignore_limit, skip_notify
     if (this.buddies_is_ignored_by(pc_target)) return 'ignored';
 
     // deleted?
-    if (this.isDeleted()) return 'deleted';
+    if (this.player.isDeleted()) return 'deleted';
 
     if (group_id == 'group1' && this.buddiesHasMax() && !ignore_limit && !this.buddies_is_reverse(pc_target)){
         return 'max_buddies';
@@ -192,8 +198,8 @@ public function addToBuddyGroup(group_id, player_tsid, ignore_limit, skip_notify
     pc_target.buddies_add_reverse(this);
 
     // perform web callback for additional processing
-    utils.http_get('callbacks/buddy_add.php', {
-        from        : this.tsid,
+    Utils.http_get('callbacks/buddy_add.php', {
+        from        : this.player.tsid,
         to      : player_tsid,
         group       : group_id,
         skip_notify : skip_notify
@@ -206,15 +212,15 @@ public function addToBuddyGroup(group_id, player_tsid, ignore_limit, skip_notify
     // send message if we're online
     var ret = pc_target.make_hash_with_location();
 
-    this.sendMsgOnline({
+    this.player.sendMsgOnline({
         type        : 'buddy_added',
         group_id    : group_id,
         pc      : ret
     });
 
-    this.achievements_set('player', 'buddies_count', this.buddies_count());
+    this.player.achievements.achievements_set('player', 'buddies_count', this.buddies_count());
 
-    if (this.buddies_count() == 1) this.checkNeighborSignpost();
+    if (this.buddies_count() == 1) this.player.checkNeighborSignpost();
 
     return 'ok';
 }
@@ -225,7 +231,7 @@ public function buddies_has_added(pc){
     // called when someone has added you as a buddy
     //
 
-    this.sendOnlineActivity(pc.linkifyLabel()+" just added you as a contact!");
+    this.player.sendOnlineActivity(pc.linkifyLabel()+" just added you as a contact!");
 
 
     //
@@ -235,12 +241,12 @@ public function buddies_has_added(pc){
 
     if (this.getBuddyGroup(pc.tsid)){
 
-        this.activity_notify({
+        this.player.activity_notify({
             type: 'friend_add_mutual',
             who: pc.tsid
         });
     }else{
-        this.activity_notify({
+        this.player.activity_notify({
             type: 'friend_add',
             who: pc.tsid
         });
@@ -251,7 +257,7 @@ public function removeBuddy(player_tsid, silent){
 
     if (!silent) silent = false;
 
-    if (player_tsid == this.tsid) return 'self';
+    if (player_tsid == this.player.tsid) return 'self';
 
     // first, get the player we're removing
     var pc_target = Server.instance.apiFindObject(player_tsid);
@@ -270,14 +276,14 @@ public function removeBuddy(player_tsid, silent){
     // remove
     delete this.friends[group_id].pcs[player_tsid];
     this.buddies_remove_from_cache(player_tsid);
-    pc_target.buddies_delete_reverse(this.tsid);
+    pc_target.buddies_delete_reverse(this.player.tsid);
 
     // revoke any house keys you gave them (as per http://bugs.tinyspeck.com/6490)
-    this.acl_keys_remove(pc_target);
+    this.player.acl_keys_remove(pc_target);
 
     // perform web callback for additional processing
-    utils.http_get('callbacks/buddy_remove.php', {
-        from    : this.tsid,
+    Utils.http_get('callbacks/buddy_remove.php', {
+        from    : this.player.tsid,
         to  : player_tsid,
         group   : group_id
     });
@@ -285,14 +291,14 @@ public function removeBuddy(player_tsid, silent){
 
     // send message if we're online
     if (!silent){
-        this.sendMsgOnline({
+        this.player.sendMsgOnline({
             type        : 'buddy_removed',
             group_id    : group_id,
             pc      : pc_target.make_hash()
         });
     }
 
-    this.achievements_set('player', 'buddies_count', this.buddies_count());
+    this.player.achievements.achievements_set('player', 'buddies_count', this.buddies_count());
 
     // Remove from neighbor signpost
     var exterior = this.houses_get_external_entrance();
@@ -376,11 +382,11 @@ public function buddies_get_online_login_info(){
 }
 
 public function buddies_get_login_info(){
-    var online = apiIsPlayerOnline(this.tsid);
+    var online = apiIsPlayerOnline(this.player.tsid);
 
     var ret = {
         ok: 1,
-        tsid: this.tsid,
+        tsid: this.player.tsid,
         label: this.label,
         online: online,
         level: this.stats_get_level(),
@@ -574,7 +580,7 @@ public function buddies_add_ignore(pc){
     //
 
     var exterior = pc.houses_get_external_entrance();
-    if (exterior) exterior.loc.removeNeighborTo(this.tsid);
+    if (exterior) exterior.loc.removeNeighborTo(this.player.tsid);
 
     this.sendActivity("You blocked "+pc.linkifyLabel()+".");
 }
@@ -669,7 +675,7 @@ public function buddies_get_ignoring_login(){
             ignoring[tsid] = all[tsid];
             delete ignoring[tsid].ok;
         }else{
-            log.error("WOAH! failed to fetch buddy data in time: "+this.tsid);
+            log.error("WOAH! failed to fetch buddy data in time: "+this.player.tsid);
         }
     }
 
@@ -710,7 +716,7 @@ public function buddies_get_ignored_by_login(){
             ignored_by[tsid] = all[tsid];
             delete ignored_by[tsid].ok;
         }else{
-            log.error("WOAH! failed to fetch buddy data in time: "+this.tsid);
+            log.error("WOAH! failed to fetch buddy data in time: "+this.player.tsid);
         }
     }
 
@@ -879,10 +885,10 @@ public function buddies_changed(){
 
         'fwd'   : fwd_tsids.join(','),
         'rev'   : rev_tsids.join(','),
-        'tsid'  : this.tsid,
+        'tsid'  : this.player.tsid,
         'ts'    : time()
 
-    }, this.tsid);
+    }, this.player.tsid);
 }
 
 public function buddies_get_simple_online(){
