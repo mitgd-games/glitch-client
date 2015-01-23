@@ -51,7 +51,6 @@ package com.reversefold.glitch.server.player {
 
             this.config = config;
             this.player = player;
-            stats_init();
         }
 
 public function stats_init(){

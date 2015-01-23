@@ -68,13 +68,22 @@ package com.reversefold.glitch.server {
 		}
 		
 		public function apiCopyHash(obj) {
+			//RVRS: TODO: this gets passed the result of apiGetJSFileObject in at least one place
+			// does this just make a copy of the object?
 			throw new Error("apiCopyHash " + obj);
+		}
+		
+		public function apiGetJSFileObject(path) {
+			//RVRS: TODO: this is supposed to get the object defined by the JS file
+			// it's the magic file-to-class/object method!
+			throw new Error("apiGetJSFileObject " + path);
 		}
 		
 		// END api funcs
 
 		
 		public function sendMessage(msg : Object) : void {
+			//RVRS: TODO: Anything special should be added to the msg here?
 			processMessage(msg);
 		}
 

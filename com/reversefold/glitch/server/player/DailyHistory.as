@@ -15,7 +15,6 @@ package com.reversefold.glitch.server.player {
         public function DailyHistory(config : Config, player : Player) {
             this.config = config;
             this.player = player;
-            daily_history_init();
         }
 
 

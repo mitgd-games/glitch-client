@@ -18,7 +18,6 @@ package com.reversefold.glitch.server.player {
         public function Metabolics(config : Config, player : Player) {
             this.config = config;
             this.player = player;
-            metabolics_init();
         }
 
 

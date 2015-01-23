@@ -1,4 +1,7 @@
 package com.reversefold.glitch.server.player {
+    import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
     
@@ -7,80 +10,93 @@ package com.reversefold.glitch.server.player {
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
-    public class Achievements {
+    public class Achievements extends Common {
         private static var log : Logger = Log.getLogger("server.player.achievements");
 
         public var config : Config;
         public var player : Player;
 		
+		public var label : String;
+		public var queue : Array;
+		
 		public var counters : Dictionary;
+		public var achievements : Dictionary;
+		
+		public var place_time_counters;
+		public var daily_counters;
+		public var callback_queue;
+		public var jump_count : int;
+		public var utime : int;
 
         public function Achievements(config : Config, player : Player) {
             this.config = config;
             this.player = player;
-            achievements_init();
         }
 
 
-function achievements_init(){
-
-    if (this.achievements === undefined || this.achievements === null){
-        this.achievements = apiNewOwnedDC(this);
-        this.achievements.label = 'Achievements';
-        this.achievements.achievements = {};
-        this.achievements.queue = [];
+public function achievements_init(){
+    if (this.achievements === null){
+        //this.achievements = apiNewOwnedDC(this);
+        this.label = 'Achievements';
+        this.achievements = new Dictionary();
+        this.queue = [];
     }
 
-    if (this.achievements.place_time_counters === undefined || this.achievements.place_time_counters === null){
-        this.achievements.place_time_counters = {};
+    if (this.place_time_counters === undefined || this.place_time_counters === null){
+        this.place_time_counters = {};
     }
 
-    if (    (this.achievements.daily_counters === undefined || this.achievements.daily_counters === null) ||
-        (this.achievements.daily_counters.today_key === undefined || this.achievements.daily_counters.today_key === null) ||
-        this.achievements.daily_counters.today_key != current_day_key()
+    if (    (this.daily_counters === undefined || this.daily_counters === null) ||
+        (this.daily_counters.today_key === undefined || this.daily_counters.today_key === null) ||
+        this.daily_counters.today_key != current_day_key()
         ){
-            this.achievements.daily_counters = {};
-            this.achievements.daily_counters.today_key = current_day_key();
+            this.daily_counters = {};
+            this.daily_counters.today_key = current_day_key();
     }
 
-    if (!this.achievements.callback_queue) this.achievements.callback_queue = {};
+    if (!this.callback_queue) this.callback_queue = {};
 }
 
-function achievements_login(){
+public function achievements_login(){
     this.achievements_run_queue();
 
     // Check for 11 secret locations start:
-    if (this.stats.level >= this.secretLocationsQuestLevel()) {
-        this.startSecretLocationsQuest();
+    if (this.player.stats.level >= this.player.eleven_secrets.secretLocationsQuestLevel()) {
+        this.player.eleven_secrets.startSecretLocationsQuest();
     }
 }
 
-function achievements_delete_all(){
+public function achievements_delete_all(){
+	apiDeleteTimers();
+	this.player.achievements = new Achievements(config, player);
+	/*
     if (this.achievements){
-        this.achievements.apiDelete();
+        this.apiDelete();
         delete this.achievements;
     }
+	*/
 }
 
-function achievements_reset_counters(){
+public function achievements_reset_counters(){
     // DO NOT do a callback here. This is just for removing the counters hash for players that have been migrated
-    delete this.achievements.counters;
+    //delete this.counters;
+	this.counters = null;
 }
 
 var achievements_to_save = ['collection_egg_hunter', 'collection_street_creator_dirt', 'collection_street_creator_earth', 'collection_street_creator_rock', 'collection_street_creator_wood', 'fine_friend', 'good_buddy', 'jolly_good_chap', 'a1_comrade', 'best_pal', 'ascended', 'ascended_level11', 'ascended_level23', 'ascended_level31', 'ascended_level41', 'ascended_level61', 'ascended_level83', 'ascended_level101']; // Don't forget to modify pc.resetForTesting() to make sure they also keep any associated trophies
-function achievements_reset(){
+public function achievements_reset(){
 
     this.achievements_init();
-    //this.achievements.achievements = {};
-    //this.achievements.queue = [];
+    //this.achievements = {};
+    //this.queue = [];
     this.jump_count = 0;
 
-    for (var id in this.achievements.achievements){
-        if (!in_array_real(id, this.achievements_to_save)) delete this.achievements.achievements[id];
+    for (var id in this.achievements){
+        if (!in_array_real(id, this.achievements_to_save)) delete this.achievements[id];
     }
 
     var ids_to_restore = [];
-    for (var id in this.achievements.queue){
+    for (var id in this.queue){
         if (in_array_real(id, this.achievements_to_save)) ids_to_restore.push(id);
     }
 
@@ -88,16 +104,16 @@ function achievements_reset(){
         this.achievements_grant(id, true);
     }
 
-    this.achievements.place_time_counters = {};
+    this.place_time_counters = {};
 
-    utils.http_post('callbacks/achievement_counter.php', {player: this.tsid, 'do_counter_reset': 1}, this.tsid);
+    Utils.http_post('callbacks/achievement_counter.php', {player: this.player.tsid, 'do_counter_reset': 1}, this.player.tsid);
 }
 
 //
 // Increment a counter used for tracking achievement progress
 //
 
-function achievements_increment(group, label, count, no_callback=false, immediate_callback=false){
+public function achievements_increment(group, label, count, no_callback=false, immediate_callback=false){
     this.achievements_init();
 
     if (group && group.length > 50){
@@ -114,7 +130,7 @@ function achievements_increment(group, label, count, no_callback=false, immediat
         count = 1;
     }
 
-    if ((this.location.is_newxp && this.location.class_tsid != 'newbie_island') || this.location.is_skillquest) return;
+    if ((this.player.location.is_newxp && this.player.location.class_tsid != 'newbie_island') || this.player.location.is_skillquest) return;
 
     //if (config.is_dev) log.info('Incrementing achievement counter '+group+' ' + label + ': '+count);
     if (!count) return;
@@ -125,7 +141,7 @@ function achievements_increment(group, label, count, no_callback=false, immediat
     }
 }
 
-function achievements_increment_delayed(args) {
+public function achievements_increment_delayed(args) {
     this.achievements_increment(args.group, args.label, args.count);
 }
 
@@ -133,7 +149,7 @@ function achievements_increment_delayed(args) {
 // Decrement a counter, which we never do, except for collections
 //
 
-function achievements_decrement(group, label, count){
+public function achievements_decrement(group, label, count){
     this.achievements_init();
 
     if (group && group.length > 50){
@@ -150,7 +166,7 @@ function achievements_decrement(group, label, count){
         count = 1;
     }
 
-    if ((this.location.is_newxp && this.location.class_tsid != 'newbie_island') || this.location.is_skillquest) return;
+    if ((this.player.location.is_newxp && this.player.location.class_tsid != 'newbie_island') || this.player.location.is_skillquest) return;
 
     //if (config.is_dev) log.info('Decrementing achievement counter '+group+' ' + label + ': '+count);
 
@@ -163,7 +179,7 @@ function achievements_decrement(group, label, count){
 // Accomplished by nuking it and then calling achievements_increment()
 //
 
-function achievements_set(group, label, count){
+public function achievements_set(group, label, count){
     this.achievements_init();
 
     if (group && group.length > 50){
@@ -180,7 +196,7 @@ function achievements_set(group, label, count){
         count = 1;
     }
 
-    if ((this.location.is_newxp && this.location.class_tsid != 'newbie_island') || this.location.is_skillquest) return;
+    if ((this.player.location.is_newxp && this.player.location.class_tsid != 'newbie_island') || this.player.location.is_skillquest) return;
 
     this.achievements_do_callback('set', group, label, count);
 }
@@ -189,39 +205,39 @@ function achievements_set(group, label, count){
 // Reset a counter
 //
 
-function achievements_reset_label_count(group, label){
+public function achievements_reset_label_count(group, label){
     this.achievements_do_callback('set', group, label, 0);
 }
 
-function achievements_reset_group(group){
+public function achievements_reset_group(group){
     this.achievements_do_callback('set', group, null, 0);
 }
 
-function achievements_do_callback(mode, group, label, value){
-    if (!this.achievements.callback_queue) this.achievements.callback_queue = {};
-    if (!this.achievements.callback_queue[mode]) this.achievements.callback_queue[mode] = {};
-    if (!this.achievements.callback_queue[mode][group]) this.achievements.callback_queue[mode][group] = {};
+public function achievements_do_callback(mode, group, label, value){
+    if (!this.callback_queue) this.callback_queue = {};
+    if (!this.callback_queue[mode]) this.callback_queue[mode] = {};
+    if (!this.callback_queue[mode][group]) this.callback_queue[mode][group] = {};
 
     if (!label) label = 'no_label';
-    if (!this.achievements.callback_queue[mode][group][label]) this.achievements.callback_queue[mode][group][label] = 0;
-    if (value && mode != 'set') this.achievements.callback_queue[mode][group][label] += value;
-    if (mode == 'set') this.achievements.callback_queue[mode][group][label] = value;
+    if (!this.callback_queue[mode][group][label]) this.callback_queue[mode][group][label] = 0;
+    if (value && mode != 'set') this.callback_queue[mode][group][label] += value;
+    if (mode == 'set') this.callback_queue[mode][group][label] = value;
 
     if (!this.apiTimerExists('achievements_run_callback_queue')) this.apiSetTimer('achievements_run_callback_queue', 30000);
     return;
 }
 
-function achievements_run_callback_queue(){
+public function achievements_run_callback_queue(){
 
     var args = {
-        player: this.tsid
+        player: this.player.tsid
     };
 
     var idx = 0;
     var remainder = {};
-    //log.info(this.achievements.callback_queue);
-    for (var mode in this.achievements.callback_queue){
-        var groups = this.achievements.callback_queue[mode];
+    //log.info(this.callback_queue);
+    for (var mode in this.callback_queue){
+        var groups = this.callback_queue[mode];
         for (var group in groups){
             var labels = groups[group];
             for (var label in labels){
@@ -276,7 +292,7 @@ function achievements_run_callback_queue(){
                 }
 
                 //log.info(args);
-                //utils.http_post('callbacks/achievement_counter.php', args, this.tsid);
+                //utils.http_post('callbacks/achievement_counter.php', args, this.player.tsid);
 
                 idx++;
             }
@@ -284,17 +300,17 @@ function achievements_run_callback_queue(){
     }
 
     if (num_keys(args) > 1){
-        utils.http_post('callbacks/achievement_counter.php', args, this.tsid);
+        Utils.http_post('callbacks/achievement_counter.php', args, this.player.tsid);
     }
 
-    this.achievements.callback_queue = remainder;
+    this.callback_queue = remainder;
 }
 
 //
 // Grant multiple achievements
 //
 
-function achievements_grant_multiple(){
+public function achievements_grant_multiple(){
     if (config.is_dev) log.info(this+'achievements_grant_multiple');
     for (var i=0; i < arguments.length; i++){
         if (config.is_dev) log.info(this+'achievements_grant_multiple running: '+arguments[i]);
@@ -306,8 +322,8 @@ function achievements_grant_multiple(){
 // Grant the player an achievement
 //
 
-function achievements_grant(id, close_payload = null){
-    if (this.tsid == 'PCRN0MDLUUT195N' || config.is_dev) log.info(this+' achievements_grant '+id);
+public function achievements_grant(id, close_payload = null){
+    if (this.player.tsid == 'PCRN0MDLUUT195N' || config.is_dev) log.info(this+' achievements_grant '+id);
     if (this.achievements_has(id)) return;
 
     var achievement = this.achievements_get(id);
@@ -316,27 +332,27 @@ function achievements_grant(id, close_payload = null){
         return;
     }
 
-    utils.http_post('callbacks/achievement_counter_by_day.php', {player: this.tsid, achievement: id, shareworthy: achievement.is_shareworthy}, this.tsid);
+    Utils.http_post('callbacks/achievement_counter_by_day.php', {player: this.player.tsid, achievement: id, shareworthy: achievement.is_shareworthy}, this.player.tsid);
 
     //
     // If the player is offline, queue it
     //
 
-    if (!this.isOnline() || ((!this.has_done_intro || this.location.is_newxp || this.location.is_skillquest) && this.location.class_tsid != 'newbie_island')){
-        if (this.tsid == 'PCRN0MDLUUT195N' || config.is_dev) log.info(this+' achievements_grant queueing '+id);
+    if (!this.player.isOnline() || ((!this.player.has_done_intro || this.player.location.is_newxp || this.player.location.is_skillquest) && this.player.location.class_tsid != 'newbie_island')){
+        if (this.player.tsid == 'PCRN0MDLUUT195N' || config.is_dev) log.info(this+' achievements_grant queueing '+id);
         return this.achievements_add_queue(id);
     }
 
-    if (this.tsid == 'PCRN0MDLUUT195N' || config.is_dev) log.info(this+' achievements_grant giving '+id);
-    this.achievements.achievements[id] = time();
+    if (this.player.tsid == 'PCRN0MDLUUT195N' || config.is_dev) log.info(this+' achievements_grant giving '+id);
+    this.achievements[id] = time();
 
 
     var status = 'You got the '+achievement.name+' badge!';
     if (achievement.status_text) status = achievement.status_text;
-    this.sendActivity(status, null, true);
+    this.player.sendActivity(status, null, true);
 
     var text = this.label + ' just got the '+this.achievements_linkify(id)+' badge!';
-    this.sendLocationActivity(text, this, this.buddies_get_ignoring_tsids());
+    this.player.sendLocationActivity(text, this, this.player.buddies.buddies_get_ignoring_tsids());
 
     var out = {
         type            : 'achievement_complete',
@@ -346,25 +362,25 @@ function achievements_grant(id, close_payload = null){
         swf_url         : achievement.url_swf,
         is_shareworthy  : achievement.is_shareworthy,
         status_text     : status,
-        url             : config.web_root+'/profiles/'+this.tsid+'/achievements/'+achievement.url+'/'
+        url             : config.web_root+'/profiles/'+this.player.tsid+'/achievements/'+achievement.url+'/'
     };
 
     if (close_payload) out.close_payload = close_payload;
 
     // If we have the silvertongue buff, adjust achievement values accordingly
-    var multiplier = this.buffs_has('gift_of_gab') ? 1.2 : this.buffs_has('silvertongue') ? 1.05 : 1.0;
-    multiplier += this.imagination_get_achievement_modifier();
+    var multiplier = this.player.buffs.buffs_has('gift_of_gab') ? 1.2 : this.player.buffs.buffs_has('silvertongue') ? 1.05 : 1.0;
+    multiplier += this.player.imagination.imagination_get_achievement_modifier();
 
     // See here: http://bugs.tinyspeck.com/8804
     // It would be nice if we had access to the category, but luckily these completist achievements are
     // easy to detect.
     if (/completist/.exec(id)) {
-        log.info(this+" level is "+this.stats_get_level()+" and multiplier is "+multiplier);
+        log.info(this+" level is "+this.player.stats.stats_get_level()+" and multiplier is "+multiplier);
 
-        var level = this.stats_get_level();
+        var level = this.player.stats.stats_get_level();
 
         if (level > 4){
-            multiplier *= (this.stats_get_level() / 4);
+            multiplier *= (this.player.stats.stats_get_level() / 4);
         }
 
         log.info(this+" new multiplier is "+multiplier);
@@ -394,7 +410,7 @@ function achievements_grant(id, close_payload = null){
         if (ac_rewards.recipes){
             var recipes = {};
             for (var i in ac_rewards.recipes){
-                if (!this.making_recipe_is_known(ac_rewards.recipes[i].recipe_id)){
+                if (!this.player.making.making_recipe_is_known(ac_rewards.recipes[i].recipe_id)){
                     recipes[i] = ac_rewards.recipes[i].recipe_id;
                 }
             }
@@ -422,9 +438,9 @@ function achievements_grant(id, close_payload = null){
         for (var i in achievement.conditions){
             var condition = achievement.conditions[i];
             if (condition.group == 'in_inventory'){
-                if (achievement.collection_type == 2) this.items_destroy(condition.label, condition.value);
+                if (achievement.collection_type == 2) this.player.items.items_destroy(condition.label, condition.value);
 
-                var prot = apiFindItemPrototype(condition.label);
+                var prot = Server.instance.apiFindItemPrototype(condition.label);
                 if (prot){
                     var item = {
                         class_tsid  : condition.label,
@@ -434,7 +450,7 @@ function achievements_grant(id, close_payload = null){
 
                     // Items with sounds
                     if (prot.is_musicblock){
-                        item.sound = config.music_map[condition.label.toUpperCase()];
+                        item.sound = config.sounds.music_map[condition.label.toUpperCase()];
                     }
 
                     trophy_items.push(item);
@@ -445,7 +461,7 @@ function achievements_grant(id, close_payload = null){
         var trophy = this.achievement_get_trophy(id);
 
 
-        this.daily_history_push('collections', id);
+        this.player.daily_history.daily_history_push('collections', id);
 
         out.type = 'collection_complete';
         out.trophy_items = trophy_items;
@@ -453,65 +469,65 @@ function achievements_grant(id, close_payload = null){
 
         out.sound = 'TROPHY_RECEIVED';
 
-        apiLogAction('TROPHY_UNLOCKED', 'pc='+this.tsid, 'achievement='+id, 'xp='+intval(out.rewards.imagination), 'mood='+intval(out.rewards.mood), 'energy='+intval(out.rewards.energy), 'currants='+intval(out.rewards.currants), 'favor_giant='+(out.rewards.favor ? out.rewards.favor[0].giant : 'none'), 'favor_points='+(out.rewards.favor ? intval(out.rewards.favor[0].points) : 0));
+        Server.instance.apiLogAction('TROPHY_UNLOCKED', 'pc='+this.player.tsid, 'achievement='+id, 'xp='+intval(out.rewards.imagination), 'mood='+intval(out.rewards.mood), 'energy='+intval(out.rewards.energy), 'currants='+intval(out.rewards.currants), 'favor_giant='+(out.rewards.favor ? out.rewards.favor[0].giant : 'none'), 'favor_points='+(out.rewards.favor ? intval(out.rewards.favor[0].points) : 0));
     }
     else{
-        this.daily_history_push('achievements', id);
+        this.player.daily_history.daily_history_push('achievements', id);
         out.sound = 'ACHIEVEMENT_UNLOCKED';
 
 
-        apiLogAction('ACHIEVEMENT_UNLOCKED', 'pc='+this.tsid, 'achievement='+id, 'xp='+intval(out.rewards.imagination), 'mood='+intval(out.rewards.mood), 'energy='+intval(out.rewards.energy), 'currants='+intval(out.rewards.currants), 'favor_giant='+(out.rewards.favor ? out.rewards.favor[0].giant : 'none'), 'favor_points='+(out.rewards.favor ? intval(out.rewards.favor[0].points) : 0));
+        Server.instance.apiLogAction('ACHIEVEMENT_UNLOCKED', 'pc='+this.player.tsid, 'achievement='+id, 'xp='+intval(out.rewards.imagination), 'mood='+intval(out.rewards.mood), 'energy='+intval(out.rewards.energy), 'currants='+intval(out.rewards.currants), 'favor_giant='+(out.rewards.favor ? out.rewards.favor[0].giant : 'none'), 'favor_points='+(out.rewards.favor ? intval(out.rewards.favor[0].points) : 0));
     }
     this.apiSendMsgAsIs(out);
 
     if (achievement.onComplete) achievement.onComplete.call(achievement, this);
     if (achievement.on_apply) achievement.on_apply.call(achievement, this);
 
-    this.activity_notify({
+    this.player.activity_notify({
         type    : 'achievement',
         id  : id
     });
 }
 
-function achievements_add_queue(id){
-    if (!this.achievements.queue) this.achievements.queue = [];
+public function achievements_add_queue(id){
+    if (!this.queue) this.queue = [];
 
     if (this.achievements_is_queued(id)) return;
-    this.achievements.queue.push(id);
-    this.achievements.utime = time();
+    this.queue.push(id);
+    this.utime = time();
 }
 
-function achievements_run_queue(){
-    if (this.tsid == 'PCRN0MDLUUT195N') log.info(this+' achievements_run_queue');
-    if (!this.achievements.queue || !this.achievements.queue.length) return;
+public function achievements_run_queue(){
+    if (this.player.tsid == 'PCRN0MDLUUT195N') log.info(this+' achievements_run_queue');
+    if (!this.queue || !this.queue.length) return;
 
-    var queue = utils.copy_hash(this.achievements.queue);
-    this.achievements.queue = [];
+    var queue = Utils.copy_hash(this.queue);
+    this.queue = [];
 
     for (var i in queue){
-        if (this.tsid == 'PCRN0MDLUUT195N') log.info(this+' achievements_run_queue giving '+queue[i]);
+        if (this.player.tsid == 'PCRN0MDLUUT195N') log.info(this+' achievements_run_queue giving '+queue[i]);
         this.achievements_grant(queue[i]);
     }
 }
 
-function achievements_get_queue(){
-    return this.achievements.queue;
+public function achievements_get_queue(){
+    return this.queue;
 }
 
-function achievements_is_queued(id){
-    if (!this.achievements || !this.achievements.queue) return false;
+public function achievements_is_queued(id){
+    if (!this.achievements || !this.queue) return false;
 
-    return in_array_real(id, this.achievements.queue);
+    return in_array_real(id, this.queue);
 }
 
-function achievement_get_trophy(id){
+public function achievement_get_trophy(id){
     var achievement = this.achievements_get(id);
 
     var trophy = {};
     if (achievement && achievement.rewards && achievement.rewards.items){
         for (var i in achievement.rewards.items){
             var it = achievement.rewards.items[i];
-            var prot = apiFindItemPrototype(it.class_id);
+            var prot = Server.instance.apiFindItemPrototype(it.class_id);
             if (prot && prot.is_trophy){
                 trophy = {
                     class_tsid  : it.class_id,
@@ -529,19 +545,19 @@ function achievement_get_trophy(id){
 // Test if the player has an achievement
 //
 
-function achievements_has(id){
-    return this.achievements.achievements[id] ? 1 : 0;
+public function achievements_has(id){
+    return this.achievements[id] ? 1 : 0;
 }
 
-function achievements_delete(id){
-    delete this.achievements.achievements[id];
+public function achievements_delete(id){
+    delete this.achievements[id];
 }
 
 //
 // Like the old achievements_check_requirements, but *only* checks in_inventory requirements -- for collection achievements
 //
 
-function achievements_check_in_inventory(id){
+public function achievements_check_in_inventory(id){
 
     var ac = this.achievements_get(id);
 
@@ -554,7 +570,7 @@ function achievements_check_in_inventory(id){
             return false;
         }
         else if (data.type == 'counter' && data.group == 'in_inventory'){
-            if (this.countItemClass(data.label) < intval(data.value)){
+            if (this.player.bag.countItemClass(data.label) < intval(data.value)){
                 return false;
             }
         }
@@ -574,13 +590,13 @@ function achievements_check_in_inventory(id){
 // Defined once here, instead of inside the loop in achievements_get_from_counter, for perf reasons
 var group_types = ['group_count', 'group_sum'];
 
-function achievements_get_from_counter(group, label){
+public function achievements_get_from_counter(group, label){
     var out = {};
 
     // Retarded, but serguei insists it's faster
     var local_group_types = this.group_types;
 
-    var counters = config.data_achievement_counters;
+    var counters = config.base.data_achievement_counters;
     for (var type in counters){
         var groups = counters[type];
         for (var counter_group in groups){
@@ -613,9 +629,9 @@ function achievements_get_from_counter(group, label){
 // Fetch the details of an achievement
 //
 
-function achievements_get(id){
+public function achievements_get(id){
     try{
-        var prot = apiGetJSFileObject('achievements/'+id+'.js');
+        var prot = Server.instance.apiGetJSFileObject('achievements/'+id+'.js');
         return prot;
     }
     catch(e){
@@ -624,14 +640,14 @@ function achievements_get(id){
     }
 }
 
-function achievements_get_name(id){
+public function achievements_get_name(id){
     var achievement = this.achievements_get(id);
     if (!achievement) return '';
 
     return achievement.name;
 }
 
-function achievements_linkify(id){
+public function achievements_linkify(id){
     var achievement = this.achievements_get(id);
 
     if (!achievement) return '';
@@ -647,16 +663,16 @@ function achievements_linkify(id){
 // Get a list of the achievements the player has
 //
 
-function achievements_get_list(){
+public function achievements_get_list(){
 
     var out = [];
 
-    for (var i in this.achievements.achievements){
+    for (var i in this.achievements){
 
-        var achievement = utils.copy_hash(this.achievements_get(i));
+        var achievement = Utils.copy_hash(this.achievements_get(i));
         if (achievement){
             achievement.id = i;
-            achievement.when = this.achievements.achievements[i];
+            achievement.when = this.achievements[i];
 
             out.push(achievement);
         }
@@ -665,42 +681,42 @@ function achievements_get_list(){
     return out;
 }
 
-function achievements_get_profile(){
+public function achievements_get_profile(){
 
     if (!this.achievements) return {};
 
     var out = {};
 
-    for (var i in this.achievements.achievements){
-        var key = '.' + this.achievements.achievements[i] + i;
+    for (var i in this.achievements){
+        var key = '.' + this.achievements[i] + i;
 
-        out[i] = this.achievements.achievements[i];
+        out[i] = this.achievements[i];
     }
 
     return out;
 }
 
-function achievements_get_all(){
+public function achievements_get_all(){
 
     var out = {};
 
-    for (var i in this.achievements.achievements){
+    for (var i in this.achievements){
 
-        out[i] = this.achievements.achievements[i];
+        out[i] = this.achievements[i];
     }
 
     return out;
 }
 
-function achievementsGetCount(){
-    return this.achievements.achievements.__length;
+public function achievementsGetCount(){
+    return this.achievements.__length;
 }
 
-function achievementsGetLatest(){
-    var row = this.achievements.achievements.__latestKeyValue;
+public function achievementsGetLatest(){
+    var row = this.achievements.__latestKeyValue;
 
     if (row.key){
-        var latest_achievement = utils.copy_hash(this.achievements_get(row.key));
+        var latest_achievement = Utils.copy_hash(this.achievements_get(row.key));
         if (!latest_achievement) return null;
 
         latest_achievement.id = row.key;
@@ -713,10 +729,10 @@ function achievementsGetLatest(){
 }
 
 var leaderboardless_achievements = ['ascended', 'ascended_level11', 'ascended_level23', 'ascended_level31', 'ascended_level41', 'ascended_level61', 'ascended_level83', 'ascended_level101'];
-function achievements_get_leaderboard_count(){
+public function achievements_get_leaderboard_count(){
 
     var count = 0;
-    for (var i in this.achievements.achievements){
+    for (var i in this.achievements){
         if (!in_array_real(i, this.leaderboardless_achievements)) count++;
     }
 
@@ -732,11 +748,11 @@ function achievements_get_leaderboard_count(){
 //
 
 // For testing only:
-function achievements_reset_daily() {
-    this.achievements.daily_counters = {};
+public function achievements_reset_daily() {
+    this.daily_counters = {};
 }
 
-function achievements_increment_daily(group, label, count){
+public function achievements_increment_daily(group, label, count){
     if (group == 'today_key'){
         log.error('Invalid group sent to achievements_increment_daily');
         return false;
@@ -751,45 +767,45 @@ function achievements_increment_daily(group, label, count){
     //if (config.is_dev) log.info('Incrementing achievement counter '+group+' ' + label + ': '+count);
     if (!count) return;
 
-    if (!this.achievements.daily_counters[group]){
-        this.achievements.daily_counters[group] = {};
+    if (!this.daily_counters[group]){
+        this.daily_counters[group] = {};
     }
 
-    if (!this.achievements.daily_counters[group][label]){
-        this.achievements.daily_counters[group][label] = count;
+    if (!this.daily_counters[group][label]){
+        this.daily_counters[group][label] = count;
     }
     else{
-        this.achievements.daily_counters[group][label] += count;
+        this.daily_counters[group][label] += count;
     }
 }
 
-function achievements_get_daily_label_count(group, label){
+public function achievements_get_daily_label_count(group, label){
     this.achievements_init();
-    if (!this.achievements.daily_counters[group]){ return 0; }
-    return intval(this.achievements.daily_counters[group][label]);
+    if (!this.daily_counters[group]){ return 0; }
+    return intval(this.daily_counters[group][label]);
 }
 
 //
 // Number of labels in a group
 //
 
-function achievements_get_daily_group_count(group){
+public function achievements_get_daily_group_count(group){
     this.achievements_init();
-    if (!this.achievements.daily_counters[group]){ return 0; }
-    return num_keys(this.achievements.daily_counters[group]);
+    if (!this.daily_counters[group]){ return 0; }
+    return num_keys(this.daily_counters[group]);
 }
 
 //
 // Sum of all labels in a group
 //
 
-function achievements_get_daily_group_sum(group){
+public function achievements_get_daily_group_sum(group){
     this.achievements_init();
-    if (!this.achievements.daily_counters[group]){ return 0; }
+    if (!this.daily_counters[group]){ return 0; }
 
     var sum = 0;
-    for (var label in this.achievements.daily_counters[group]){
-        sum += intval(this.achievements.daily_counters[group][label]);
+    for (var label in this.daily_counters[group]){
+        sum += intval(this.daily_counters[group][label]);
     }
     return sum;
 }
@@ -800,68 +816,68 @@ function achievements_get_daily_group_sum(group){
 // (aka Piggy-capturing limit)
 //
 
-function achievements_set_place_time(action, place, ts){
+public function achievements_set_place_time(action, place, ts){
     this.achievements_init();
 
-    if (!this.achievements.place_time_counters[action]){
-        this.achievements.place_time_counters[action] = {};
+    if (!this.place_time_counters[action]){
+        this.place_time_counters[action] = {};
     }
-    this.achievements.place_time_counters[action][place] = ts;
+    this.place_time_counters[action][place] = ts;
     return true;
 }
 
-function achievements_set_place_time_now(action, place){
+public function achievements_set_place_time_now(action, place){
     var now = time();
     return this.achievements_set_place_time(action, place, now);
 }
 
-function achievements_get_place_time(action, place){
+public function achievements_get_place_time(action, place){
     this.achievements_init();
 
-    if (!this.achievements.place_time_counters[action] || !this.achievements.place_time_counters[action][place]){
+    if (!this.place_time_counters[action] || !this.place_time_counters[action][place]){
         return false;
     } else {
-        return this.achievements.place_time_counters[action][place];
+        return this.place_time_counters[action][place];
     }
 }
 
-function achievements_reset_place_time(action, place){
+public function achievements_reset_place_time(action, place){
     this.achievements_init();
 
-    if (!this.achievements.place_time_counters[action] || !this.achievements.place_time_counters[action][place]){
+    if (!this.place_time_counters[action] || !this.place_time_counters[action][place]){
         return false;
     } else {
-        delete this.achievements.place_time_counters[action][place];
+        delete this.place_time_counters[action][place];
         return true;
     }
 }
 
-function achievements_reset_place_time_action(action){
+public function achievements_reset_place_time_action(action){
     this.achievements_init();
 
-    if (!this.achievements.place_time_counters[action]){
+    if (!this.place_time_counters[action]){
         return false;
     } else {
-        delete this.achievements.place_time_counters[action];
+        delete this.place_time_counters[action];
         return true;
     }
 }
 
-function achievements_place_time_ago_enough(action, place, delta){
+public function achievements_place_time_ago_enough(action, place, delta){
     this.achievements_init();
 
-    if (!this.achievements.place_time_counters[action] || !this.achievements.place_time_counters[action][place]){
+    if (!this.place_time_counters[action] || !this.place_time_counters[action][place]){
         return true;
     } else {
-        return (time() - delta > this.achievements.place_time_counters[action][place]) ? true : false;
+        return (time() - delta > this.place_time_counters[action][place]) ? true : false;
     }
 }
 
 
-function achievements_admin_get_when(args){
+public function achievements_admin_get_when(args){
 
-    if (this.achievements.achievements[args.class_tsid]){
-        return this.achievements.achievements[args.class_tsid];
+    if (this.achievements[args.class_tsid]){
+        return this.achievements[args.class_tsid];
     }
 
     return 0;

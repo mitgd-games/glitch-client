@@ -15,7 +15,6 @@ package com.reversefold.glitch.server.player {
         public function Buddies(config : Config, player : Player) {
             this.config = config;
             this.player = player;
-            buddies_init();
         }
 
 

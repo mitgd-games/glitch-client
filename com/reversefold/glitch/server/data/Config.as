@@ -15,6 +15,8 @@ package com.reversefold.glitch.server.data {
 			}
 		}
 		
+		public static var is_dev : Boolean = false;
+		
 //#include config_base.js
         public var base : ConfigBase = new ConfigBase();
 

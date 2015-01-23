@@ -15,7 +15,6 @@ package com.reversefold.glitch.server.player {
 		public function Skills(config : Config, player : Player) {
 			this.config = config;
 			this.player = player;
-			skills_init();
 		}
 
 public function skills_init(){

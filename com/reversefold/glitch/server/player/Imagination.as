@@ -18,7 +18,6 @@ package com.reversefold.glitch.server.player {
 		public function Imagination(config : Config, player : Player) : void {
 			this.config = config;
 			this.player = player;
-			imagination_init();
 		}
 
 public function imagination_init(){

@@ -15,7 +15,6 @@ package com.reversefold.glitch.server.player {
         public function Quests(config : Config, player : Player) {
             this.config = config;
             this.player = player;
-            quests_init();
         }
 
 public function quests_init(){

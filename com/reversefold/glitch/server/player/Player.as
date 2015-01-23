@@ -1,14 +1,16 @@
 package com.reversefold.glitch.server.player {
 	import com.reversefold.glitch.server.Common;
+	import com.reversefold.glitch.server.Utils;
 	import com.reversefold.glitch.server.data.Config;
+	import com.reversefold.glitch.server.item.Bag;
 	import com.reversefold.glitch.server.player.Buffs;
 	import com.reversefold.glitch.server.player.Imagination;
 	import com.reversefold.glitch.server.player.Metabolics;
 	import com.reversefold.glitch.server.player.Skills;
 	import com.reversefold.glitch.server.player.Stats;
-
+	
 	import flash.utils.Dictionary;
-
+	
 	import org.osmf.logging.Log;
 	import org.osmf.logging.Logger;
 
@@ -23,8 +25,12 @@ package com.reversefold.glitch.server.player {
 		public var label : String;
 		public var has_done_intro : Boolean;
 		public var daily_favor : Dictionary;
+		public var h : int;
+		public var w : int;
+		public var date_last_login : int;
 		
 		public var location;
+		public var bag : Bag;
 
 		public function Player(config : Config) : void {
 			//init();
@@ -32,11 +38,12 @@ package com.reversefold.glitch.server.player {
 
 			making = new Making(config, this);
 			skills = new Skills(config, this);
+			buffs = new Buffs(config, this);
 			stats = new Stats(config, this);
 			metabolics = new Metabolics(config, this);
+			items = new Items(config, this);
 			buddies = new Buddies(config, this);
 			quests = new Quests(config, this);
-			buffs = new Buffs(config, this);
 			achievements = new Achievements(config, this);
 			announcements = new Announcements(config, this);
 			prompts = new Prompts(config, this);
@@ -45,6 +52,8 @@ package com.reversefold.glitch.server.player {
 			imagination = new Imagination(config, this);
 			eleven_secrets = new ElevenSecrets(config, this);
 			butler = new Butler(config, this);
+			
+			bag = new Bag();
 		}
 
 //#include inc_admin.js,
@@ -60,6 +69,7 @@ package com.reversefold.glitch.server.player {
 //#include inc_metabolics.js,
 		public var metabolics : Metabolics;
 //inc_items.js
+		public var items : Items;
 //#include inc_buddies.js,
 		public var buddies : Buddies;
 //inc_quests.js,
@@ -90,7 +100,7 @@ public function activity_notify(args){
 
 	args.to_tsid = this.tsid;
 
-	utils.http_get('callbacks/activity_push.php', args);
+	Utils.http_get('callbacks/activity_push.php', args);
 }
 
 		//inc_prompts.js,
@@ -145,30 +155,30 @@ public function init(){
 	// various bits
 	//
 
-	this.stats_init();
-	this.skills_init();
-	this.making_init();
-	this.buffs_init();
-	this.metabolics_init(); // must come after stats & buffs
-	this.achievements_init();
-	this.quests_init();
-	this.familiar_init();
-	this.instances_init();
-	this.auctions_init();
-	this.prompts_init();
-	this.trading_init();
-	this.jobs_init();
-	this.daily_history_init();
-	this.rewards_init();
-	this.mail_init();
-	this.buddies_init();
-	this.groups_init();
-	this.organizations_init();
-	this.conversations_init();
-	this.teleportation_init();
-	this.counters_init();
-	this.imagination_init();
-	this.furniture_init();
+	this.stats.stats_init();
+	this.skills.skills_init();
+	this.making.making_init();
+	this.buffs.buffs_init();
+	this.metabolics.metabolics_init(); // must come after stats & buffs
+	this.achievements.achievements_init();
+	this.quests.quests_init();
+	this.familiar.familiar_init();
+	this.instances.instances_init();
+	this.auctions.auctions_init();
+	this.prompts.prompts_init();
+	this.trading.trading_init();
+	this.jobs.jobs_init();
+	this.daily_history.daily_history_init();
+	this.rewards.rewards_init();
+	this.mail.mail_init();
+	this.buddies.buddies_init();
+	this.groups.groups_init();
+	this.organizations.organizations_init();
+	this.conversations.conversations_init();
+	this.teleportation.teleportation_init();
+	this.counters.counters_init();
+	this.imagination.imagination_init();
+	this.furniture.furniture_init();
 
 	// Hardcoded values matching the client
 	this.h = 112;
@@ -177,7 +187,7 @@ public function init(){
 	//
 	// clean up old things
 	//
-
+	/*
 	if (this.abilities){
 		this.abilities.apiDelete();
 		delete this.abilities;
@@ -196,6 +206,7 @@ public function init(){
 	delete this.bag_size;
 	delete this.last_pet;
 	//delete this.home;
+	*/
 
 	if (this.starting_instance) this.starting_instance.apiDelete();
 	delete this.starting_instance;

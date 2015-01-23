@@ -2,11 +2,54 @@ package com.reversefold.glitch.server {
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Utils;
     
+    import flash.events.Event;
+    import flash.events.TimerEvent;
+    import flash.utils.Dictionary;
+    import flash.utils.Timer;
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
     public class Common {
         private static var log : Logger = Log.getLogger("server.Common");
+		
+		
+		private var timers : Dictionary = new Dictionary();
+		
+		public function apiTimerExists(callback_name : String) : Boolean {
+			return timers.hasOwnProperty(callback_name);
+		}
+		
+		public function apiSetTimer(callback_name : String, ms : int) : void {
+			var timer : Timer = new Timer(ms, 0);
+			timers[callback_name] = timer;
+			timer.addEventListener(TimerEvent.TIMER, function(e : Event) : void {
+				this[callback_name]();
+			});
+			timer.start();
+		}
+
+		public function apiDeleteTimer(callback_name : String) : Boolean {
+			if (!timers.hasOwnProperty(callback_name)) {
+				return false;
+			}
+			timers[callback_name].stop();
+			delete timers[callback_name];
+			return true;
+		}
+		
+		public function apiDeleteTimers() : void {
+			for (var callback_name : String in timers) {
+				timers[callback_name].stop();
+			}
+			//delete timers?
+			timers = new Dictionary();
+		}
+		
+		public function apiSendMsgAsIs(msg) : void {
+			//RVRS: TODO: anything special here?
+			Server.instance.sendMessage(msg);
+		}
 
 
 public static function getPlayer(tsid){
@@ -197,7 +240,7 @@ public static function game_days_since(gametime){
 
 // This returns a whole number of game days.
 public static function game_days_since_ts(timestamp) {
-    var current_time = getTime();
+    var current_time = new Date().getTime();
 
     var diff = current_time - timestamp;
 
@@ -305,7 +348,7 @@ public static function isGlitchmas() {
     return true;
 
     // Currently enabled up until the 2012-01-03 10AM PST
-    if (getTime()/1000 < 1325613600){
+    if (new Date().getTime()/1000 < 1325613600){
         return true;
     }
 
@@ -355,7 +398,7 @@ public static function numberth(number){
 
 public static function numberth_word(number){
 
-    return Config.numbers_to_words[number];
+    return Config.instance.base.numbers_to_words[number];
 }
 
 public static function is_chance(prob){
@@ -363,7 +406,7 @@ public static function is_chance(prob){
     if (prob == 1) return 1;
     if (prob > 1){
         log.error('is_chance called with probability greater than 1. Fix this!');
-        log.printStackTrace();
+        //log.printStackTrace();
         prob /= 100;
     }
     if (Math.random() <= prob) return 1;
@@ -433,13 +476,15 @@ public static function numValidKeys(a) {
     return c;
 }
 
-public static function is_array(a) {
-
+public static function is_array(a) : Boolean {
+	return a is Array;
+	/*
     if (/Array/.exec(toString.call(a))) {
         return true;
     }
 
     return false;
+	*/
 }
 
 public static function array_keys(a){
@@ -460,7 +505,10 @@ public static function array_remove(array, from, to){
     return array.push.apply(array, rest);
 }
 
-public static function array_remove_value(array, value){
+public static function array_remove_value(array : Array, value){
+	//RVRS: TODO: is this supposed to modify the passed in array?
+	return array.filter(function(val) : Boolean { return val != value; });
+	/*
     var idx = null;
     for (var i=0; i<array.length; i++){
         if (array[i] == value){
@@ -475,6 +523,7 @@ public static function array_remove_value(array, value){
     else{
         return array;
     }
+	*/
 }
 
 public static function make_rsp(req){
@@ -564,7 +613,7 @@ public static function make_item_simple(item){
     return ret;
 }
 
-public static function make_bag(bag, pc){
+public static function make_bag(bag, pc = null){
     var contents = bag.getContents();
 
     var itemstacks = {};
@@ -632,9 +681,9 @@ public static function make_location(location, pc){
 
 public static function get_recipe(id){
 
-    var prot = apiFindItemPrototype('catalog_recipes');
+    var prot = Server.instance.apiFindItemPrototype('catalog_recipes');
     if (prot.recipes[id] && prot.recipes[id].tool){
-        var tool = apiFindItemPrototype(prot.recipes[id].tool);
+        var tool = Server.instance.apiFindItemPrototype(prot.recipes[id].tool);
         // Find the verb on this tool that makes recipe id 'id'
         for (var v in tool.verbs){
             // Is this a making verb?
@@ -655,7 +704,7 @@ public static function get_recipe(id){
     if (prot.recipes[id] && prot.recipes[id].inputs){
         // Find consumables
         for (var i=0; i<prot.recipes[id].inputs.length; i++){
-            var input = apiFindItemPrototype(prot.recipes[id].inputs[i][0]);
+            var input = Server.instance.apiFindItemPrototype(prot.recipes[id].inputs[i][0]);
             if (input && input.is_consumable){
                 prot.recipes[id].inputs[i][2] = true;
             }
@@ -670,7 +719,7 @@ public static function get_recipe(id){
 
 public static function get_recipe_ids_for_skill(skill_id){
 
-    var prot = apiFindItemPrototype('catalog_recipes');
+    var prot = Server.instance.apiFindItemPrototype('catalog_recipes');
     var recipe_ids = [];
 
     for (var i in prot.recipes){
@@ -716,14 +765,14 @@ public static function make_fail_msg(type, code, msg){
 
 public static function get_store(id){
 
-    var prot = apiFindItemPrototype('catalog_stores');
-    return utils.copy_hash(prot.stores[id]);
+    var prot = Server.instance.apiFindItemPrototype('catalog_stores');
+    return Utils.copy_hash(prot.stores[id]);
 }
 
 public static function get_achievement(id){
     try{
-        var prot = apiGetJSFileObject('achievements/'+id+'.js');
-        return utils.copy_hash(prot);
+        var prot = Server.instance.apiGetJSFileObject('achievements/'+id+'.js');
+        return Utils.copy_hash(prot);
     }
     catch(e){
         log.error('Could not load non-existent achievement: '+id);
@@ -817,7 +866,7 @@ public static function pluralize(count, singular, plural){
 
 public static function get_skill_package(id){
 
-    var prot = apiFindItemPrototype('catalog_skill_packages');
+    var prot = Server.instance.apiFindItemPrototype('catalog_skill_packages');
     return Utils.copy_hash(prot.skill_packages[id]);
 }
 
@@ -835,7 +884,7 @@ public static function api_ok(){
 }
 
 public static function overlay_key_to_url(key){
-    return Config.overlays_map[key];
+    return Config.instance.overlays.overlays_map[key];
 }
 
 public static function text_list_from_array(data_array){
@@ -863,7 +912,7 @@ public static function get_item_names_from_classes(class_tsids, plural, include_
 
 public static function get_item_name_from_class(class_tsid, plural, include_article){
     try {
-        var prot = apiFindItemPrototype(class_tsid);
+        var prot = Server.instance.apiFindItemPrototype(class_tsid);
         if (prot){
             var article = '';
             if (include_article){
@@ -886,7 +935,7 @@ public static function get_item_name_from_class(class_tsid, plural, include_arti
 }
 
 public static function round_to_5(value){
-    return (value % 5) >= 2.5 ? parseInt(value / 5) * 5 + 5 : parseInt(value / 5) * 5;
+    return (value % 5) >= 2.5 ? int(value / 5) * 5 + 5 : int(value / 5) * 5;
 }
 
 public static function rootPlayer(pc){
@@ -908,7 +957,7 @@ public static function unrootPlayer(pc){
 
 // Get a new value for the sequence
 public static function getSequence(key){
-    var sequences = Server.instance.apiFindObject(Config.sequence_object);
+    var sequences = Server.instance.apiFindObject(Config.instance.sequence_object);
     if (!sequences) return null;
 
     return sequences.getSequence(key);
@@ -916,7 +965,7 @@ public static function getSequence(key){
 
 // Get the current value for the sequence without incrementing it
 public static function getCurrentSequence(key){
-    var sequences = Server.instance.apiFindObject(Config.sequence_object);
+    var sequences = Server.instance.apiFindObject(Config.instance.sequence_object);
     if (!sequences) return 0;
 
     return sequences.getCurrentSequence(key);
@@ -925,14 +974,14 @@ public static function getCurrentSequence(key){
 
 public static function linkifyPlayer(pc, possessive){
     if (!possessive) {
-        var txt = "<a href=\"event:player_info|"+pc.tsid+"\">"+utils.escape(pc.label)+"</a>";
+        var txt = "<a href=\"event:player_info|"+pc.tsid+"\">"+Utils.escape(pc.label)+"</a>";
     }
     else {
-        var txt = "<a href=\"event:player_info|"+pc.tsid+"\">"+utils.escape(pc.label+"'s")+"</a>";
+        var txt = "<a href=\"event:player_info|"+pc.tsid+"\">"+Utils.escape(pc.label+"'s")+"</a>";
     }
 
 return txt;
 }
 
-    }
+	}
 }

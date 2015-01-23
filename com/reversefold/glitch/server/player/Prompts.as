@@ -14,7 +14,6 @@ package com.reversefold.glitch.server.player {
         public function Prompts(config : Config, player : Player) {
             this.config = config;
             this.player = player;
-            achievements_init();
         }
 
 

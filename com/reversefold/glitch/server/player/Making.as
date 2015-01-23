@@ -14,7 +14,6 @@ package com.reversefold.glitch.server.player {
         public function Making(config : Config, player : Player) {
             this.config = config;
             this.player = player;
-            making_init();
         }
 
 public function making_init(){
