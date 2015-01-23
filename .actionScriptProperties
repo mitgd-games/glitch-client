@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<actionScriptProperties analytics="false" mainApplicationPath="BootStrap.as" projectUUID="ccc8b532-ac91-48d5-bcdf-e73c9727fbbb" version="10">
-  <compiler additionalCompilerArguments="-locale en_US&#10;-define+=CONFIG::god,true&#10;-define+=CONFIG::perf,false&#10;-define+=CONFIG::debugging,true&#10;-define+=CONFIG::embed_engine_in_bootstrap,true&#10;-define+=CONFIG::localhost,true&#10;-define+=CONFIG::locodeco,false&#10;-define+=CONFIG::svn_revision,'1'" autoRSLOrdering="true" copyDependentFiles="true" flexSDK="Flex 4.5" fteInMXComponents="false" generateAccessible="true" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin-debug" removeUnusedRSL="true" rootURL="http://localhost:8000/glitch-client/bin-debug" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="false" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
+<actionScriptProperties analytics="false" mainApplicationPath="BootStrap.as" projectUUID="ccc8b532-ac91-48d5-bcdf-e73c9727fbbb" version="11">
+  <compiler additionalCompilerArguments="-locale en_US&#10;-define+=CONFIG::god,true&#10;-define+=CONFIG::perf,false&#10;-define+=CONFIG::debugging,true&#10;-define+=CONFIG::embed_engine_in_bootstrap,true&#10;-define+=CONFIG::localhost,true&#10;-define+=CONFIG::locodeco,true&#10;-define+=CONFIG::svn_revision,'1'" advancedTelemetry="false" autoRSLOrdering="true" copyDependentFiles="true" fteInMXComponents="false" generateAccessible="true" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin-debug" removeUnusedRSL="true" rootURL="http://localhost:8000/glitch-client/bin-debug" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="false" useDebugRSLSwfs="true" useFlashSDK="true" verifyDigests="true" warn="true">
     <compilerSourcePath>
       <compilerSourcePathEntry kind="1" linkType="1" path="/Users/papercrane/src/glitch/asunit/asunit-4.0/src"/>
     </compilerSourcePath>
@@ -34,6 +34,9 @@
       <libraryPathEntry kind="3" linkType="1" path="/BuildDecayChronograph/bin/BuildDecayChronograph.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="1" linkType="1" path="/Users/papercrane/src/glitch/asunit/asunit-4.0/lib"/>
       <libraryPathEntry kind="3" linkType="1" path="locodeco/lib/bin/LocoDeco.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="1" linkType="1" path="/Applications/Adobe Flash Builder 4.7/sdks/flex_sdk_4.6/frameworks/libs"/>
+      <libraryPathEntry kind="1" linkType="1" path="/Applications/Adobe Flash Builder 4.7/sdks/flex_sdk_4.6/frameworks/locale/en_US"/>
+      <libraryPathEntry kind="1" linkType="1" path="/Applications/Adobe Flash Builder 4.7/sdks/flex_sdk_4.6/frameworks/libs/mx"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>
@@ -41,6 +44,7 @@
     <application path="BootStrap.as"/>
   </applications>
   <modules/>
+  <workers/>
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
 </actionScriptProperties>
