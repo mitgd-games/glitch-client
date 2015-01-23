@@ -86,6 +86,10 @@ package com.reversefold.glitch.server.player {
 			moutaineering = new Moutaineering(config, this);
 			physics = new Physics(config, this);
 			butler = new Butler(config, this);
+			towers = new Towers(config, this);
+			feats = new Feats(config, this);
+			visiting = new Visiting(config, this);
+			emotes = new Emotes(config, this);
 
 			bag = new Bag();
 		}
@@ -119,7 +123,7 @@ package com.reversefold.glitch.server.player {
 //inc_houses.js,
 		public var houses : Houses;
 
-		//inc_acl_keys.js,
+//inc_acl_keys.js,
 public function acl_keys_init(){
 	if (!this.acl_keys){
 		this.acl_keys = {};
@@ -362,21 +366,21 @@ public function acl_keys_fix_house_backup(really_fix_it){
 }
 //END acl_keys
 
-		//inc_achievements.js
+//inc_achievements.js
 		public var achievements : Achievements;
 //#include inc_familiar.js,
 		public var familiar : Familiar;
-		//inc_demo.js,
+//inc_demo.js,
 // I am not empty
-		//inc_party.js,
+//inc_party.js,
 		public var party : Party;
-		//inc_instances.js
+//inc_instances.js
 		public var instances : Instances;
 //#include inc_auctions.js,
 		public var auctions : Auctions;
-		//inc_announcements.js,
+//inc_announcements.js,
 		public var announcements : Announcements;
-		//inc_skill_packages.js
+//inc_skill_packages.js
 		public var skill_packages : SkillPackages;
 
 //#include inc_activity.js,
@@ -393,41 +397,41 @@ public function activity_notify(args){
 	Utils.http_get('callbacks/activity_push.php', args);
 }
 
-		//inc_prompts.js,
+//inc_prompts.js,
 		public var prompts : Prompts;
-		//inc_trophies.js
+//inc_trophies.js
 		public var trophies : Trophies;
 //#include inc_trading.js,
 		public var trading : Trading;
-		//inc_teleportation.js,
+//inc_teleportation.js,
 		public var teleportation : Teleportation;
-		//inc_jobs.js
+//inc_jobs.js
 		public var jobs : Jobs;
 //#include inc_daily_history.js,
 		public var daily_history : DailyHistory;
-		//inc_profile.js,
+//inc_profile.js,
 		public var profile : Profile;
-		//inc_rewards.js
+//inc_rewards.js
 		public var rewards : Rewards;
 //#include inc_avatar.js,
 		public var avatar : Avatar;
-		//inc_mail.js,
+//inc_mail.js,
 		public var mail : Mail;
-		//inc_conversations.js
+//inc_conversations.js
 		public var conversations : Conversations;
 //#include ../items/include/events.js
 		public var events : Events;
-		//../items/include/rook.js
+//../items/include/rook.js
 		public var rook : Rook;
 //#include inc_special_locations.js,
 		public var special_locations : SpecialLocations;
-		//inc_games.js,
+//inc_games.js,
 		public var games : Games;
-		//inc_eleven_secrets.js
+//inc_eleven_secrets.js
 		public var eleven_secrets : ElevenSecrets;
 //#include inc_requests.js,
 		public var requests : Requests;
-		//inc_counters.js,
+//inc_counters.js,
 		public var counters : Counters;
 //inc_imagination.js,
 		public var imagination : Imagination;
@@ -435,14 +439,14 @@ public function activity_notify(args){
 		public var furniture : Furniture;
 //#include inc_world_events.js,
 		public var world_events : WorldEvents;
-		//inc_mountaineering.js,
+//inc_mountaineering.js,
 		public var moutaineering : Moutaineering;
-		//inc_physics.js
+//inc_physics.js
 		public var physics : Physics;
 //#include inc_butler.js,
 		public var butler : Butler;
 
-		//inc_newxp.js,
+//inc_newxp.js,
 public function newxp_move_along(details){
 	this.prompts_add_simple('Time to move along. Try going right?', 30);
 }
@@ -563,10 +567,14 @@ public function checkNeighborSignpost(){
 }
 //END newxp
 
-		//inc_towers.js,
-		//inc_feats.js
+//inc_towers.js,
+		public var towers : Towers;
+//inc_feats.js
+		public var feats : Feats;
 //#include inc_visiting.js,
-		//inc_emotes.js
+		public var visiting : Visiting;
+//inc_emotes.js
+		public var emotes : Emotes;
 
 public var is_player = 1;
 
