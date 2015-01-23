@@ -20,7 +20,7 @@ package com.reversefold.glitch.server.player {
 
 // do not call this directly! shoudl be called only from
 // setHiEmoteVariantRandomly() or setHiEmoteVariantFromInfector()
-function setHiEmoteVariant(variant, tracker_str) {
+public function setHiEmoteVariant(variant, tracker_str) {
     if (this.hi_emote_variant) {
         // we never expect this to happen if this.hi_emote_variant has not been removed by newday
         return;
@@ -66,7 +66,7 @@ function setHiEmoteVariant(variant, tracker_str) {
     return variant;
 }
 
-function setHiEmoteVariantRandomly() {
+public function setHiEmoteVariantRandomly() {
     var variant = choose_one(config.hi_emote_variants);
     if (config.feature_hi_viral) {
         // log it
@@ -76,7 +76,7 @@ function setHiEmoteVariantRandomly() {
     return this.setHiEmoteVariant(variant, 'random');
 }
 
-function setHiEmoteVariantFromInfector(infector) {
+public function setHiEmoteVariantFromInfector(infector) {
     if (!infector.hi_emote_variant) return;
 
     var variant = infector.hi_emote_variant;
@@ -99,7 +99,7 @@ function setHiEmoteVariantFromInfector(infector) {
     return this.setHiEmoteVariant(variant, infector.tsid);
 }
 
-function doEmote(msg){
+public function doEmote(msg){
     if (msg.emote != 'hi') {
         return this.apiSendMsg(make_fail_rsp(msg, 0, 'Unrecognized emote: '+msg.emote));
     }
@@ -334,7 +334,7 @@ function doEmote(msg){
     });
 }
 
-function doHiEmoteBonusWithButler(target_butler, emote, variant, pc_mood) {
+public function doHiEmoteBonusWithButler(target_butler, emote, variant, pc_mood) {
     var emote_bonus_mood_granted = {};
     emote_bonus_mood_granted[this.tsid] = this.metabolics_add_mood(pc_mood);
     var bonus_annc = {
@@ -352,7 +352,7 @@ function doHiEmoteBonusWithButler(target_butler, emote, variant, pc_mood) {
     this.achievements_increment('hi_jackpot_butler', target_butler.tsid, 1);
 }
 
-function doHiEmoteBonusWithOtherPlayer(target_pc, emote, variant, pc_mood, target_mood) {
+public function doHiEmoteBonusWithOtherPlayer(target_pc, emote, variant, pc_mood, target_mood) {
     var emote_bonus_mood_granted = {};
     emote_bonus_mood_granted[this.tsid] = this.metabolics_add_mood(pc_mood);
     emote_bonus_mood_granted[target_pc.tsid] = target_pc.metabolics_add_mood(target_mood);
@@ -383,7 +383,7 @@ function doHiEmoteBonusWithOtherPlayer(target_pc, emote, variant, pc_mood, targe
     }
 }
 
-function maybe_set_evasion_record(msg){
+public function maybe_set_evasion_record(msg){
     var secs = msg.seconds;
     var ret;
     var location = this.location;
@@ -494,7 +494,7 @@ function maybe_set_evasion_record(msg){
     return ret || {status: 'fail', msg: 'no record set or anything'};
 }
 
-function make_and_store_evasion_record(msg, location, today_key, alltime){
+public function make_and_store_evasion_record(msg, location, today_key, alltime){
     var secs = msg.seconds;
     var ob = {
         pc_tsid: this.tsid,
@@ -533,7 +533,7 @@ function make_and_store_evasion_record(msg, location, today_key, alltime){
     }
 }
 
-function doHiEmoteMissileHit(msg){
+public function doHiEmoteMissileHit(msg){
     this.apiSendMsg(make_ok_rsp(msg));
 
     if (!config.feature_hi_records) return;
@@ -647,7 +647,7 @@ function doHiEmoteMissileHit(msg){
 }
 
 
-function resetTheShitOutOfHiOverlays() {
+public function resetTheShitOutOfHiOverlays() {
     this.hi_emote_variant='';
     this.hi_emote_daily_targets.pcs = {};
     this.hi_emote_daily_targets.butlers = {};

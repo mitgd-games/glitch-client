@@ -18,7 +18,7 @@ package com.reversefold.glitch.server.player {
         }
 
 
-function getTestTower(){
+public function getTestTower(){
 
     // we must already have a house for this to work
     if (!this.home || !this.home.exterior) return null;
@@ -44,35 +44,35 @@ function getTestTower(){
     return this.home.tower;
 }
 
-function getTower(){
+public function getTower(){
     if (!this.home || !this.home.exterior) return null;
 
     return this.home.tower;
 }
 
-function visitTower(){
+public function visitTower(){
     var tower = this.getTestTower();
     tower.tower_rebuild();
     var pos = tower.tower_get_teleport_point();
     this.teleportToLocationDelayed(tower.tsid, pos[0], pos[1]);
 }
 
-function rebuildTower(){
+public function rebuildTower(){
     var tower = this.getTestTower();
     if (this.location.tsid == tower.tsid) tower.tower_rebuild();
 }
 
-function setTowerFloors(num){
+public function setTowerFloors(num){
     var tower = this.getTestTower();
     if (this.location.tsid == tower.tsid) tower.tower_set_floors(num);
 }
 
-function resetTower(){
+public function resetTower(){
     var tower = this.getTestTower();
     if (this.location.tsid == tower.tsid) tower.tower_reset();
 }
 
-function removeTower(){
+public function removeTower(){
     if (!this.home) return;
 
     if (this.home.exterior){

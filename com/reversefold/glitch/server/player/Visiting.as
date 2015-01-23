@@ -18,19 +18,19 @@ package com.reversefold.glitch.server.player {
         }
 
 
-function visiting_can_opt_in(){
+public function visiting_can_opt_in(){
 
     if (this.stats.level < 4){
         return {
             ok: 0,
-            error: 'low_level',
+            error: 'low_level'
         };
     }
 
     if (!this.home || !this.home.exterior){
         return {
             ok: 0,
-            error: 'no_home',
+            error: 'no_home'
         };
     }
 
@@ -40,37 +40,37 @@ function visiting_can_opt_in(){
         return {
             ok: 0,
             error: 'no_cultivation',
-            jobs: jobs,
+            jobs: jobs
         };
     }
 
     if (!this.has_butler()){
         return {
             ok: 0,
-            error: 'no_butler',
+            error: 'no_butler'
         };
     }
 
     return {
-        ok: 1,
+        ok: 1
     };
 }
 
-function visiting_opt_in_done(){
+public function visiting_opt_in_done(){
     this.home_allow_visits = true;
     this.sendActivity("You've been opted in - you will recieve random visitors to your street.");
 }
 
-function visiting_opt_out_done(){
+public function visiting_opt_out_done(){
     delete this.home_allow_visits;
     this.sendActivity("You've been opted out - you will no longer receive random visitors to your street.");
 }
 
-function visiting_opt_in(){
+public function visiting_opt_in(){
 
     if (this.home_allow_visits){
         return {
-            ok: 1,
+            ok: 1
         };
     }
 
@@ -79,41 +79,41 @@ function visiting_opt_in(){
 
     utils.http_post('callbacks/player_random_visits.php', {
         'player' : this.tsid,
-        'opt_in' : 1,
+        'opt_in' : 1
     });
 
     return {
         ok: 1,
-        async: 1,
+        async: 1
     };
 }
 
-function visiting_opt_out(){
+public function visiting_opt_out(){
 
     if (!this.home_allow_visits){
         return {
-            ok: 1,
+            ok: 1
         };
     }
 
     utils.http_post('callbacks/player_random_visits.php', {
-        'player' : this.tsid,
+        'player' : this.tsid
     });
 
     return {
         ok: 1,
-        async: 1,
+        async: 1
     };
 }
 
-function visiting_visit_random(){
+public function visiting_visit_random(){
 
     utils.http_post('callbacks/player_random_go.php', {
-        'player' : this.tsid,
+        'player' : this.tsid
     });
 }
 
-function visiting_visit_random_go(){
+public function visiting_visit_random_go(){
 
     var tsids = [];
     for (var i=0; i < arguments.length; i++){

@@ -20,7 +20,7 @@ package com.reversefold.glitch.server.player {
 
 // http://wiki.tinyspeck.com/wiki/Feats
 
-function feats_init(){
+public function feats_init(){
     if (!this.feats){
         this.feats = apiNewOwnedDC(this);
         this.feats.label = 'Feats';
@@ -32,7 +32,7 @@ function feats_init(){
     if (!this.feats.in_progress) this.feats.in_progress = {};
 }
 
-function feats_get(class_tsid, skip_range){
+public function feats_get(class_tsid, skip_range){
     // In catalog?
     var cfg = config.feats[class_tsid];
     if (!cfg) return null;
@@ -54,7 +54,7 @@ function feats_get(class_tsid, skip_range){
     return feat;
 }
 
-function feats_increment(class_tsid, amount){
+public function feats_increment(class_tsid, amount){
     // Get feat
     var feat = this.feats_get(class_tsid);
     if (feat === undefined || feat === null) return 0;
@@ -132,21 +132,21 @@ function feats_increment(class_tsid, amount){
     return amount;
 }
 
-function feats_is_complete(class_tsid){
+public function feats_is_complete(class_tsid){
     var feat = this.feats_get(class_tsid, true);
     if (!feat) return false;
 
     return feat.is_complete();
 }
 
-function feats_get_status(class_tsid){
+public function feats_get_status(class_tsid){
     var feat = this.feats_get(class_tsid, true);
     if (!feat) return {};
 
     return feat.get_status();
 }
 
-function adminFeatsGiveRewards(rewards){
+public function adminFeatsGiveRewards(rewards){
     this.feats_init();
 
     if (this.feats.todo[rewards.feat_id]) return;
@@ -170,7 +170,7 @@ function adminFeatsGiveRewards(rewards){
     });
 }
 
-function feats_has_unclaimed_rewards(){
+public function feats_has_unclaimed_rewards(){
     if (!this.feats || !this.feats.todo) return false;
     if (num_keys(this.familiar_find_alerts('feats_familiar_turnin_do'))) return false;
 
@@ -181,12 +181,12 @@ function feats_has_unclaimed_rewards(){
     return false;
 }
 
-function feats_familiar_turnin_do(choice, details){
+public function feats_familiar_turnin_do(choice, details){
     /*
     if (this.tsid != 'PHVRJ840M992GJK'){
         return {
             txt: "Feat rewards are currently disabled while we work on a bug",
-            done: true,
+            done: true
         };
     }
     */
@@ -272,7 +272,7 @@ function feats_familiar_turnin_do(choice, details){
     }
 }
 
-function feats_gather_rewards(feat_id){
+public function feats_gather_rewards(feat_id){
     var rewards = this.feats.todo[feat_id];
     if (!rewards) return;
 
@@ -302,7 +302,7 @@ function feats_gather_rewards(feat_id){
     apiLogAction('FEAT_REWARDS', 'pc='+this.tsid, 'feat_id='+rewards.feat_id, 'xp='+intval(rewards.xp), 'mood='+intval(rewards.mood), 'energy='+intval(rewards.energy), 'currants='+intval(rewards.currants));
 }
 
-function feats_has_contributed(feat_id){
+public function feats_has_contributed(feat_id){
     this.feats_init();
     if (this.feats.todo[feat_id]) return true;
     if (this.feats.feats[feat_id]) return true;
@@ -312,7 +312,7 @@ function feats_has_contributed(feat_id){
     return false;
 }
 
-function feats_get_current(){
+public function feats_get_current(){
     var today = current_day_key();
 
     for (var i in config.feats){
@@ -328,7 +328,7 @@ function feats_get_current(){
     return null;
 }
 
-function feats_count_in_epic(epic_id){
+public function feats_count_in_epic(epic_id){
     var count = 0;
 
     for (var i in config.feats){
@@ -338,7 +338,7 @@ function feats_count_in_epic(epic_id){
     return count;
 }
 
-function feats_increment_for_commit(amount){
+public function feats_increment_for_commit(amount){
     return;
     this.feats_init();
     // Are we allowed to contribute?
@@ -348,14 +348,14 @@ function feats_increment_for_commit(amount){
     this.feats.to_commit += amount;
 }
 
-function feats_reset_commit(){
+public function feats_reset_commit(){
     return;
     this.feats_init();
     if (this.feats.to_commit) this.sendActivity("Whoops! You lost your contribution to the \"… And Ask Nothing in Return\" Feat!");
     delete this.feats.to_commit;
 }
 
-function feats_get_for_commit(){
+public function feats_get_for_commit(){
     return 0;
     this.feats_init();
     if (!this.feats.to_commit) return 0;
