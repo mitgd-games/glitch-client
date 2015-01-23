@@ -1,5 +1,6 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
     
@@ -20,16 +21,21 @@ package com.reversefold.glitch.server.player {
             this.config = config;
             this.player = player;
         }
+		
+		public function apiSendAnnouncement(ann) : void {
+			//RVRS: TODO: Should this do anything special, like flag for this player?
+			Server.instance.apiSendAnnouncement(ann);
+		}
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Music and sound management
 //
 
-public function announce_sound(name, loop_count, fade_in, is_exclusive, allow_multiple){
+public function announce_sound(name, loop_count, fade_in, is_exclusive=false, allow_multiple=false){
     if (name == 'NO_MUSIC') return;
 
-    if (config.music_map[name]) name = config.music_map[name];
+    if (config.sounds.music_map[name]) name = config.sounds.music_map[name];
 
     var rsp = {
         type: 'play_sound',
@@ -61,7 +67,7 @@ public function announce_sound_delayed(name, loop_count, fade_in, delay){
         callback: 'announce_sound_delayed_callback'
     };
 
-    this.events_add(details, delay);
+    this.player.events.events_add(details, delay);
 }
 
 public function announce_sound_delayed_callback(details){
@@ -71,7 +77,7 @@ public function announce_sound_delayed_callback(details){
 public function announce_sound_stop(name, fade_out){
     if (name == 'NO_MUSIC') return;
 
-    if (config.music_map[name]) name = config.music_map[name];
+    if (config.sounds.music_map[name]) name = config.sounds.music_map[name];
 
     var rsp = {
         type: 'stop_sound',
@@ -90,7 +96,7 @@ public function announce_music(name, loop_count, fade_in){
 
     var rsp = {
         type: 'play_music',
-        mp3_url: config.music_map[name]
+        mp3_url: config.sounds.music_map[name]
     };
 
     if (loop_count){
@@ -108,7 +114,7 @@ public function announce_music_stop(name, fade_out){
 
     var rsp = {
         type: 'stop_music',
-        mp3_url: config.music_map[name]
+        mp3_url: config.sounds.music_map[name]
     };
 
     if (fade_out){
@@ -132,7 +138,7 @@ public function announce_vp_overlay(args){
 
     for (var i in args){
         if (i == 'overlay_key'){
-            rsp['swf_url'] = this.overlay_key_to_url(args[i]);
+            rsp['swf_url'] = Common.overlay_key_to_url(args[i]);
         }
         else{
             rsp[i] = args[i];
@@ -149,7 +155,7 @@ public function announce_window_overlay(args){
 
     for (var i in args){
         if (i == 'overlay_key'){
-            rsp['swf_url'] = this.overlay_key_to_url(args[i]);
+            rsp['swf_url'] = Common.overlay_key_to_url(args[i]);
         }
         else{
             rsp[i] = args[i];
@@ -166,7 +172,7 @@ public function announce_pc_overlay(args){
 
     for (var i in args){
         if (i == 'overlay_key'){
-            rsp['swf_url'] = this.overlay_key_to_url(args[i]);
+            rsp['swf_url'] = Common.overlay_key_to_url(args[i]);
         }
         else{
             rsp[i] = args[i];
@@ -183,7 +189,7 @@ public function announce_itemstack_overlay(args){
 
     for (var i in args){
         if (i == 'overlay_key'){
-            rsp['swf_url'] = this.overlay_key_to_url(args[i]);
+            rsp['swf_url'] = Common.overlay_key_to_url(args[i]);
         }
         else{
             rsp[i] = args[i];
@@ -200,7 +206,7 @@ public function announce_location_overlay(args){
 
     for (var i in args){
         if (i == 'overlay_key'){
-            rsp['swf_url'] = this.overlay_key_to_url(args[i]);
+            rsp['swf_url'] = Common.overlay_key_to_url(args[i]);
         }
         else{
             rsp[i] = args[i];
@@ -385,7 +391,7 @@ public function overlay_done_script_top_of_tree(pc){
 
 public function activate_spinach_prompt(details){
     if (!this['!spinach_activated']){
-        this.prompts_add({
+        this.player.prompts.prompts_add({
             txt     : details.txt,
             icon_buttons    : false,
             timeout_value   : '',
@@ -578,7 +584,7 @@ public function announce_counter(value, args){
     this.apiSendAnnouncement({
         uid: 'counter',
         type: "pc_overlay",
-        pc_tsid: this.tsid,
+        pc_tsid: this.player.tsid,
         swf_url: overlay_key_to_url('light_burst'),
         duration: args['duration'],
         locking: false,
@@ -611,9 +617,9 @@ public function announce_build_indicator_annc(uid){
 
     var annc = {
         type: 'pc_overlay',
-        uid: this.tsid+'_'+uid,
+        uid: this.player.tsid+'_'+uid,
         duration: 0,
-        pc_tsid: this.tsid,
+        pc_tsid: this.player.tsid,
         delta_y: indicator.delta_y ? indicator.delta_y : -120,
         delta_x: indicator.delta_x ? indicator.delta_x : 0
     };
@@ -622,7 +628,7 @@ public function announce_build_indicator_annc(uid){
         annc.item_class = indicator.overlay_key;
     }
     else{
-        annc.swf_url= this.overlay_key_to_url(indicator.overlay_key);
+        annc.swf_url= Common.overlay_key_to_url(indicator.overlay_key);
     }
 
     if (indicator.state){
@@ -661,21 +667,21 @@ public function announce_add_indicator(uid, overlay_key, is_item, state, args){
 
     annc.delta_y += offset;
 
-    this.location.apiSendAnnouncement(annc);
+    this.player.location.apiSendAnnouncement(annc);
 }
 
-public function announce_hide_indicators(pc) {
+public function announce_hide_indicators(pc=null) {
     for (var i in this.announced_indicators){
         var msg = {
             type: 'overlay_cancel',
-            uid: this.tsid+'_'+i
+            uid: this.player.tsid+'_'+i
         };
 
         if (pc){
             pc.apiSendMsg(msg);
         }
         else{
-            this.location.apiSendMsg(msg);
+            this.player.location.apiSendMsg(msg);
         }
     }
 }
@@ -686,7 +692,7 @@ public function announce_remove_all_indicators() {
     this.announced_indicators = null;
 }
 
-public function announce_show_indicators(pc) {
+public function announce_show_indicators(pc=null) {
     if (!this.announced_indicators) return;
 
     var offset = 0;
@@ -700,7 +706,7 @@ public function announce_show_indicators(pc) {
             pc.apiSendAnnouncement(annc);
         }
         else{
-            this.location.apiSendAnnouncement(annc);
+            this.player.location.apiSendAnnouncement(annc);
         }
         offset -= 50;
     }
@@ -717,7 +723,7 @@ public function announce_remove_indicator(uid){
     if (num_keys(this.announced_indicators)){
         this.announce_show_indicators();
     } else {
-        delete this.announced_indicators;
+        this.announced_indicators = null;
     }
 }
 

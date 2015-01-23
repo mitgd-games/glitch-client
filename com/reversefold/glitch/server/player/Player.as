@@ -1,5 +1,6 @@
 package com.reversefold.glitch.server.player {
 	import com.reversefold.glitch.server.Common;
+	import com.reversefold.glitch.server.Server;
 	import com.reversefold.glitch.server.Utils;
 	import com.reversefold.glitch.server.data.Config;
 	import com.reversefold.glitch.server.item.Bag;
@@ -58,7 +59,8 @@ package com.reversefold.glitch.server.player {
 			
 			bag = new Bag();
 		}
-//RVRS: TODO: include items/include/events.js? Buffs needs it...
+		
+//RVRS: TODO: include items/include/events.js? Buffs and Announcements need it...
 		
 		
 //#include inc_admin.js,
