@@ -568,7 +568,7 @@ public function checkNeighborSignpost(){
 //#include inc_visiting.js,
 		//inc_emotes.js
 
-var is_player = 1;
+public var is_player = 1;
 
 public function init(){
 
@@ -2200,7 +2200,7 @@ public function greeterGoToGreetingLocation(){
 	}
 }
 
-var collectible_item_classes = ['gameserver', 'collectors_edition_2010_glitchmas_yeti', 'glitchmas_present', 'greeter_badge', 'bag_greeter_badge', 'trophy_egghunt', 'trophy_street_creator_dirt', 'trophy_street_creator_earth', 'trophy_street_creator_rock', 'trophy_street_creator_wood'];
+public var collectible_item_classes = ['gameserver', 'collectors_edition_2010_glitchmas_yeti', 'glitchmas_present', 'greeter_badge', 'bag_greeter_badge', 'trophy_egghunt', 'trophy_street_creator_dirt', 'trophy_street_creator_earth', 'trophy_street_creator_rock', 'trophy_street_creator_wood'];
 public function resetForTesting(skip){
 
 	log.info(this+' resetForTesting');
@@ -2380,9 +2380,9 @@ public function distanceFromPlayerXY(x, y){
 // this is called any time after a player does "something"
 //
 
-var meditation_ok_types = ['itemstack_mouse_over'];
-var meditation_ok_verbs = ['meditate', 'focus_energy', 'focus_mood', 'radiate'];
-var please_wait_ok_types = ['party_chat', 'groups_chat', 'local_chat', 'buff_tick', 'conversation_choice', 'buff_start', 'prompt_choice'];
+public var meditation_ok_types = ['itemstack_mouse_over'];
+public var meditation_ok_verbs = ['meditate', 'focus_energy', 'focus_mood', 'radiate'];
+public var please_wait_ok_types = ['party_chat', 'groups_chat', 'local_chat', 'buff_tick', 'conversation_choice', 'buff_start', 'prompt_choice'];
 public function performPostProcessing(msg){
 	// handle any delayed teleport
 	if (msg.type != 'login_start' && msg.type != 'relogin_start' && msg.type != 'login_start' && msg.type != 'relogin_start') this.handleDelayedTeleport();
@@ -2514,7 +2514,7 @@ public function faceAvatar(face, force){
 	this.apiSendMsgAsIs(rsp);
 }
 
-var emotion_types = ['happy', 'surprise', 'angry'];
+public var emotion_types = ['happy', 'surprise', 'angry'];
 public function playEmotionAnimation(em){
 	if (!in_array(em, this.emotion_types)) {
 		log.error('unknown emotion: '+em);
@@ -2547,7 +2547,7 @@ public function stopDoAnimation(){
 	});
 }
 
-var hit_types = ['hit1', 'hit2'];
+public var hit_types = ['hit1', 'hit2'];
 public function playHitAnimation(hit_type, ms){
 	if (!in_array(hit_type, this.hit_types)) {
 		log.error('unknown hit_type: '+hit_type);
@@ -3386,7 +3386,7 @@ public function greeter_training_callback(value, details){
 }
 
 // http://wiki.tinyspeck.com/wiki/SpecUICallout
-var valid_callout_sections = ['character', 'level', 'xp', 'energy', 'mood', 'currants', 'familiar', 'mini_map', 'buffs', 'chat_friends', 'chat_help', 'chat_local', 'chat_party', 'backpack', 'clock', 'volume_control', 'chat_active'];
+public var valid_callout_sections = ['character', 'level', 'xp', 'energy', 'mood', 'currants', 'familiar', 'mini_map', 'buffs', 'chat_friends', 'chat_help', 'chat_local', 'chat_party', 'backpack', 'clock', 'volume_control', 'chat_active'];
 public function ui_callout(section, duration){
 	if (!in_array_real(section, this.valid_callout_sections)) return false;
 

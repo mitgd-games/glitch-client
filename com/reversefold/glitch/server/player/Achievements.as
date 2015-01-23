@@ -83,7 +83,7 @@ public function achievements_reset_counters(){
 	this.counters = null;
 }
 
-var achievements_to_save = ['collection_egg_hunter', 'collection_street_creator_dirt', 'collection_street_creator_earth', 'collection_street_creator_rock', 'collection_street_creator_wood', 'fine_friend', 'good_buddy', 'jolly_good_chap', 'a1_comrade', 'best_pal', 'ascended', 'ascended_level11', 'ascended_level23', 'ascended_level31', 'ascended_level41', 'ascended_level61', 'ascended_level83', 'ascended_level101']; // Don't forget to modify pc.resetForTesting() to make sure they also keep any associated trophies
+public var achievements_to_save = ['collection_egg_hunter', 'collection_street_creator_dirt', 'collection_street_creator_earth', 'collection_street_creator_rock', 'collection_street_creator_wood', 'fine_friend', 'good_buddy', 'jolly_good_chap', 'a1_comrade', 'best_pal', 'ascended', 'ascended_level11', 'ascended_level23', 'ascended_level31', 'ascended_level41', 'ascended_level61', 'ascended_level83', 'ascended_level101']; // Don't forget to modify pc.resetForTesting() to make sure they also keep any associated trophies
 public function achievements_reset(){
 
     this.achievements_init();
@@ -588,7 +588,7 @@ public function achievements_check_in_inventory(id){
 //
 
 // Defined once here, instead of inside the loop in achievements_get_from_counter, for perf reasons
-var group_types = ['group_count', 'group_sum'];
+public var group_types = ['group_count', 'group_sum'];
 
 public function achievements_get_from_counter(group, label){
     var out = {};
@@ -728,7 +728,7 @@ public function achievementsGetLatest(){
     }
 }
 
-var leaderboardless_achievements = ['ascended', 'ascended_level11', 'ascended_level23', 'ascended_level31', 'ascended_level41', 'ascended_level61', 'ascended_level83', 'ascended_level101'];
+public var leaderboardless_achievements = ['ascended', 'ascended_level11', 'ascended_level23', 'ascended_level31', 'ascended_level41', 'ascended_level61', 'ascended_level83', 'ascended_level101'];
 public function achievements_get_leaderboard_count(){
 
     var count = 0;

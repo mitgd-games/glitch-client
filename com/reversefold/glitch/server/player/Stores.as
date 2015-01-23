@@ -116,7 +116,7 @@ public function openStoreInterface(item, verb){
 // player wants to buy from the store
 //
 
-var generic_bag_classes = ['bag_generic', 'bag_generic_blue', 'bag_generic_gray', 'bag_generic_green', 'bag_generic_pink', 'bag_bigger', 'bag_bigger_blue', 'bag_bigger_gray', 'bag_bigger_green', 'bag_bigger_pink'];
+public var generic_bag_classes = ['bag_generic', 'bag_generic_blue', 'bag_generic_gray', 'bag_generic_green', 'bag_generic_pink', 'bag_bigger', 'bag_bigger_blue', 'bag_bigger_gray', 'bag_bigger_green', 'bag_bigger_pink'];
 public function storeBuy(msg, item){
 
     var store_id = intval(this.storeGetID(item, msg.verb));
@@ -267,8 +267,8 @@ public function storeBuy(msg, item){
 // player wants to sell a stack of items to the store
 //
 
-var watering_can_stores = [6,11,12];
-var hatchet_stores = [4,6,11,12];
+public var watering_can_stores = [6,11,12];
+public var hatchet_stores = [4,6,11,12];
 public function storeSell(msg, item){
 
     var store_id = this.storeGetID(item, msg.verb);

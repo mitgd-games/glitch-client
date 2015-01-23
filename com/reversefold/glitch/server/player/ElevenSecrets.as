@@ -264,7 +264,7 @@ public function triggerSecretLocationMarker(loc, id) {
 }
 
 // VoG messages for each giant. Three options for each one.
-var secret_giant_messages = {
+public var secret_giant_messages = {
     'alph': [   '*YOWCH!*\nWha…? What was that? Some kind of shock?',
                 '*POW*.\nWas that a deja vu of the DNA? Because it smells like burning hair.',
                 'WOAH THERE!\nI swear I just felt a planet imploding. Did you feel that?!?'
@@ -309,7 +309,7 @@ var secret_giant_messages = {
                 '*SHAZAYAM*\nI feel dizzy. Can a deja vu of the DNA make you dizzy?']
 };
 
-var secret_giant_growls = {
+public var secret_giant_growls = {
     'alph': [   'The power of Alph is reverberating in your cellular membranes. The DNAja-vu feels like an electric shock.',
                 'An Alph-specific DNAja-vu fizzles through your veins. You feel the urge to go tinker with something.',
                 'One of Alph\'s own memories flashed through your brain faster than you could catch in a moment of DNAja-vu.'

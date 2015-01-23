@@ -992,7 +992,7 @@ public function quests_learnt_skill(skill_id){
     }
 }
 
-var first_tool_skills = {
+public var first_tool_skills = {
     'ezcooking_1': 'knife_and_board',
     'alchemy_1': 'test_tube',
     'mining_1': 'pick',

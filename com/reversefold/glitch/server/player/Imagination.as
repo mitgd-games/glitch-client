@@ -990,7 +990,7 @@ public function imagination_update_collectors() {
     }
 }
 
-var imagination_shuffle_card_cost = [
+public var imagination_shuffle_card_cost = [
     25,
     30,
     35,
@@ -1057,7 +1057,7 @@ public function imagination_get_resurrection_card_cost(){
     return Math.max(20, this.metabolics_get_max_energy() * 0.1);
 }
 
-var imagination_conversion_energy = [
+public var imagination_conversion_energy = [
     [140, 900],
     [150, 1200],
     [170, 1900],
@@ -1116,7 +1116,7 @@ var imagination_conversion_energy = [
     [2860, 441300]
 ];
 
-var imagination_conversion_quoin = [
+public var imagination_conversion_quoin = [
     [1.4, 400],
     [1.5, 500],
     [1.7, 1000],

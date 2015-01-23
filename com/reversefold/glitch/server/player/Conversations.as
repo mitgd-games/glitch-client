@@ -254,7 +254,7 @@ public function conversations_can_do_chain(chain){
     return true;
 }
 
-var convo_bubble_choices = [
+public var convo_bubble_choices = [
     "Hey {pc_label}, come here, I've got something to tell you!",
     "Hey! {pc_label}! Come talk to me!",
     "{pc_label}! Talk to me? I know secrets.",

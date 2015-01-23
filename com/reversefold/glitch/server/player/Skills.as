@@ -1433,9 +1433,9 @@ public function skills_in_learning_queue(skill) {
     return false;
 }
 
-var teleportation_skills = ['teleportation_1', 'teleportation_2', 'teleportation_3', 'teleportation_4', 'teleportation_5'];
-var meditation_skills = ['meditativearts_1', 'meditativearts_2', 'meditativearts_3'];
-var camera_skills = ['snapshotting_1', 'eyeballery_1'];
+public var teleportation_skills = ['teleportation_1', 'teleportation_2', 'teleportation_3', 'teleportation_4', 'teleportation_5'];
+public var meditation_skills = ['meditativearts_1', 'meditativearts_2', 'meditativearts_3'];
+public var camera_skills = ['snapshotting_1', 'eyeballery_1'];
 public function skills_give(id){
     // valid skill?
     var data = this.skills_get(id);

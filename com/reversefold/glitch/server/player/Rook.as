@@ -23,7 +23,7 @@ package com.reversefold.glitch.server.player {
 // This contains methods and properties for items which can be rooked (trants and animals)
 // It is also included by players, for the same purpose
 
-var can_be_rooked = true; // By including this file, you've made this object rookable!
+public var can_be_rooked = true; // By including this file, you've made this object rookable!
 
 // Is this object currently rooked?
 public function isRooked(){

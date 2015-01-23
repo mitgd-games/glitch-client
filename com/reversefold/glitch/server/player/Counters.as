@@ -143,7 +143,7 @@ public function counters_reset_group(group){
 
 //////////////////////////////////////////////////////////////////////
 
-var counter_groups_to_sync = ['time_played'];
+public var counter_groups_to_sync = ['time_played'];
 public function counters_sync_from_achievements(){
     for (var group in this.player.achievements.counters){
         if (!in_array_real(group, counter_groups_to_sync)) continue;

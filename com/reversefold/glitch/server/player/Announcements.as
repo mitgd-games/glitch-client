@@ -357,7 +357,7 @@ public function run_overlay_done_script(name){
 }
 
 // this is used to match up functions with overlay script names
-var overlay_scripts_map = {
+public var overlay_scripts_map = {
     'top_of_tree': {
         start: this.overlay_script_top_of_tree,
         done: this.overlay_done_script_top_of_tree

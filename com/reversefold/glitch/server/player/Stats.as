@@ -154,7 +154,7 @@ public function stats_calc_level_from_xp_simple(xp){
     return ret.level;
 }
 
-var xp_for_level = [
+public var xp_for_level = [
     400,
     1091,
     2180,
