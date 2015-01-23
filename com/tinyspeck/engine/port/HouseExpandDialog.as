@@ -32,7 +32,13 @@ package com.tinyspeck.engine.port
 	public class HouseExpandDialog extends Dialog implements IPackChange
 	{
 		/* singleton boilerplate */
-		public static const instance:HouseExpandDialog = new HouseExpandDialog();
+		public static var _instance:HouseExpandDialog = null;
+        public static function get instance() : HouseExpandDialog {
+            if (_instance == null) {
+                _instance = new HouseExpandDialog();
+            }
+            return _instance;
+        }
 		
 		private static const REQ_PADD:int = 80; //L+R padding
 		private static const WORK_ICON_WH:uint = 40;
@@ -66,7 +72,7 @@ package com.tinyspeck.engine.port
 		
 		public function HouseExpandDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = 424;

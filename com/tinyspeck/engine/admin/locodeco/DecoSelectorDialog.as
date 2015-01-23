@@ -31,7 +31,13 @@ package com.tinyspeck.engine.admin.locodeco {
 	public class DecoSelectorDialog extends Dialog {
 		
 		/* singleton boilerplate */
-		public static const instance:DecoSelectorDialog = new DecoSelectorDialog();
+		public static var _instance:DecoSelectorDialog = null;
+        public static function get instance() : DecoSelectorDialog {
+            if (_instance == null) {
+                _instance = new DecoSelectorDialog();
+            }
+            return _instance;
+        }
 		
 		public  static const CATEGORY_ALL:String        = 'ALL';
 		public  static const CATEGORY_ANIMS:String      = 'ANIMS';
@@ -104,7 +110,7 @@ package com.tinyspeck.engine.admin.locodeco {
 		
 		public function DecoSelectorDialog() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			DecoHolderPool = new ObjectPool(true);
@@ -157,7 +163,7 @@ package com.tinyspeck.engine.admin.locodeco {
 		
 		override protected function makeCloseBt():Button {
 			return new Button({
-				graphic: new AssetManager.instance.assets['close_x_small_gray'](),
+				graphic: new (AssetManager.instance.assets['close_x_small_gray'])(),
 				name: '_close_bt',
 				c: bg_c,
 				high_c: bg_c,

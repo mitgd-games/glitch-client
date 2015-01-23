@@ -65,7 +65,13 @@ package com.tinyspeck.engine.port {
 	public class QuestManager extends EventDispatcher {
 		
 		/* singleton boilerplate */
-		public static const instance:QuestManager = new QuestManager();
+		public static var _instance:QuestManager = null;
+        public static function get instance() : QuestManager {
+            if (_instance == null) {
+                _instance = new QuestManager();
+            }
+            return _instance;
+        }
 		
 		private static const MAX_NEED_TO_SHOW:uint = 20; //how many "need" things to allow for the quest update requirement to show up
 		
@@ -75,7 +81,7 @@ package com.tinyspeck.engine.port {
 		/* constructor */
 		public function QuestManager() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

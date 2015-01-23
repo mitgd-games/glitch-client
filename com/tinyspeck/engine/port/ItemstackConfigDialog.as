@@ -32,7 +32,13 @@ package com.tinyspeck.engine.port
 
 	public class ItemstackConfigDialog extends BigDialog implements IFocusableComponent {
 		/* singleton boilerplate */
-		public static const instance:ItemstackConfigDialog = new ItemstackConfigDialog();
+		public static var _instance:ItemstackConfigDialog = null;
+        public static function get instance() : ItemstackConfigDialog {
+            if (_instance == null) {
+                _instance = new ItemstackConfigDialog();
+            }
+            return _instance;
+        }
 		
 		private var wm:WorldModel;
 		
@@ -56,7 +62,7 @@ package com.tinyspeck.engine.port
 		
 		public function ItemstackConfigDialog() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			wm = model.worldModel;

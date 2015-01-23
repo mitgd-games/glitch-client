@@ -49,7 +49,13 @@ package com.tinyspeck.engine.pack {
 	public class PackDisplayManager extends TSSpriteWithModel implements IFocusableComponent, IPcItemstackAddDelConsumer, IPcItemstackUpdateConsumer {
 		
 		/* singleton boilerplate */
-		public static const instance:PackDisplayManager = new PackDisplayManager();
+		public static var _instance:PackDisplayManager = null;
+        public static function get instance() : PackDisplayManager {
+            if (_instance == null) {
+                _instance = new PackDisplayManager();
+            }
+            return _instance;
+        }
 		
 		public var showing_label_boxes:Boolean = true;
 		public var label_box_w:int = 80;
@@ -81,7 +87,7 @@ package com.tinyspeck.engine.pack {
 		
 		public function PackDisplayManager():void {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_h = 72;

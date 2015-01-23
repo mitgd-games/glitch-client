@@ -64,7 +64,13 @@ package com.tinyspeck.engine.view.renderer
 	 */ 	
 	public class LocationInputHandler extends EventDispatcher{
 		public static const CLICK_DELAY:uint = 100; // milliseconds
-		public static const instance:LocationInputHandler = new LocationInputHandler();
+		public static var _instance:LocationInputHandler = null;
+        public static function get instance() : LocationInputHandler {
+            if (_instance == null) {
+                _instance = new LocationInputHandler();
+            }
+            return _instance;
+        }
 		
 		private const interaction_spritesV:Vector.<TSSprite> = new Vector.<TSSprite>();
 		
@@ -83,7 +89,7 @@ package com.tinyspeck.engine.view.renderer
 		
 		public function LocationInputHandler() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			this.model = TSModelLocator.instance;

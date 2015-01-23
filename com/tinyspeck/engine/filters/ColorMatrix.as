@@ -9,7 +9,6 @@ package com.tinyspeck.engine.filters
 	{
 		//Adapted from both Quasimondo and gskinner's colormatrix classes.
 		
-		
 		public var matrixArray:Array;
 		private static var identityArray:Array = [1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0];
 		private static var DELTA_INDEX:Array = [
@@ -32,7 +31,13 @@ package com.tinyspeck.engine.filters
 		private static var lumG:Number = 0.715160;
 		private static var lumB:Number = 0.072169;
 		
-		private static var filterColorMatrix:com.tinyspeck.engine.filters.ColorMatrix = new com.tinyspeck.engine.filters.ColorMatrix();
+		private static var _filterColorMatrix:com.tinyspeck.engine.filters.ColorMatrix = null;
+		private static function get filterColorMatrix() : com.tinyspeck.engine.filters.ColorMatrix {
+			if (_filterColorMatrix == null) {
+				_filterColorMatrix = new com.tinyspeck.engine.filters.ColorMatrix();
+			}
+			return _filterColorMatrix;
+		}
 		
 		public function ColorMatrix(brightnessValue:Number = 0, contrastValue:Number = 0, saturationValue:Number = 0, tintColor:int = 0x000000, tintAmount:Number = 0)
 		{

@@ -38,7 +38,13 @@ package com.tinyspeck.engine.view.ui.imagination
 	public class ImaginationYourLooksUI extends Sprite implements IRefreshListener
 	{
 		/* singleton boilerplate */
-		public static const instance:ImaginationYourLooksUI = new ImaginationYourLooksUI();
+		public static var _instance:ImaginationYourLooksUI = null;
+        public static function get instance() : ImaginationYourLooksUI {
+            if (_instance == null) {
+                _instance = new ImaginationYourLooksUI();
+            }
+            return _instance;
+        }
 		
 		private static const TOP_PADD:uint = 20;
 		private static const AVATAR_PADD:uint = 15;
@@ -90,7 +96,7 @@ package com.tinyspeck.engine.view.ui.imagination
 		
 		public function ImaginationYourLooksUI(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

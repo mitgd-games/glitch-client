@@ -36,7 +36,13 @@ package com.tinyspeck.engine.view.gameoverlay
 	public class SnapTravelView extends BaseScreenView
 	{
 		/* singleton boilerplate */
-		public static const instance:SnapTravelView = new SnapTravelView();
+		public static var _instance:SnapTravelView = null;
+        public static function get instance() : SnapTravelView {
+            if (_instance == null) {
+                _instance = new SnapTravelView();
+            }
+            return _instance;
+        }
 		
 		private static const IMAGE_PADD:uint = 16; //width of the frame around the snap
 		private static const SNAP_SHOW_DELAY_MS:uint = 2000; //how long to show the text before showing the image
@@ -72,7 +78,7 @@ package com.tinyspeck.engine.view.gameoverlay
 		
 		public function SnapTravelView(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

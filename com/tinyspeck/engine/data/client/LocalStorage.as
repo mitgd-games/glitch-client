@@ -50,7 +50,13 @@ package com.tinyspeck.engine.data.client
 		
 		private static const SO_NAME:String = 'TS_DATA';
 		private static const SO_LOG_NAME:String = 'TS_LOG_DATA';
-		public static const instance:LocalStorage = new LocalStorage();
+		public static var _instance:LocalStorage = null;
+        public static function get instance() : LocalStorage {
+            if (_instance == null) {
+                _instance = new LocalStorage();
+            }
+            return _instance;
+        }
 		
 		private var _pc_tsid:String;
 		private var _so:SharedObject;
@@ -60,7 +66,7 @@ package com.tinyspeck.engine.data.client
 		/* constructor */
 		public function LocalStorage() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

@@ -20,7 +20,13 @@ package com.tinyspeck.engine.port {
 	public class ConfirmationDialog extends Dialog implements IMoveListener {
 		
 		/* singleton boilerplate */
-		public static const instance:ConfirmationDialog = new ConfirmationDialog();
+		public static var _instance:ConfirmationDialog = null;
+        public static function get instance() : ConfirmationDialog {
+            if (_instance == null) {
+                _instance = new ConfirmationDialog();
+            }
+            return _instance;
+        }
 		
 		private const ICON_WH:uint = 50;
 		private const DEFAULT_WIDTH:uint = 450;
@@ -42,7 +48,7 @@ package com.tinyspeck.engine.port {
 		
 		public function ConfirmationDialog() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_close_bt_padd_right = 8;

@@ -74,11 +74,17 @@ package com.tinyspeck.engine.port
 		
 		
 		/* singleton boilerplate */
-		public static const instance:TrophyCaseDialog = new TrophyCaseDialog();
+		public static var _instance:TrophyCaseDialog = null;
+        public static function get instance() : TrophyCaseDialog {
+            if (_instance == null) {
+                _instance = new TrophyCaseDialog();
+            }
+            return _instance;
+        }
 		
 		public function TrophyCaseDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			model = TSModelLocator.instance;

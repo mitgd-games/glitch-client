@@ -29,7 +29,13 @@ package com.tinyspeck.engine.view.gameoverlay {
 	public class LevelUpView extends BaseScreenView {
 		
 		/* singleton boilerplate */
-		public static const instance:LevelUpView = new LevelUpView();
+		public static var _instance:LevelUpView = null;
+        public static function get instance() : LevelUpView {
+            if (_instance == null) {
+                _instance = new LevelUpView();
+            }
+            return _instance;
+        }
 		
 		private const MAX_WORDS_DISPLAYED:uint = 4; //WORD_POINTS needs to have this many points
 		private const WORD_POINTS:Array = new Array(new Point(-60,630), new Point(200,620), new Point(-80,830), new Point(270,850));
@@ -52,7 +58,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 		public function LevelUpView() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

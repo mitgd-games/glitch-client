@@ -32,7 +32,13 @@ package com.tinyspeck.engine.view.gameoverlay
 	public class UICalloutView extends Sprite implements IMoveListener
 	{
 		/* singleton boilerplate */
-		public static const instance:UICalloutView = new UICalloutView();
+		public static var _instance:UICalloutView = null;
+        public static function get instance() : UICalloutView {
+            if (_instance == null) {
+                _instance = new UICalloutView();
+            }
+            return _instance;
+        }
 		
 		/**
 		 * http://svn.tinyspeck.com/wiki/SpecUICallout#Available_Sections 
@@ -101,7 +107,7 @@ package com.tinyspeck.engine.view.gameoverlay
 		
 		public function UICalloutView() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

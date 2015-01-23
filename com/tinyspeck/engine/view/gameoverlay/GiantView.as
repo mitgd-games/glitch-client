@@ -25,7 +25,13 @@ package com.tinyspeck.engine.view.gameoverlay
 	public class GiantView extends BaseScreenView
 	{
 		/* singleton boilerplate */
-		public static const instance:GiantView = new GiantView();
+		public static var _instance:GiantView = null;
+        public static function get instance() : GiantView {
+            if (_instance == null) {
+                _instance = new GiantView();
+            }
+            return _instance;
+        }
 		
 		private static const TEXT_OFFSET:int = 20; //how much left to go based on the FLV width
 		private static const TEXT_PADD:int = 20; //how much padding on the right before it starts to auto size the body
@@ -68,7 +74,7 @@ package com.tinyspeck.engine.view.gameoverlay
 		
 		public function GiantView(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

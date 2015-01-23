@@ -49,7 +49,13 @@ package com.tinyspeck.engine.port
 
 	public class CultManager implements IFocusableComponent, IMoveListener, IRefreshListener, ILocItemstackAddDelConsumer, ILocItemstackUpdateConsumer {
 		/* singleton boilerplate */
-		public static const instance:CultManager = new CultManager();
+		public static var _instance:CultManager = null;
+        public static function get instance() : CultManager {
+            if (_instance == null) {
+                _instance = new CultManager();
+            }
+            return _instance;
+        }
 		
 		public static const WIDTH_OF_CONFIG_UI:uint = 190;
 		
@@ -78,7 +84,7 @@ package com.tinyspeck.engine.port
 		
 		public function CultManager() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

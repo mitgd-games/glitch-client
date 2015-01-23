@@ -33,7 +33,13 @@ package com.tinyspeck.engine.admin
 	
 	public final class HandOfGod implements IFocusableComponent, ILocItemstackAddDelConsumer, IMoveListener
 	{
-		public static const instance:HandOfGod = new HandOfGod();
+		public static var _instance:HandOfGod = null;
+        public static function get instance() : HandOfGod {
+            if (_instance == null) {
+                _instance = new HandOfGod();
+            }
+            return _instance;
+        }
 		private static const KEY_REPEAT_DELAY:int = 250; // ms
 		
 		private var initialized:Boolean;
@@ -58,7 +64,7 @@ package com.tinyspeck.engine.admin
 		
 		public function HandOfGod():void {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

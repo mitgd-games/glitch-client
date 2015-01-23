@@ -32,7 +32,13 @@ package com.tinyspeck.engine.pack {
 	public class FurnitureBagUI extends BagUI {
 		
 		/* singleton boilerplate */
-		public static const instance:FurnitureBagUI = new FurnitureBagUI();
+		public static var _instance:FurnitureBagUI = null;
+        public static function get instance() : FurnitureBagUI {
+            if (_instance == null) {
+                _instance = new FurnitureBagUI();
+            }
+            return _instance;
+        }
 		
 		private const FBIV_SIZE:int = 70; // this size makes sure that exactly one row is visible at the smallest window size
 		
@@ -40,7 +46,7 @@ package com.tinyspeck.engine.pack {
 		
 		public function FurnitureBagUI() {			
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

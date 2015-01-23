@@ -18,7 +18,13 @@ package com.tinyspeck.engine.port
 	public class CraftyManager
 	{
 		/* singleton boilerplate */
-		public static const instance:CraftyManager = new CraftyManager();
+		public static var _instance:CraftyManager = null;
+        public static function get instance() : CraftyManager {
+            if (_instance == null) {
+                _instance = new CraftyManager();
+            }
+            return _instance;
+        }
 		
 		public var jobs:Vector.<CraftyJob> = new Vector.<CraftyJob>();
 		public var job_cost_req:CraftyJob; //used when price checking
@@ -43,7 +49,7 @@ package com.tinyspeck.engine.port
 		
 		public function CraftyManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

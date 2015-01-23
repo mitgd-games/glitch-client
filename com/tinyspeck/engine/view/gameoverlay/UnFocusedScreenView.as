@@ -20,7 +20,13 @@ package com.tinyspeck.engine.view.gameoverlay {
 	public class UnFocusedScreenView extends AbstractTSView implements IMoveListener {
 		
 		/* singleton boilerplate */
-		public static const instance:UnFocusedScreenView = new UnFocusedScreenView();
+		public static var _instance:UnFocusedScreenView = null;
+        public static function get instance() : UnFocusedScreenView {
+            if (_instance == null) {
+                _instance = new UnFocusedScreenView();
+            }
+            return _instance;
+        }
 		
 		private var model:TSModelLocator;
 		
@@ -36,7 +42,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 		public function UnFocusedScreenView() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			if (no_go) return;

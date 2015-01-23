@@ -14,7 +14,13 @@ package com.tinyspeck.engine.port
 	public class SendIMToDevDialog extends BigDialog
 	{
 		/* singleton boilerplate */
-		public static const instance:SendIMToDevDialog = new SendIMToDevDialog();
+		public static var _instance:SendIMToDevDialog = null;
+        public static function get instance() : SendIMToDevDialog {
+            if (_instance == null) {
+                _instance = new SendIMToDevDialog();
+            }
+            return _instance;
+        }
 		
 		private var body_tf:TSLinkedTextField = new TSLinkedTextField();
 		private var ok_bt:Button;
@@ -25,7 +31,7 @@ package com.tinyspeck.engine.port
 		
 		public function SendIMToDevDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_body_border_c = 0xffffff;

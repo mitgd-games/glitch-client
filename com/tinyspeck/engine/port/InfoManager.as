@@ -31,7 +31,13 @@ package com.tinyspeck.engine.port {
 	
 	public class InfoManager implements IFocusableComponent, IDisposableSpriteChangeHandler, IMoveListener {
 		/* singleton boilerplate */
-		public static const instance:InfoManager = new InfoManager();
+		public static var _instance:InfoManager = null;
+		public static function get instance() : InfoManager {
+			if (_instance == null) {
+				_instance = new InfoManager();
+			}
+			return _instance;
+		}
 		
 		private const item_class_to_info_label:Dictionary = new Dictionary();
 		private const pc_to_info_label:Dictionary = new Dictionary();
@@ -71,7 +77,7 @@ package com.tinyspeck.engine.port {
 		
 		public function InfoManager():void {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			init();

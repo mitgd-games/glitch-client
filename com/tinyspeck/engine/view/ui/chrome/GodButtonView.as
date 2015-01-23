@@ -34,7 +34,13 @@ package com.tinyspeck.engine.view.ui.chrome {
 	
 	public class GodButtonView extends AbstractTSView implements ITipProvider {
 		/* singleton boilerplate */
-		public static const instance:GodButtonView = new GodButtonView();
+		public static var _instance:GodButtonView = null;
+        public static function get instance() : GodButtonView {
+            if (_instance == null) {
+                _instance = new GodButtonView();
+            }
+            return _instance;
+        }
 		
 		private const renderer_vector_icon_holder:Sprite = new Sprite();
 		private const renderer_bitmap_icon_holder:Sprite = new Sprite();
@@ -74,7 +80,7 @@ package com.tinyspeck.engine.view.ui.chrome {
 		
 		public function GodButtonView() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			buttonMode    = false;

@@ -15,13 +15,19 @@ package com.tinyspeck.engine.view.gameoverlay {
 	
 	public class ThrottledScreenView extends TSSpriteWithModel {
 		/* singleton boilerplate */
-		public static const instance:ThrottledScreenView = new ThrottledScreenView();
+		public static var _instance:ThrottledScreenView = null;
+        public static function get instance() : ThrottledScreenView {
+            if (_instance == null) {
+                _instance = new ThrottledScreenView();
+            }
+            return _instance;
+        }
 		
 		private const container:Sprite = new Sprite();
 		
 		public function ThrottledScreenView() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			buttonMode = true;

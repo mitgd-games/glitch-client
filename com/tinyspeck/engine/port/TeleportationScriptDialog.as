@@ -36,7 +36,13 @@ package com.tinyspeck.engine.port
 	public class TeleportationScriptDialog extends BigDialog implements ITipProvider
 	{
 		/* singleton boilerplate */
-		public static const instance:TeleportationScriptDialog = new TeleportationScriptDialog();
+		public static var _instance:TeleportationScriptDialog = null;
+        public static function get instance() : TeleportationScriptDialog {
+            if (_instance == null) {
+                _instance = new TeleportationScriptDialog();
+            }
+            return _instance;
+        }
 		
 		private const DISABLED_ALPHA:Number = .5;
 		private const NOTE_HEIGHT:uint = 80;
@@ -72,7 +78,7 @@ package com.tinyspeck.engine.port
 		
 		public function TeleportationScriptDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_head_min_h = 60;

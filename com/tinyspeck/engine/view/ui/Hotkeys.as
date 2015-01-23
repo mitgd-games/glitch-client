@@ -21,7 +21,13 @@ package com.tinyspeck.engine.view.ui
 	public class Hotkeys extends Sprite implements IRefreshListener
 	{
 		/* singleton boilerplate */
-		public static const instance:Hotkeys = new Hotkeys();
+		public static var _instance:Hotkeys = null;
+        public static function get instance() : Hotkeys {
+            if (_instance == null) {
+                _instance = new Hotkeys();
+            }
+            return _instance;
+        }
 		
 		private static const ANI_TIME:Number = .1;
 		
@@ -33,7 +39,7 @@ package com.tinyspeck.engine.view.ui
 		
 		public function Hotkeys(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

@@ -13,7 +13,13 @@ package com.tinyspeck.engine.port
 	public class NoticeBoardManager
 	{
 		/* singleton boilerplate */
-		public static const instance:NoticeBoardManager = new NoticeBoardManager();
+		public static var _instance:NoticeBoardManager = null;
+        public static function get instance() : NoticeBoardManager {
+            if (_instance == null) {
+                _instance = new NoticeBoardManager();
+            }
+            return _instance;
+        }
 		
 		private var itemstack_tsid:String;
 		private var _max_notes:uint;
@@ -21,7 +27,7 @@ package com.tinyspeck.engine.port
 		
 		public function NoticeBoardManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

@@ -10,13 +10,19 @@ package com.tinyspeck.engine.port
 	public class PartySpaceManager
 	{
 		/* singleton boilerplate */
-		public static const instance:PartySpaceManager = new PartySpaceManager();
+		public static var _instance:PartySpaceManager = null;
+        public static function get instance() : PartySpaceManager {
+            if (_instance == null) {
+                _instance = new PartySpaceManager();
+            }
+            return _instance;
+        }
 		
 		private var _current_party:PartySpace;
 		
 		public function PartySpaceManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

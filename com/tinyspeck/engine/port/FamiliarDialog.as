@@ -39,7 +39,13 @@ package com.tinyspeck.engine.port {
 	public class FamiliarDialog extends Dialog {
 		
 		/* singleton boilerplate */
-		public static const instance:FamiliarDialog = new FamiliarDialog();
+		public static var _instance:FamiliarDialog = null;
+        public static function get instance() : FamiliarDialog {
+            if (_instance == null) {
+                _instance = new FamiliarDialog();
+            }
+            return _instance;
+        }
 		
 		public static const DEFAULT:String = 'DEFAULT';
 		public static const SKILL_LEARNED:String = 'SKILL_LEARNED';
@@ -79,7 +85,7 @@ package com.tinyspeck.engine.port {
 		
 		public function FamiliarDialog() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_close_bt_padd_right = 8;

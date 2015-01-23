@@ -27,7 +27,13 @@ package com.tinyspeck.engine.view.ui.quest
 	public class QuestTracker extends Sprite implements IRefreshListener, IMoveListener
 	{
 		/* singleton boilerplate */
-		public static const instance:QuestTracker = new QuestTracker();
+		public static var _instance:QuestTracker = null;
+        public static function get instance() : QuestTracker {
+            if (_instance == null) {
+                _instance = new QuestTracker();
+            }
+            return _instance;
+        }
 		
 		private var top_holder:Sprite = new Sprite();
 		private var bottom_holder:Sprite = new Sprite();
@@ -52,7 +58,7 @@ package com.tinyspeck.engine.view.ui.quest
 		
 		public function QuestTracker(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

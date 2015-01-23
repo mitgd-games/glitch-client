@@ -10,7 +10,13 @@ package com.tinyspeck.engine.port
 	public class TradeChannelDialog extends BigDialog
 	{
 		/* singleton boilerplate */
-		public static const instance:TradeChannelDialog = new TradeChannelDialog();
+		public static var _instance:TradeChannelDialog = null;
+        public static function get instance() : TradeChannelDialog {
+            if (_instance == null) {
+                _instance = new TradeChannelDialog();
+            }
+            return _instance;
+        }
 		
 		private var body_tf:TSLinkedTextField = new TSLinkedTextField();
 		private var ok_bt:Button;
@@ -19,7 +25,7 @@ package com.tinyspeck.engine.port
 		
 		public function TradeChannelDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_body_border_c = 0xffffff;

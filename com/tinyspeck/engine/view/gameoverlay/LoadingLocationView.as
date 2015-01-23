@@ -41,7 +41,13 @@ package com.tinyspeck.engine.view.gameoverlay {
 	public class LoadingLocationView extends AbstractTSView {
 		
 		/* singleton boilerplate */
-		public static const instance:LoadingLocationView = new LoadingLocationView();
+		public static var _instance:LoadingLocationView = null;
+        public static function get instance() : LoadingLocationView {
+            if (_instance == null) {
+                _instance = new LoadingLocationView();
+            }
+            return _instance;
+        }
 		
 		private const IMG_H:uint = 160;
 		private const PADD_PERC:Number = .10; //how much of the vp width to use for gaps on the left and right
@@ -109,7 +115,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 		public function LoadingLocationView() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			model = TSModelLocator.instance;

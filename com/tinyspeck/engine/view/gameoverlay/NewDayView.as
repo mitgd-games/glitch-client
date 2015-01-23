@@ -37,7 +37,13 @@ package com.tinyspeck.engine.view.gameoverlay {
 	public class NewDayView extends BaseScreenView implements ITipProvider {
 		
 		/* singleton boilerplate */
-		public static const instance:NewDayView = new NewDayView();
+		public static var _instance:NewDayView = null;
+        public static function get instance() : NewDayView {
+            if (_instance == null) {
+                _instance = new NewDayView();
+            }
+            return _instance;
+        }
 		
 		private const REFILL_PADD:int = 75;
 		private const GAUGE_SCALE_BASE:Number = 2.5;
@@ -82,7 +88,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 		public function NewDayView() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

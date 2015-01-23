@@ -4,7 +4,13 @@ package com.tinyspeck.engine.model {
 	
 	public class TSModelLocator {
 		/* singleton boilerplate */
-		public static const instance:TSModelLocator = new TSModelLocator();
+		public static var _instance:TSModelLocator = null;
+        public static function get instance() : TSModelLocator {
+            if (_instance == null) {
+                _instance = new TSModelLocator();
+            }
+            return _instance;
+        }
 		
 		public var prefsModel:PrefsModel;
 		public var flashVarModel:FlashVarModel;
@@ -22,7 +28,7 @@ package com.tinyspeck.engine.model {
 		
 		public function TSModelLocator() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			// we used to do this, but now we take care not to reference the

@@ -17,7 +17,13 @@ package com.tinyspeck.engine.port {
 	
 	public class Cursor extends Sprite implements IFocusableComponent {
 		/* singleton boilerplate */
-		public static const instance:Cursor = new Cursor();
+		public static var _instance:Cursor = null;
+        public static function get instance() : Cursor {
+            if (_instance == null) {
+                _instance = new Cursor();
+            }
+            return _instance;
+        }
 		
 		public var is_dragging:Boolean = false;
 		public var drag_DO:DisplayObject;
@@ -27,7 +33,7 @@ package com.tinyspeck.engine.port {
 		
 		public function Cursor():void {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			mouseChildren = false;

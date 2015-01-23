@@ -43,7 +43,13 @@ package com.tinyspeck.engine.port
 	public class PlayerInfoDialog extends BigDialog implements ITipProvider
 	{
 		/* singleton boilerplate */
-		public static const instance:PlayerInfoDialog = new PlayerInfoDialog();
+		public static var _instance:PlayerInfoDialog = null;
+        public static function get instance() : PlayerInfoDialog {
+            if (_instance == null) {
+                _instance = new PlayerInfoDialog();
+            }
+            return _instance;
+        }
 		
 		private const OFFSET_X:uint = 170;
 		private const AVATAR_SIZE:uint = 172; //must match a size that the API returns  (50, 100, 172 as of April 18, 2011)
@@ -73,7 +79,7 @@ package com.tinyspeck.engine.port
 		
 		public function PlayerInfoDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = 510;

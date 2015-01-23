@@ -5,14 +5,20 @@ package com.tinyspeck.engine.pack
 	public class WallSwatchBagUI extends SwatchBagUI
 	{
 		/* singleton boilerplate */
-		public static const instance:WallSwatchBagUI = new WallSwatchBagUI();
+		public static var _instance:WallSwatchBagUI = null;
+        public static function get instance() : WallSwatchBagUI {
+            if (_instance == null) {
+                _instance = new WallSwatchBagUI();
+            }
+            return _instance;
+        }
 		
 		public function WallSwatchBagUI(){
 			//set the type
 			super(Swatch.TYPE_WALLPAPER);
 			
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}		
 		}
 	}

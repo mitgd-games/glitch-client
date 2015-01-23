@@ -107,7 +107,7 @@ package com.tinyspeck.engine.port
 		
 		public function TradeDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = 574;
@@ -1552,6 +1552,12 @@ package com.tinyspeck.engine.port
 		}
 		
 		/* singleton boilerplate */
-		public static const instance:TradeDialog = new TradeDialog();
+		public static var _instance:TradeDialog = null;
+        public static function get instance() : TradeDialog {
+            if (_instance == null) {
+                _instance = new TradeDialog();
+            }
+            return _instance;
+        }
 	}
 }

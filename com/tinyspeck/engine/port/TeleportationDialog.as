@@ -52,11 +52,17 @@ package com.tinyspeck.engine.port
 		private var _cooldown_left:int;
 		
 		/* singleton boilerplate */
-		public static const instance:TeleportationDialog = new TeleportationDialog();
+		public static var _instance:TeleportationDialog = null;
+        public static function get instance() : TeleportationDialog {
+            if (_instance == null) {
+                _instance = new TeleportationDialog();
+            }
+            return _instance;
+        }
 
 		public function TeleportationDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			model = TSModelLocator.instance;

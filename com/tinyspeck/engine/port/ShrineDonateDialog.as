@@ -28,7 +28,13 @@ package com.tinyspeck.engine.port
 	public class ShrineDonateDialog extends BigDialog implements IPackChange
 	{
 		/* singleton boilerplate */
-		public static const instance:ShrineDonateDialog = new ShrineDonateDialog();
+		public static var _instance:ShrineDonateDialog = null;
+        public static function get instance() : ShrineDonateDialog {
+            if (_instance == null) {
+                _instance = new ShrineDonateDialog();
+            }
+            return _instance;
+        }
 		
 		private static const HOLDER_WH:uint = 132;
 		private static const ICON_WH:uint = 100;
@@ -59,7 +65,7 @@ package com.tinyspeck.engine.port
 		
 		public function ShrineDonateDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = 500;

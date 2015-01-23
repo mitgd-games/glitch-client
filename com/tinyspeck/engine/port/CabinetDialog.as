@@ -70,11 +70,17 @@ package com.tinyspeck.engine.port
 		private var has_focus:Boolean;
 		
 		/* singleton boilerplate */
-		public static const instance:CabinetDialog = new CabinetDialog();
+		public static var _instance:CabinetDialog = null;
+        public static function get instance() : CabinetDialog {
+            if (_instance == null) {
+                _instance = new CabinetDialog();
+            }
+            return _instance;
+        }
 		
 		public function CabinetDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

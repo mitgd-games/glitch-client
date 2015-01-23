@@ -15,7 +15,13 @@ package com.tinyspeck.engine.view.gameoverlay
 	public class ImaginationManager
 	{
 		/* singleton boilerplate */
-		public static const instance:ImaginationManager = new ImaginationManager();
+		public static var _instance:ImaginationManager = null;
+        public static function get instance() : ImaginationManager {
+            if (_instance == null) {
+                _instance = new ImaginationManager();
+            }
+            return _instance;
+        }
 		
 		public var is_confirming:Boolean;
 		
@@ -23,7 +29,7 @@ package com.tinyspeck.engine.view.gameoverlay
 		
 		public function ImaginationManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

@@ -9,7 +9,13 @@ package com.tinyspeck.engine.port {
 	
 	public class JS_interface extends JS_interface_base {
 		/* singleton boilerplate */
-		public static const instance:JS_interface = new JS_interface();
+		public static var _instance:JS_interface = null;
+        public static function get instance() : JS_interface {
+            if (_instance == null) {
+                _instance = new JS_interface();
+            }
+            return _instance;
+        }
 		
 		//TODO remove if we keep SWF_better_focus_handling
 		private static var flash_had_focus_before_blur:Boolean = false;
@@ -96,7 +102,7 @@ package com.tinyspeck.engine.port {
 		public function JS_interface() {
 			super(METHODS_OPEN_TO_JS);
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

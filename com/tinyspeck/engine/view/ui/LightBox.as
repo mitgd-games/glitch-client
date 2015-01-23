@@ -29,7 +29,13 @@ package com.tinyspeck.engine.view.ui
 	public class LightBox extends Sprite implements IRefreshListener, IMoveListener, IFocusableComponent
 	{
 		/* singleton boilerplate */
-		public static const instance:LightBox = new LightBox();
+		public static var _instance:LightBox = null;
+        public static function get instance() : LightBox {
+            if (_instance == null) {
+                _instance = new LightBox();
+            }
+            return _instance;
+        }
 		
 		protected static const BG_ALPHA:Number = .9;
 		protected static const BORDER_W:uint = 10;
@@ -52,7 +58,7 @@ package com.tinyspeck.engine.view.ui
 		
 		public function LightBox(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

@@ -190,7 +190,13 @@ package com.tinyspeck.engine.control
 		/** Sends true when going afk, false when going not afk */
 		public const afk_sig:Signal = new Signal(Boolean);
 		
-		public static const instance:TSFrontController = new TSFrontController();
+		public static var _instance:TSFrontController = null;
+        public static function get instance() : TSFrontController {
+            if (_instance == null) {
+                _instance = new TSFrontController();
+            }
+            return _instance;
+        }
 		
 		//vectors for holding subscribers
 		private const moveListenersV:Vector.<IMoveListener> = new Vector.<IMoveListener>();
@@ -208,7 +214,7 @@ package com.tinyspeck.engine.control
 		
 		public function TSFrontController() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

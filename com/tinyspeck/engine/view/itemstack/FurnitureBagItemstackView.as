@@ -192,7 +192,7 @@ package com.tinyspeck.engine.view.itemstack {
 					var arrow:DisplayObject;
 					var next_x:int;
 					for (var i:int=0;i<furn_config.upgrade_ids.length;i++) {
-						arrow = new AssetManager.instance.assets['upgrade_arrow']();
+						arrow = new (AssetManager.instance.assets['upgrade_arrow'])();
 						ups_count_holder.addChild(arrow);
 						arrow.x = next_x;
 						next_x+= arrow.width-1;

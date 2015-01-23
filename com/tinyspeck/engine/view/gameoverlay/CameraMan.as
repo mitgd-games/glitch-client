@@ -1,7 +1,5 @@
 package com.tinyspeck.engine.view.gameoverlay {
 	
-	import com.tinyspeck.tstweener.TSTweener;
-	
 	import com.quietless.bitmap.BitmapSnapshot;
 	import com.tinyspeck.core.beacon.KeyBeacon;
 	import com.tinyspeck.core.beacon.StageBeacon;
@@ -29,6 +27,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 	import com.tinyspeck.engine.view.itemstack.LocationItemstackView;
 	import com.tinyspeck.engine.view.renderer.LocationRenderer;
 	import com.tinyspeck.engine.view.ui.glitchr.GlitchrSnapshotView;
+	import com.tinyspeck.tstweener.TSTweener;
 	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
@@ -87,11 +86,17 @@ package com.tinyspeck.engine.view.gameoverlay {
 		private var elapsed_ms:Number;
 		
 		/* singleton boilerplate */
-		public static const instance:CameraMan = new CameraMan();
+		public static var _instance:CameraMan = null;
+		public static function get instance() : CameraMan {
+			if (_instance == null) {
+				_instance = new CameraMan();
+			}
+			return _instance;
+		}
 		
 		public function CameraMan():void {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			ms_per_loop = new BoundedAverageValueTracker(60);

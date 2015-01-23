@@ -124,11 +124,17 @@ package com.tinyspeck.engine.view.ui
 		private var model:TSModelLocator;
 		
 		/* singleton boilerplate */
-		public static const instance:ChatGodDebug = new ChatGodDebug();
+		public static var _instance:ChatGodDebug = null;
+        public static function get instance() : ChatGodDebug {
+            if (_instance == null) {
+                _instance = new ChatGodDebug();
+            }
+            return _instance;
+        }
 		
 		public function ChatGodDebug() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			model = TSModelLocator.instance;

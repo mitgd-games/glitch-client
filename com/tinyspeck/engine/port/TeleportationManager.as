@@ -18,7 +18,13 @@ package com.tinyspeck.engine.port
 	public class TeleportationManager
 	{
 		/* singleton boilerplate */
-		public static const instance:TeleportationManager = new TeleportationManager();
+		public static var _instance:TeleportationManager = null;
+        public static function get instance() : TeleportationManager {
+            if (_instance == null) {
+                _instance = new TeleportationManager();
+            }
+            return _instance;
+        }
 		
 		private static const teleport_choices:Array = new Array();
 		private static const cdVO:ConfirmationDialogVO = new ConfirmationDialogVO(null, '', teleport_choices);
@@ -30,7 +36,7 @@ package com.tinyspeck.engine.port
 		
 		public function TeleportationManager() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

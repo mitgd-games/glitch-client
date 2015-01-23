@@ -49,7 +49,13 @@ package com.tinyspeck.engine.port
 	public class JobDialog extends BigDialog implements IFocusableComponent, IPackChange {
 		
 		/* singleton boilerplate */
-		public static const instance:JobDialog = new JobDialog();
+		public static var _instance:JobDialog = null;
+        public static function get instance() : JobDialog {
+            if (_instance == null) {
+                _instance = new JobDialog();
+            }
+            return _instance;
+        }
 		
 		private const HOLDER_GAP:int = 40;
 		private const ANIMATION_SPEED:Number = .5;
@@ -98,7 +104,7 @@ package com.tinyspeck.engine.port
 		
 		public function JobDialog() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_draggable = true;

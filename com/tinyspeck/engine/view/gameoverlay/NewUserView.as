@@ -12,13 +12,19 @@ package com.tinyspeck.engine.view.gameoverlay
 	public class NewUserView extends BaseScreenView
 	{
 		/* singleton boilerplate */
-		public static const instance:NewUserView = new NewUserView();
+		public static var _instance:NewUserView = null;
+        public static function get instance() : NewUserView {
+            if (_instance == null) {
+                _instance = new NewUserView();
+            }
+            return _instance;
+        }
 		
 		private var ok_bt:Button;
 		
 		public function NewUserView(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

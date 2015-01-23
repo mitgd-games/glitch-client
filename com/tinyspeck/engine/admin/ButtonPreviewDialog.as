@@ -15,7 +15,13 @@ package com.tinyspeck.engine.admin
 	public class ButtonPreviewDialog extends BigDialog
 	{
 		/* singleton boilerplate */
-		public static const instance:ButtonPreviewDialog = new ButtonPreviewDialog();
+		public static var _instance:ButtonPreviewDialog = null;
+        public static function get instance() : ButtonPreviewDialog {
+            if (_instance == null) {
+                _instance = new ButtonPreviewDialog();
+            }
+            return _instance;
+        }
 		
 		private static const SCROLL_H:uint = 150;
 		
@@ -37,7 +43,7 @@ package com.tinyspeck.engine.admin
 		
 		public function ButtonPreviewDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = 500;

@@ -19,7 +19,13 @@ package com.tinyspeck.engine.port
 	public class ACLManager extends EventDispatcher
 	{
 		/* singleton boilerplate */
-		public static const instance:ACLManager = new ACLManager();
+		public static var _instance:ACLManager = null;
+        public static function get instance() : ACLManager {
+            if (_instance == null) {
+                _instance = new ACLManager();
+            }
+            return _instance;
+        }
 		
 		private var is_grant:Boolean;
 		
@@ -28,7 +34,7 @@ package com.tinyspeck.engine.port
 		
 		public function ACLManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

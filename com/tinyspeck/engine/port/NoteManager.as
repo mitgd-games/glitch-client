@@ -14,13 +14,19 @@ package com.tinyspeck.engine.port
 	{
 		
 		/* singleton boilerplate */
-		public static const instance:NoteManager = new NoteManager();
+		public static var _instance:NoteManager = null;
+        public static function get instance() : NoteManager {
+            if (_instance == null) {
+                _instance = new NoteManager();
+            }
+            return _instance;
+        }
 		
 		private var _current_note:Note;
 		
 		public function NoteManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

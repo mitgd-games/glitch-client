@@ -7,7 +7,13 @@ package com.tinyspeck.bootstrap.model
 	public class BootStrapModel
 	{
 		/* singleton boilerplate */
-		public static const instance:BootStrapModel = new BootStrapModel();
+		public static var _instance:BootStrapModel = null;
+        public static function get instance() : BootStrapModel {
+            if (_instance == null) {
+                _instance = new BootStrapModel();
+            }
+            return _instance;
+        }
 
 		public var prefsModel:PrefsModel;
 		public var api_token:String;
@@ -20,7 +26,7 @@ package com.tinyspeck.bootstrap.model
 		
 		public function BootStrapModel() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			prefsModel = new PrefsModel();
 			if (_use_high_port_by_default) {

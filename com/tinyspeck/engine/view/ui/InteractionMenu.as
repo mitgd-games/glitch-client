@@ -137,11 +137,17 @@ package com.tinyspeck.engine.view.ui
 		private var waiting_spinner:MovieClip = new AssetManager.instance.assets.spinner();
 		
 		/* singleton boilerplate */
-		public static const instance:InteractionMenu = new InteractionMenu();
+		public static var _instance:InteractionMenu = null;
+        public static function get instance() : InteractionMenu {
+            if (_instance == null) {
+                _instance = new InteractionMenu();
+            }
+            return _instance;
+        }
 
 		public function InteractionMenu(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			model = TSModelLocator.instance;

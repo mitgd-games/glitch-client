@@ -29,7 +29,13 @@ package com.tinyspeck.engine.view.ui.glitchr
 	public class GlitchrSavedDialog extends BigDialog
 	{
 		/* singleton boilerplate */
-		public static const instance:GlitchrSavedDialog = new GlitchrSavedDialog();
+		public static var _instance:GlitchrSavedDialog = null;
+        public static function get instance() : GlitchrSavedDialog {
+            if (_instance == null) {
+                _instance = new GlitchrSavedDialog();
+            }
+            return _instance;
+        }
 		
 		private static const PHOTO_W:uint = 120;
 		private static const PHOTO_H:uint = 80;
@@ -66,7 +72,7 @@ package com.tinyspeck.engine.view.ui.glitchr
 		
 		public function GlitchrSavedDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = 375;

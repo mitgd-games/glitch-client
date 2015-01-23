@@ -14,7 +14,13 @@ package com.tinyspeck.engine.port
 	public class StoreManager
 	{
 		/* singleton boilerplate */
-		public static const instance:StoreManager = new StoreManager();
+		public static var _instance:StoreManager = null;
+        public static function get instance() : StoreManager {
+            if (_instance == null) {
+                _instance = new StoreManager();
+            }
+            return _instance;
+        }
 		
 		public var legacy_store_ob:Object;
 		
@@ -25,7 +31,7 @@ package com.tinyspeck.engine.port
 		
 		public function StoreManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			model = TSModelLocator.instance;

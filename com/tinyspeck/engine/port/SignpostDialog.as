@@ -32,7 +32,13 @@ package com.tinyspeck.engine.port
 	public class SignpostDialog extends BigDialog
 	{
 		/* singleton boilerplate */
-		public static const instance:SignpostDialog = new SignpostDialog();
+		public static var _instance:SignpostDialog = null;
+        public static function get instance() : SignpostDialog {
+            if (_instance == null) {
+                _instance = new SignpostDialog();
+            }
+            return _instance;
+        }
 		
 		public static const DEFAULT_TXT:String = 'Click to add a friend';
 		
@@ -67,7 +73,7 @@ package com.tinyspeck.engine.port
 		
 		public function SignpostDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_body_border_c = 0xffffff;

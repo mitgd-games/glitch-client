@@ -9,13 +9,19 @@ import flash.text.TextField;
 
 public class LocoDecoFocusWarning extends TextField {
 	/* singleton boilerplate */
-	public static const instance:LocoDecoFocusWarning = new LocoDecoFocusWarning();
+	public static var _instance:LocoDecoFocusWarning = null;
+        public static function get instance() : LocoDecoFocusWarning {
+            if (_instance == null) {
+                _instance = new LocoDecoFocusWarning();
+            }
+            return _instance;
+        }
 	
 	private var _model:TSModelLocator;
 	
 	public function LocoDecoFocusWarning() {
 		CONFIG::god {
-			if(instance) throw new Error('Singleton');
+			if(_instance) throw new Error('Singleton');
 		}
 		
 		_model = TSModelLocator.instance;

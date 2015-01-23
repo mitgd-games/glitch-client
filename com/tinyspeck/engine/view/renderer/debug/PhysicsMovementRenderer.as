@@ -20,7 +20,13 @@ package com.tinyspeck.engine.view.renderer.debug
 	public class PhysicsMovementRenderer extends Sprite
 	{
 		/* singleton boilerplate */
-		public static const instance:PhysicsMovementRenderer = new PhysicsMovementRenderer();
+		public static var _instance:PhysicsMovementRenderer = null;
+        public static function get instance() : PhysicsMovementRenderer {
+            if (_instance == null) {
+                _instance = new PhysicsMovementRenderer();
+            }
+            return _instance;
+        }
 		
 		private var model:TSModelLocator;
 		private var shape:Shape = new Shape();
@@ -43,7 +49,7 @@ package com.tinyspeck.engine.view.renderer.debug
 				
 		public function PhysicsMovementRenderer() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			mouseEnabled = mouseChildren = false;
 			visible = false;

@@ -11,7 +11,13 @@ package com.tinyspeck.engine.view.gameoverlay {
 	public class BuffViewManager extends AbstractTSView {
 		
 		/* singleton boilerplate */
-		public static const instance:BuffViewManager = new BuffViewManager();
+		public static var _instance:BuffViewManager = null;
+        public static function get instance() : BuffViewManager {
+            if (_instance == null) {
+                _instance = new BuffViewManager();
+            }
+            return _instance;
+        }
 		
 		private static const GAP:uint = 5;
 		
@@ -23,7 +29,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 		public function BuffViewManager():void {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 						
 			model = TSModelLocator.instance;

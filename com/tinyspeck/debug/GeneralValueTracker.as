@@ -5,11 +5,17 @@ package com.tinyspeck.debug
 	public class GeneralValueTracker extends ValueTracker
 	{
 		/* singleton boilerplate */
-		public static const instance:GeneralValueTracker = new GeneralValueTracker();
+		public static var _instance:GeneralValueTracker = null;
+        public static function get instance() : GeneralValueTracker {
+            if (_instance == null) {
+                _instance = new GeneralValueTracker();
+            }
+            return _instance;
+        }
 		
 		public function GeneralValueTracker(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			CONFIG::debugging {

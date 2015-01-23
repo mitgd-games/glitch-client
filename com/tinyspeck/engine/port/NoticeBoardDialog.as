@@ -24,7 +24,13 @@ package com.tinyspeck.engine.port
 	public class NoticeBoardDialog extends BigDialog implements IPackChange
 	{
 		/* singleton boilerplate */
-		public static const instance:NoticeBoardDialog = new NoticeBoardDialog();
+		public static var _instance:NoticeBoardDialog = null;
+        public static function get instance() : NoticeBoardDialog {
+            if (_instance == null) {
+                _instance = new NoticeBoardDialog();
+            }
+            return _instance;
+        }
 		
 		private static const MAX_CHARS:uint = 90;
 		private static const FRAME_WIDTH:uint = 16;
@@ -41,7 +47,7 @@ package com.tinyspeck.engine.port
 		
 		public function NoticeBoardDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = 515;

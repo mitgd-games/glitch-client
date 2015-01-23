@@ -95,7 +95,13 @@ package com.tinyspeck.engine.control {
 	
 	public final class HandOfDecorator extends EventDispatcher implements IFocusableComponent, ILocItemstackAddDelConsumer, ILocItemstackUpdateConsumer, IMoveListener, IRefreshListener
 	{
-		public static const instance:HandOfDecorator = new HandOfDecorator();
+		public static var _instance:HandOfDecorator = null;
+        public static function get instance() : HandOfDecorator {
+            if (_instance == null) {
+                _instance = new HandOfDecorator();
+            }
+            return _instance;
+        }
 		
 		private static const KEY_REPEAT_DELAY:int = 250; // ms
 		
@@ -212,7 +218,7 @@ package com.tinyspeck.engine.control {
 		
 		public function HandOfDecorator():void {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			init();
 		}

@@ -47,7 +47,13 @@ package com.tinyspeck.engine.view.gameoverlay {
 	public class YouDisplayManager extends Sprite implements IMoveListener {
 		
 		/* singleton boilerplate */
-		public static const instance:YouDisplayManager = new YouDisplayManager();
+		public static var _instance:YouDisplayManager = null;
+        public static function get instance() : YouDisplayManager {
+            if (_instance == null) {
+                _instance = new YouDisplayManager();
+            }
+            return _instance;
+        }
 		
 		private static const CURRANTS_REG_ALPHA:Number = .3;
 		private static const CURRANTS_HOVER_ALPHA:Number = 1;
@@ -91,7 +97,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 		public function YouDisplayManager():void {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			addEventListener(Event.ADDED_TO_STAGE, _addedToStageHandler);

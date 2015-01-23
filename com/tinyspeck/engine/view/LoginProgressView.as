@@ -15,13 +15,19 @@ package com.tinyspeck.engine.view {
 	
 	public class LoginProgressView extends Sprite {
 		/* singleton boilerplate */
-		public static const instance:LoginProgressView = new LoginProgressView();
+		public static var _instance:LoginProgressView = null;
+		public static function get instance() : LoginProgressView {
+			if (_instance == null) {
+				_instance = new LoginProgressView();
+			}
+			return _instance;
+		}
 		
 		private var login_spinner:MovieClip;
 
 		public function LoginProgressView() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			init();

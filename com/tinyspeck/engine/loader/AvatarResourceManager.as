@@ -12,7 +12,13 @@ package com.tinyspeck.engine.loader {
 	public class AvatarResourceManager {
 		
 		/* singleton boilerplate */
-		public static const instance:AvatarResourceManager = new AvatarResourceManager();
+		public static var _instance:AvatarResourceManager = null;
+        public static function get instance() : AvatarResourceManager {
+            if (_instance == null) {
+                _instance = new AvatarResourceManager();
+            }
+            return _instance;
+        }
 		
 		public static var avatar_url:String;
 		
@@ -24,7 +30,7 @@ package com.tinyspeck.engine.loader {
 		
 		public function AvatarResourceManager() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			CONFIG::debugging {

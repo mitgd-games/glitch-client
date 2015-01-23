@@ -32,7 +32,13 @@ package com.tinyspeck.engine.port
 
 	public class ChassisManager implements IFocusableComponent, IMoveListener, IRefreshListener {
 		/* singleton boilerplate */
-		public static const instance:ChassisManager = new ChassisManager();
+		public static var _instance:ChassisManager = null;
+        public static function get instance() : ChassisManager {
+            if (_instance == null) {
+                _instance = new ChassisManager();
+            }
+            return _instance;
+        }
 		
 		public static const WIDTH_OF_CONFIG_UI:uint = 190;
 		
@@ -51,7 +57,7 @@ package com.tinyspeck.engine.port
 		
 		public function ChassisManager() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

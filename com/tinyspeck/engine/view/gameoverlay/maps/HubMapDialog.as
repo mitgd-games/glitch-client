@@ -53,7 +53,13 @@ package com.tinyspeck.engine.view.gameoverlay.maps
 	public class HubMapDialog extends Dialog implements IMoveListener {
 		
 		/* singleton boilerplate */
-		public static const instance:HubMapDialog = new HubMapDialog();
+		public static var _instance:HubMapDialog = null;
+        public static function get instance() : HubMapDialog {
+            if (_instance == null) {
+                _instance = new HubMapDialog();
+            }
+            return _instance;
+        }
 		
 		public static const MAP_ACTUAL_W:int = 760; // this is the w of the loaded coordinate space
 		public static const MAP_ACTUAL_H:int = 460; // this is the h of the loaded coordinate space
@@ -120,7 +126,7 @@ package com.tinyspeck.engine.view.gameoverlay.maps
 		
 		public function HubMapDialog() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = MAP_W+(_border_w*2);

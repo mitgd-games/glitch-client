@@ -5,14 +5,20 @@ package com.tinyspeck.engine.pack
 	public class FloorSwatchBagUI extends SwatchBagUI
 	{
 		/* singleton boilerplate */
-		public static const instance:FloorSwatchBagUI = new FloorSwatchBagUI();
+		public static var _instance:FloorSwatchBagUI = null;
+        public static function get instance() : FloorSwatchBagUI {
+            if (_instance == null) {
+                _instance = new FloorSwatchBagUI();
+            }
+            return _instance;
+        }
 		
 		public function FloorSwatchBagUI(){
 			//set the type
 			super(Swatch.TYPE_FLOOR);
 			
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}			
 		}
 	}

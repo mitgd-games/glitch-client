@@ -22,7 +22,13 @@ package com.tinyspeck.engine.view.gameoverlay {
 	public class TipDisplayManager extends Sprite {
 		
 		/* singleton boilerplate */
-		public static const instance:TipDisplayManager = new TipDisplayManager();
+		public static var _instance:TipDisplayManager = null;
+        public static function get instance() : TipDisplayManager {
+            if (_instance == null) {
+                _instance = new TipDisplayManager();
+            }
+            return _instance;
+        }
 		
 		//defaults
 		private var BG_COLOR:uint = 0xf8f6b4;
@@ -48,7 +54,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 		public function TipDisplayManager():void {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			addChild(container);

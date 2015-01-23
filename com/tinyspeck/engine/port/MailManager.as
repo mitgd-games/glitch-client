@@ -24,7 +24,13 @@ package com.tinyspeck.engine.port
 	public class MailManager extends EventDispatcher
 	{
 		/* singleton boilerplate */
-		public static const instance:MailManager = new MailManager();
+		public static var _instance:MailManager = null;
+        public static function get instance() : MailManager {
+            if (_instance == null) {
+                _instance = new MailManager();
+            }
+            return _instance;
+        }
 		
 		private const MIN_SECS_BETWEEN_CHECK:uint = 60;
 		
@@ -47,7 +53,7 @@ package com.tinyspeck.engine.port
 		
 		public function MailManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

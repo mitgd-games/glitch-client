@@ -10,11 +10,17 @@ package com.tinyspeck.engine.port
 	public class SignpostManager
 	{
 		/* singleton boilerplate */
-		public static const instance:SignpostManager = new SignpostManager();
+		public static var _instance:SignpostManager = null;
+        public static function get instance() : SignpostManager {
+            if (_instance == null) {
+                _instance = new SignpostManager();
+            }
+            return _instance;
+        }
 		
 		public function SignpostManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

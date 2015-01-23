@@ -12,7 +12,13 @@ package com.tinyspeck.engine.port
 	public class ActionRequestManager
 	{
 		/* singleton boilerplate */
-		public static const instance:ActionRequestManager = new ActionRequestManager();
+		public static var _instance:ActionRequestManager = null;
+        public static function get instance() : ActionRequestManager {
+            if (_instance == null) {
+                _instance = new ActionRequestManager();
+            }
+            return _instance;
+        }
 		
 		private const RESPONDED:Array = [];
 		
@@ -20,7 +26,7 @@ package com.tinyspeck.engine.port
 		
 		public function ActionRequestManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

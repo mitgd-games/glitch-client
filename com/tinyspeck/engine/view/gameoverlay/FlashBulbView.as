@@ -9,11 +9,17 @@ package com.tinyspeck.engine.view.gameoverlay
 	public class FlashBulbView extends Sprite {
 		
 		/* singleton boilerplate */
-		public static const instance:FlashBulbView = new FlashBulbView();
+		public static var _instance:FlashBulbView = null;
+        public static function get instance() : FlashBulbView {
+            if (_instance == null) {
+                _instance = new FlashBulbView();
+            }
+            return _instance;
+        }
 		
 		public function FlashBulbView(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			visible = false;
 		}

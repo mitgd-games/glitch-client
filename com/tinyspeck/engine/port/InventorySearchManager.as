@@ -14,7 +14,13 @@ package com.tinyspeck.engine.port {
 
 	public class InventorySearchManager implements IRefreshListener {
 		/* singleton boilerplate */
-		public static const instance:InventorySearchManager = new InventorySearchManager();
+		public static var _instance:InventorySearchManager = null;
+        public static function get instance() : InventorySearchManager {
+            if (_instance == null) {
+                _instance = new InventorySearchManager();
+            }
+            return _instance;
+        }
 		
 		private var model:TSModelLocator;
 		private var ui:InventorySearch = new InventorySearch();
@@ -30,7 +36,7 @@ package com.tinyspeck.engine.port {
 		
 		public function InventorySearchManager() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			CONFIG::perf {
 				badClassesV.push(PerfTestController);

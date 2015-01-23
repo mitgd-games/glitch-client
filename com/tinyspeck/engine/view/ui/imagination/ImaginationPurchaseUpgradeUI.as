@@ -32,7 +32,13 @@ package com.tinyspeck.engine.view.ui.imagination
 	public class ImaginationPurchaseUpgradeUI extends Sprite implements IRefreshListener
 	{	
 		/* singleton boilerplate */
-		public static const instance:ImaginationPurchaseUpgradeUI = new ImaginationPurchaseUpgradeUI();
+		public static var _instance:ImaginationPurchaseUpgradeUI = null;
+        public static function get instance() : ImaginationPurchaseUpgradeUI {
+            if (_instance == null) {
+                _instance = new ImaginationPurchaseUpgradeUI();
+            }
+            return _instance;
+        }
 		
 		private static const TEXT_PADD:uint = 40;
 		private static const ITEM_WH:uint = 90;
@@ -143,7 +149,7 @@ package com.tinyspeck.engine.view.ui.imagination
 		
 		public function ImaginationPurchaseUpgradeUI(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

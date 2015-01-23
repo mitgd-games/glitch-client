@@ -11,7 +11,13 @@ package com.tinyspeck.core.beacon {
 	
 	public class KeyBeacon extends EventDispatcher {
 		/* singleton boilerplate */
-		public static const instance:KeyBeacon = new KeyBeacon();
+		public static var _instance:KeyBeacon = null;
+        public static function get instance() : KeyBeacon {
+            if (_instance == null) {
+                _instance = new KeyBeacon();
+            }
+            return _instance;
+        }
 		
 		// Cal needs to be told about any keys added to this! (the new keys need to be added to the verb key map exclusion list in lib_items_publish.php)
 		// the above is only true if we ever decide to actually do model.flashVarModel.do_single_interaction_sp_keys
@@ -77,7 +83,7 @@ package com.tinyspeck.core.beacon {
 		
 		public function KeyBeacon() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			StageBeacon.flash_focus_changed_sig.add(onFlashFocusChanged);

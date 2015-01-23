@@ -17,7 +17,13 @@ package com.tinyspeck.engine.port
 	public class FeedManager
 	{
 		/* singleton boilerplate */
-		public static const instance:FeedManager = new FeedManager();
+		public static var _instance:FeedManager = null;
+        public static function get instance() : FeedManager {
+            if (_instance == null) {
+                _instance = new FeedManager();
+            }
+            return _instance;
+        }
 		
 		private static const MANUAL_REFRESH_SECS:uint = 5; //how fast are they allowed to force a refresh
 		private static const AUTO_REFRESH_SECS:uint = 60; //auto refresh timer
@@ -37,7 +43,7 @@ package com.tinyspeck.engine.port
 		
 		public function FeedManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			//setup the api

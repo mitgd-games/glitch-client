@@ -14,7 +14,13 @@ import mx.events.PropertyChangeEvent;
 
 public final class LocoDecoGlobals extends EventDispatcher
 {
-	public static const instance:LocoDecoGlobals = new LocoDecoGlobals();
+	public static var _instance:LocoDecoGlobals = null;
+        public static function get instance() : LocoDecoGlobals {
+            if (_instance == null) {
+                _instance = new LocoDecoGlobals();
+            }
+            return _instance;
+        }
 
 	// view
 	[Bindable] public var sideBarHeight:uint;

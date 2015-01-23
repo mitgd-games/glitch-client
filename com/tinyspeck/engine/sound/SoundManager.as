@@ -43,7 +43,13 @@ package com.tinyspeck.engine.sound
 		public static const INSTANCE_LOOP_COUNT:uint = 999; //this is how many times instance audio loops
 		
 		// singleton instance
-		public static const instance:SoundManager = new SoundManager();
+		public static var _instance:SoundManager = null;
+        public static function get instance() : SoundManager {
+            if (_instance == null) {
+                _instance = new SoundManager();
+            }
+            return _instance;
+        }
 		
 		//which sounds are allowed to play more than one at a time
 		private static const MULTIPLE_INSTANCES:Array = ['QUOIN_GOT', 'CLICK_SUCCESS', 'CLICK_FAILURE', 'TOGGLE_VIEWPORT_SCALE_ONE_CLICK', 
@@ -71,7 +77,7 @@ package com.tinyspeck.engine.sound
 	
 		public function SoundManager() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_soundsDict = new Dictionary(true);

@@ -24,7 +24,13 @@ package com.tinyspeck.engine.control.engine {
 
 	public class FancyDoor implements ILocItemstackUpdateConsumer, ILocItemstackAddDelConsumer {
 		/* singleton boilerplate */
-		public static const instance:FancyDoor = new FancyDoor();
+		public static var _instance:FancyDoor = null;
+        public static function get instance() : FancyDoor {
+            if (_instance == null) {
+                _instance = new FancyDoor();
+            }
+            return _instance;
+        }
 		
 		private var model:TSModelLocator;
 		private var wm:WorldModel;

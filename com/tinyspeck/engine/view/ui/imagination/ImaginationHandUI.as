@@ -33,7 +33,13 @@ package com.tinyspeck.engine.view.ui.imagination
 	public class ImaginationHandUI extends Sprite implements IRefreshListener
 	{
 		/* singleton boilerplate */
-		public static const instance:ImaginationHandUI = new ImaginationHandUI();
+		public static var _instance:ImaginationHandUI = null;
+        public static function get instance() : ImaginationHandUI {
+            if (_instance == null) {
+                _instance = new ImaginationHandUI();
+            }
+            return _instance;
+        }
 		
 		private static const LEFT_ROTATION:Number = -10;
 		private static const RIGHT_ROTATION:Number = 10;
@@ -73,7 +79,7 @@ package com.tinyspeck.engine.view.ui.imagination
 		
 		public function ImaginationHandUI(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

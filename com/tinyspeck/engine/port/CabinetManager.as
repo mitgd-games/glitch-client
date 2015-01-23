@@ -23,11 +23,17 @@ package com.tinyspeck.engine.port
 		private var _cabinets:Vector.<Cabinet> = new Vector.<Cabinet>();
 		
 		/* singleton boilerplate */
-		public static const instance:CabinetManager = new CabinetManager();
+		public static var _instance:CabinetManager = null;
+        public static function get instance() : CabinetManager {
+            if (_instance == null) {
+                _instance = new CabinetManager();
+            }
+            return _instance;
+        }
 		
 		public function CabinetManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

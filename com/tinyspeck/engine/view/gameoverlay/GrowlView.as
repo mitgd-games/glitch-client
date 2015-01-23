@@ -5,14 +5,20 @@ package com.tinyspeck.engine.view.gameoverlay {
 	
 	final public class GrowlView extends AbstractTSView {
 		/* singleton boilerplate */
-		public static const instance:GrowlView = new GrowlView();
+		public static var _instance:GrowlView = null;
+        public static function get instance() : GrowlView {
+            if (_instance == null) {
+                _instance = new GrowlView();
+            }
+            return _instance;
+        }
 		
 		private const growl_queue:GrowlQueue = new GrowlQueue();
 		private var model:TSModelLocator;
 		
 		public function GrowlView():void {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			model = TSModelLocator.instance;

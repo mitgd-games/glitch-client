@@ -14,7 +14,13 @@ package com.tinyspeck.engine.view.gameoverlay {
 	public class LocationCanvasView extends AbstractTSView {
 		
 		/* singleton boilerplate */
-		public static const instance:LocationCanvasView = new LocationCanvasView();
+		public static var _instance:LocationCanvasView = null;
+        public static function get instance() : LocationCanvasView {
+            if (_instance == null) {
+                _instance = new LocationCanvasView();
+            }
+            return _instance;
+        }
 		
 		public var annc:Announcement;
 		
@@ -24,7 +30,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 		public function LocationCanvasView() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			mouseChildren = mouseEnabled = false;

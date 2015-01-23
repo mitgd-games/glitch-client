@@ -47,7 +47,13 @@ package com.tinyspeck.engine.view.gameoverlay
 	public class ImgMenuView extends BaseSplashScreenView implements IMoveListener
 	{
 		/* singleton boilerplate */
-		public static const instance:ImgMenuView = new ImgMenuView();
+		public static var _instance:ImgMenuView = null;
+        public static function get instance() : ImgMenuView {
+            if (_instance == null) {
+                _instance = new ImgMenuView();
+            }
+            return _instance;
+        }
 		
 		private static const BG_MATRIX:Matrix = new Matrix();
 		private static const BG_COLORS:Array = [0,0];
@@ -84,7 +90,7 @@ package com.tinyspeck.engine.view.gameoverlay
 		
 		public function ImgMenuView(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

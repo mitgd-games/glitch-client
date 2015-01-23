@@ -27,7 +27,13 @@ package com.tinyspeck.engine.view.gameoverlay {
 	public class CollectionCompleteView extends BaseScreenView {
 		
 		/* singleton boilerplate */
-		public static const instance:CollectionCompleteView = new CollectionCompleteView();
+		public static var _instance:CollectionCompleteView = null;
+        public static function get instance() : CollectionCompleteView {
+            if (_instance == null) {
+                _instance = new CollectionCompleteView();
+            }
+            return _instance;
+        }
 		
 		private const MIN_RIGHT_W:uint = 380;
 		private const MARGIN_RIGHT_TOP:int = 50;
@@ -57,7 +63,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 		public function CollectionCompleteView() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

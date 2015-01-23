@@ -22,7 +22,13 @@ package com.tinyspeck.engine.view.gameoverlay {
 	
 	final public class LocationCheckListView extends AbstractTSView implements IRefreshListener {
 		/* singleton boilerplate */
-		public static const instance:LocationCheckListView = new LocationCheckListView();
+		public static var _instance:LocationCheckListView = null;
+        public static function get instance() : LocationCheckListView {
+            if (_instance == null) {
+                _instance = new LocationCheckListView();
+            }
+            return _instance;
+        }
 
 		private var _w:int = 200;
 		private var padd:int = 10;
@@ -33,7 +39,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 		public function LocationCheckListView():void {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			model = TSModelLocator.instance;

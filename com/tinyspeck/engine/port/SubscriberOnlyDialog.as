@@ -12,7 +12,13 @@ package com.tinyspeck.engine.port
 	public class SubscriberOnlyDialog extends Dialog
 	{
 		/* singleton boilerplate */
-		public static const instance:SubscriberOnlyDialog = new SubscriberOnlyDialog();
+		public static var _instance:SubscriberOnlyDialog = null;
+        public static function get instance() : SubscriberOnlyDialog {
+            if (_instance == null) {
+                _instance = new SubscriberOnlyDialog();
+            }
+            return _instance;
+        }
 		
 		private static const X_OFFSET:uint = 140;
 		
@@ -26,7 +32,7 @@ package com.tinyspeck.engine.port
 		
 		public function SubscriberOnlyDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = 646;

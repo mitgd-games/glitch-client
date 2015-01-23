@@ -14,13 +14,19 @@ package com.tinyspeck.engine.port
 	public class TeleportationScriptManager
 	{
 		/* singleton boilerplate */
-		public static const instance:TeleportationScriptManager = new TeleportationScriptManager();
+		public static var _instance:TeleportationScriptManager = null;
+        public static function get instance() : TeleportationScriptManager {
+            if (_instance == null) {
+                _instance = new TeleportationScriptManager();
+            }
+            return _instance;
+        }
 		
 		private var _current_script:TeleportationScript;
 		
 		public function TeleportationScriptManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

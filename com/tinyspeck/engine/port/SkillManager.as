@@ -18,7 +18,13 @@ package com.tinyspeck.engine.port
 		 */	
 		
 		/* singleton boilerplate */
-		public static const instance:SkillManager = new SkillManager();
+		public static var _instance:SkillManager = null;
+        public static function get instance() : SkillManager {
+            if (_instance == null) {
+                _instance = new SkillManager();
+            }
+            return _instance;
+        }
 		
 		private var world:WorldModel;
 		private var current_skill:PCSkill;
@@ -28,7 +34,7 @@ package com.tinyspeck.engine.port
 			
 		public function SkillManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

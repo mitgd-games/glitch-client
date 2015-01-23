@@ -26,7 +26,13 @@ package com.tinyspeck.engine.port
 	public class QuestsDialog extends BigDialog
 	{
 		/* singleton boilerplate */
-		public static const instance:QuestsDialog = new QuestsDialog();
+		public static var _instance:QuestsDialog = null;
+        public static function get instance() : QuestsDialog {
+            if (_instance == null) {
+                _instance = new QuestsDialog();
+            }
+            return _instance;
+        }
 		
 		private const PAD_LEFT:int = 20;
 		private const CLOSED_SCALE:Number = .02;
@@ -46,7 +52,7 @@ package com.tinyspeck.engine.port
 		
 		public function QuestsDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = 615;

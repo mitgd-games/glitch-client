@@ -35,7 +35,13 @@ package com.tinyspeck.engine.port
 	public class LocationSelectorDialog extends Dialog implements IFocusableComponent
 	{
 		/* singleton boilerplate */
-		public static const instance:LocationSelectorDialog = new LocationSelectorDialog();
+		public static var _instance:LocationSelectorDialog = null;
+        public static function get instance() : LocationSelectorDialog {
+            if (_instance == null) {
+                _instance = new LocationSelectorDialog();
+            }
+            return _instance;
+        }
 		
 		private const ELEVATOR_PANEL_MIN_W:uint = 380;
 		private const SHOW_DESTINATION:Boolean = true;
@@ -67,7 +73,7 @@ package com.tinyspeck.engine.port
 		
 		public function LocationSelectorDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = ELEVATOR_PANEL_MIN_W;

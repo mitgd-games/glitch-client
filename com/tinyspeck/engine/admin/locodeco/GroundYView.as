@@ -13,7 +13,13 @@ package com.tinyspeck.engine.admin.locodeco {
 	
 	public class GroundYView extends Sprite {
 		/* singleton boilerplate */
-		public static const instance:GroundYView = new GroundYView();
+		public static var _instance:GroundYView = null;
+        public static function get instance() : GroundYView {
+            if (_instance == null) {
+                _instance = new GroundYView();
+            }
+            return _instance;
+        }
 		
 		private var _location:LocationModel;
 		private var _layoutModel:LayoutModel;
@@ -21,7 +27,7 @@ package com.tinyspeck.engine.admin.locodeco {
 		
 		public function GroundYView() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_location = LocoDecoGlobals.instance.location;

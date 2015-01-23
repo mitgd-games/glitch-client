@@ -20,7 +20,13 @@ package com.tinyspeck.engine.port
 	public class EmblemSpendDialog extends BigDialog implements IPackChange
 	{
 		/* singleton boilerplate */
-		public static const instance:EmblemSpendDialog = new EmblemSpendDialog();
+		public static var _instance:EmblemSpendDialog = null;
+        public static function get instance() : EmblemSpendDialog {
+            if (_instance == null) {
+                _instance = new EmblemSpendDialog();
+            }
+            return _instance;
+        }
 		
 		private const OFFSET_X:uint = 100;
 		private const TIP_WIDTH:uint = 240;
@@ -40,7 +46,7 @@ package com.tinyspeck.engine.port
 		
 		public function EmblemSpendDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_body_border_c = 0xffffff;

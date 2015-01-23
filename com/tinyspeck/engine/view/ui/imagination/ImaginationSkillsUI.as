@@ -43,7 +43,13 @@ package com.tinyspeck.engine.view.ui.imagination
 	public class ImaginationSkillsUI extends TSSpriteWithModel implements IRefreshListener
 	{
 		/* singleton boilerplate */
-		public static const instance:ImaginationSkillsUI = new ImaginationSkillsUI();
+		public static var _instance:ImaginationSkillsUI = null;
+        public static function get instance() : ImaginationSkillsUI {
+            if (_instance == null) {
+                _instance = new ImaginationSkillsUI();
+            }
+            return _instance;
+        }
 		
 		private static const BAR_W:uint = 9;
 		private static const SCROLL_MATRIX:Matrix = new Matrix();
@@ -109,7 +115,7 @@ package com.tinyspeck.engine.view.ui.imagination
 		
 		public function ImaginationSkillsUI(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

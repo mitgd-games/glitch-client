@@ -24,7 +24,13 @@ package com.tinyspeck.engine.port
 	public class TrophyGetInfoDialog extends BigDialog implements IFocusableComponent, ITipProvider
 	{
 		/* singleton boilerplate */
-		public static const instance:TrophyGetInfoDialog = new TrophyGetInfoDialog();
+		public static var _instance:TrophyGetInfoDialog = null;
+        public static function get instance() : TrophyGetInfoDialog {
+            if (_instance == null) {
+                _instance = new TrophyGetInfoDialog();
+            }
+            return _instance;
+        }
 		
 		private const ICON_WH:uint = 100;
 		private const ICON_POSITION:Point = new Point(296, 32);
@@ -42,7 +48,7 @@ package com.tinyspeck.engine.port
 		public function TrophyGetInfoDialog()
 		{
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = 430;

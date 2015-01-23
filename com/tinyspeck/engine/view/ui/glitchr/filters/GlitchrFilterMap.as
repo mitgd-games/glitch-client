@@ -3,7 +3,13 @@ package com.tinyspeck.engine.view.ui.glitchr.filters
 	 /** Maps filter TSIDs to GlitchrFilter instances. */ 
 	public class GlitchrFilterMap {
 		
-		public static const instance:GlitchrFilterMap = new GlitchrFilterMap();
+		public static var _instance:GlitchrFilterMap = null;
+        public static function get instance() : GlitchrFilterMap {
+            if (_instance == null) {
+                _instance = new GlitchrFilterMap();
+            }
+            return _instance;
+        }
 		private var filtersByTSID:Object;
 		
 		public function GlitchrFilterMap() {

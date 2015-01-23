@@ -53,7 +53,13 @@ package com.tinyspeck.engine.port
 
 	public class RookManager extends EventDispatcher implements IFocusableComponent {
 		/* singleton boilerplate */
-		public static const instance:RookManager = new RookManager();
+		public static var _instance:RookManager = null;
+        public static function get instance() : RookManager {
+            if (_instance == null) {
+                _instance = new RookManager();
+            }
+            return _instance;
+        }
 		
 		private const ASSETS:Array = new Array('rook_flock', 'rook_fly_side', 'rook_fly_forward', 'rook_fly_up', 'sonic_boom');
 		
@@ -100,7 +106,7 @@ package com.tinyspeck.engine.port
 		
 		public function RookManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			main_view = TSFrontController.instance.getMainView();

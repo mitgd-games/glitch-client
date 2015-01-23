@@ -15,13 +15,19 @@ package com.tinyspeck.engine.view.gameoverlay
 	public class R3View extends BaseScreenView
 	{
 		/* singleton boilerplate */
-		public static const instance:R3View = new R3View();
+		public static var _instance:R3View = null;
+        public static function get instance() : R3View {
+            if (_instance == null) {
+                _instance = new R3View();
+            }
+            return _instance;
+        }
 		
 		private var ok_bt:Button;
 		
 		public function R3View(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

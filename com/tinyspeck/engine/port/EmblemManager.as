@@ -9,13 +9,19 @@ package com.tinyspeck.engine.port
 	public class EmblemManager
 	{
 		/* singleton boilerplate */
-		public static const instance:EmblemManager = new EmblemManager();
+		public static var _instance:EmblemManager = null;
+        public static function get instance() : EmblemManager {
+            if (_instance == null) {
+                _instance = new EmblemManager();
+            }
+            return _instance;
+        }
 		
 		private var _current_emblem:Emblem;
 		
 		public function EmblemManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

@@ -25,7 +25,13 @@ package com.tinyspeck.engine.port
 	public class HouseStylesDialog extends BigDialog
 	{
 		/* singleton boilerplate */
-		public static const instance:HouseStylesDialog = new HouseStylesDialog();
+		public static var _instance:HouseStylesDialog = null;
+        public static function get instance() : HouseStylesDialog {
+            if (_instance == null) {
+                _instance = new HouseStylesDialog();
+            }
+            return _instance;
+        }
 		
 		private var padder:Sprite = new Sprite();
 		private var lightbox_extra_sp:Sprite = new Sprite();
@@ -44,7 +50,7 @@ package com.tinyspeck.engine.port
 		
 		public function HouseStylesDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = 366;

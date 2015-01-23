@@ -28,7 +28,13 @@ package com.tinyspeck.engine.port
 	public class JobManager
 	{
 		/* singleton boilerplate */
-		public static const instance:JobManager = new JobManager();
+		public static var _instance:JobManager = null;
+        public static function get instance() : JobManager {
+            if (_instance == null) {
+                _instance = new JobManager();
+            }
+            return _instance;
+        }
 		
 		private var _job_info:JobInfo;
 		private var status_job_info:JobInfo;
@@ -41,7 +47,7 @@ package com.tinyspeck.engine.port
 		
 		public function JobManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

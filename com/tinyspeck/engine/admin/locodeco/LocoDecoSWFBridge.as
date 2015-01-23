@@ -80,7 +80,13 @@ package com.tinyspeck.engine.admin.locodeco {
 	import mx.events.PropertyChangeEvent;
 	
 	public class LocoDecoSWFBridge extends Loader implements IMoveListener {
-		public static const instance:LocoDecoSWFBridge = new LocoDecoSWFBridge();
+		public static var _instance:LocoDecoSWFBridge = null;
+        public static function get instance() : LocoDecoSWFBridge {
+            if (_instance == null) {
+                _instance = new LocoDecoSWFBridge();
+            }
+            return _instance;
+        }
 		
 		private static const KEY_REPEAT_DELAY:int       = 250; // ms
 		
@@ -181,7 +187,7 @@ package com.tinyspeck.engine.admin.locodeco {
 		
 		public function LocoDecoSWFBridge() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			// SWF not ready for display

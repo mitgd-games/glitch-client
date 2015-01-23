@@ -37,7 +37,13 @@ package com.tinyspeck.engine.port
 	
 	public class FurnUpgradeDialog extends BigDialog implements IFurnUpgradeUI {
 		/* singleton boilerplate */
-		public static const instance:FurnUpgradeDialog = new FurnUpgradeDialog();
+		public static var _instance:FurnUpgradeDialog = null;
+        public static function get instance() : FurnUpgradeDialog {
+            if (_instance == null) {
+                _instance = new FurnUpgradeDialog();
+            }
+            return _instance;
+        }
 		
 		private static const PREVIEW_WH:uint = 250;
 		private static const PREVIEW_PADD:uint = 10;
@@ -85,7 +91,7 @@ package com.tinyspeck.engine.port
 		
 		public function FurnUpgradeDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			dm = model.decorateModel;
 			_close_bt_padd_top = 12;

@@ -12,12 +12,18 @@ package com.tinyspeck.engine.port
 		public var styleSheet:StyleSheet = new StyleSheet();
 		
 		/* singleton boilerplate */
-		public static const instance:CSSManager = new CSSManager();
+		public static var _instance:CSSManager = null;
+        public static function get instance() : CSSManager {
+            if (_instance == null) {
+                _instance = new CSSManager();
+            }
+            return _instance;
+        }
 		
 		/* constructor */
 		public function CSSManager() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

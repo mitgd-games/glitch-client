@@ -30,7 +30,13 @@ import flash.text.TextField;
 public class GlitchroidSnapshot extends Sprite
 {
 	/* singleton boilerplate */
-	public static const instance:GlitchroidSnapshot = new GlitchroidSnapshot();
+	public static var _instance:GlitchroidSnapshot = null;
+        public static function get instance() : GlitchroidSnapshot {
+            if (_instance == null) {
+                _instance = new GlitchroidSnapshot();
+            }
+            return _instance;
+        }
 		
 	private static const DEFAULT_CAPTION:String = "click to enter a caption...";
 	private static const INNER_GLOW:GlowFilter = new GlowFilter(0x000000, 0.2, 49, 49, 2, BitmapFilterQuality.MEDIUM, true);
@@ -66,7 +72,7 @@ public class GlitchroidSnapshot extends Sprite
 	
 	public function GlitchroidSnapshot() {
 		CONFIG::god {
-			if(instance) throw new Error('Singleton');
+			if(_instance) throw new Error('Singleton');
 		}
 		
 		model = TSModelLocator.instance;

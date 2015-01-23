@@ -52,7 +52,13 @@ package com.tinyspeck.engine.port
 	public class GetInfoDialog extends BigDialog implements IMoveListener
 	{
 		/* singleton boilerplate */
-		public static const instance:GetInfoDialog = new GetInfoDialog();
+		public static var _instance:GetInfoDialog = null;
+        public static function get instance() : GetInfoDialog {
+            if (_instance == null) {
+                _instance = new GetInfoDialog();
+            }
+            return _instance;
+        }
 		
 		private const ICON_WH:uint = 100;
 		private const INFO_X:int = 200;
@@ -101,7 +107,7 @@ package com.tinyspeck.engine.port
 		public function GetInfoDialog()
 		{
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			close_on_move = false;
 			

@@ -28,7 +28,13 @@ package com.tinyspeck.engine.port
 	public class GardenManager
 	{
 		/* singleton boilerplate */
-		public static const instance:GardenManager = new GardenManager();
+		public static var _instance:GardenManager = null;
+        public static function get instance() : GardenManager {
+            if (_instance == null) {
+                _instance = new GardenManager();
+            }
+            return _instance;
+        }
 		
 		public static const GARDEN_CLASS_TSID:String = 'garden_new';
 		public static const WATER_TOOLS:Array = ['watering_can', 'irrigator_9000'];
@@ -48,7 +54,7 @@ package com.tinyspeck.engine.port
 		
 		public function GardenManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			model = TSModelLocator.instance;
 		}

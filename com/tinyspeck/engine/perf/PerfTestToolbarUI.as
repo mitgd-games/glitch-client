@@ -17,7 +17,13 @@ package com.tinyspeck.engine.perf
 
 	public class PerfTestToolbarUI extends Sprite implements IRefreshListener
 	{
-		public static const instance:PerfTestToolbarUI = new PerfTestToolbarUI();
+		public static var _instance:PerfTestToolbarUI = null;
+        public static function get instance() : PerfTestToolbarUI {
+            if (_instance == null) {
+                _instance = new PerfTestToolbarUI();
+            }
+            return _instance;
+        }
 		
 		private var all_holder:Sprite = new Sprite();
 		private var title_tf:TextField = new TextField();
@@ -26,7 +32,7 @@ package com.tinyspeck.engine.perf
 		
 		public function PerfTestToolbarUI(){			
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			//tfs

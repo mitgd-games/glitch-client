@@ -26,7 +26,13 @@ package com.tinyspeck.engine.view.ui
 	public class RookIncidentProgressView extends Sprite
 	{		
 		/* singleton boilerplate */
-		public static const instance:RookIncidentProgressView = new RookIncidentProgressView();
+		public static var _instance:RookIncidentProgressView = null;
+        public static function get instance() : RookIncidentProgressView {
+            if (_instance == null) {
+                _instance = new RookIncidentProgressView();
+            }
+            return _instance;
+        }
 				
 		private const MAX_WIDTH:uint = 350;
 		private const TOP_OFFSET:int = 10;
@@ -82,7 +88,7 @@ package com.tinyspeck.engine.view.ui
 			 *****************************************************************/
 			
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			main_view = TSFrontController.instance.getMainView();

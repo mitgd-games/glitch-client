@@ -49,7 +49,13 @@ package com.tinyspeck.engine.view.gameoverlay {
 		public static const FAM_CONVERSATION:String = 'familiar_conversation';
 		
 		/* singleton boilerplate */
-		public static const instance:ChoicesDialog = new ChoicesDialog();
+		public static var _instance:ChoicesDialog = null;
+        public static function get instance() : ChoicesDialog {
+            if (_instance == null) {
+                _instance = new ChoicesDialog();
+            }
+            return _instance;
+        }
 		
 		private var _new_top_tf:TSLinkedTextField = new TSLinkedTextField();
 		private var _title_tf:TextField = new TextField();
@@ -139,7 +145,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 		override protected function _construct():void {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			super._construct();

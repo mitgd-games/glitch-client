@@ -42,7 +42,13 @@ package com.tinyspeck.engine.view.gameoverlay {
 	public class AchievementView extends BaseScreenView {
 		
 		/* singleton boilerplate */
-		public static const instance:AchievementView = new AchievementView();
+		public static var _instance:AchievementView = null;
+        public static function get instance() : AchievementView {
+            if (_instance == null) {
+                _instance = new AchievementView();
+            }
+            return _instance;
+        }
 		
 		private const DESCRIPTION_WIDTH:uint = 640;
 		private const FAMILIAR_WH:uint = 68; //85
@@ -88,7 +94,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 		public function AchievementView() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

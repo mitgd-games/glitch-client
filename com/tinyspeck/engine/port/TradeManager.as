@@ -34,7 +34,13 @@ package com.tinyspeck.engine.port
 	
 	public class TradeManager
 	{	/* singleton boilerplate */
-		public static const instance:TradeManager = new TradeManager();
+		public static var _instance:TradeManager = null;
+        public static function get instance() : TradeManager {
+            if (_instance == null) {
+                _instance = new TradeManager();
+            }
+            return _instance;
+        }
 		
 		public static const TRADE_TAGS_TO_EXCLUDE:Array = ['no_trade'];
 		
@@ -52,7 +58,7 @@ package com.tinyspeck.engine.port
 		
 		public function TradeManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			//listen to the trade dialog for any chat happenings

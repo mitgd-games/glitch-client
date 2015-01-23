@@ -10,7 +10,13 @@ package com.tinyspeck.engine.port
 	public class StatBurstController
 	{
 		/* singleton boilerplate */
-		public static const instance:StatBurstController = new StatBurstController();
+		public static var _instance:StatBurstController = null;
+        public static function get instance() : StatBurstController {
+            if (_instance == null) {
+                _instance = new StatBurstController();
+            }
+            return _instance;
+        }
 		
 		public var paused:Boolean = false;
 		private const bursts:Vector.<StatBurst> = new Vector.<StatBurst>();
@@ -19,7 +25,7 @@ package com.tinyspeck.engine.port
 		
 		public function StatBurstController() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

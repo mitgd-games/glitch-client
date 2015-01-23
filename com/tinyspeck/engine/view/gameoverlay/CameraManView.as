@@ -24,7 +24,13 @@ package com.tinyspeck.engine.view.gameoverlay {
 	
 	public class CameraManView extends AbstractTSView implements ITipProvider {
 		/* singleton boilerplate */
-		public static const instance:CameraManView = new CameraManView();
+		public static var _instance:CameraManView = null;
+        public static function get instance() : CameraManView {
+            if (_instance == null) {
+                _instance = new CameraManView();
+            }
+            return _instance;
+        }
 		
 		private var spinner:MovieClip;
 		
@@ -51,7 +57,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 		public function CameraManView() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			mouseEnabled = false;

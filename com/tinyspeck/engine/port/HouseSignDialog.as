@@ -16,7 +16,13 @@ package com.tinyspeck.engine.port
 	public class HouseSignDialog extends BigDialog
 	{
 		/* singleton boilerplate */
-		public static const instance:HouseSignDialog = new HouseSignDialog();
+		public static var _instance:HouseSignDialog = null;
+        public static function get instance() : HouseSignDialog {
+            if (_instance == null) {
+                _instance = new HouseSignDialog();
+            }
+            return _instance;
+        }
 		
 		private var expand_bt:Button;
 		private var cultivate_bt:Button;
@@ -32,7 +38,7 @@ package com.tinyspeck.engine.port
 		
 		public function HouseSignDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = 200;

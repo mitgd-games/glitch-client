@@ -16,14 +16,22 @@ package com.tinyspeck.engine.spritesheet {
 	import flash.geom.Rectangle;
 	import flash.utils.getTimer;
 	
-	CONFIG::debugging import com.tinyspeck.debug.Console;
-	CONFIG::debugging import com.tinyspeck.engine.util.StringUtil;
-	CONFIG::debugging import com.tinyspeck.debug.BootError;
+	CONFIG::debugging {
+		import com.tinyspeck.debug.Console;
+		import com.tinyspeck.engine.util.StringUtil;
+		import com.tinyspeck.debug.BootError;
+	}
 	
 
 	public class ItemFrameCollectionRecorder {
 		
-		public static const instance:ItemFrameCollectionRecorder = new ItemFrameCollectionRecorder();
+		public static var _instance:ItemFrameCollectionRecorder = null;
+        public static function get instance() : ItemFrameCollectionRecorder {
+            if (_instance == null) {
+                _instance = new ItemFrameCollectionRecorder();
+            }
+            return _instance;
+        }
 		
 		private const requestsByKey:Object = {};
 		private const uniqueRequests:Vector.<FrameCollectionByURLRequest> = new Vector.<FrameCollectionByURLRequest>();

@@ -28,7 +28,13 @@ package com.tinyspeck.engine.port
 	public class PartySpaceDialog extends BigDialog
 	{
 		/* singleton boilerplate */
-		public static const instance:PartySpaceDialog = new PartySpaceDialog();
+		public static var _instance:PartySpaceDialog = null;
+        public static function get instance() : PartySpaceDialog {
+            if (_instance == null) {
+                _instance = new PartySpaceDialog();
+            }
+            return _instance;
+        }
 		
 		private static const IMG_H:uint = 100;
 		private static const BUDDY_COUNT:uint = 3; //how many of your buddies (if any) to show in the party goers
@@ -57,7 +63,7 @@ package com.tinyspeck.engine.port
 		
 		public function PartySpaceDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = 473;

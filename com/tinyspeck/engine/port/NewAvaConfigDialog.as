@@ -38,7 +38,13 @@ package com.tinyspeck.engine.port
 	
 	public class NewAvaConfigDialog extends BigDialog implements IFocusableComponent {
 		/* singleton boilerplate */
-		public static const instance:NewAvaConfigDialog = new NewAvaConfigDialog();
+		public static var _instance:NewAvaConfigDialog = null;
+        public static function get instance() : NewAvaConfigDialog {
+            if (_instance == null) {
+                _instance = new NewAvaConfigDialog();
+            }
+            return _instance;
+        }
 		
 		private var wm:WorldModel;
 		
@@ -76,7 +82,7 @@ package com.tinyspeck.engine.port
 		
 		public function NewAvaConfigDialog() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			wm = model.worldModel;

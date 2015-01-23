@@ -20,7 +20,13 @@ package com.tinyspeck.engine.port
 	public class MakingManager
 	{
 		/* singleton boilerplate */
-		public static const instance:MakingManager = new MakingManager();
+		public static var _instance:MakingManager = null;
+        public static function get instance() : MakingManager {
+            if (_instance == null) {
+                _instance = new MakingManager();
+            }
+            return _instance;
+        }
 		
 		private var api_call:APICall = new APICall();
 		private var model:TSModelLocator;
@@ -36,7 +42,7 @@ package com.tinyspeck.engine.port
 		
 		public function MakingManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			model = TSModelLocator.instance;

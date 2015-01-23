@@ -21,7 +21,13 @@ package com.tinyspeck.engine.port
 	public class CraftyDialog extends BigDialog
 	{
 		/* singleton boilerplate */
-		public static const instance:CraftyDialog = new CraftyDialog();
+		public static var _instance:CraftyDialog = null;
+        public static function get instance() : CraftyDialog {
+            if (_instance == null) {
+                _instance = new CraftyDialog();
+            }
+            return _instance;
+        }
 		
 		public static const BODY_H:uint = 343;
 		
@@ -44,7 +50,7 @@ package com.tinyspeck.engine.port
 		
 		public function CraftyDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_close_bt_padd_right = 8;

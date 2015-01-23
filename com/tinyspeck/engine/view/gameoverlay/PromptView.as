@@ -30,7 +30,13 @@ package com.tinyspeck.engine.view.gameoverlay {
 	public class PromptView extends AbstractTSView {
 		
 		/* singleton boilerplate */
-		public static const instance:PromptView = new PromptView();
+		public static var _instance:PromptView = null;
+        public static function get instance() : PromptView {
+            if (_instance == null) {
+                _instance = new PromptView();
+            }
+            return _instance;
+        }
 		
 		private const MAX_BUTTON_WIDTHS:uint = 100;
 		
@@ -46,7 +52,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 		public function PromptView():void {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			model = TSModelLocator.instance;

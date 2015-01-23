@@ -20,7 +20,13 @@ package com.tinyspeck.engine.port
 	public class HouseExpandYardDialog extends BigDialog
 	{
 		/* singleton boilerplate */
-		public static const instance:HouseExpandYardDialog = new HouseExpandYardDialog();
+		public static var _instance:HouseExpandYardDialog = null;
+        public static function get instance() : HouseExpandYardDialog {
+            if (_instance == null) {
+                _instance = new HouseExpandYardDialog();
+            }
+            return _instance;
+        }
 		
 		private static const TYPE_YARD:String = 'yard';
 		
@@ -38,7 +44,7 @@ package com.tinyspeck.engine.port
 		
 		public function HouseExpandYardDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = 420;

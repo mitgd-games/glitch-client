@@ -35,7 +35,13 @@ package com.tinyspeck.engine.port
 	public class InputTalkBubble extends Sprite implements IFocusableComponent
 	{
 		/* singleton boilerplate */
-		public static const instance:InputTalkBubble = new InputTalkBubble();
+		public static var _instance:InputTalkBubble = null;
+        public static function get instance() : InputTalkBubble {
+            if (_instance == null) {
+                _instance = new InputTalkBubble();
+            }
+            return _instance;
+        }
 		
 		public static function getInputTalkBubbleParentOfTF(tf:TextField):InputTalkBubble {
 			if (!tf) return null;
@@ -67,7 +73,7 @@ package com.tinyspeck.engine.port
 		
 		public function InputTalkBubble(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			model = TSModelLocator.instance;

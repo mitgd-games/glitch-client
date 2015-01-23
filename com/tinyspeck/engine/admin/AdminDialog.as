@@ -55,7 +55,13 @@ package com.tinyspeck.engine.admin {
 	public class AdminDialog extends BigDialog implements IFocusableComponent, ITipProvider {
 		
 		/* singleton boilerplate */
-		public static const instance:AdminDialog = new AdminDialog();
+		public static var _instance:AdminDialog = null;
+        public static function get instance() : AdminDialog {
+            if (_instance == null) {
+                _instance = new AdminDialog();
+            }
+            return _instance;
+        }
 		
 		public const rook_panel:AdminDialogRookPanel = new AdminDialogRookPanel();
 		private const content_sp:Sprite = new Sprite;
@@ -73,7 +79,7 @@ package com.tinyspeck.engine.admin {
 		
 		public function AdminDialog() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = 380;

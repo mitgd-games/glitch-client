@@ -14,9 +14,21 @@ package com.tinyspeck.engine.view.gameoverlay {
 	public class DisconnectedScreenView extends AbstractTSView {
 		
 		/* singleton boilerplate */
-		public static const instance:DisconnectedScreenView = new DisconnectedScreenView();
+		public static var _instance:DisconnectedScreenView = null;
+        public static function get instance() : DisconnectedScreenView {
+            if (_instance == null) {
+                _instance = new DisconnectedScreenView();
+            }
+            return _instance;
+        }
 		
-		private static const BW_FILTER_ARRAY:Array = [ColorMatrix.getFilter(0, 0, -100)];
+		private static var _BW_FILTER_ARRAY:Array = null;
+		private static function get BW_FILTER_ARRAY() : Array {
+			if (_BW_FILTER_ARRAY == null) {
+				_BW_FILTER_ARRAY = [ColorMatrix.getFilter(0, 0, -100)];
+			}
+			return _BW_FILTER_ARRAY;
+		}
 		
 		private var model:TSModelLocator;
 		
@@ -25,7 +37,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 		public function DisconnectedScreenView() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			model = TSModelLocator.instance;

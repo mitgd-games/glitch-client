@@ -13,7 +13,13 @@ package com.tinyspeck.engine.admin.locodeco {
 	import flash.text.TextField;
 	
 	public class DisambiguationDialog extends Dialog {
-		public static const instance:DisambiguationDialog = new DisambiguationDialog();
+		public static var _instance:DisambiguationDialog = null;
+        public static function get instance() : DisambiguationDialog {
+            if (_instance == null) {
+                _instance = new DisambiguationDialog();
+            }
+            return _instance;
+        }
 		
 		public const tf:TextField = new TSLinkedTextField();
 		
@@ -50,7 +56,7 @@ package com.tinyspeck.engine.admin.locodeco {
 		
 		override protected function makeCloseBt():Button {
 			return new Button({
-				graphic: new AssetManager.instance.assets['close_x_small_gray'](),
+				graphic: new (AssetManager.instance.assets['close_x_small_gray'])(),
 				name: '_close_bt',
 				c: bg_c,
 				high_c: bg_c,

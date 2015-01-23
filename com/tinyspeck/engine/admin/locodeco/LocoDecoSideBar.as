@@ -9,14 +9,20 @@ package com.tinyspeck.engine.admin.locodeco {
 
 	public class LocoDecoSideBar extends TSSpriteWithModel implements IFocusableComponent {
 		/* singleton boilerplate */
-		public static const instance:LocoDecoSideBar = new LocoDecoSideBar();
+		public static var _instance:LocoDecoSideBar = null;
+        public static function get instance() : LocoDecoSideBar {
+            if (_instance == null) {
+                _instance = new LocoDecoSideBar();
+            }
+            return _instance;
+        }
 		
 		private static const swf:LocoDecoSWFBridge = LocoDecoSWFBridge.instance;
 		private var has_focus:Boolean = false;
 		
 		public function LocoDecoSideBar() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

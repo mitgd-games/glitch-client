@@ -51,7 +51,13 @@ package com.tinyspeck.engine.control.engine
 	public class AnnouncementController implements IFocusableComponent
 	{
 		/* singleton boilerplate */
-		public static const instance:AnnouncementController = new AnnouncementController();
+		public static var _instance:AnnouncementController = null;
+        public static function get instance() : AnnouncementController {
+            if (_instance == null) {
+                _instance = new AnnouncementController();
+            }
+            return _instance;
+        }
 		
 		private var iwov_pool:Vector.<InWindowAnnouncementOverlay> = new Vector.<InWindowAnnouncementOverlay>();
 		private var ilov_pool:Vector.<InLocationAnnouncementOverlay> = new Vector.<InLocationAnnouncementOverlay>();
@@ -68,7 +74,7 @@ package com.tinyspeck.engine.control.engine
 		
 		public function AnnouncementController() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

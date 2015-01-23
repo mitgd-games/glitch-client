@@ -28,7 +28,13 @@ package com.tinyspeck.engine.port
 	public class ACLDialog extends BigDialog implements IMoveListener
 	{
 		/* singleton boilerplate */
-		public static const instance:ACLDialog = new ACLDialog();
+		public static var _instance:ACLDialog = null;
+        public static function get instance() : ACLDialog {
+            if (_instance == null) {
+                _instance = new ACLDialog();
+            }
+            return _instance;
+        }
 		
 		private static const TAB_X:uint = 13;
 		private static const TAB_H:uint = 25;
@@ -63,7 +69,7 @@ package com.tinyspeck.engine.port
 		
 		public function ACLDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_base_padd = 20;

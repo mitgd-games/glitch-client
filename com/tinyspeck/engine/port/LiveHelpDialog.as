@@ -10,7 +10,13 @@ package com.tinyspeck.engine.port
 	public class LiveHelpDialog extends BigDialog
 	{
 		/* singleton boilerplate */
-		public static const instance:LiveHelpDialog = new LiveHelpDialog();
+		public static var _instance:LiveHelpDialog = null;
+        public static function get instance() : LiveHelpDialog {
+            if (_instance == null) {
+                _instance = new LiveHelpDialog();
+            }
+            return _instance;
+        }
 		
 		private var body_tf:TSLinkedTextField = new TSLinkedTextField();
 		private var ok_bt:Button;
@@ -19,7 +25,7 @@ package com.tinyspeck.engine.port
 		
 		public function LiveHelpDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_body_border_c = 0xffffff;

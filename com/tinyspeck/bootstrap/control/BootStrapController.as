@@ -63,7 +63,13 @@ package com.tinyspeck.bootstrap.control {
 	
 	public class BootStrapController implements IController, IDisposable {
 		/* singleton boilerplate */
-		public static const instance:BootStrapController = new BootStrapController();
+		public static var _instance:BootStrapController = null;
+        public static function get instance() : BootStrapController {
+            if (_instance == null) {
+                _instance = new BootStrapController();
+            }
+            return _instance;
+        }
 		
 		[Embed(source="../../../../assets/VAGRoundedBold.ttf", fontName="BootTipEmbed", mimeType="application/x-font-truetype", unicodeRange="U+0020-U+007E")]
 		public static const BootTipEmbed:Class;
@@ -188,7 +194,7 @@ package com.tinyspeck.bootstrap.control {
 		
 		public function BootStrapController() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		public function init(flashVarModel:FlashVarModel):void {

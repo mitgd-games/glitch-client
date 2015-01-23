@@ -17,7 +17,13 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 	public class StreetUpgradeView extends BaseScreenView {
 		/* singleton boilerplate */
-		public static const instance:StreetUpgradeView = new StreetUpgradeView();
+		public static var _instance:StreetUpgradeView = null;
+        public static function get instance() : StreetUpgradeView {
+            if (_instance == null) {
+                _instance = new StreetUpgradeView();
+            }
+            return _instance;
+        }
 		
 		private var badge_holder:Sprite = new Sprite();
 		
@@ -28,7 +34,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 		public function StreetUpgradeView() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

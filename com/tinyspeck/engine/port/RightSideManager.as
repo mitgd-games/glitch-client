@@ -69,7 +69,13 @@ package com.tinyspeck.engine.port
 		 *****************************************************************/
 		
 		/* singleton boilerplate */
-		public static const instance:RightSideManager = new RightSideManager();
+		public static var _instance:RightSideManager = null;
+        public static function get instance() : RightSideManager {
+            if (_instance == null) {
+                _instance = new RightSideManager();
+            }
+            return _instance;
+        }
 		
 		public static const DIRECTION_BACK:String = 'back';
 		public static const DIRECTION_FORWARD:String = 'forward';
@@ -104,7 +110,7 @@ package com.tinyspeck.engine.port
 		
 		public function RightSideManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			model = TSModelLocator.instance;

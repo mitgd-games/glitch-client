@@ -32,7 +32,13 @@ package com.tinyspeck.engine.port
 	public class MakingDialog extends BigDialog implements IPackChange
 	{
 		/* singleton boilerplate */
-		public static const instance:MakingDialog = new MakingDialog();
+		public static var _instance:MakingDialog = null;
+        public static function get instance() : MakingDialog {
+            if (_instance == null) {
+                _instance = new MakingDialog();
+            }
+            return _instance;
+        }
 		
 		private const TITLE_ICON_WH:uint = 45;
 		
@@ -56,7 +62,7 @@ package com.tinyspeck.engine.port
 		
 		public function MakingDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = 614;

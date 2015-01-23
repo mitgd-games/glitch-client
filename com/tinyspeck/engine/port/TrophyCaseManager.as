@@ -32,11 +32,17 @@ package com.tinyspeck.engine.port
 		private var main_view:TSMainView;
 		
 		/* singleton boilerplate */
-		public static const instance:TrophyCaseManager = new TrophyCaseManager();
+		public static var _instance:TrophyCaseManager = null;
+        public static function get instance() : TrophyCaseManager {
+            if (_instance == null) {
+                _instance = new TrophyCaseManager();
+            }
+            return _instance;
+        }
 		
 		public function TrophyCaseManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			model = TSModelLocator.instance;

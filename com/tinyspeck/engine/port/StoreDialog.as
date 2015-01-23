@@ -31,7 +31,13 @@ package com.tinyspeck.engine.port
 	public class StoreDialog extends BigDialog
 	{
 		/* singleton boilerplate */
-		public static const instance:StoreDialog = new StoreDialog();
+		public static var _instance:StoreDialog = null;
+        public static function get instance() : StoreDialog {
+            if (_instance == null) {
+                _instance = new StoreDialog();
+            }
+            return _instance;
+        }
 		
 		private static const CRUNCH_LENGTH:uint = 1;
 		
@@ -61,7 +67,7 @@ package com.tinyspeck.engine.port
 		
 		public function StoreDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_draggable = true;

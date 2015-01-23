@@ -23,7 +23,13 @@ package com.tinyspeck.engine.view.ui.avatar
 	public class Lantern extends AvatarDisposableSprite
 	{
 		/* singleton boilerplate */
-		public static const instance:Lantern = new Lantern();
+		public static var _instance:Lantern = null;
+        public static function get instance() : Lantern {
+            if (_instance == null) {
+                _instance = new Lantern();
+            }
+            return _instance;
+        }
 		
 		public static const DEFAULT_RADIUS:uint = 220;
 		
@@ -45,7 +51,7 @@ package com.tinyspeck.engine.view.ui.avatar
 		
 		public function Lantern(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			mouseEnabled = mouseChildren = false;

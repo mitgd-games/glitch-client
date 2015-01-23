@@ -9,7 +9,13 @@ package com.tinyspeck.engine.port {
 	public class DecoratorDisclaimerDialog extends BigDialog {
 		
 		/* singleton boilerplate */
-		public static const instance:DecoratorDisclaimerDialog = new DecoratorDisclaimerDialog();
+		public static var _instance:DecoratorDisclaimerDialog = null;
+        public static function get instance() : DecoratorDisclaimerDialog {
+            if (_instance == null) {
+                _instance = new DecoratorDisclaimerDialog();
+            }
+            return _instance;
+        }
 		
 		private var body_tf:TSLinkedTextField = new TSLinkedTextField();
 		private var ok_bt:Button;
@@ -17,7 +23,7 @@ package com.tinyspeck.engine.port {
 		
 		public function DecoratorDisclaimerDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_body_border_c = 0xffffff;

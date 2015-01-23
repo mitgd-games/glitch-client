@@ -33,7 +33,13 @@ package com.tinyspeck.engine.port {
 	
 	public class ConversationManager extends TSSpriteWithModel implements IChoiceProvider, iChoiceAgent {
 		/* singleton boilerplate */
-		public static const instance:ConversationManager = new ConversationManager();
+		public static var _instance:ConversationManager = null;
+        public static function get instance() : ConversationManager {
+            if (_instance == null) {
+                _instance = new ConversationManager();
+            }
+            return _instance;
+        }
 		
 		public static const TYPE_GREETER_COMING:String = 'greeter_coming';
 		public static const TYPE_GREETER_ARRIVED:String = 'greeter_arrived';
@@ -63,7 +69,7 @@ package com.tinyspeck.engine.port {
 		/* constructor */
 		public function ConversationManager() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

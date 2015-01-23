@@ -11,7 +11,13 @@ package com.tinyspeck.engine.view.gameoverlay {
 	public class FlashUnfocusedView extends AbstractTSView {
 		
 		/* singleton boilerplate */
-		public static const instance:FlashUnfocusedView = new FlashUnfocusedView();
+		public static var _instance:FlashUnfocusedView = null;
+        public static function get instance() : FlashUnfocusedView {
+            if (_instance == null) {
+                _instance = new FlashUnfocusedView();
+            }
+            return _instance;
+        }
 		
 		private var showing:Boolean;
 		private var model:TSModelLocator;
@@ -19,7 +25,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 		public function FlashUnfocusedView() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			mouseChildren = mouseEnabled = false;

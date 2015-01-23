@@ -18,7 +18,13 @@ package com.tinyspeck.engine.port {
 	public class StoreEmbed extends TSSpriteWithModel implements IFocusableComponent {
 		
 		/* singleton boilerplate */
-		public static const instance:StoreEmbed = new StoreEmbed();
+		public static var _instance:StoreEmbed = null;
+        public static function get instance() : StoreEmbed {
+            if (_instance == null) {
+                _instance = new StoreEmbed();
+            }
+            return _instance;
+        }
 		
 		private var _frame:Sprite = new Sprite();
 		
@@ -44,7 +50,7 @@ package com.tinyspeck.engine.port {
 			
 			
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = 420;

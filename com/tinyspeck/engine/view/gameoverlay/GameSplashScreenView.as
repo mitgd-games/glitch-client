@@ -32,7 +32,13 @@ package com.tinyspeck.engine.view.gameoverlay
 	public class GameSplashScreenView extends BaseSplashScreenView {
 		
 		/* singleton boilerplate */
-		public static const instance:GameSplashScreenView = new GameSplashScreenView();
+		public static var _instance:GameSplashScreenView = null;
+        public static function get instance() : GameSplashScreenView {
+            if (_instance == null) {
+                _instance = new GameSplashScreenView();
+            }
+            return _instance;
+        }
 		
 		private const RAYS_SCENE:String = 'combinedSlow'; //thinFast, thinSlow, thickFast, thickSlow, combinedSlow
 		private const GRAPHIC_FILTERS:Array = [];
@@ -61,7 +67,7 @@ package com.tinyspeck.engine.view.gameoverlay
 		
 		public function GameSplashScreenView(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

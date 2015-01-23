@@ -29,7 +29,13 @@ package com.tinyspeck.engine.view.ui
 	public class RookIncidentHeaderView extends Sprite
 	{		
 		/* singleton boilerplate */
-		public static const instance:RookIncidentHeaderView = new RookIncidentHeaderView();
+		public static var _instance:RookIncidentHeaderView = null;
+        public static function get instance() : RookIncidentHeaderView {
+            if (_instance == null) {
+                _instance = new RookIncidentHeaderView();
+            }
+            return _instance;
+        }
 		
 		private const FULL_ANIMATION_TIME:Number = 2.5; //how long from 0% - 100% in secs.
 		private const UPDATE_ANIMATION_TIME:Number = 1.5; //anytime updates come in, how long it takes to animate
@@ -72,7 +78,7 @@ package com.tinyspeck.engine.view.ui
 				
 		public function RookIncidentHeaderView(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			main_view = TSFrontController.instance.getMainView();

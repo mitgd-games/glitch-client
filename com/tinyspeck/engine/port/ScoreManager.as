@@ -18,7 +18,13 @@ package com.tinyspeck.engine.port
 	public class ScoreManager
 	{
 		/* singleton boilerplate */
-		public static const instance:ScoreManager = new ScoreManager();
+		public static var _instance:ScoreManager = null;
+        public static function get instance() : ScoreManager {
+            if (_instance == null) {
+                _instance = new ScoreManager();
+            }
+            return _instance;
+        }
 		
 		private var model:TSModelLocator;
 		private var score_boards:Vector.<ScoreBoard> = new Vector.<ScoreBoard>();
@@ -29,7 +35,7 @@ package com.tinyspeck.engine.port
 		
 		public function ScoreManager() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			//listen to the timer

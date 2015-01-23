@@ -26,7 +26,13 @@ package com.tinyspeck.engine.sound
 	public class SoundMaster {
 		
 		/* singleton boilerplate */
-		public static const instance:SoundMaster = new SoundMaster();
+		public static var _instance:SoundMaster = null;
+        public static function get instance() : SoundMaster {
+            if (_instance == null) {
+                _instance = new SoundMaster();
+            }
+            return _instance;
+        }
 		
 		private static const AMBIENT_FADE_MS:int = 1000;
 		
@@ -54,7 +60,7 @@ package com.tinyspeck.engine.sound
 
 		public function SoundMaster() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

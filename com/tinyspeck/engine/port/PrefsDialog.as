@@ -39,11 +39,17 @@ package com.tinyspeck.engine.port
 		private var pref_changed:Boolean;
 		
 		/* singleton boilerplate */
-		public static const instance:PrefsDialog = new PrefsDialog();
+		public static var _instance:PrefsDialog = null;
+        public static function get instance() : PrefsDialog {
+            if (_instance == null) {
+                _instance = new PrefsDialog();
+            }
+            return _instance;
+        }
 		
 		public function PrefsDialog() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			_body_min_h = 200;
 			_w = 450;

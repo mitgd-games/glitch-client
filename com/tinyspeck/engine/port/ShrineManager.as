@@ -33,7 +33,13 @@ package com.tinyspeck.engine.port
 	public class ShrineManager
 	{
 		/* singleton boilerplate */
-		public static const instance:ShrineManager = new ShrineManager();
+		public static var _instance:ShrineManager = null;
+        public static function get instance() : ShrineManager {
+            if (_instance == null) {
+                _instance = new ShrineManager();
+            }
+            return _instance;
+        }
 		
 		public var donate_verb:String = 'donate_to'; //this may change someday, who knows...
 		
@@ -48,7 +54,7 @@ package com.tinyspeck.engine.port
 		
 		public function ShrineManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

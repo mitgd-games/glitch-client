@@ -24,7 +24,13 @@ package com.tinyspeck.engine.port
 	public class MailDialog extends BigDialog
 	{
 		/* singleton boilerplate */
-		public static const instance:MailDialog = new MailDialog();
+		public static var _instance:MailDialog = null;
+        public static function get instance() : MailDialog {
+            if (_instance == null) {
+                _instance = new MailDialog();
+            }
+            return _instance;
+        }
 		
 		public static const INBOX:String = 'inbox';
 		public static const COMPOSE:String = 'compose';
@@ -54,7 +60,7 @@ package com.tinyspeck.engine.port
 		
 		public function MailDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			_base_padd = 20;
 			_head_min_h = 60;

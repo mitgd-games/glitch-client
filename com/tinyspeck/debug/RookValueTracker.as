@@ -4,11 +4,17 @@ package com.tinyspeck.debug {
 	public class RookValueTracker extends ValueTracker {
 		
 		/* singleton boilerplate */
-		public static const instance:RookValueTracker = new RookValueTracker();
+		public static var _instance:RookValueTracker = null;
+        public static function get instance() : RookValueTracker {
+            if (_instance == null) {
+                _instance = new RookValueTracker();
+            }
+            return _instance;
+        }
 		
 		public function RookValueTracker(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			CONFIG::debugging {

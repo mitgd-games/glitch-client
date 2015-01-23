@@ -27,7 +27,13 @@ package com.tinyspeck.engine.port
 	public class HouseManager
 	{
 		/* singleton boilerplate */
-		public static const instance:HouseManager = new HouseManager();
+		public static var _instance:HouseManager = null;
+        public static function get instance() : HouseManager {
+            if (_instance == null) {
+                _instance = new HouseManager();
+            }
+            return _instance;
+        }
 		
 		private var chasis_itemstack:Itemstack;
 		private var chasis_array:Array;
@@ -40,7 +46,7 @@ package com.tinyspeck.engine.port
 		
 		public function HouseManager(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

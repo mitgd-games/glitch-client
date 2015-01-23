@@ -10,14 +10,20 @@ package com.tinyspeck.engine.port
 	public class TransitManager extends EventDispatcher
 	{
 		/* singleton boilerplate */
-		public static const instance:TransitManager = new TransitManager();
+		public static var _instance:TransitManager = null;
+        public static function get instance() : TransitManager {
+            if (_instance == null) {
+                _instance = new TransitManager();
+            }
+            return _instance;
+        }
 		
 		private var _current_status:TransitStatus;
 		private var travel_timer:Timer = new Timer(1000); //delay changes when the message comes in
 				
 		public function TransitManager() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

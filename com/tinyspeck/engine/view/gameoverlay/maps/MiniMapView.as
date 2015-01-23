@@ -1,6 +1,4 @@
 package com.tinyspeck.engine.view.gameoverlay.maps {
-	import com.tinyspeck.tstweener.TSTweener;
-	
 	import com.tinyspeck.core.beacon.StageBeacon;
 	import com.tinyspeck.engine.admin.locodeco.LocoDecoSWFBridge;
 	import com.tinyspeck.engine.control.TSFrontController;
@@ -35,6 +33,7 @@ package com.tinyspeck.engine.view.gameoverlay.maps {
 	import com.tinyspeck.engine.view.ui.Checkbox;
 	import com.tinyspeck.engine.view.ui.map.GpsUI;
 	import com.tinyspeck.engine.view.util.StaticFilters;
+	import com.tinyspeck.tstweener.TSTweener;
 	
 	import flash.display.Bitmap;
 	import flash.display.DisplayObject;
@@ -55,7 +54,14 @@ package com.tinyspeck.engine.view.gameoverlay.maps {
 	
 	public class MiniMapView extends TSSpriteWithModel implements IMoveListener, ILocPcAddDelConsumer, ILocPcUpdateConsumer, ITipProvider {
 		/* singleton boilerplate */
-		public static const instance:MiniMapView = new MiniMapView();
+		public static var _instance:MiniMapView = null;
+		public static function get instance() : MiniMapView {
+			if (_instance == null) {
+				_instance = new MiniMapView();
+			}
+			return _instance;
+		}
+			
 		public static const MAX_ALLOWABLE_MAP_WIDTH:int = 160;
 		
 		private static const MAX_CONTRACTED_H:int = 70;
@@ -155,7 +161,7 @@ package com.tinyspeck.engine.view.gameoverlay.maps {
 		
 		public function MiniMapView():void {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

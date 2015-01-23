@@ -34,7 +34,13 @@ package com.tinyspeck.engine.port
 	public class NoteDialog extends Dialog implements IFocusableComponent, ITipProvider
 	{
 		/* singleton boilerplate */
-		public static const instance:NoteDialog = new NoteDialog();
+		public static var _instance:NoteDialog = null;
+        public static function get instance() : NoteDialog {
+            if (_instance == null) {
+                _instance = new NoteDialog();
+            }
+            return _instance;
+        }
 		
 		private const TEXT_HEIGHT:uint = 217;
 		private const WARN_PERC:Number = .05;
@@ -69,7 +75,7 @@ package com.tinyspeck.engine.port
 		
 		public function NoteDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_h = 365;

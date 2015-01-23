@@ -56,7 +56,13 @@ package com.tinyspeck.engine.view.ui.glitchr {
 		private static const LOCAL_NO_PUBLISH:String = 'glitchr_no_publish';
 		
 		/* singleton boilerplate */
-		public static const instance:GlitchrSnapshotView = new GlitchrSnapshotView();
+		public static var _instance:GlitchrSnapshotView = null;
+        public static function get instance() : GlitchrSnapshotView {
+            if (_instance == null) {
+                _instance = new GlitchrSnapshotView();
+            }
+            return _instance;
+        }
 		
 		private var model:TSModelLocator;
 		private var has_focus:Boolean;
@@ -80,7 +86,7 @@ package com.tinyspeck.engine.view.ui.glitchr {
 		
 		public function GlitchrSnapshotView() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			model = TSModelLocator.instance;

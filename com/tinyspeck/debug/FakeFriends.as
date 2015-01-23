@@ -12,7 +12,13 @@ package com.tinyspeck.debug {
 	
 	public class FakeFriends {
 		/* singleton boilerplate */
-		public static const instance:FakeFriends = new FakeFriends();
+		public static var _instance:FakeFriends = null;
+        public static function get instance() : FakeFriends {
+            if (_instance == null) {
+                _instance = new FakeFriends();
+            }
+            return _instance;
+        }
 		
 		private var model:TSModelLocator;
 		private var limit:int; // set in insertFakesIntoLocation(); 56 is all we have right now in getFakeData
@@ -23,7 +29,7 @@ package com.tinyspeck.debug {
 		
 		public function FakeFriends() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

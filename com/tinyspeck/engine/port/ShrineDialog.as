@@ -37,7 +37,13 @@ package com.tinyspeck.engine.port
 	public class ShrineDialog extends BigDialog implements IFocusableComponent {
 		
 		/* singleton boilerplate */
-		public static const instance:ShrineDialog = new ShrineDialog();
+		public static var _instance:ShrineDialog = null;
+        public static function get instance() : ShrineDialog {
+            if (_instance == null) {
+                _instance = new ShrineDialog();
+            }
+            return _instance;
+        }
 		
 		private const ICON_WH:uint = 66;
 		private const SKILL_ICON_WH:uint = 60;
@@ -77,7 +83,7 @@ package com.tinyspeck.engine.port
 		
 		public function ShrineDialog() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_draggable = true;

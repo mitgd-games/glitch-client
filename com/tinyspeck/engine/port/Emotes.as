@@ -6,7 +6,13 @@ package com.tinyspeck.engine.port
 	public class Emotes
 	{
 		/* singleton boilerplate */
-		public static const instance:Emotes = new Emotes();
+		public static var _instance:Emotes = null;
+        public static function get instance() : Emotes {
+            if (_instance == null) {
+                _instance = new Emotes();
+            }
+            return _instance;
+        }
 		
 		/*****************************************
 		 * Anytime you want the avatar to react to
@@ -22,7 +28,7 @@ package com.tinyspeck.engine.port
 		
 		public function Emotes(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 		}
 		

@@ -31,7 +31,13 @@ package com.tinyspeck.engine.port
 	public class InputDialog extends BigDialog implements IFocusableComponent {
 		
 		/* singleton boilerplate */
-		public static const instance:InputDialog = new InputDialog();
+		public static var _instance:InputDialog = null;
+        public static function get instance() : InputDialog {
+            if (_instance == null) {
+                _instance = new InputDialog();
+            }
+            return _instance;
+        }
 		
 		private var Q:Array = [];
 		private var payload:Object;
@@ -51,7 +57,7 @@ package com.tinyspeck.engine.port
 		
 		public function InputDialog() {
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_w = 500;

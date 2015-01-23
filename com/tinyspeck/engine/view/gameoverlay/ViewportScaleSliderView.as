@@ -10,7 +10,13 @@ package com.tinyspeck.engine.view.gameoverlay {
 	
 	public class ViewportScaleSliderView extends TSSlider implements ITipProvider {
 		/* singleton boilerplate */
-		public static const instance:ViewportScaleSliderView = new ViewportScaleSliderView();
+		public static var _instance:ViewportScaleSliderView = null;
+        public static function get instance() : ViewportScaleSliderView {
+            if (_instance == null) {
+                _instance = new ViewportScaleSliderView();
+            }
+            return _instance;
+        }
 		
 		private var model:TSModelLocator;
 		private var mouse_is_down:Boolean;
@@ -19,7 +25,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 			super(TSSlider.VERTICAL);
 			
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			model = TSModelLocator.instance;

@@ -25,7 +25,13 @@ package com.tinyspeck.engine.port
 	public class DateTimeDialog extends Dialog
 	{
 		/* singleton boilerplate */
-		public static const instance:DateTimeDialog = new DateTimeDialog();
+		public static var _instance:DateTimeDialog = null;
+        public static function get instance() : DateTimeDialog {
+            if (_instance == null) {
+                _instance = new DateTimeDialog();
+            }
+            return _instance;
+        }
 		
 		private var title_tf:TextField = new TextField();
 		private var sub_title_tf:TextField = new TextField();
@@ -46,7 +52,7 @@ package com.tinyspeck.engine.port
 		
 		public function DateTimeDialog(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			_draggable = true;

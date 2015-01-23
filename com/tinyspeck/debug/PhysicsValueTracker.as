@@ -4,11 +4,17 @@ package com.tinyspeck.debug {
 	public class PhysicsValueTracker extends ValueTracker {
 		
 		/* singleton boilerplate */
-		public static const instance:PhysicsValueTracker = new PhysicsValueTracker();
+		public static var _instance:PhysicsValueTracker = null;
+        public static function get instance() : PhysicsValueTracker {
+            if (_instance == null) {
+                _instance = new PhysicsValueTracker();
+            }
+            return _instance;
+        }
 		
 		public function PhysicsValueTracker(){
 			CONFIG::god {
-				if(instance) throw new Error('Singleton');
+				if(_instance) throw new Error('Singleton');
 			}
 			
 			CONFIG::debugging {

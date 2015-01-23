@@ -15,7 +15,13 @@ package com.tinyspeck.bridge
 	 */
 	public class MouseWheel
 	{
-		public static const instance:MouseWheel = new MouseWheel();
+		public static var _instance:MouseWheel = null;
+        public static function get instance() : MouseWheel {
+            if (_instance == null) {
+                _instance = new MouseWheel();
+            }
+            return _instance;
+        }
 		
 		private var _currItem:InteractiveObject;
 		private var _clonedEvent:MouseEvent;
