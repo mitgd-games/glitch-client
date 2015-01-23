@@ -1,6 +1,7 @@
 package com.tinyspeck.engine.net
 {
 	import com.adobe.serialization.json.JSON;
+	import com.reversefold.glitch.server.Server;
 	import com.tinyspeck.core.beacon.StageBeacon;
 	import com.tinyspeck.core.memory.DisposableEventDispatcher;
 	import com.tinyspeck.core.memory.DisposableSocket;
@@ -35,10 +36,13 @@ package com.tinyspeck.engine.net
 
 	public class NetDelegateSocket extends DisposableEventDispatcher implements INetDelegate
 	{
-		private const messageQueue:Vector.<Object> = new Vector.<Object>();
-		private const sendObject:Object = new Object();
+		//private const messageQueue:Vector.<Object> = new Vector.<Object>();
+		//private const sendObject:Object = new Object();
 		
-		private const netSocket:DisposableSocket = new DisposableSocket();
+		//private const netSocket:DisposableSocket = new DisposableSocket();
+		
+		private var incomingMessageQueue : Array = new Array();
+		
 		/** NaN when waiting for a value, otherwise represents a read value */
 		private var expectedMessageSize:Number = NaN;
 		
@@ -58,14 +62,18 @@ package com.tinyspeck.engine.net
 		private var connection_tries:int = 0;
 		private var ping_tries:int       = 0;
 		
+		private var server : Server;
+		
 		public function NetDelegateSocket(responder:INetResponder, model:TSModelLocator) {
 			super(null);
+			server = Server.instance;
+			server.socket = this;
 			this.model = model;
 			this.responder = responder;
-			
+			/*
 			netSocket.objectEncoding = ObjectEncoding.AMF3;
 			netSocket.timeout = 10000;
-			
+			*/
 			LocalStorage.instance.removeLogStorage();
 			
 			Benchmark.addOutstandingMsgsCallback(getOutstandingMessages);
@@ -92,12 +100,13 @@ package com.tinyspeck.engine.net
 			}
 			BootError.most_recent_gs = host+':'+port;
 			Benchmark.addCheck('connecting to host:'+host+' port:'+port+' token:'+token);
+			/*
 			netSocket.addEventListener(Event.CONNECT, onSocketConnect);
 			netSocket.addEventListener(Event.CLOSE, onSocketClose, false, 1);
 			netSocket.addEventListener(ProgressEvent.SOCKET_DATA, onSocketData);
 			netSocket.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onSocketError);
 			netSocket.addEventListener(IOErrorEvent.IO_ERROR, onSocketError);
-			
+			*/
 			// preload the socket policy file
 			try {
 				Security.loadPolicyFile('xmlsocket://' + host + ':843');
@@ -110,7 +119,8 @@ package com.tinyspeck.engine.net
 			this.token = token;
 			this.host = host;
 			this.port = port;
-			netSocket.connect(host, port);
+			onSocketConnect(null);
+			//netSocket.connect(host, port);
 		}
 		
 		private function tryToConnectAgain():void {
@@ -150,7 +160,7 @@ package com.tinyspeck.engine.net
 				pingTimer.reset();
 				
 				try {
-					netSocket.close();
+					//netSocket.close();
 				} catch (ioe:IOError) {
 					// s'okay
 				}
@@ -163,13 +173,16 @@ package com.tinyspeck.engine.net
 		}
 		
 		public function disconnect():void {
+			/*
 			CONFIG::debugging {
 				Console.info('disconnecting now, currently connected:'+netSocket.connected);
 			}
+			
 			if (netSocket.connected){
 				netSocket.close();
+			*/
 				closeErUp();
-			}
+			//}
 		}
 		
 		private function onSocketConnect(event:Event):void {
@@ -240,7 +253,7 @@ package com.tinyspeck.engine.net
 		
 		private function closeErUp():void {
 			//Console.info('closed')
-			netSocket.removeAllEventListeners(); // do this first, because responder.disconnectHandler might try to reconnect us!
+			//netSocket.removeAllEventListeners(); // do this first, because responder.disconnectHandler might try to reconnect us!
 			responder.disconnectHandler();
 		}
 		
@@ -251,21 +264,24 @@ package com.tinyspeck.engine.net
 		}
 		
 		public function socketReport():String {
+			return '';
+			/*
 			return 'Socket[connected:' + netSocket.connected + ', ' +
 				'expectedMessageSize:' + expectedMessageSize + 'b, ' +
 				'bytesAvailable:' + (netSocket.connected ? netSocket.bytesAvailable : 0) + 'b, ' +
 				'last_rcvd_message: [' + StringUtil.getJsonStr(model.netModel.last_rcvd_message) + '], ' +
 				'last_sent_message: [' + StringUtil.getJsonStr(model.netModel.last_sent_message) + ']]';
+			*/
 		}
 		
 		/** Returns whether there is more incoming data available */
 		private function checkIncomingData():Boolean {
-			if (!netSocket.connected) return false;
-			
+			//if (!netSocket.connected) return false;
+			/*
 			// if we have not received the header yet
 			if (isNaN(expectedMessageSize)) {
 				// not enough data for the header
-				if (netSocket.bytesAvailable < 4) return false;
+				//if (netSocket.bytesAvailable < 4) return false;
 				
 				// read the header
 				try {
@@ -293,19 +309,19 @@ package com.tinyspeck.engine.net
 			
 			if (isNaN(expectedMessageSize) || netSocket.bytesAvailable < expectedMessageSize) return false;
 			var this_bytes_avail:uint = netSocket.bytesAvailable
-			
+			*/
 			// read the Object
 			const ob:Object = getIncomingMessage();
-			
+			/*
 			// reset header length as next four bytes should be a header
 			expectedMessageSize = NaN;
-			
 			if (ob && ob.type=='login_start') {
 				CONFIG::god {
 					Console.info('login_start bytes '+this_bytes_avail);
 				}
 				Benchmark.addCheck('login_start bytes '+this_bytes_avail);
 			}
+			*/
 			
 			//TODO PERF remove one day when we're satisfied that we solved the socket readObject problems
 			model.netModel.last_rcvd_message = ObjectUtil.copyOb(ob);;
@@ -313,14 +329,15 @@ package com.tinyspeck.engine.net
 			if (ob) parseIncomingMessage(ob);
 			
 			// parseIncomingMessage() might result in the closing of the socket
-			return (netSocket.connected && (netSocket.bytesAvailable > 0));
+			return incomingMessageQueue.length > 0;//(netSocket.connected && (netSocket.bytesAvailable > 0));
 		}
 		
 		/** Returns an Object or null if an error occurred (already logged) */
 		private function getIncomingMessage():Object {
 			var ob:Object = null;
 			try {
-				ob = netSocket.readObject();
+				//ob = netSocket.readObject();
+				ob = incomingMessageQueue.shift();
 				if (ob == null) {
 					reportSocketError('netSocket.readObject() returned null');
 					return null;
@@ -368,6 +385,10 @@ package com.tinyspeck.engine.net
 		
 		private function reportSocketError(problem:String):void {
 			BootError.handleError(socketReport(), new Error(problem), ['socket'], true, false);
+		}
+		
+		public function addIncomingMessage(msg : Object) : void {
+			incomingMessageQueue.push(msg);
 		}
 		
 		public function parseIncomingMessage(ob:Object, logit:Boolean=false):Boolean {
@@ -688,12 +709,13 @@ package com.tinyspeck.engine.net
 		
 		// this is for testing only
 		public function addAnonRequest(msg:Object):void {
-			messageQueue[int(messageQueue.length)] = msg;
+			server.sendMessage(msg);
+			//messageQueue[int(messageQueue.length)] = msg;
 		}
 		
 		private var session_stamp:String = getTimer().toString();
 		public function addRequest(msg:NetOutgoingMessageVO):int {
-			if(netSocket.connected){
+			//if(netSocket.connected){
 				var msg_id:int;
 				if(msg == null || msg.type == null){
 					return -1;
@@ -725,7 +747,8 @@ package com.tinyspeck.engine.net
 				msg.time_sent = getTimer();
 				
 				try {
-					messageQueue[int(messageQueue.length)] = messageToAnonymousObject(msg,sendObject);
+					server.sendMessage(msg);
+					//messageQueue[int(messageQueue.length)] = messageToAnonymousObject(msg,sendObject);
 					if(msg.needs_msg_id && msg.msg_id){
 						return msg_id;
 					}else{
@@ -734,14 +757,18 @@ package com.tinyspeck.engine.net
 				}catch(e:IOError){
 					return -1;
 				}
-			}
+			//}
 			return -1;
 		}
 		
 		public function sendRequests():void {
+			//noop
+			
+			/*
 			while (messageQueue.length){
 				sendAnonymousObjectRequest(messageQueue.pop());
 			}
+			*/
 		}
 		
 		CONFIG::debugging private function trackMsgCounts(type:String, kind:String):void {
@@ -770,7 +797,7 @@ package com.tinyspeck.engine.net
 		}
 		
 		private function sendAnonymousObjectRequest(ob:Object):Boolean {
-			if(netSocket.connected){
+			//if(netSocket.connected){
 				if(ob == null || ob.type == null){
 					CONFIG::debugging {
 						Console.error('no ob or no ob.type')
@@ -813,9 +840,9 @@ package com.tinyspeck.engine.net
 						//TODO PERF remove one day when we're satisfied that we solved the socket readObject problems
 						model.netModel.last_sent_message = ObjectUtil.copyOb(ob);
 					}
-					
-					netSocket.writeObject(ob);
-					netSocket.flush();
+					server.sendMessage(ob);
+					//netSocket.writeObject(ob);
+					//netSocket.flush();
 
 					CONFIG::debugging {
 						trackMsgCounts(ob.type, 'REQ');
@@ -835,13 +862,13 @@ package com.tinyspeck.engine.net
 					}
 					return false;
 				}
-			}
+			//}
 			
 			return false;
 		}
 		
 		override public function dispose():void {
-			netSocket.dispose();
+			//netSocket.dispose();
 			
 			pingTimer.stop();
 			pingTimer.reset();
