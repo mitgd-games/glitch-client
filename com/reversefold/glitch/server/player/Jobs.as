@@ -224,7 +224,7 @@ public function jobs_familiar_turnin(job_location, job_id, class_id, is_winner){
     this.jobs_familiar_turnin_cancel(job_location, job_id, class_id);
 
     if (this.is_dead) return;
-    this.familiar_send_alert({
+    this.player.familiar.familiar_send_alert({
         'callback'  : 'jobs_familiar_turnin_do',
         'job_location'  : job_location,
         'job_id'    : job_id,
@@ -237,12 +237,12 @@ public function jobs_familiar_turnin_cancel(job_location, job_id, class_id){
 
     // remove any turnin alert about this job from the queue
 
-    var alerts = this.familiar_find_alerts('jobs_familiar_turnin_do');
+    var alerts = this.player.familiar.familiar_find_alerts('jobs_familiar_turnin_do');
 
     for (var i in alerts){
         if (alerts[i].job_id == job_id && alerts[i].job_location == job_location && (!alerts[i].class_id || alerts[i].class_id == class_id)){
 
-            this.familiar_remove_alert(i);
+            this.player.familiar.familiar_remove_alert(i);
         }
     }
 }
@@ -353,7 +353,7 @@ public function jobs_familiar_job_complete(job_location, job_id, multiplier){
     this.jobs_familiar_job_complete_cancel(job_location, job_id);
 
     if (this.is_dead) return;
-    this.familiar_send_alert_delayed({
+    this.player.familiar.familiar_send_alert_delayed({
         'callback'  : 'jobs_familiar_job_complete_do',
         'job_location'  : job_location,
         'job_id'    : job_id,
@@ -365,12 +365,12 @@ public function jobs_familiar_job_complete_cancel(job_location, job_id){
 
     // remove any turnin alert about this job from the queue
 
-    var alerts = this.familiar_find_alerts('jobs_familiar_job_complete_do');
+    var alerts = this.player.familiar.familiar_find_alerts('jobs_familiar_job_complete_do');
 
     for (var i in alerts){
         if (alerts[i].job_id == job_id && alerts[i].job_location == job_location){
 
-            this.familiar_remove_alert(i);
+            this.player.familiar.familiar_remove_alert(i);
         }
     }
 }
@@ -420,7 +420,7 @@ public function jobs_familiar_job_complete_do(choice, details){
 
                     if (remaining){
                         // Anything remaining from the familiar we automatically place in rewards overflow storage
-                        this.rewards_store(s);
+                        this.player.rewards.rewards_store(s);
                     }
                 }
                 else{
@@ -479,7 +479,7 @@ public function jobs_familiar_job_complete_do(choice, details){
             }
 
             if ((my_contribution / job.getTotalBasecost()) > .5) {
-                this.achievements_grant("philanthropic_member_of_the_social_construct");
+                this.player.achievements.achievements_grant("philanthropic_member_of_the_social_construct");
             }
         }
 
@@ -497,7 +497,7 @@ public function jobs_familiar_job_complete_do(choice, details){
 
         apiLogAction('JOB_COMPLETE', 'pc='+this.tsid, 'job_id='+details.job_id, 'class_id='+job.class_id, 'location='+details.job_location, 'xp='+intval(rewards.xp), 'mood='+intval(rewards.mood), 'energy='+intval(rewards.energy), 'currants='+intval(rewards.currants));
 
-        this.sendActivity(job_txt, null, true);
+        this.player.sendActivity(job_txt, null, true);
         completion_text = job_txt;
     }
     else{

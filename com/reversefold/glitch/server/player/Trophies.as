@@ -73,14 +73,14 @@ public function trophies_add_hidden(trophy){
     // If we have one already, pretend it worked
     if (this.trophies_has(trophy.class_tsid)){
         trophy.apiDelete();
-        this.furniture_migrate_trophies();
+        this.player.furniture.furniture_migrate_trophies();
         return 0;
     }
 
     var bag = this.trophies_find_container();
 
     var ret = bag.addItemStack(trophy);
-    this.furniture_migrate_trophies();
+    this.player.furniture.furniture_migrate_trophies();
     return ret;
 }
 
@@ -100,7 +100,7 @@ public function trophies_has(class_tsid){
         if (t.class_tsid == class_tsid) return true;
     }
 
-    var houses = this.houses_get_old();
+    var houses = this.player.houses.houses_get_old();
     for (var i in houses){
         var house = houses[i];
         if (!house) continue;
@@ -257,7 +257,7 @@ public function trophies_clean_and_sync(){
     // Now sync with furniture
     //
 
-    this.furniture_migrate_trophies();
+    this.player.furniture.furniture_migrate_trophies();
 }
 
     }

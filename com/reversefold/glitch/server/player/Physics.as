@@ -43,17 +43,17 @@ public function physicsReset(){
     delete this.physics_new;
     this.setDefaultPhysics();
 
-    this.imagination_delete_upgrade('walk_speed_1');
-    this.imagination_delete_upgrade('walk_speed_2');
-    this.imagination_delete_upgrade('walk_speed_3');
-    this.imagination_delete_upgrade('walk_speed_4');
-    this.imagination_delete_upgrade('jump_1');
-    this.imagination_delete_upgrade('jump_2');
-    this.imagination_delete_upgrade('jump_3');
-    this.imagination_delete_upgrade('jump_triple_1');
-    this.imagination_delete_upgrade('jump_triple_2');
-    this.imagination_delete_upgrade('jump_triple_3');
-    this.imagination_delete_upgrade('jump_wall');
+    this.player.imagination.imagination_delete_upgrade('walk_speed_1');
+    this.player.imagination.imagination_delete_upgrade('walk_speed_2');
+    this.player.imagination.imagination_delete_upgrade('walk_speed_3');
+    this.player.imagination.imagination_delete_upgrade('walk_speed_4');
+    this.player.imagination.imagination_delete_upgrade('jump_1');
+    this.player.imagination.imagination_delete_upgrade('jump_2');
+    this.player.imagination.imagination_delete_upgrade('jump_3');
+    this.player.imagination.imagination_delete_upgrade('jump_triple_1');
+    this.player.imagination.imagination_delete_upgrade('jump_triple_2');
+    this.player.imagination.imagination_delete_upgrade('jump_triple_3');
+    this.player.imagination.imagination_delete_upgrade('jump_wall');
 }
 
 public function setDefaultPhysics(){
@@ -418,9 +418,9 @@ public function sendPhysicsAdjustments(){
         adjustments: this.stacked_physics_cache
     };
 
-    this.sendMsgOnline(evt);
+    this.player.sendMsgOnline(evt);
 
-    if (this.isOnline()) {
+    if (this.player.isOnline()) {
         this.location.apiSendMsgX({
             type: 'pc_physics_changes',
             pc_tsid: this.tsid,

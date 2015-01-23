@@ -71,9 +71,9 @@ public function feats_increment(class_tsid, amount){
         var converted = gametime_to_timestamp(cfg.game_day.split('-'));
 
         if (!this.feats_has_contributed(class_tsid)){
-            this.achievements_increment('feats', 'contributed', 1);
+            this.player.achievements.achievements_increment('feats', 'contributed', 1);
             if (cfg.epic_id){
-                this.achievements_increment('epics_contributed', cfg.epic_id, 1);
+                this.player.achievements.achievements_increment('epics_contributed', cfg.epic_id, 1);
 
                 var feat_all_the_epics = 1;
                 for (var i in this.feats.todo){
@@ -85,11 +85,11 @@ public function feats_increment(class_tsid, amount){
                 }
 
                 if (feat_all_the_epics == this.feats_count_in_epic(cfg.epic_id)){
-                    this.achievements_increment('epics_completed', cfg.epic_id, 1);
+                    this.player.achievements.achievements_increment('epics_completed', cfg.epic_id, 1);
                 }
             }
 
-            if (time() - converted <= (30*60)) this.achievements_grant('quick_on_your_feat');
+            if (time() - converted <= (30*60)) this.player.achievements.achievements_grant('quick_on_your_feat');
 
             var vog_text = cfg ? cfg.vog_text : null;
             if (vog_text){
@@ -98,13 +98,13 @@ public function feats_increment(class_tsid, amount){
                     vog_text = vog_text.replace(/\{remaining\}/g, Math.round(status.goal - status.value, 2));
 
                     //vog_text += '<br /><a href="event:external|/feats/'+cfg.url+'">See Feat details</a>';
-                    this.announce_vog_fade(vog_text, {css_class: 'nuxp_medium'});
+                    this.player.announcements.announce_vog_fade(vog_text, {css_class: 'nuxp_medium'});
                 }
             }
         }
 
 /*
-        if (!this.achievements_has('down_to_the_wire') && converted + (24*60*60) - time() <= (30*60)){
+        if (!this.player.achievements.achievements_has('down_to_the_wire') && converted + (24*60*60) - time() <= (30*60)){
             var status = feat.get_status();
             var remaining = status.goal - status.value;
             var goal = status.goal;
@@ -117,12 +117,12 @@ public function feats_increment(class_tsid, amount){
                 }
             }
 
-            if (remaining > 0 && (1 - (remaining / goal) <= 0.05)) this.achievements_grant('down_to_the_wire');
+            if (remaining > 0 && (1 - (remaining / goal) <= 0.05)) this.player.achievements.achievements_grant('down_to_the_wire');
         }
 */
 
-        if (!this.achievements_has('down_to_the_wire')) {
-            this.achievements_grant('down_to_the_wire');
+        if (!this.player.achievements.achievements_has('down_to_the_wire')) {
+            this.player.achievements.achievements_grant('down_to_the_wire');
         }
 
         if (!this.feats.in_progress) this.feats.in_progress = {};
@@ -157,14 +157,14 @@ public function adminFeatsGiveRewards(rewards){
 
     // Achievements
     if (rewards.place && rewards.place <= 26){
-        this.achievements_increment('feats', 'top_26', 1);
+        this.player.achievements.achievements_increment('feats', 'top_26', 1);
     }
     else if (rewards.place && rewards.place <= 30){
-        this.achievements_grant('the_cigar');
+        this.player.achievements.achievements_grant('the_cigar');
     }
 
     if (this.is_dead) return; // resurrecting will send these later
-    this.familiar_send_alert({
+    this.player.familiar.familiar_send_alert({
         'callback'  : 'feats_familiar_turnin_do',
         'feat_id'   : rewards.feat_id
     });
@@ -172,7 +172,7 @@ public function adminFeatsGiveRewards(rewards){
 
 public function feats_has_unclaimed_rewards(){
     if (!this.feats || !this.feats.todo) return false;
-    if (num_keys(this.familiar_find_alerts('feats_familiar_turnin_do'))) return false;
+    if (num_keys(this.player.familiar.familiar_find_alerts('feats_familiar_turnin_do'))) return false;
 
     for (var i in this.feats.todo){
         return i;
@@ -276,29 +276,29 @@ public function feats_gather_rewards(feat_id){
     var rewards = this.feats.todo[feat_id];
     if (!rewards) return;
 
-    if (rewards.xp) rewards.xp = this.stats_add_xp(rewards.xp, false, {type: 'feat_complete', feat_id: rewards.feat_id});
-    if (rewards.currants) rewards.currants = this.stats_add_currants(rewards.currants, {type: 'feat_complete', feat_id: rewards.feat_id});
-    if (rewards.mood) rewards.mood = this.metabolics_add_mood(rewards.mood);
-    if (rewards.energy) rewards.energy = this.metabolics_add_energy(rewards.energy);
-    if (rewards.favor_giant && rewards.favor_points) this.stats_add_favor_points(rewards.favor_giant, rewards.favor_points);
-    if (rewards.favor_giant_perf && rewards.favor_points_perf) this.stats_add_favor_points(rewards.favor_giant_perf, rewards.favor_points_perf);
+    if (rewards.xp) rewards.xp = this.player.stats.stats_add_xp(rewards.xp, false, {type: 'feat_complete', feat_id: rewards.feat_id});
+    if (rewards.currants) rewards.currants = this.player.stats.stats_add_currants(rewards.currants, {type: 'feat_complete', feat_id: rewards.feat_id});
+    if (rewards.mood) rewards.mood = this.player.metabolics.metabolics_add_mood(rewards.mood);
+    if (rewards.energy) rewards.energy = this.player.metabolics.metabolics_add_energy(rewards.energy);
+    if (rewards.favor_giant && rewards.favor_points) this.player.stats.stats_add_favor_points(rewards.favor_giant, rewards.favor_points);
+    if (rewards.favor_giant_perf && rewards.favor_points_perf) this.player.stats.stats_add_favor_points(rewards.favor_giant_perf, rewards.favor_points_perf);
 
     for (var i in rewards.items){
-        this.createItemFromFamiliar(rewards.items[i].class_tsid, rewards.items[i].count);
+        this.player.items.createItemFromFamiliar(rewards.items[i].class_tsid, rewards.items[i].count);
     }
 
     for (var i in rewards.recipes){
-        this.making_try_learn_recipe(rewards.recipes[i].class_tsid);
+        this.player.making.making_try_learn_recipe(rewards.recipes[i].class_tsid);
     }
 
     for (var i in rewards.drop_table){
-        this.runDropTable(rewards.drop_table[i].class_tsid);
+        this.player.skill_packages.runDropTable(rewards.drop_table[i].class_tsid);
     }
 
     this.feats.feats[rewards.feat_id] = rewards;
     delete this.feats.todo[feat_id];
 
-    this.achievements_increment('feats', 'contributed_to');
+    this.player.achievements.achievements_increment('feats', 'contributed_to');
     apiLogAction('FEAT_REWARDS', 'pc='+this.tsid, 'feat_id='+rewards.feat_id, 'xp='+intval(rewards.xp), 'mood='+intval(rewards.mood), 'energy='+intval(rewards.energy), 'currants='+intval(rewards.currants));
 }
 
@@ -351,7 +351,7 @@ public function feats_increment_for_commit(amount){
 public function feats_reset_commit(){
     return;
     this.feats_init();
-    if (this.feats.to_commit) this.sendActivity("Whoops! You lost your contribution to the \"… And Ask Nothing in Return\" Feat!");
+    if (this.feats.to_commit) this.player.sendActivity("Whoops! You lost your contribution to the \"… And Ask Nothing in Return\" Feat!");
     delete this.feats.to_commit;
 }
 

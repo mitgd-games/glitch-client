@@ -142,7 +142,7 @@ public function party_invited(party, inviter){
         txt += "Party Chat.";
     }
 
-    this.prompts_add({
+    this.player.prompts.prompts_add({
         callback    : 'familiar_invite_read',
         party       : party,
         inviter     : inviter,
@@ -227,7 +227,7 @@ public function party_left(reason){
             this.party_activity("Left party for unknown reason: "+reason);
     }
 
-    //this.sendActivity('MSG:party_leave');
+    //this.player.sendActivity('MSG:party_leave');
 }
 
 
@@ -253,7 +253,7 @@ public function party_joined(party, reason, pc){
 
     var m = party.get_members();
 
-    //this.sendActivity('MSG:party_join');
+    //this.player.sendActivity('MSG:party_join');
     this.apiSendMsg({
         type    : 'party_join',
         members : m
@@ -303,7 +303,7 @@ public function party_member_joined(pc, invited){
         this.party_activity(utils.escape(pc.label)+' has joined the party');
     }
 
-    //this.sendActivity('MSG:party_add');
+    //this.player.sendActivity('MSG:party_add');
     this.apiSendMsg({
         type    : 'party_add',
         pc  : pc.make_hash_online()
@@ -314,7 +314,7 @@ public function party_member_left(pc, reason){
 
     this.party_activity(utils.escape(pc.label)+" has left the party");
 
-    //this.sendActivity('MSG:party_remove');
+    //this.player.sendActivity('MSG:party_remove');
     this.apiSendMsg({
         type    : 'party_remove',
         pc_tsid : pc.tsid
@@ -330,7 +330,7 @@ public function party_member_online(pc){
 
     this.party_activity("Party member "+utils.escape(pc.label)+" has come online");
 
-    //this.sendActivity('MSG:party_online');
+    //this.player.sendActivity('MSG:party_online');
     this.apiSendMsg({
         type    : 'party_online',
         pc_tsid : pc.tsid
@@ -341,7 +341,7 @@ public function party_member_offline(pc){
 
     this.party_activity("Party member "+utils.escape(pc.label)+" has gone offline");
 
-    //this.sendActivity('MSG:party_offline');
+    //this.player.sendActivity('MSG:party_offline');
     this.apiSendMsg({
         type    : 'party_offline',
         pc_tsid : pc.tsid
@@ -466,7 +466,7 @@ public function party_create(){
 
 public function party_activity(msg){
 
-    this.sendMsgOnline({
+    this.player.sendMsgOnline({
         type: 'party_activity',
         txt: msg
     });
@@ -481,8 +481,8 @@ public function party_space_prompt(){
         pcs.push(ret.players[i].make_hash());
     }
 
-    var energy_cost = this.teleportation_get_energy_cost();
-    if (!energy_cost) energy_cost = Math.round(this.metabolics_get_max_energy() * 0.40);
+    var energy_cost = this.player.teleportation.teleportation_get_energy_cost();
+    if (!energy_cost) energy_cost = Math.round(this.player.metabolics.metabolics_get_max_energy() * 0.40);
     this.apiSendMsg({
         type: 'party_space_start',
         location_name: ret.label,
@@ -495,28 +495,28 @@ public function party_space_prompt(){
 
 public function party_space_prompt_callback(choice, details){
     if (!this.party || !this.party.get_space()) {
-        this.sendActivity("Sorry, but the party space has already expired.");
+        this.player.sendActivity("Sorry, but the party space has already expired.");
         return;
     }
 
     if (choice == 'energy'){
-        var energy_cost = this.teleportation_get_energy_cost();
-        if (!energy_cost) energy_cost = Math.round(this.metabolics_get_max_energy() * 0.40);
+        var energy_cost = this.player.teleportation.teleportation_get_energy_cost();
+        if (!energy_cost) energy_cost = Math.round(this.player.metabolics.metabolics_get_max_energy() * 0.40);
 
-        if (this.metabolics_try_lose_energy(energy_cost)){
+        if (this.player.metabolics.metabolics_try_lose_energy(energy_cost)){
             this.party_create_teleporter();
         }
         else{
-            this.sendActivity("You don't have enough energy for that.");
+            this.player.sendActivity("You don't have enough energy for that.");
             this.party_space_prompt();
         }
     }
     else if (choice == 'token'){
-        if (this.teleportation_spend_token("Party Space teleportation.")){
+        if (this.player.teleportation.teleportation_spend_token("Party Space teleportation.")){
             this.party_create_teleporter();
         }
         else{
-            this.sendActivity("You don't have any tokens left.");
+            this.player.sendActivity("You don't have any tokens left.");
             this.party_space_prompt();
         }
     }
@@ -529,8 +529,8 @@ public function party_create_teleporter(){
     //log.info(this+' Creating party teleporter');
     var tp = this.location.createAndReturnItem('teleporter_visible', 1, this.x+100, this.y+40, 0, this.tsid);
     if (tp){
-        this.announce_sound('TELEPORTER_VISIBLE_APPEAR');
-        this.announce_sound_delayed('TELEPORTER_VISIBLE_PORTAL', 0, 0, 1);
+        this.player.announcements.announce_sound('TELEPORTER_VISIBLE_APPEAR');
+        this.player.announcements.announce_sound_delayed('TELEPORTER_VISIBLE_PORTAL', 0, 0, 1);
         //log.info(this+' Teleporter is '+tp);
         tp.setInstanceProp('width', 50);
         tp.setInstanceProp('height', 200);
@@ -538,7 +538,7 @@ public function party_create_teleporter(){
         tp.setInstanceProp('is_party', 1);
         tp.apiSetTimer('disappear', 2*60*1000);
 
-        this.moveAvatar(tp.x-100, this.y, 'right');
+        this.player.moveAvatar(tp.x-100, this.y, 'right');
     }
 }
 
@@ -547,7 +547,7 @@ public function party_find_teleporter(){
 
     var tp = this.location.find_items(is_tp, this.tsid)[0];
     if (tp){
-        this.moveAvatar(tp.x, tp.y-40, 'right');
+        this.player.moveAvatar(tp.x, tp.y-40, 'right');
         return true;
     }
 
@@ -556,7 +556,7 @@ public function party_find_teleporter(){
 
 public function party_extend_space_time(duration, cost){
     if (this.party){
-        if (this.stats_try_remove_currants(cost, {type: 'party_space_extend', party: this.party.tsid, space_type: this.party.get_space().getProp('party_template')})){
+        if (this.player.stats.stats_try_remove_currants(cost, {type: 'party_space_extend', party: this.party.tsid, space_type: this.party.get_space().getProp('party_template')})){
             this.party.extend_space_time(this, duration);
             return true;
         }

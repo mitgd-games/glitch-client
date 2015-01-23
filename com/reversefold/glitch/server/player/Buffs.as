@@ -529,7 +529,7 @@ public function buffs_fire_apply(class_tsid){
             log.error(this+" buffs_fire_apply missing args "+class_tsid+": ", buff);
         }
 
-        //this.sendActivity('Starting a buff: '+buff.def.name+' (Last for '+buff.args.duration+'s)');
+        //this.player.sendActivity('Starting a buff: '+buff.def.name+' (Last for '+buff.args.duration+'s)');
         var out = {
             type: 'buff_start',
             tsid: class_tsid,
@@ -559,7 +559,7 @@ public function buffs_fire_tick(class_tsid){
     try {
         var buff = this.buffs_get_instance(class_tsid);
 
-        //this.sendActivity('Ticking a buff: '+buff.def.name);
+        //this.player.sendActivity('Ticking a buff: '+buff.def.name);
         // This apparently does nothing. The client now ignores buff tick messages.
 /*      var out = {
             type: 'buff_tick',
@@ -573,7 +573,7 @@ public function buffs_fire_tick(class_tsid){
 
         //log.info('TICK', out);
         this.player.sendMsgOnline(out);
-        this.events_add({out: out, callback: 'buffs_perform_postprocessing'}, 0.1);*/
+        this.player.events.events_add({out: out, callback: 'buffs_perform_postprocessing'}, 0.1);*/
 
         buff.def.on_tick.call(buff, this, this.buffs[class_tsid]);
     }
@@ -604,7 +604,7 @@ public function buffs_fire_remove(class_tsid){
 public function buffs_remove_client(class_tsid){
     var buff = this.buffs_get_instance(class_tsid);
 
-    //this.sendActivity('Removing a buff: '+buff.def.name);
+    //this.player.sendActivity('Removing a buff: '+buff.def.name);
     var out = {
         type: 'buff_remove',
         tsid: class_tsid,

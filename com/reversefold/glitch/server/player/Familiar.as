@@ -87,7 +87,7 @@ public function familiar_send_alert_delayed(details, seconds){
     if (details.callback) details.familiar_callback = details.callback;
     details.callback = 'familiar_send_alert';
 
-    this.events_add(details, seconds);
+    this.player.events.events_add(details, seconds);
 }
 
 public function familiar_send_alert(details){
@@ -397,7 +397,7 @@ public function familiar_get_login(){
     out.messages = this.familiar.stack.length;
     out.tsid = config.familiar_tsid;
 
-    if (this.skills_is_accelerated()){
+    if (this.player.skills.skills_is_accelerated()){
         out.accelerated = true;
     }
     else{
@@ -451,7 +451,7 @@ public function familiar_teleport_do(choice, details){
     }
 
     if (choice == 'accept' || details.force){
-        this.teleportToLocationDelayed(details.tsid, details.x, details.y);
+        this.player.teleportToLocationDelayed(details.tsid, details.x, details.y);
         return {
             done: true
         };

@@ -196,7 +196,7 @@ public function furniture_get_count(class_tsid){
 public function furniture_migrate_trophies(){
     var bag = this.furniture_get_bag();
 
-    var trophies = this.trophies_get_hidden();
+    var trophies = this.player.trophies.trophies_get_hidden();
     for (var i in trophies){
         var t = trophies[i];
         if (!t) continue;
@@ -221,12 +221,12 @@ public function furniture_migrate_trophies(){
 
     for (var i in this.achievements.achievements){
 
-        var trophy = this.achievement_get_trophy(i);
+        var trophy = this.player.achievements.achievement_get_trophy(i);
         if (trophy && trophy.class_tsid){
             if (config.is_dev) log.info(this+" has trophy achievement "+i);
-            if (!this.trophies_has(trophy.class_tsid)){
+            if (!this.player.trophies.trophies_has(trophy.class_tsid)){
                 if (config.is_dev) log.info(this+" is missing trophy "+i);
-                this.trophies_add_hidden(apiNewItemStack(trophy.class_tsid, 1));
+                this.player.trophies.trophies_add_hidden(apiNewItemStack(trophy.class_tsid, 1));
             }
         }
     }
@@ -254,7 +254,7 @@ public function furniture_get_wall_options(){
 
         // Hide paid swatches from newxp players
         if (this.location.is_newxp){
-            if (conf.cost_credits || (conf.is_subscriber && !this.stats_is_sub())) continue;
+            if (conf.cost_credits || (conf.is_subscriber && !this.player.stats.stats_is_sub())) continue;
         }
 
         out[i] = {
@@ -295,7 +295,7 @@ public function furniture_get_floor_options(){
 
         // Hide paid swatches from newxp players
         if (this.location.is_newxp){
-            if (conf.cost_credits || (conf.is_subscriber && !this.stats_is_sub())) continue;
+            if (conf.cost_credits || (conf.is_subscriber && !this.player.stats.stats_is_sub())) continue;
         }
 
         out[i] = {
@@ -336,7 +336,7 @@ public function furniture_get_ceiling_options(){
 
         // Hide paid swatches from newxp players
         if (this.location.is_newxp){
-            if (conf.cost_credits || (conf.is_subscriber && !this.stats_is_sub())) continue;
+            if (conf.cost_credits || (conf.is_subscriber && !this.player.stats.stats_is_sub())) continue;
         }
 
         out[i] = {
@@ -458,7 +458,7 @@ public function furniture_buy_wall(wp_type){
     var ret = this.furniture_can_buy_wall(wp_type);
     if (ret.ok){
 
-        this.stats_spend_credits(ret.cost, {
+        this.player.stats.stats_spend_credits(ret.cost, {
             'callback'  : 'furniture_buy_wall_do',
             'wp_type'   : wp_type
         });
@@ -488,7 +488,7 @@ public function furniture_can_buy_wall(wp_type){
     // too expensive?
     var cost = 0;
     if (!config.home_limits.UPGRADES_ARE_FREE){
-        if (config.homes_wallpaper_configs[wp_type].is_subscriber && !this.stats_is_sub()){
+        if (config.homes_wallpaper_configs[wp_type].is_subscriber && !this.player.stats.stats_is_sub()){
             return {
                 'ok' : 0,
                 'error' : 'not_a_subscriber'
@@ -496,7 +496,7 @@ public function furniture_can_buy_wall(wp_type){
         }
 
         cost = config.homes_wallpaper_configs[wp_type].cost_credits;
-        if (cost && !this.stats_has_credits(cost)){
+        if (cost && !this.player.stats.stats_has_credits(cost)){
             return {
                 'ok' : 0,
                 'error' : 'not_enough_credits'
@@ -559,7 +559,7 @@ public function furniture_buy_floor(floor_type){
     var ret = this.furniture_can_buy_floor(floor_type);
     if (ret.ok){
 
-        this.stats_spend_credits(ret.cost, {
+        this.player.stats.stats_spend_credits(ret.cost, {
             'callback'  : 'furniture_buy_floor_do',
             'floor_type'    : floor_type
         });
@@ -590,7 +590,7 @@ public function furniture_can_buy_floor(floor_type){
     // too expensive?
     var cost = 0;
     if (!config.home_limits.UPGRADES_ARE_FREE){
-        if (config.homes_floor_configs[floor_type].is_subscriber && !this.stats_is_sub()){
+        if (config.homes_floor_configs[floor_type].is_subscriber && !this.player.stats.stats_is_sub()){
             return {
                 'ok' : 0,
                 'error' : 'not_a_subscriber'
@@ -598,7 +598,7 @@ public function furniture_can_buy_floor(floor_type){
         }
 
         cost = config.homes_floor_configs[floor_type].cost_credits;
-        if (cost && !this.stats_has_credits(cost)){
+        if (cost && !this.player.stats.stats_has_credits(cost)){
             return {
                 'ok' : 0,
                 'error' : 'not_enough_credits'
@@ -659,7 +659,7 @@ public function furniture_buy_ceiling(ceiling_type){
     var ret = this.furniture_can_buy_ceiling(ceiling_type);
     if (ret.ok){
 
-        this.stats_spend_credits(ret.cost, {
+        this.player.stats.stats_spend_credits(ret.cost, {
             'callback'  : 'furniture_buy_ceiling_do',
             'ceiling_type'  : ceiling_type
         });
@@ -689,7 +689,7 @@ public function furniture_can_buy_ceiling(ceiling_type){
     // too expensive?
     var cost = 0;
     if (!config.home_limits.UPGRADES_ARE_FREE){
-        if (config.homes_ceiling_configs[ceiling_type].is_subscriber && !this.stats_is_sub()){
+        if (config.homes_ceiling_configs[ceiling_type].is_subscriber && !this.player.stats.stats_is_sub()){
             return {
                 'ok' : 0,
                 'error' : 'not_a_subscriber'
@@ -697,7 +697,7 @@ public function furniture_can_buy_ceiling(ceiling_type){
         }
 
         cost = config.homes_ceiling_configs[ceiling_type].cost_credits;
-        if (cost && !this.stats_has_credits(cost)){
+        if (cost && !this.player.stats.stats_has_credits(cost)){
             return {
                 'ok' : 0,
                 'error' : 'not_enough_credits'
@@ -762,9 +762,9 @@ public function furniture_upgrade_purchase(item, upgrade_id, msg_id, user_config
     if (item.getInstanceProp('upgrade_id') == upgrade_id) return {ok: 0, error: 'Already upgraded'};
     if (item['!upgrade_in_progress']) return {ok: 0, error: 'Upgrade in progress'};
 
-    if (!config.home_limits.UPGRADES_ARE_FREE && !upgrade.is_owned && upgrade.subscriber_only == 1 && !this.stats_is_sub()) return {ok: 0, error: 'The upgrade is subscriber-locked, and you are not a subscriber'};
+    if (!config.home_limits.UPGRADES_ARE_FREE && !upgrade.is_owned && upgrade.subscriber_only == 1 && !this.player.stats.stats_is_sub()) return {ok: 0, error: 'The upgrade is subscriber-locked, and you are not a subscriber'};
 
-    if (!config.home_limits.UPGRADES_ARE_FREE && !upgrade.is_owned && upgrade.imagination_cost && !this.stats_try_remove_imagination(upgrade.imagination_cost, {'furniture_class': item.class_tsid, 'upgrade_id': upgrade_id})) return {ok: 0, error: 'You don\'t have enough imagination.'};
+    if (!config.home_limits.UPGRADES_ARE_FREE && !upgrade.is_owned && upgrade.imagination_cost && !this.player.stats.stats_try_remove_imagination(upgrade.imagination_cost, {'furniture_class': item.class_tsid, 'upgrade_id': upgrade_id})) return {ok: 0, error: 'You don\'t have enough imagination.'};
 
     if (upgrade.is_owned) apiLogAction('FURNITURE_CHANGE', 'pc='+this.tsid, 'item='+item.class_tsid, 'upgrade='+upgrade_id, 'config='+utils.JSON_stringify(user_config)+'');
 
@@ -795,7 +795,7 @@ public function furniture_upgrade_purchase(item, upgrade_id, msg_id, user_config
         log.info(this+' furniture_upgrade_purchase '+args);
 
         item['!upgrade_in_progress'] = true;
-        if (this.stats_spend_credits(upgrade.credits_cost, args)){
+        if (this.player.stats.stats_spend_credits(upgrade.credits_cost, args)){
             return {ok: 1};
         }
         else{
@@ -1019,7 +1019,7 @@ public function furniture_add_chassis(upgrade_id, amount){
 }
 
 public function furniture_pickup(itemstack_tsid){
-    if (!this.houses_is_at_home()) return api_error("You are not at home");
+    if (!this.player.houses.houses_is_at_home()) return api_error("You are not at home");
 
     var item = this.location.apiLockStack(itemstack_tsid);
     if (!item) return api_error("That item is not here");

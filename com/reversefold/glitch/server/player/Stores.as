@@ -34,16 +34,16 @@ public function storeAdjustPrices(store_info){
 
     var multiplier = 0.0;
 
-    if (this.imagination_has_upgrade("vendors_lower_sell_price_4")){
+    if (this.player.imagination.imagination_has_upgrade("vendors_lower_sell_price_4")){
         multiplier = 0.1;
     }
-    else if (this.imagination_has_upgrade("vendors_lower_sell_price_3")){
+    else if (this.player.imagination.imagination_has_upgrade("vendors_lower_sell_price_3")){
         multiplier = 0.07;
     }
-    else if (this.imagination_has_upgrade("vendors_lower_sell_price_2")){
+    else if (this.player.imagination.imagination_has_upgrade("vendors_lower_sell_price_2")){
         multiplier = 0.05;
     }
-    else if (this.imagination_has_upgrade("vendors_lower_sell_price_1")){
+    else if (this.player.imagination.imagination_has_upgrade("vendors_lower_sell_price_1")){
         multiplier = 0.02;
     }
 
@@ -72,7 +72,7 @@ public function openStoreInterface(item, verb){
     var store_id = intval(this.storeGetID(item, verb));
 
     if (!store_id){
-        this.sendActivity("store verb is not bound to a store - oops");
+        this.player.sendActivity("store verb is not bound to a store - oops");
         return false;
     }
 
@@ -106,7 +106,7 @@ public function openStoreInterface(item, verb){
     //log.info(out);
 
     this.apiSendMsgAsIs(out);
-    //this.sendActivity("store_start");
+    //this.player.sendActivity("store_start");
 
     return true;
 }
@@ -175,9 +175,9 @@ public function storeBuy(msg, item){
         }
     }
 
-    if (!this.stats_has_currants(total_cost)){
+    if (!this.player.stats.stats_has_currants(total_cost)){
         log.info("you don't have enough money");
-        this.sendActivity("Sorry, you can't afford that.");
+        this.player.sendActivity("Sorry, you can't afford that.");
         return this.apiSendMsg(make_fail_rsp(msg, 0, "Sorry, you can't afford that."));
     }
 
@@ -186,15 +186,15 @@ public function storeBuy(msg, item){
     // give them the item
     //
 
-    var remainder = this.createItemFromSource(msg.class_tsid, count, item, true);
+    var remainder = this.player.items.createItemFromSource(msg.class_tsid, count, item, true);
     if (remainder == count){
         log.info("your bag is full");
-        this.sendActivity("You can't buy that -- there's no more room in your inventory!");
+        this.player.sendActivity("You can't buy that -- there's no more room in your inventory!");
         return this.apiSendMsg(make_fail_rsp(msg, 0, "You can't buy that -- there's no more room in your inventory!"));
     }
 
     var got = count-remainder;
-    this.achievements_increment('items_bought', msg.class_tsid, got);
+    this.player.achievements.achievements_increment('items_bought', msg.class_tsid, got);
 
     var rsp = 'You bought '+item_proto.formatStack(got)+'.';
     if (remainder){
@@ -213,15 +213,15 @@ public function storeBuy(msg, item){
             if (to_refund <= 0) break;
         }
     }
-    this.sendActivity(rsp);
-    this.announce_sound('PURCHASE_ITEM');
+    this.player.sendActivity(rsp);
+    this.player.announcements.announce_sound('PURCHASE_ITEM');
 
 
     //
     // Charge them
     //
 
-    this.stats_remove_currants(total_cost, {type: 'store_buy', class_id: msg.class_tsid, store: store_id, count: got});
+    this.player.stats.stats_remove_currants(total_cost, {type: 'store_buy', class_id: msg.class_tsid, store: store_id, count: got});
 
 
     //
@@ -242,19 +242,19 @@ public function storeBuy(msg, item){
     //
 
     if (in_array_real(msg.class_tsid, this.generic_bag_classes)){
-        this.quests_inc_counter('generic_bag_purchased', got);
+        this.player.quests.quests_inc_counter('generic_bag_purchased', got);
     }
 
     if (total_cost >= 1009){
-        this.achievements_grant('big_spender');
+        this.player.achievements.achievements_grant('big_spender');
     }
 
     if (total_cost >= 2003){
-        this.achievements_grant('el_big_spenderino');
+        this.player.achievements.achievements_grant('el_big_spenderino');
     }
 
     if (total_cost >= 5003){
-        this.achievements_grant('moneybags_magoo');
+        this.player.achievements.achievements_grant('moneybags_magoo');
     }
 
     if (item.onPurchase) item.onPurchase(this, msg);
@@ -345,19 +345,19 @@ public function storeSell(msg, item){
         if (stack){
             remainder = msg.count - stack.count;
             stack.apiDelete();
-            this.items_removed(stack);
+            this.player.items.items_removed(stack);
         }
 
         do {
             stack = this.removeItemStackClass(msg.sellstack_class, remainder);
             remainder -= stack.count;
             stack.apiDelete();
-            this.items_removed(stack);
+            this.player.items.items_removed(stack);
         } while (remainder > 0);
     }
     else if (msg.count == stack.count){
         stack.apiDelete();
-        this.items_removed(stack);
+        this.player.items.items_removed(stack);
     }else{
         var needed = stack.apiSplit(msg.count);
         if (needed) needed.apiDelete();
@@ -369,8 +369,8 @@ public function storeSell(msg, item){
     //
 
     //log.info("gain cash: "+cost);
-    this.announce_sound('PURCHASE_ITEM');
-    this.stats_add_currants(cost, {type: 'store_sell', class_id: msg.sellstack_class, store: store_id, count: msg.count});
+    this.player.announcements.announce_sound('PURCHASE_ITEM');
+    this.player.stats.stats_add_currants(cost, {type: 'store_sell', class_id: msg.sellstack_class, store: store_id, count: msg.count});
 
 
     if (!item.buys_made) item.purchases_made = 0;
@@ -382,16 +382,16 @@ public function storeSell(msg, item){
     //
 
     if (msg.sellstack_class == 'frying_pan' && store_id == 7){
-        this.quests_set_flag('frying_pan_sold');
+        this.player.quests.quests_set_flag('frying_pan_sold');
     }
     else if (msg.sellstack_class == 'watering_can' && in_array(store_id, this.watering_can_stores)){
-        this.quests_set_flag('watering_can_sold');
+        this.player.quests.quests_set_flag('watering_can_sold');
     }
     else if (msg.sellstack_class == 'hatchet' && in_array(store_id, this.hatchet_stores)){
-        this.quests_set_flag('hatchet_sold');
+        this.player.quests.quests_set_flag('hatchet_sold');
     }
 
-    this.achievements_increment('items_sold', msg.sellstack_class, intval(msg.count));
+    this.player.achievements.achievements_increment('items_sold', msg.sellstack_class, intval(msg.count));
 
 
     var item_proto = apiFindItemPrototype(msg.sellstack_class);
@@ -411,22 +411,22 @@ public function storeSell(msg, item){
         }
     }
 
-    this.sendActivity(text);
+    this.player.sendActivity(text);
     return this.apiSendMsg(make_ok_rsp(msg));
 }
 
 // Handle Wheeler Dealer imagination upgrades
 public function storeAdjustBuyPrice(cost){
-    if (this.imagination_has_upgrade("vendors_higher_buy_price_4")){
+    if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_4")){
         return (cost + 0.1 * cost);
     }
-    else if (this.imagination_has_upgrade("vendors_higher_buy_price_3")){
+    else if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_3")){
         return (cost + 0.07 * cost);
     }
-    else if (this.imagination_has_upgrade("vendors_higher_buy_price_2")){
+    else if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_2")){
         return (cost + 0.05 * cost);
     }
-    else if (this.imagination_has_upgrade("vendors_higher_buy_price_1")){
+    else if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_1")){
         return (cost + 0.02 * cost);
     }
 
@@ -435,16 +435,16 @@ public function storeAdjustBuyPrice(cost){
 
 // Handle Wheeler Dealer imagination upgrades
 public function storeGetUpgradeMultiplier(){
-    if (this.imagination_has_upgrade("vendors_higher_buy_price_4")){
+    if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_4")){
         return 0.1;
     }
-    else if (this.imagination_has_upgrade("vendors_higher_buy_price_3")){
+    else if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_3")){
         return  0.07;
     }
-    else if (this.imagination_has_upgrade("vendors_higher_buy_price_2")){
+    else if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_2")){
         return 0.05;
     }
-    else if (this.imagination_has_upgrade("vendors_higher_buy_price_1")){
+    else if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_1")){
         return 0.02;
     }
 
@@ -454,19 +454,19 @@ public function storeGetUpgradeMultiplier(){
 
 // Handle Wheeler Dealer imagination upgrades
 public function storeGetUpgradeName(){
-    if (this.imagination_has_upgrade("vendors_higher_buy_price_4")){
+    if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_4")){
         var upgrade = config.data_imagination_upgrades["vendors_higher_buy_price_4"];
         return upgrade.name;
     }
-    else if (this.imagination_has_upgrade("vendors_higher_buy_price_3")){
+    else if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_3")){
         var upgrade = config.data_imagination_upgrades["vendors_higher_buy_price_3"];
         return upgrade.name;
     }
-    else if (this.imagination_has_upgrade("vendors_higher_buy_price_2")){
+    else if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_2")){
         var upgrade = config.data_imagination_upgrades["vendors_higher_buy_price_2"];
         return upgrade.name;
     }
-    else if (this.imagination_has_upgrade("vendors_higher_buy_price_1")){
+    else if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_1")){
         var upgrade = config.data_imagination_upgrades["vendors_higher_buy_price_1"];
         return upgrade.name;
     }

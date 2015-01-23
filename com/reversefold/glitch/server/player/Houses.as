@@ -45,7 +45,7 @@ public function houses_logout(){
             }
         }
         else if (!this.is_god && !this.is_help){
-            this.teleportToLocationDelayed(entrance.tsid, entrance.x, entrance.y);
+            this.player.teleportToLocationDelayed(entrance.tsid, entrance.x, entrance.y);
         }
     }
 
@@ -104,9 +104,9 @@ public function house_set_auth(key){
     var pc_tsid = a[1];
 
     var pc = apiFindObject(pc_tsid);
-    pc.sendOnlineActivity(this.linkifyLabel()+" has let you into their location");
+    pc.sendOnlineActivity(this.player.linkifyLabel()+" has let you into their location");
     pc.prompts_add({
-        txt     : this.linkifyLabel()+" has let you into their house.",
+        txt     : this.player.linkifyLabel()+" has let you into their house.",
         icon_buttons    : false,
         timeout: 20,
         choices     : [
@@ -151,11 +151,11 @@ public function houses_auth_request(loc, pc){
     // send request
     this.house_auth_req[key] = 1;
 
-    this.announce_sound('POL_GATE_KNOCKED');
+    this.player.announcements.announce_sound('POL_GATE_KNOCKED');
     pc.announce_sound('POL_GATE_KNOCKED');
 
     // prompt the owner
-    this.prompts_add({
+    this.player.prompts.prompts_add({
         'callback'  : 'houses_auth_req',
         'key'       : key,
         'pc'        : pc,
@@ -327,7 +327,7 @@ public function houses_get_entrances(){
 }
 
 public function houses_update_client(){
-    this.sendMsgOnline({
+    this.player.sendMsgOnline({
         'type'      : 'pol_change',
         'pol_info'  : this.houses_get_login(),
         'home_info' : this.houses_get_login_new()
@@ -436,7 +436,7 @@ public function houses_familiar_no_owner(choice, details){
         }
 
 
-        this.teleportToLocation(loc.tsid, landing.x, landing.y);
+        this.player.teleportToLocation(loc.tsid, landing.x, landing.y);
         return {done: true};
     }
 
@@ -469,7 +469,7 @@ public function houses_familiar_knock(choice, details){
 
         var owner = apiFindObject(details.owner_tsid);
 
-        if (this.buddies_is_ignored_by(owner)){
+        if (this.player.buddies.buddies_is_ignored_by(owner)){
             return {
                 txt : owner.label+" is blocking you.",
                 done : true
@@ -594,8 +594,8 @@ public function houses_familiar_org_create(choice, details){
         // Charge them
         //
 
-        if (!this.stats_try_remove_currants(details.cost, {type: 'org_purchase', pol: this.tsid})){
-            this.sendActivity('Not enough currants!');
+        if (!this.player.stats.stats_try_remove_currants(details.cost, {type: 'org_purchase', pol: this.tsid})){
+            this.player.sendActivity('Not enough currants!');
 
             return {
                 ok: 0,
@@ -609,7 +609,7 @@ public function houses_familiar_org_create(choice, details){
         // Walk connections and set the other group street(s) as owned
         //
 
-        var org = this.organizations_create('Unnamed Organization', '');
+        var org = this.player.organizations.organizations_create('Unnamed Organization', '');
         loc.pols_setOwner(org);
 
 
@@ -623,7 +623,7 @@ public function houses_familiar_org_create(choice, details){
             subtitle: 'Your new Organization needs a name!',
             input_max_chars: 255
         };
-        this.openInputBox('org_create', 'Create Your Organization', args);
+        this.player.openInputBox('org_create', 'Create Your Organization', args);
 
         return {done: true};
     }
@@ -705,7 +705,7 @@ public function houses_familiar_unnamed_org(choice, details){
             subtitle: 'Your new Organization needs a name!',
             input_max_chars: 255
         };
-        this.openInputBox('org_create', 'Create Your Organization', args);
+        this.player.openInputBox('org_create', 'Create Your Organization', args);
 
         return {done: true};
     }
@@ -746,7 +746,7 @@ public function houses_remove_all(){
 
     // Delete incoming neighborhood signposts
     try{
-        var reverse = this.buddies_get_reverse_tsids();
+        var reverse = this.player.buddies.buddies_get_reverse_tsids();
         for (var i in reverse){
             var pc = getPlayer(reverse[i]);
             if (!pc) continue;
@@ -779,11 +779,11 @@ public function houses_remove_new(){
     if (this.home){
 
         // Backup keys
-        if (!this.acl_keys_backup) this.acl_keys_backup = this.acl_keys_get_given(true);
-        this.had_butler = this.has_butler();
+        if (!this.acl_keys_backup) this.acl_keys_backup = this.player.acl_keys_get_given(true);
+        this.had_butler = this.player.butler.has_butler();
 
         // Moving boxes
-        this.removeButler();
+        this.player.butler.removeButler();
 
         // Backup social signpost
         if (this.home.exterior && !this.social_signpost_backup){
@@ -795,7 +795,7 @@ public function houses_remove_new(){
         }
 
         // Delete incoming neighborhood signposts
-        var reverse = this.buddies_get_reverse_tsids();
+        var reverse = this.player.buddies.buddies_get_reverse_tsids();
         for (var i in reverse){
             var pc = getPlayer(reverse[i]);
             if (!pc) continue;
@@ -836,7 +836,7 @@ public function houses_go_to_new_house(force_recreate, no_teleport, go_inside){
     }
     else if (!this.home){
         // Backup keys
-        if (!this.acl_keys_backup) this.acl_keys_backup = this.acl_keys_get_given();
+        if (!this.acl_keys_backup) this.acl_keys_backup = this.player.acl_keys_get_given();
     }
 
 
@@ -925,7 +925,7 @@ public function houses_go_to_new_house(force_recreate, no_teleport, go_inside){
 
         if (this.newxp_allow_home){
             // TA-DA!
-            this.newxpComplete();
+            this.player.newxpComplete();
         }
 
         var target_house = go_inside ? this.home.interior : this.home.exterior;
@@ -990,7 +990,7 @@ public function houses_visit(player_tsid){
     }
 
     // check blocking
-    if (this.buddies_is_ignored_by(player)){
+    if (this.player.buddies.buddies_is_ignored_by(player)){
         return {
             ok: 0,
             error: 'blocked'
@@ -1013,7 +1013,7 @@ public function houses_visit(player_tsid){
         return ret;
     }
 
-    if (!house.pols_is_owner(this) && this.countFollowers()){
+    if (!house.pols_is_owner(this) && this.player.countFollowers()){
         var followers_have_clearance = 1;
 
         for (var i in this.followers){
@@ -1044,7 +1044,7 @@ public function houses_visit(player_tsid){
     }
 
     // newxp us
-    if (!house.pols_is_owner(this) && (!this.has_done_intro || this.getQuestStatus('leave_gentle_island') == 'todo')){
+    if (!house.pols_is_owner(this) && (!this.has_done_intro || this.player.quests.getQuestStatus('leave_gentle_island') == 'todo')){
         return {
             ok: 0,
             error: 'newxp_us'
@@ -1058,7 +1058,7 @@ public function houses_teleport_to(target_house, x, y){
 
     if (this.is_dead) return {ok: 0, error: "You are dead."};
 
-    if (this.making_is_making()) return {ok: 0, error: "You need to finish up what you're working on first."};
+    if (this.player.making.making_is_making()) return {ok: 0, error: "You need to finish up what you're working on first."};
 
     //
     // Record where they were before
@@ -1075,14 +1075,14 @@ public function houses_teleport_to(target_house, x, y){
     if (x === undefined) x = landing.x;
     if (y === undefined) y = landing.y;
 
-    this.teleportToLocationDelayed(target_house.tsid, x, y);
+    this.player.teleportToLocationDelayed(target_house.tsid, x, y);
 
     return {ok: 1};
 }
 
 public function houses_record_leave(){
     if (this.location.isInstance() && this.location.class_tsid != 'newbie_island'){
-        var exit = this.instances_unwind_exit();
+        var exit = this.player.instances.instances_unwind_exit();
         if (exit && exit.tsid){
             var exit_loc = apiFindObject(exit.tsid);
             if (exit_loc && (!exit_loc.pols_is_pol() || !exit_loc.getProp('is_home'))){
@@ -1196,11 +1196,11 @@ public function houses_is_our_home(tsid){
 
 public function houses_check_inside_home(){
     if (!this.home || !this.home.exterior || !this.home.interior){
-        this.sendActivity('Only works in your own house');
+        this.player.sendActivity('Only works in your own house');
         return false;
     }
     if (this.location.tsid != this.home.interior.tsid){
-        this.sendActivity('Only works in your own house');
+        this.player.sendActivity('Only works in your own house');
         return false;
     }
 
@@ -1308,20 +1308,20 @@ public function houses_undo_moving_boxes(){
 }
 
 public function houses_leave(){
-    if (!this.location.getProp('is_home')) return this.sendActivity("To leave, you must first go /home");
+    if (!this.location.getProp('is_home')) return this.player.sendActivity("To leave, you must first go /home");
 
     var target = this.houses_get_previous_location();
     if (!target.tsid){
-        if (!this.has_done_intro || this.getQuestStatus('leave_gentle_island') == 'todo') return this.sendActivity("You can't do that yet");
-        return config.is_dev ? this.teleportHome() : this.teleportSomewhere();
+        if (!this.has_done_intro || this.player.quests.getQuestStatus('leave_gentle_island') == 'todo') return this.player.sendActivity("You can't do that yet");
+        return config.is_dev ? this.player.teleportHome() : this.player.teleportSomewhere();
     }
 
     var loc = apiFindObject(target.tsid);
     if (loc && loc.class_tsid == 'newbie_island'){
-        this.removeFollowers();
+        this.player.removeFollowers();
     }
 
-    this.teleportToLocationDelayed(target.tsid, target.x, target.y);
+    this.player.teleportToLocationDelayed(target.tsid, target.x, target.y);
     delete this.home_leave;
 }
 
@@ -1330,7 +1330,7 @@ public function houses_get_previous_location(){
     var loc;
 
     // Newxp forcing to newbie island
-    if (this.getQuestStatus('leave_gentle_island') == 'todo' && !config.is_dev){
+    if (this.player.quests.getQuestStatus('leave_gentle_island') == 'todo' && !config.is_dev){
         if (target && target.tsid){
             loc = apiFindObject(target.tsid);
             if (loc && loc.class_tsid == 'newbie_island') return target;
@@ -1353,7 +1353,7 @@ public function houses_get_previous_location(){
         return {};
     }
 
-    if (loc.class_tsid == 'newbie_island' && this.getQuestStatus('leave_gentle_island') == 'done'){
+    if (loc.class_tsid == 'newbie_island' && this.player.quests.getQuestStatus('leave_gentle_island') == 'done'){
         return {};
     }
 
@@ -1375,7 +1375,7 @@ public function admin_reset_house(args){
     if (this.home){
         this.houses_go_to_new_house(true, true);
 
-        this.furniture_reset();
+        this.player.furniture.furniture_reset();
     }
 
     return {ok:1};
@@ -1451,7 +1451,7 @@ public function houses_extend(){
     }
 
     if (!config.home_limits.UPGRADES_ARE_FREE){
-        if (!this.items_destroy_multi(items)){
+        if (!this.player.items.items_destroy_multi(items)){
             return {
                 ok: 0,
                 error: 'missing_mats',
@@ -1496,7 +1496,7 @@ public function houses_expand_yard(side){
         }
 
         if (!config.home_limits.UPGRADES_ARE_FREE){
-            if (!this.stats_try_remove_imagination(costs.img_cost, context)){
+            if (!this.player.stats.stats_try_remove_imagination(costs.img_cost, context)){
                 return {
                     ok: 0,
                     error: 'not_enough_img'
@@ -1534,7 +1534,7 @@ public function houses_expand_yard(side){
         }
 
         if (!config.home_limits.UPGRADES_ARE_FREE){
-            if (!this.stats_try_remove_imagination(costs.img_cost, context)){
+            if (!this.player.stats.stats_try_remove_imagination(costs.img_cost, context)){
                 return {
                     ok: 0,
                     error: 'not_enough_img'
@@ -1579,7 +1579,7 @@ public function houses_unexpand(){
     var items = [];
     for (var i in costs.unexpand.items){
         if (costs.unexpand.items[i]){
-            this.createItem(i, costs.unexpand.items[i]);
+            this.player.items.createItem(i, costs.unexpand.items[i]);
         }
     }
 
@@ -1639,7 +1639,7 @@ public function houses_style_choices(){
 
 public function house_style_switch_cost(){
 
-    var cost = this.stats_get_level() * 10;
+    var cost = this.player.stats.stats_get_level() * 10;
     if (cost < 40) cost = 40;
 
     return cost;
@@ -1671,7 +1671,7 @@ public function houses_style_set(t){
     };
 
     if (!config.home_limits.UPGRADES_ARE_FREE){
-        if (!this.stats_try_remove_imagination(this.house_style_switch_cost(), context)){
+        if (!this.player.stats.stats_try_remove_imagination(this.house_style_switch_cost(), context)){
             return {
                 ok: 0,
                 error: 'not_enough_img'
@@ -1787,7 +1787,7 @@ public function houses_signpost(player_tsid){
     }
 
     // check blocking
-    if (this.buddies_is_ignored_by(player)){
+    if (this.player.buddies.buddies_is_ignored_by(player)){
         return {
             ok: 0,
             error: 'blocked'

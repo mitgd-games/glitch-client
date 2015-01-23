@@ -159,7 +159,7 @@ public function mail_liquidate_all_auctions(do_it) {
 
         if(do_it) {
             log.info("Liquidated auctions worth "+total+" for player "+this);
-            this.stats_add_currants(total);
+            this.player.stats.stats_add_currants(total);
         } else {
             log.info("Found auctions totalling "+total+" for player "+this);
         }
@@ -175,7 +175,7 @@ public function mail_has_unread() {
     for(var i in this.mail.inbox) {
         var sender_pc = getPlayer(this.mail.inbox[i].sender_tsid);
 
-        if (this.mail.inbox[i].is_read == false && this.mail.inbox[i].delivery_time < time() && (!sender_pc || !this.buddies_is_ignoring(sender_pc))) {
+        if (this.mail.inbox[i].is_read == false && this.mail.inbox[i].delivery_time < time() && (!sender_pc || !this.player.buddies.buddies_is_ignoring(sender_pc))) {
             return true;
         }
     }
@@ -192,7 +192,7 @@ public function mail_count_messages(){
     for(var i in this.mail.inbox) {
         var sender_pc = getPlayer(this.mail.inbox[i].sender_tsid);
 
-        if(this.mail.inbox[i].delivery_time < time() && (!sender_pc || !this.buddies_is_ignoring(sender_pc))) {
+        if(this.mail.inbox[i].delivery_time < time() && (!sender_pc || !this.player.buddies.buddies_is_ignoring(sender_pc))) {
             n_msgs++;
         }
     }
@@ -228,7 +228,7 @@ public function mail_count_replied(){
 }
 
 public function mail_can_receive(from){
-    if (this.buddies_is_ignored_by(from) || this.buddies_is_ignoring(from)){
+    if (this.player.buddies.buddies_is_ignored_by(from) || this.player.buddies.buddies_is_ignoring(from)){
         return false;
     }
 
@@ -318,12 +318,12 @@ public function has_frog_already() {
 
 public function deliver_mail() {
     // If the player is offline, cancel. It will be sent to mailbox on log-in
-    if(!this.isOnline()) {
+    if(!this.player.isOnline()) {
         return;
     }
 
     // If the player is in an instance or in hell, reschedule
-    if(this.location.isInstance() || this.location.isInHell() || this.doNotDisturb()) {
+    if(this.location.isInstance() || this.location.isInHell() || this.player.doNotDisturb()) {
         log.error("Player "+this+" had a mail delivery, but is in a undeliverable location!");
         this.reschedule_mail();
         return;
@@ -335,7 +335,7 @@ public function deliver_mail() {
 
     this['!has_frog_prompt'] = true;
 
-    this.prompts_add({
+    this.player.prompts.prompts_add({
         txt: "Special delivery! A package has arrived for you.",
         prompt_callback: 'answer_mail_prompt',
         is_modal: true,
@@ -633,10 +633,10 @@ public function mail_archive_message(msg_id){
         'msg_id': msg_id
     });
 
-    if (this.isOnline()) {
+    if (this.player.isOnline()) {
         // send message to player. we'll do this within the mailbox once we get client support
         // but for now, just growl it.
-        this.sendActivity('Your mail message has been moved to the archives!');
+        this.player.sendActivity('Your mail message has been moved to the archives!');
     }
 }
 
@@ -649,7 +649,7 @@ public function get_message_goodies(msg_id, no_prompts) {
     // First receive currants, and pull them off the message, in case we can't deliver
     if (this.mail) {
         if(this.mail.inbox[msg_id] && this.mail.inbox[msg_id].currants) {
-            this.stats_add_currants(this.mail.inbox[msg_id].currants, {'mail':msg_id});
+            this.player.stats.stats_add_currants(this.mail.inbox[msg_id].currants, {'mail':msg_id});
             this.mail.inbox[msg_id].currants = 0;
         }
     } else {
@@ -677,7 +677,7 @@ public function get_message_goodies(msg_id, no_prompts) {
 
     if(unsent && !no_prompts) {
         // prompt that we could not receive items
-        this.prompts_add({
+        this.player.prompts.prompts_add({
             txt     : "You cannot receive your items because your bag is full. You will need to free up space in your bag first.",
             timeout     : 10,
             choices     : [
@@ -707,7 +707,7 @@ public function new_inbox_growl() {
         return;
     }
 
-    this.sendActivity("You have new messages in your mailbox!");
+    this.player.sendActivity("You have new messages in your mailbox!");
 
     // And tell any mailboxes in our area to update!
     if(this.location) {
@@ -737,7 +737,7 @@ public function fix_broken_mail_item(stack) {
         return;
     }
 
-    this.sendActivity("Oops, there was a problem with one of your deliveries. The item has been placed in your mailbox!");
+    this.player.sendActivity("Oops, there was a problem with one of your deliveries. The item has been placed in your mailbox!");
     log.error("Player "+this+" has broken delivery item "+stack+".");
     this.send_auction_to_inbox(stack);
 }
@@ -819,11 +819,11 @@ public function send_unsent_auctions_to_inbox() {
 
     if(num_sent) {
         if (deets.auction_action == 'cancelled'){
-            this.sendActivity("Your cancelled auctions arrived while you were out. All items have been placed in your mailbox for convenient pickup.");
+            this.player.sendActivity("Your cancelled auctions arrived while you were out. All items have been placed in your mailbox for convenient pickup.");
         } else if (deets.auction_action == 'expired'){
-            this.sendActivity("Your expired auctions arrived while you were out. All items have been placed in your mailbox for convenient pickup.");
+            this.player.sendActivity("Your expired auctions arrived while you were out. All items have been placed in your mailbox for convenient pickup.");
         } else {
-            this.sendActivity("Your purchased auctions arrived while you were out. All items have been placed in your mailbox for convenient pickup.");
+            this.player.sendActivity("Your purchased auctions arrived while you were out. All items have been placed in your mailbox for convenient pickup.");
         }
     }
 
@@ -916,7 +916,7 @@ public function schedule_next_delivery() {
     var next_delivery_type = 'auction';
 
     // if we already have a frog delivering, don't schedule mail yet
-    if(this.has_frog_already() || !this.isOnline()) {
+    if(this.has_frog_already() || !this.player.isOnline()) {
         return;
     }
 
@@ -1059,7 +1059,7 @@ public function get_mail_items(mailType, msg_id) {
         }
 
         if(mailItems.length == 1) {
-            this.sendActivity("Mail time! You got "+mailItems[0]+'.');
+            this.player.sendActivity("Mail time! You got "+mailItems[0]+'.');
         } else if (mailItems.length > 1) {
             var mailString = '';
             for(var i = 0; i < mailItems.length; ++i) {
@@ -1070,7 +1070,7 @@ public function get_mail_items(mailType, msg_id) {
                 }
             }
 
-            this.sendActivity("Mail time! You got "+mailString);
+            this.player.sendActivity("Mail time! You got "+mailString);
         }
     }
 
@@ -1388,7 +1388,7 @@ public function build_mail_check_msg(from_item, to_msg, fetch_all) {
         if(sender_tsid) {
             var sender_pc = getPlayer(this.mail.inbox[i].sender_tsid);
 
-            if (sender_pc && this.buddies_is_ignoring(sender_pc) && this.mail.inbox[i].currants == 0 && !this.mail.inbox[i].items.length) {
+            if (sender_pc && this.player.buddies.buddies_is_ignoring(sender_pc) && this.mail.inbox[i].currants == 0 && !this.mail.inbox[i].items.length) {
                 this.mail_remove_player_message(i);
                 continue;
             }
@@ -1509,7 +1509,7 @@ public function admin_clear_mail() {
     // Get any currants from messages
     for(var i in this.mail.inbox) {
         if(this.mail.inbox[i].currants) {
-            this.stats_add_currants(this.mail.inbox[i].currants, {'mail':i});
+            this.player.stats.stats_add_currants(this.mail.inbox[i].currants, {'mail':i});
         }
     }
 
@@ -1563,7 +1563,7 @@ public function mail_replace_mail_item(source_tsid, replacement_item){
 public function mail_send_special_item(class_tsid, number, message, min_level) {
     var n_sending = number ? number : 1;
 
-    if(min_level && this.stats_get_level() < min_level) {
+    if(min_level && this.player.stats.stats_get_level() < min_level) {
         return;
     }
 

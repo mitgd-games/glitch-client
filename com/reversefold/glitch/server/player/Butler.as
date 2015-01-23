@@ -31,7 +31,7 @@ public function createButler(x_pos) {
             this.removeButler();
         }
         else {
-            this.sendActivity("You already have a Butler.");
+            this.player.sendActivity("You already have a Butler.");
             return; // only one butler per person
         }
     }
@@ -54,7 +54,7 @@ public function createButler(x_pos) {
         butler = this.location.createItemStackWithPoof('bag_butler', 1, x_pos, this.y);
     }
     else {
-        this.sendActivity("You must be on your home street to create a butler.");
+        this.player.sendActivity("You must be on your home street to create a butler.");
     }
 
     if (butler) {
@@ -98,11 +98,11 @@ public function giveButlerBox() {
         return;
     }
 
-    if (!this.has_done_intro || this.return_to_gentle_island || this.getQuestStatus('leave_gentle_island') == 'todo'){
+    if (!this.has_done_intro || this.return_to_gentle_island || this.player.quests.getQuestStatus('leave_gentle_island') == 'todo'){
         return;
     }
 
-    if (this.stats_get_level() < 3) {
+    if (this.player.stats.stats_get_level() < 3) {
         return;
     }
 
@@ -131,7 +131,7 @@ public function notifyButlersAboutTower(){
                         completion_time: time()        // timestamp in seconds
                     };
 
-    var tsids = this.buddies_get_reverse_tsids();
+    var tsids = this.player.buddies.buddies_get_reverse_tsids();
 
     var player = null;
     var butler = null;

@@ -41,10 +41,10 @@ public function start_baqala_buff() {
     }*/
 
     // otherwise, give the overwhelming nostalgia buff
-    if(!this.buffs_has('ancestral_nostalgia')) {
-        this.buffs_apply('ancestral_nostalgia');
+    if(!this.player.buffs.buffs_has('ancestral_nostalgia')) {
+        this.player.buffs.buffs_apply('ancestral_nostalgia');
     }
-    this.sendActivity("The gravity of countless ages weighs heavily on your shoulders. You can't spend too long here!")
+    this.player.sendActivity("The gravity of countless ages weighs heavily on your shoulders. You can't spend too long here!")
 
     // How much time since we last entered Baqala?
     if(this.baqala_times && this.baqala_times.time_spent) {
@@ -63,14 +63,14 @@ public function start_baqala_buff() {
             if(this.baqala_times.time_spent < 0) {
                 this.baqala_times.time_spent = 0;
             } else {
-                if (this.imagination_has_upgrade("ancestral_lands_time_2")) {
-                    this.buffs_alter_time('ancestral_nostalgia', -this.baqala_times.time_spent, 12*60)
+                if (this.player.imagination.imagination_has_upgrade("ancestral_lands_time_2")) {
+                    this.player.buffs.buffs_alter_time('ancestral_nostalgia', -this.baqala_times.time_spent, 12*60)
                 }
-                else if (this.imagination_has_upgrade("ancestral_lands_time_1")){
-                    this.buffs_alter_time('ancestral_nostalgia', -this.baqala_times.time_spent, 11*60)
+                else if (this.player.imagination.imagination_has_upgrade("ancestral_lands_time_1")){
+                    this.player.buffs.buffs_alter_time('ancestral_nostalgia', -this.baqala_times.time_spent, 11*60)
                 }
                 else {
-                    this.buffs_alter_time('ancestral_nostalgia', -this.baqala_times.time_spent)
+                    this.player.buffs.buffs_alter_time('ancestral_nostalgia', -this.baqala_times.time_spent)
                 }
             }
         }
@@ -83,8 +83,8 @@ public function start_baqala_buff() {
 
     this.baqala_times.entry_time = time();
 
-//  if (this.baqala_times.total_time_spent > 60 * 60 && this.getQuestStatus('help_juju_bandits') == 'none' && is_chance(0.1)) {
-    if (this.getQuestStatus('help_juju_bandits') == 'none') {
+//  if (this.baqala_times.total_time_spent > 60 * 60 && this.player.quests.getQuestStatus('help_juju_bandits') == 'none' && is_chance(0.1)) {
+    if (this.player.quests.getQuestStatus('help_juju_bandits') == 'none') {
         this.baqala_times.offer_quest = true;
     } else {
         this.baqala_times.offer_quest = false;
@@ -107,8 +107,8 @@ public function reset_baqala_times() {
 
 public function leave_savanna(logout) {
     // if we have the ancestral nostalogia buff, remove it.
-    if(this.buffs_has('ancestral_nostalgia') && !logout) {
-        this.buffs_remove('ancestral_nostalgia');
+    if(this.player.buffs.buffs_has('ancestral_nostalgia') && !logout) {
+        this.player.buffs.buffs_remove('ancestral_nostalgia');
     }
 
     if (this.baqala_times.entry_time) {
@@ -146,18 +146,18 @@ public function set_baqala_times(times) {
 }
 
 public function give_baqala_time(amount) {
-    if(!this.buffs_has("ancestral_nostalgia")) {
+    if(!this.player.buffs.buffs_has("ancestral_nostalgia")) {
         return;
     }
 
-    if (this.imagination_has_upgrade("ancestral_lands_time_2")) {
-        var result = this.buffs_alter_time('ancestral_nostalgia', amount, 12 * 60);
+    if (this.player.imagination.imagination_has_upgrade("ancestral_lands_time_2")) {
+        var result = this.player.buffs.buffs_alter_time('ancestral_nostalgia', amount, 12 * 60);
     }
-    else if (this.imagination_has_upgrade("ancestral_lands_time_1")){
-        var result = this.buffs_alter_time('ancestral_nostalgia', amount, 11 * 60);
+    else if (this.player.imagination.imagination_has_upgrade("ancestral_lands_time_1")){
+        var result = this.player.buffs.buffs_alter_time('ancestral_nostalgia', amount, 11 * 60);
     }
     else {
-        var result = this.buffs_alter_time('ancestral_nostalgia', amount);
+        var result = this.player.buffs.buffs_alter_time('ancestral_nostalgia', amount);
     }
 
     // Don't forget to subtract from time spent!
@@ -174,10 +174,10 @@ public function check_baqala_boot() {
     }
 
     // If this is removed while we're in the savanna, and we're over the time, we are done for!
-    if(this.location.hub_region() == "Savanna" && (this.get_baqala_buff_time() > 595 || !this.buffs_has('ancestral_nostalgia'))) {
+    if(this.location.hub_region() == "Savanna" && (this.get_baqala_buff_time() > 595 || !this.player.buffs.buffs_has('ancestral_nostalgia'))) {
         log.info(this+" is being booted from the savanna.");
-        if(!this.buffs_has('too_much_nostalgia')) {
-            this.buffs_apply('too_much_nostalgia');
+        if(!this.player.buffs.buffs_has('too_much_nostalgia')) {
+            this.player.buffs.buffs_apply('too_much_nostalgia');
         }
 
         var ret = this.do_baqala_boot();
@@ -256,7 +256,7 @@ public function do_baqala_boot() {
         };
     }
 
-    return this.teleportToLocationDelayed(target.tsid, targets[choice].x, targets[choice].y);
+    return this.player.teleportToLocationDelayed(target.tsid, targets[choice].x, targets[choice].y);
 }
 
 public function overwhelmed_prompt_callback() {
@@ -272,7 +272,7 @@ public function juju_bandit_curse() {
     }
 
     // Does the PC have anything the jujus want?
-    var list = this.items_has_drops('dust_trap', 1);
+    var list = this.player.items.items_has_drops('dust_trap', 1);
 
     if(num_keys(list) == 0) {
         return;
@@ -311,7 +311,7 @@ public function juju_bandit_curse() {
     var juju = this.location.createItemStack('npc_juju_bandit', 1, point.x, point.y);
     juju.setParams(this, item_class);
 
-    if (this.baqala_times.offer_quest && this.getQuestStatus('help_juju_bandits') == 'none') {
+    if (this.baqala_times.offer_quest && this.player.quests.getQuestStatus('help_juju_bandits') == 'none') {
         juju.setOfferQuest(true);
     }
 }
@@ -339,25 +339,25 @@ public function begin_purple_journey(stage) {
 
     switch (stage) {
         case 0:
-            this.sendActivity("Nothing seems to be happening. Maybe you got a bad batch of Essence of Purple?");
+            this.player.sendActivity("Nothing seems to be happening. Maybe you got a bad batch of Essence of Purple?");
             this.apiSetTimerX('begin_purple_journey', 15 * 1000, 1);
             break;
         case 1:
-            this.sendActivity("Maybe you just need to take more.");
+            this.player.sendActivity("Maybe you just need to take more.");
             this.apiSetTimerX('begin_purple_journey', 15 * 1000, 2);
             break;
         case 2:
-            this.sendActivity("Oh, you're starting to feel relaxed and kind of tingly. Actually, it's fairly pleasant.");
-            this.metabolics_add_mood(5);
+            this.player.sendActivity("Oh, you're starting to feel relaxed and kind of tingly. Actually, it's fairly pleasant.");
+            this.player.metabolics.metabolics_add_mood(5);
             this.apiSetTimerX('begin_purple_journey', 7.5 * 1000, 3);
             break;
         case 3:
-            this.sendActivity("You realize you've been grinding your teeth a little. Hurry up, please; it's time.");
-            this.metabolics_add_mood(10);
+            this.player.sendActivity("You realize you've been grinding your teeth a little. Hurry up, please; it's time.");
+            this.player.metabolics.metabolics_add_mood(10);
             this.apiSetTimerX('begin_purple_journey', 5 * 1000, 4);
             break;
         case 4:
-            this.sendActivity("Your jaw hurts now. Your jaw hurts your hurts your your hurry up please it's its");
+            this.player.sendActivity("Your jaw hurts now. Your jaw hurts your hurts your your hurry up please it's its");
             this.apiSetTimerX('begin_purple_journey', 2 * 1000, 5);
             break;
         case 5:
@@ -365,7 +365,7 @@ public function begin_purple_journey(stage) {
             vogUID = "purple_1";
             xpos = 20;
             ypos = 10;
-            this.metabolics_lose_mood(5);
+            this.player.metabolics.metabolics_lose_mood(5);
             this.apiSetTimerX('begin_purple_journey', 1000, 6);
             break;
         case 6:
@@ -373,7 +373,7 @@ public function begin_purple_journey(stage) {
             vogUID = "purple_2";
             xpos = 50;
             ypos = 25;
-            this.metabolics_lose_mood(10);
+            this.player.metabolics.metabolics_lose_mood(10);
             this.apiSetTimerX('begin_purple_journey', 1000, 7);
             break;
         case 7:
@@ -409,7 +409,7 @@ public function begin_purple_journey(stage) {
             vogText = "HURRY UP PLEASE ITS TIME";
             xpos = 50;
             ypos = 50;
-            this.events_add({ callback: 'instances_create_delayed', tsid: config.is_dev ? 'LMF33RVTAUG2IU6' : 'LNVV4OTMAUG2PQV',
+            this.player.events.events_add({ callback: 'instances_create_delayed', tsid: config.is_dev ? 'LMF33RVTAUG2IU6' : 'LNVV4OTMAUG2PQV',
                 instance_id: 'purple_journey', x: 0, y: -61}, 2.0);
             this.apiSetTimerX('begin_purple_journey', 1500, 12);
             break;
@@ -421,7 +421,7 @@ public function begin_purple_journey(stage) {
     }
 
     if (vogUID) {
-        this.playEmotionAnimation('surprise');
+        this.player.playEmotionAnimation('surprise');
 
         if (stage == 10) {
             var steps = [
@@ -467,7 +467,7 @@ public function begin_purple_journey(stage) {
 /***************** Mountaineering ***********************/
 public function mountaineering_start(expedition_id, duration, difficulty){
     if (!this.party) return {ok: 0, error: "You are not in a party."};
-    if (this.party_has_space()) return {ok: 0, error: "There's already a space!"};
+    if (this.player.party.party_has_space()) return {ok: 0, error: "There's already a space!"};
 
     this.party.create_mountain(expedition_id, duration, difficulty, this);
 
@@ -480,7 +480,7 @@ public function mountaineering_start(expedition_id, duration, difficulty){
     var y = y_pos;
     var x = 0;
 
-    this.sendActivity("displaying freeze at "+x+" "+y+" width "+width*2+" height "+height);
+    this.player.sendActivity("displaying freeze at "+x+" "+y+" width "+width*2+" height "+height);
 
     this.location.apiSendAnnouncement({
         type: 'location_overlay',

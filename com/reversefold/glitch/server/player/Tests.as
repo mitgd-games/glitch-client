@@ -476,12 +476,12 @@ public function tests_fail(msg){
 }
 
 public function tests_instance_my_location() {
-    this.instances_create('test_instance', this.location.tsid);
-    this.instances_enter('test_instance', this.x, this.y);
+    this.player.instances.instances_create('test_instance', this.location.tsid);
+    this.player.instances.instances_enter('test_instance', this.x, this.y);
 }
 
 public function tests_leave_test_instance() {
-    this.instances_exit('test_instance');
+    this.player.instances.instances_exit('test_instance');
 }
 
 public function tests_increment_grapes_squished(){

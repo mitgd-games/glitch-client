@@ -106,7 +106,7 @@ public function conversations_offer(source_item, id){
 
     var now = time();
     if (!config.is_dev && now - this.date_last_loggedin < (5*60)) return false; // 5 minutes from last login
-    if (now - this.stats_get_last_street_visit(this.location.tsid) < 10) return false; // At least 10s on this street
+    if (now - this.player.stats.stats_get_last_street_visit(this.location.tsid) < 10) return false; // At least 10s on this street
 
     var timeout = config.is_dev ? 10 : 30*60;
     if (num_keys(this.conversations.chains_inprogress)) timeout = config.is_dev ? 5 : 15; // If we're on a chain, we can continue every 15 seconds
@@ -114,7 +114,7 @@ public function conversations_offer(source_item, id){
     if (this.conversations.last_offer > (now - timeout)) return false;
     if (this.conversations_get_last_completed_conversation() > (now - timeout)) return false;
 
-    var donate_to_all_shrines = this.getQuestInstance('donate_to_all_shrines');
+    var donate_to_all_shrines = this.player.quests.getQuestInstance('donate_to_all_shrines');
     if (!config.is_dev){
         if (!donate_to_all_shrines || !donate_to_all_shrines.isDone() || time() - donate_to_all_shrines.getProp('ts_done') < 60) return false;
     }
@@ -273,7 +273,7 @@ public var convo_bubble_choices = [
 public function conversations_offer_bubble(source){
     if (!this.do_not_disturb){
         var choice = choose_one(this.convo_bubble_choices);
-        choice = choice.replace(/{pc_label}/g, this.getLabel());
+        choice = choice.replace(/{pc_label}/g, this.player.getLabel());
 
         source.sendBubble(choice, 10000, this);
     }

@@ -19,7 +19,7 @@ package com.reversefold.glitch.server.player {
 
 
 public function sendActionRequest(type, tsid, from, txt, need, got, timeout){
-    this.sendMsgOnline({
+    this.player.sendMsgOnline({
         type: "action_request",
         txt: txt,
         pc: from.make_hash(),
@@ -57,7 +57,7 @@ public function broadcastActionRequest(type, tsid, txt, need=false, got=false){
     this.location.apiSendMsgX({
         type: "action_request",
         txt: txt,
-        pc: this.make_hash(),
+        pc: this.player.make_hash(),
         got: intval(got),
         need: intval(need),
         event_type: type,
@@ -69,7 +69,7 @@ public function broadcastActionRequest(type, tsid, txt, need=false, got=false){
     this.apiSendMsg({
         type: "action_request",
         txt: txt,
-        pc: this.make_hash(),
+        pc: this.player.make_hash(),
         got: intval(got),
         need: intval(need),
         event_type: type,
@@ -86,7 +86,7 @@ public function actionRequestReply(from, msg){
 
     var g;
     if (msg.event_type == 'quest_accept'){
-        var q = this.getQuestInstance(msg.event_tsid);
+        var q = this.player.quests.getQuestInstance(msg.event_tsid);
         if (!q){
             g = config.shared_instances[msg.event_tsid];
             if (!g){
@@ -97,7 +97,7 @@ public function actionRequestReply(from, msg){
 
         if (q && (q.isFull() || !q.isStarted())){
             from.prompts_add({
-                txt     : 'Sorry, you were not quite fast enough to join '+this.linkifyLabel()+' on the '+q.getTitle(this)+' quest.',
+                txt     : 'Sorry, you were not quite fast enough to join '+this.player.linkifyLabel()+' on the '+q.getTitle(this)+' quest.',
                 timeout     : 10,
                 choices     : [
                     { value : 'ok', label : 'Dagnabit!' }
@@ -113,9 +113,9 @@ public function actionRequestReply(from, msg){
     }
 
     if (g || msg.event_type == 'game_accept'){
-        if (this.games_invite_is_full()){
+        if (this.player.games.games_invite_is_full()){
             from.prompts_add({
-                txt     : 'Sorry, you were not quite fast enough to join '+this.linkifyLabel()+'.',
+                txt     : 'Sorry, you were not quite fast enough to join '+this.player.linkifyLabel()+'.',
                 timeout     : 10,
                 choices     : [
                     { value : 'ok', label : 'Dagnabit!' }
@@ -123,7 +123,7 @@ public function actionRequestReply(from, msg){
             });
         }
         else{
-            this.games_add_opponent(from);
+            this.player.games.games_add_opponent(from);
             from.addActionRequestReply(this);
         }
 
@@ -150,12 +150,12 @@ public function actionRequestReply(from, msg){
 
 public function actionRequestCancel(msg){
     if (msg.event_type == 'quest_accept'){
-        var q = this.getQuestInstance(msg.event_tsid);
+        var q = this.player.quests.getQuestInstance(msg.event_tsid);
 
         if (q){
             if (!q.isFull()){
                 // Remove prompts
-                this.prompts_remove(this['!invite_uid_'+this.tsid]);
+                this.player.prompts.prompts_remove(this['!invite_uid_'+this.tsid]);
                 for (var i in q.opponents){
                     var opp = getPlayer(i);
                     if (opp){
@@ -166,13 +166,13 @@ public function actionRequestCancel(msg){
 
                 this.updateActionRequest('was looking for a challenger on the quest <b>'+q.getTitle(this)+'</b>.', 0);
                 this.cancelActionRequestBroadcast('quest_accept', q.class_tsid);
-                this.failQuest(q.class_tsid);
-                this.events_remove(function(details){ return details.callback == 'quests_multiplayer_invite_timeout'; });
+                this.player.quests.failQuest(q.class_tsid);
+                this.player.events.events_remove(function(details){ return details.callback == 'quests_multiplayer_invite_timeout'; });
             }
         }
         return true;
     } else if (msg.event_type == 'game_accept') {
-        if (!this.games_invite_is_full()){
+        if (!this.player.games.games_invite_is_full()){
             var g = config.shared_instances[msg.event_tsid];
             if (!g){
                 log.error(this+' actionRequestCancel unknown game id: '+msg.event_tsid);
@@ -180,7 +180,7 @@ public function actionRequestCancel(msg){
             }
 
             // Remove prompts
-            this.prompts_remove(this['!invite_uid_'+this.tsid]);
+            this.player.prompts.prompts_remove(this['!invite_uid_'+this.tsid]);
             for (var i in this.games_invite.opponents){
                 var opp = getPlayer(i);
                 if (opp){
@@ -191,10 +191,10 @@ public function actionRequestCancel(msg){
 
             this.updateActionRequest('was looking for a challenger on <b>'+g.name+'</b>.', 0);
             this.cancelActionRequestBroadcast('game_accept', msg.event_tsid);
-            this.events_remove(function(details){ return details.callback == 'games_invite_timeout'; });
+            this.player.events.events_remove(function(details){ return details.callback == 'games_invite_timeout'; });
 
             if (this.games_invite && this.games_invite.ticket_on_cancel){
-                this.createItemFromFamiliar(this.games_invite.ticket_on_cancel, 1);
+                this.player.items.createItemFromFamiliar(this.games_invite.ticket_on_cancel, 1);
             }
 
             delete this.games_invite;

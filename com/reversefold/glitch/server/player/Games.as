@@ -77,7 +77,7 @@ public function games_start_color_game(game, color, start_time) {
 
     this.apiSetTimer('games_end_color_game', 1000 * time_remaining);
 
-    this.setPlayerCollisions(true);
+    this.player.setPlayerCollisions(true);
 }
 
 // Infect another player
@@ -134,19 +134,19 @@ public function games_end_color_game() {
 
     this.apiCancelTimer('games_end_color_game');
 
-    this.setPlayerCollisions(false);
+    this.player.setPlayerCollisions(false);
 
     var reds = this.color_game.game.getInfections('red');
     var yellows = this.color_game.game.getInfections('yellow');
     var blues = this.color_game.game.getInfections('blue');
 
-    this.achievements_increment('color_game', 'infections', reds+yellows+blues);
-    this.achievements_increment('color_game', 'infections_red', reds);
-    this.achievements_increment('color_game', 'infections_yellow', yellows);
-    this.achievements_increment('color_game', 'infections_blue', blues);
+    this.player.achievements.achievements_increment('color_game', 'infections', reds+yellows+blues);
+    this.player.achievements.achievements_increment('color_game', 'infections_red', reds);
+    this.player.achievements.achievements_increment('color_game', 'infections_yellow', yellows);
+    this.player.achievements.achievements_increment('color_game', 'infections_blue', blues);
 
     if(!this.color_game.is_done) {
-        this.prompts_add({
+        this.player.prompts.prompts_add({
             txt: "Time's up! The stats were: red "+reds+", blue "+blues+", yellow "+yellows+". You failed to reach your safe colour. Better luck next time!",
             title: "The Color Game",
             is_modal: true,
@@ -156,7 +156,7 @@ public function games_end_color_game() {
                 { value: "leave", label: "Leave!"}
             ]});
     } else {
-        this.prompts_add({
+        this.player.prompts.prompts_add({
             txt: "The game is over! The stats were: red "+reds+", blue "+blues+", yellow "+yellows+". Good job and thanks for playing.",
             title: "The Color Game",
             is_modal: true,
@@ -184,11 +184,11 @@ public function games_color_finish_on_color(end_color) {
     this.color_game.is_done = true;
     this.games_color_game_set_color(end_color);
 
-    this.setPlayerCollisions(false);
+    this.player.setPlayerCollisions(false);
 
     // Are we our safe color? Then do something good.
     if(this.color_game.color == this.color_game.safe_color) {
-        /*this.prompts_add({
+        /*this.player.prompts.prompts_add({
             txt: "You have reached your safe colour, and you infected "+this.color_game.infections+" people. Congratulations!",
             title: "A Fun, New Game!",
             is_modal: true,
@@ -211,10 +211,10 @@ public function games_color_finish_on_color(end_color) {
             ]
         });
 
-        this.achievements_increment('color_game', 'wins');
+        this.player.achievements.achievements_increment('color_game', 'wins');
         this.color_game.game.playerOut(this, true);
     } else {
-        /*this.prompts_add({
+        /*this.player.prompts.prompts_add({
             txt: "YOU'RE OUT! That is not your safe colour. You infected "+this.color_game.infections+" people, but none of them count. Better luck next time.",
             title: "A Fun, New Game!",
             is_modal: true,
@@ -237,7 +237,7 @@ public function games_color_finish_on_color(end_color) {
             ]
         });
 
-        this.achievements_increment('color_game', 'losses');
+        this.player.achievements.achievements_increment('color_game', 'losses');
         this.color_game.game.playerOut(this, false);
     }
 }
@@ -374,9 +374,9 @@ public function games_start_it_game(game, start_time){
 
     log.info('[GAMES] '+"Starting IT game for player "+this);
 
-    this.setPlayerCollisions(true);
+    this.player.setPlayerCollisions(true);
 
-    this.announce_music(choose_one(['GOC_MUSIC_1', 'GOC_MUSIC_2', 'GOC_MUSIC_3']), 10);
+    this.player.announcements.announce_music(choose_one(['GOC_MUSIC_1', 'GOC_MUSIC_2', 'GOC_MUSIC_3']), 10);
 }
 
 // Two players tagged
@@ -415,7 +415,7 @@ public function games_is_it(){
     }
 
     log.info('[GAMES] '+this+" is now it!");
-    this.overlay_dismiss('it_game_tip');
+    this.player.announcements.overlay_dismiss('it_game_tip');
 
     // Start timer?
     if (this.games_it_game_is_started()){
@@ -464,7 +464,7 @@ public function games_is_it(){
     // Send overlays
     this.games_it_game_lock(1);
     this.games_set_it_map();
-    this.announce_sound('YOU_TAKE_CROWN');
+    this.player.announcements.announce_sound('YOU_TAKE_CROWN');
 }
 
 public function games_set_it_map(){
@@ -495,7 +495,7 @@ public function games_is_not_it(){
     log.info('[GAMES] '+this+" is no longer it!");
 
     // Cancel overlays
-    this.overlay_dismiss('it_game_tip');
+    this.player.announcements.overlay_dismiss('it_game_tip');
 
     // Cancel timer?
     if (this.games_it_game_is_started()){
@@ -505,7 +505,7 @@ public function games_is_not_it(){
         var delta = time() - this.it_game.crown_start;
         this.it_game.crown_time += delta;
 
-        this.achievements_increment('it_game', 'seconds_with_crown', delta);
+        this.player.achievements.achievements_increment('it_game', 'seconds_with_crown', delta);
 
         this.apiCancelTimer('games_end_it_game');
 
@@ -541,9 +541,9 @@ public function games_is_not_it(){
         });
     }
 
-    this.announce_remove_indicator('it_game_crown');
+    this.player.announcements.announce_remove_indicator('it_game_crown');
     this.games_set_notit_map();
-    this.announce_sound('YOU_LOSE_CROWN');
+    this.player.announcements.announce_sound('YOU_LOSE_CROWN');
 }
 
 public function games_set_notit_map(){
@@ -583,7 +583,7 @@ public function games_it_game_gate(){
             this.it_game.crown_start = time();
             this.apiSetTimer('games_end_it_game', 1000 * 60);
 
-            this.overlay_dismiss('it_game_tip');
+            this.player.announcements.overlay_dismiss('it_game_tip');
             this.apiSendAnnouncement({
                 uid: "it_game_tip",
                 type: "vp_overlay",
@@ -611,7 +611,7 @@ public function games_it_game_gate(){
             this.it_game.crown_time += time() - this.it_game.crown_start;
             this.apiCancelTimer('games_end_it_game');
 
-            this.overlay_dismiss('it_game_tip');
+            this.player.announcements.overlay_dismiss('it_game_tip');
             this.apiSendAnnouncement({
                 uid: "it_game_tip",
                 type: "vp_overlay",
@@ -639,12 +639,12 @@ public function games_end_it_game(){
 
     // End the game
     this.it_game.is_done = true;
-    this.setPlayerCollisions(false);
+    this.player.setPlayerCollisions(false);
     this.games_it_dismiss_overlays();
 
-    this.announce_music_stop('GOC_MUSIC_1');
-    this.announce_music_stop('GOC_MUSIC_2');
-    this.announce_music_stop('GOC_MUSIC_3');
+    this.player.announcements.announce_music_stop('GOC_MUSIC_1');
+    this.player.announcements.announce_music_stop('GOC_MUSIC_2');
+    this.player.announcements.announce_music_stop('GOC_MUSIC_3');
 
     this.apiSetTimerX('announce_music', 5000, 'WAITING_MUZAK', 10);
 
@@ -689,32 +689,32 @@ public function games_end_it_game(){
             log.info('[GAMES] '+this+" games_end_it_game was it!");
 
             var context = {'verb':'it_game'};
-            this.stats_add_xp(200, false, context);
-            this.stats_add_currants(50, context);
-            this.achievements_increment('it_game', 'won');
+            this.player.stats.stats_add_xp(200, false, context);
+            this.player.stats.stats_add_currants(50, context);
+            this.player.achievements.achievements_increment('it_game', 'won');
 
             if (!this.it_game.crown_start) {
                 log.error("Player "+this.tsid+" won GoC without a crown start time");
             }
             else {
                 var delta = time() - this.it_game.crown_start;
-                this.achievements_increment('it_game', 'seconds_with_crown', delta);
+                this.player.achievements.achievements_increment('it_game', 'seconds_with_crown', delta);
             }
 
             // Cancel the game for everyone else
             this.it_game.game.cancel();
             splash.graphic.frame_label = 'you_winner';
             splash.show_rays = true;
-            this.announce_sound('YOU_WIN');
+            this.player.announcements.announce_sound('YOU_WIN');
         }
         else{
             log.info('[GAMES] '+this+" games_end_it_game was not it, winner was: "+winner);
 
-            this.achievements_increment('it_game', 'lost');
+            this.player.achievements.achievements_increment('it_game', 'lost');
             splash.graphic.text = winner.label;  //format is "game_splash_TSID_graphic" in client.css
             splash.graphic.text_delta_y = 25;
             splash.graphic.frame_label = 'other_winner';
-            this.announce_sound('YOU_LOSE');
+            this.player.announcements.announce_sound('YOU_LOSE');
         }
 
         this.apiSendMsg(splash);
@@ -759,10 +759,10 @@ public function games_end_it_game(){
 public function games_it_dismiss_overlays(){
     log.info('[GAMES] '+this+' dismissing all overlays');
 
-    this.announce_remove_indicator('it_game_crown');
-    this.overlay_dismiss('crown_game_indicator');
-    this.overlay_dismiss('crown_game_score');
-    this.overlay_dismiss('crown_game_king');
+    this.player.announcements.announce_remove_indicator('it_game_crown');
+    this.player.announcements.overlay_dismiss('crown_game_indicator');
+    this.player.announcements.overlay_dismiss('crown_game_score');
+    this.player.announcements.overlay_dismiss('crown_game_king');
     this.games_set_notit_map();
 }
 
@@ -791,10 +791,10 @@ public function games_it_game_lock(duration){
         log.info('[GAMES] '+'it_game locking IT: '+this);
         if (this.it_game.lock_start) {
             this.apiCancelTimer('games_it_game_unlock');
-            this.announce_add_indicator('it_game_crown', 'game_crown', true, 'locked', {width: 42, height: 42});
+            this.player.announcements.announce_add_indicator('it_game_crown', 'game_crown', true, 'locked', {width: 42, height: 42});
         }
         else {
-            this.announce_add_indicator('it_game_crown', 'game_crown', true, 'locking', {width: 42, height: 42});
+            this.player.announcements.announce_add_indicator('it_game_crown', 'game_crown', true, 'locking', {width: 42, height: 42});
         }
 
         this.it_game.lock_start = time();
@@ -818,10 +818,10 @@ public function games_it_game_unlock(){
 
         var it = this.it_game.game.whosIt(true);
         if (this.tsid == it){
-            this.announce_add_indicator('it_game_crown', 'game_crown', true, 'unlocking', {width: 42, height: 42});
+            this.player.announcements.announce_add_indicator('it_game_crown', 'game_crown', true, 'unlocking', {width: 42, height: 42});
         }
         else{
-            this.announce_remove_indicator('it_game_crown');
+            this.player.announcements.announce_remove_indicator('it_game_crown');
         }
     }
 }
@@ -831,10 +831,10 @@ public function games_it_game_wiggle1(){
         return;
     }
 
-    if (this.announce_has_indicator('it_game_crown')){
+    if (this.player.announcements.announce_has_indicator('it_game_crown')){
         if (config.is_dev) log.info('[GAMES] '+this+' wiggle 1');
 
-        this.announce_add_indicator('it_game_crown', 'game_crown', true, 'wiggle1', {width: 42, height: 42});
+        this.player.announcements.announce_add_indicator('it_game_crown', 'game_crown', true, 'wiggle1', {width: 42, height: 42});
 
         this.apiSetTimer('games_it_game_wiggle2', 1 * 1000);
     }
@@ -845,10 +845,10 @@ public function games_it_game_wiggle2(){
         return;
     }
 
-    if (this.announce_has_indicator('it_game_crown')){
+    if (this.player.announcements.announce_has_indicator('it_game_crown')){
         if (config.is_dev) log.info('[GAMES] '+this+' wiggle 2');
 
-        this.announce_add_indicator('it_game_crown', 'game_crown', true, 'wiggle2', {width: 42, height: 42});
+        this.player.announcements.announce_add_indicator('it_game_crown', 'game_crown', true, 'wiggle2', {width: 42, height: 42});
     }
 }
 
@@ -887,8 +887,8 @@ public function games_it_game_start_scores(it){
 
     log.info('[GAMES] '+this+' start scores. It: '+it);
 
-    this.overlay_dismiss('crown_game_indicator');
-    this.overlay_dismiss('crown_game_king');
+    this.player.announcements.overlay_dismiss('crown_game_indicator');
+    this.player.announcements.overlay_dismiss('crown_game_king');
     if (it.tsid == this.tsid){
         this.apiSendAnnouncement({
             uid: "crown_game_indicator",
@@ -934,7 +934,7 @@ public function games_it_game_update_scores(remaining, is_it){
     }
 
     if (config.is_dev) log.info('[GAMES] '+this+' update scores: '+remaining+', '+is_it);
-    this.overlay_dismiss('crown_game_score');
+    this.player.announcements.overlay_dismiss('crown_game_score');
     if (is_it){
         this.apiSendAnnouncement({
             uid: "crown_game_score",
@@ -951,7 +951,7 @@ public function games_it_game_update_scores(remaining, is_it){
         });
     }
     else{
-        this.announce_remove_indicator('it_game_crown'); // temporary?
+        this.player.announcements.announce_remove_indicator('it_game_crown'); // temporary?
 
         this.apiSendAnnouncement({
             uid: "crown_game_score",
@@ -993,7 +993,7 @@ public function games_start_math_mayhem(game, start_time, score, team, target){
 
     log.info('[GAMES] '+"Starting math mayhem for player "+this);
 
-    this.setPlayerCollisions(true);
+    this.player.setPlayerCollisions(true);
     this.games_show_mayhem_score(team, score);
     this.games_mayhem_show_target(target);
 }
@@ -1061,7 +1061,7 @@ public function games_set_math_mayhem_score(score){
 public function games_math_mayhem_dismiss_overlays(){
     log.info('[GAMES] '+this+' dismissing all overlays');
 
-    this.overlay_dismiss('math_mayhem_target');
+    this.player.announcements.overlay_dismiss('math_mayhem_target');
     this.games_clear_mayhem_score();
 }
 
@@ -1074,7 +1074,7 @@ public function games_end_math_mayhem(){
 
     // End the game
     this.math_mayhem.is_done = true;
-    this.setPlayerCollisions(false);
+    this.player.setPlayerCollisions(false);
     this.games_math_mayhem_dismiss_overlays();
 
     // Did we win?
@@ -1094,9 +1094,9 @@ public function games_end_math_mayhem(){
         });
 
         var context = {'verb':'math_mayhem'};
-        this.stats_add_xp(200, false, context);
-        this.stats_add_currants(50, context);
-        this.achievements_increment('math_mayhem', 'won');
+        this.player.stats.stats_add_xp(200, false, context);
+        this.player.stats.stats_add_currants(50, context);
+        this.player.achievements.achievements_increment('math_mayhem', 'won');
 
         // Cancel the game for everyone else
         this.math_mayhem.game.cancel();
@@ -1104,7 +1104,7 @@ public function games_end_math_mayhem(){
     else{
         log.info('[GAMES] '+this+" games_end_math_mayhem was not it, winner was: "+winner);
 
-        this.achievements_increment('math_mayhem', 'lost');
+        this.player.achievements.achievements_increment('math_mayhem', 'lost');
 
         if (winner){
             this.apiSendAnnouncement({
@@ -1390,9 +1390,9 @@ public function games_end_race(){
             log.info('[GAMES] '+this+" won the race!");
 
             var context = {'verb':'race'};
-            this.stats_add_xp(50, false, context);
-            this.stats_add_currants(100, context);
-            this.achievements_increment('race', 'won');
+            this.player.stats.stats_add_xp(50, false, context);
+            this.player.stats.stats_add_currants(100, context);
+            this.player.achievements.achievements_increment('race', 'won');
 
             splash.graphic.frame_label = 'you_winner';
             splash.show_rays = true;
@@ -1406,7 +1406,7 @@ public function games_end_race(){
             splash.graphic.text = winner.label;
             splash.graphic.text_delta_y = 55;
 
-            this.achievements_increment('race', 'lost');
+            this.player.achievements.achievements_increment('race', 'lost');
         }
 
         this.apiSendMsg(splash);
@@ -1590,9 +1590,9 @@ public function games_end_quoin_grab(){
             log.info('[GAMES] '+this+" won grab 'em good!");
 
             var context = {'verb':'quoin_grab'};
-            this.stats_add_xp(50, false, context);
-            this.stats_add_currants(100, context);
-            this.achievements_increment('quoin_grab', 'won');
+            this.player.stats.stats_add_xp(50, false, context);
+            this.player.stats.stats_add_currants(100, context);
+            this.player.achievements.achievements_increment('quoin_grab', 'won');
 
             splash.show_rays = true;
             splash.graphic.frame_label = 'you_winner';
@@ -1605,7 +1605,7 @@ public function games_end_quoin_grab(){
             splash.graphic.text_delta_y = 0;
             splash.graphic.frame_label = 'other_winner';
 
-            this.achievements_increment('quoin_grab', 'lost');
+            this.player.achievements.achievements_increment('quoin_grab', 'lost');
         }
 
         this.apiSendMsg(splash);
@@ -1790,9 +1790,9 @@ public function games_end_cloudhopolis(){
             log.info('[GAMES] '+this+" won cloudhopolis!");
 
             var context = {'verb':'cloudhopolis'};
-            this.stats_add_xp(50, false, context);
-            this.stats_add_currants(100, context);
-            this.achievements_increment('cloudhopolis', 'won');
+            this.player.stats.stats_add_xp(50, false, context);
+            this.player.stats.stats_add_currants(100, context);
+            this.player.achievements.achievements_increment('cloudhopolis', 'won');
 
             splash.show_rays = true;
             splash.graphic.frame_label = 'you_winner';
@@ -1805,7 +1805,7 @@ public function games_end_cloudhopolis(){
             splash.graphic.text_delta_y = 0;
             splash.graphic.frame_label = 'other_winner';
 
-            this.achievements_increment('cloudhopolis', 'lost');
+            this.player.achievements.achievements_increment('cloudhopolis', 'lost');
         }
 
         this.apiSendMsg(splash);
@@ -1935,11 +1935,11 @@ public function games_hogtie_piggy_pickup_bait() {
         return false;
     }
 
-    this.announce_add_indicator('has_pig_bait', 'pig_bait', true);
+    this.player.announcements.announce_add_indicator('has_pig_bait', 'pig_bait', true);
     var score = this.hogtie_piggy.game.hogtie_piggy_get_score(this);
 
     if (!score){
-        this.overlay_dismiss('piggy_tip');
+        this.player.announcements.overlay_dismiss('piggy_tip');
 
         this.apiSendAnnouncement({
             uid: "pig_bait_tip",
@@ -1956,7 +1956,7 @@ public function games_hogtie_piggy_pickup_bait() {
         });
     }
     else if (score){
-        this.overlay_dismiss('piggy_tip');
+        this.player.announcements.overlay_dismiss('piggy_tip');
 
         this.apiSendAnnouncement({
             uid: "pig_bait_tip",
@@ -1979,14 +1979,14 @@ public function games_hogtie_piggy_pickup_pig() {
         return false;
     }
 
-    if (!this.announce_has_indicator('has_hogtied_piggy') && this.announce_has_indicator('has_pig_bait')){
+    if (!this.player.announcements.announce_has_indicator('has_hogtied_piggy') && this.player.announcements.announce_has_indicator('has_pig_bait')){
 
-        this.announce_remove_indicator('has_pig_bait');
-        this.announce_add_indicator('has_hogtied_piggy', 'hogtied_piggy', true);
+        this.player.announcements.announce_remove_indicator('has_pig_bait');
+        this.player.announcements.announce_add_indicator('has_hogtied_piggy', 'hogtied_piggy', true);
         var score = this.hogtie_piggy.game.hogtie_piggy_get_score(this);
 
         if (!score){
-            this.overlay_dismiss('pig_bait_tip');
+            this.player.announcements.overlay_dismiss('pig_bait_tip');
             this.apiSendAnnouncement({
                 uid: "piggy_tip",
                 type: "vp_overlay",
@@ -2002,7 +2002,7 @@ public function games_hogtie_piggy_pickup_pig() {
             });
         }
         else if (score == 1){
-            this.overlay_dismiss('pig_bait_tip');
+            this.player.announcements.overlay_dismiss('pig_bait_tip');
 
             this.apiSendAnnouncement({
                 uid: "piggy_tip",
@@ -2021,7 +2021,7 @@ public function games_hogtie_piggy_pickup_pig() {
 
         return true;
     }
-    else if (!this.announce_has_indicator('has_hogtied_piggy')){
+    else if (!this.player.announcements.announce_has_indicator('has_hogtied_piggy')){
         this.apiSendAnnouncement({
             uid: "piggy_tip",
             type: "vp_overlay",
@@ -2046,7 +2046,7 @@ public function games_hogtie_piggy_add_pig() {
         return;
     }
 
-    this.announce_remove_indicator('has_hogtied_piggy');
+    this.player.announcements.announce_remove_indicator('has_hogtied_piggy');
     if (this.hogtie_piggy.is_done) {
         return;
     }
@@ -2115,8 +2115,8 @@ public function games_end_hogtie_piggy(){
     // End the game
     this.hogtie_piggy.is_done = true;
     this.hogtie_piggy_dismiss_overlays();
-    this.announce_remove_indicator('has_pig_bait');
-    this.announce_remove_indicator('has_hogtied_piggy');
+    this.player.announcements.announce_remove_indicator('has_pig_bait');
+    this.player.announcements.announce_remove_indicator('has_hogtied_piggy');
 
     var winner = getPlayer(this.hogtie_piggy.game.hogtie_piggy_get_winner());
 
@@ -2151,9 +2151,9 @@ public function games_end_hogtie_piggy(){
             log.info('[GAMES] '+this+" won the hogtied piggy race!");
 
             var context = {'verb':'hogtie_piggy'};
-            this.stats_add_xp(50, false, context);
-            this.stats_add_currants(100, context);
-            this.achievements_increment('hogtie_piggy', 'won');
+            this.player.stats.stats_add_xp(50, false, context);
+            this.player.stats.stats_add_currants(100, context);
+            this.player.achievements.achievements_increment('hogtie_piggy', 'won');
 
             splash.show_rays = true;
             splash.graphic.frame_label = 'you_winner';
@@ -2166,7 +2166,7 @@ public function games_end_hogtie_piggy(){
             splash.graphic.text = winner.label;  //format is "game_splash_TSID_graphic" in client.css
             splash.graphic.frame_label = 'other_winner';
 
-            this.achievements_increment('hogtie_piggy', 'lost');
+            this.player.achievements.achievements_increment('hogtie_piggy', 'lost');
         }
 
         this.apiSendMsg(splash);
@@ -2223,20 +2223,20 @@ public function games_leave_instance(value, details) {
     log.info('[GAMES] '+this+' games_leave_instance: '+value+', '+details);
 
     if (!value || value == 'leave'){
-        this.overlay_dismiss('game_waiting');
-        this.overlay_dismiss('game_instructions_text');
+        this.player.announcements.overlay_dismiss('game_waiting');
+        this.player.announcements.overlay_dismiss('game_instructions_text');
 
-        this.announce_music_stop('WAITING_MUZAK');
-        this.instances_exit(this.location.instance_id, true);
+        this.player.announcements.announce_music_stop('WAITING_MUZAK');
+        this.player.instances.instances_exit(this.location.instance_id, true);
     }
     else if (value == 'again'){
         // Add our spawn point back in.
-        var instance = this.instances_get(this.location.instance_id);
+        var instance = this.player.instances.instances_get(this.location.instance_id);
         if(instance){
 
             // Move to another spawn point
             var spawn_point = instance.get_spawn_point();
-            this.teleportToLocation(this.location.tsid, spawn_point.x, spawn_point.y);
+            this.player.teleportToLocation(this.location.tsid, spawn_point.x, spawn_point.y);
 
 
             // Register ourselves as ready
@@ -2297,7 +2297,7 @@ public function games_accept_start_button(payload){
 
     if (!payload.instance_id) return;
 
-    var instance = this.instances_get(payload.instance_id);
+    var instance = this.player.instances.instances_get(payload.instance_id);
     if (!instance) return;
 
     var manager = instance.getInstanceManager();
@@ -2310,10 +2310,10 @@ public function games_accept_start_button(payload){
 public function games_leave_instance_overlay(payload){
     log.info('[GAMES] '+this+' games_leave_instance_overlay: '+payload);
 
-    this.overlay_dismiss('game_results');
-    this.overlay_dismiss('game_winner_name');
-    this.overlay_dismiss('game_button_again');
-    this.overlay_dismiss('game_button_leave');
+    this.player.announcements.overlay_dismiss('game_results');
+    this.player.announcements.overlay_dismiss('game_winner_name');
+    this.player.announcements.overlay_dismiss('game_button_again');
+    this.player.announcements.overlay_dismiss('game_button_leave');
 
     this.games_leave_instance(payload.choice, payload);
 }
@@ -2322,7 +2322,7 @@ public function games_auto_leave(){
     log.info('[GAMES] '+this+' games_auto_leave');
     this.games_leave_instance_overlay({choice: 'leave', forced: true});
 
-    this.sendActivity("You were removed from the game due to inactivity.");
+    this.player.sendActivity("You were removed from the game due to inactivity.");
 }
 
 public function games_assign_spawn_point(x, y){
@@ -2358,7 +2358,7 @@ public function games_scoreboard_start(game_id, game_title, duration, players){
         msg.players.push(players[i]);
     }
 
-    this.sendMsgOnline(msg);
+    this.player.sendMsgOnline(msg);
 }
 
 public function games_scoreboard_update(game_id, duration, is_complete, players){
@@ -2374,7 +2374,7 @@ public function games_scoreboard_update(game_id, duration, is_complete, players)
         msg.players.push(players[i]);
     }
 
-    this.sendMsgOnline(msg);
+    this.player.sendMsgOnline(msg);
 }
 
 public function games_scoreboard_end(game_id){
@@ -2383,7 +2383,7 @@ public function games_scoreboard_end(game_id){
         tsid: game_id
     };
 
-    this.sendMsgOnline(msg);
+    this.player.sendMsgOnline(msg);
 }
 
 //////////////////////////////////////////////////////////////////
@@ -2409,9 +2409,9 @@ public function games_invite_create(class_tsid, ticket_on_cancel, location_id){
     if (q){
         var game_name = this.games_get_name(class_tsid, location_id);
 
-        this.broadcastActionRequest('game_accept', class_tsid, 'is looking for a challenger for <b>'+game_name+'</b>.', q.min_players-1);
+        this.player.requests.broadcastActionRequest('game_accept', class_tsid, 'is looking for a challenger for <b>'+game_name+'</b>.', q.min_players-1);
 
-        this['!invite_uid_'+this.tsid] = this.prompts_add({
+        this['!invite_uid_'+this.tsid] = this.player.prompts.prompts_add({
             txt     : 'Waiting for other players...',
             timeout     : 60,
             choices     : [
@@ -2425,7 +2425,7 @@ public function games_invite_create(class_tsid, ticket_on_cancel, location_id){
         });
 
         // Set a timer to fail the request
-        this.events_add({callback: 'games_invite_timeout', class_tsid: class_tsid}, 60);
+        this.player.events.events_add({callback: 'games_invite_timeout', class_tsid: class_tsid}, 60);
 
         this.games_invite = {
             game_name: game_name,
@@ -2444,7 +2444,7 @@ public function games_invite_timeout(details){
         if (!this.games_invite_is_full()){
 
             // Remove prompts
-            this.prompts_remove(this['!invite_uid_'+this.tsid]);
+            this.player.prompts.prompts_remove(this['!invite_uid_'+this.tsid]);
             if (this.games_invite){
                 for (var i in this.games_invite.opponents){
                     var opp = getPlayer(i);
@@ -2453,10 +2453,10 @@ public function games_invite_timeout(details){
             }
 
 
-            this.updateActionRequest('was looking for a challenger for <b>'+this.games_invite.game_name+'</b>.', 0);
-            this.cancelActionRequestBroadcast('game_accept', details.class_tsid);
+            this.player.requests.updateActionRequest('was looking for a challenger for <b>'+this.games_invite.game_name+'</b>.', 0);
+            this.player.requests.cancelActionRequestBroadcast('game_accept', details.class_tsid);
 
-            this.prompts_add({
+            this.player.prompts.prompts_add({
                 txt     : 'Not enough players accepted your challenge. Try again later?',
                 timeout     : 10,
                 choices     : [
@@ -2465,7 +2465,7 @@ public function games_invite_timeout(details){
             });
 
             if (this.games_invite && this.games_invite.ticket_on_cancel){
-                this.createItemFromFamiliar(this.games_invite.ticket_on_cancel, 1);
+                this.player.items.createItemFromFamiliar(this.games_invite.ticket_on_cancel, 1);
             }
 
             delete this.games_invite;
@@ -2482,7 +2482,7 @@ public function games_accept(value, details){
         if (!q) return;
 
         if (this.games_invite_is_full()){
-            this.prompts_add({
+            this.player.prompts.prompts_add({
                 txt     : 'Sorry, you were not quite fast enough to join '+utils.escape(challenger.label)+' for '+details.game_name+'.',
                 timeout     : 10,
                 choices     : [
@@ -2524,12 +2524,12 @@ public function games_add_opponent(pc){
     this.games_invite.opponents.push(pc.tsid);
 
     if (this.games_invite.opponents.length >= q.min_players-1){
-        this.events_remove(function(details){ return (details.callback == 'games_invite_timeout') ? true : false;});
+        this.player.events.events_remove(function(details){ return (details.callback == 'games_invite_timeout') ? true : false;});
 
         //delete this.games_invite;
 
-        this.updateActionRequest('was looking for a challenger for <b>'+this.games_invite.game_name+'</b>. '+pc.linkifyLabel()+' accepted.', this.games_invite.opponents.length);
-        this.cancelActionRequestBroadcast('game_accept', this.games_invite.class_tsid);
+        this.player.requests.updateActionRequest('was looking for a challenger for <b>'+this.games_invite.game_name+'</b>. '+pc.linkifyLabel()+' accepted.', this.games_invite.opponents.length);
+        this.player.requests.cancelActionRequestBroadcast('game_accept', this.games_invite.class_tsid);
 
         var opponent_names = [];
         opponent_names.push(utils.escape(this.label));
@@ -2544,7 +2544,7 @@ public function games_add_opponent(pc){
         var pretty_opponents = pretty_list(opponent_names, ' and ');
 
         // Remove waiting prompts, add starting prompts!
-        this.prompts_remove(this['!invite_uid_'+this.tsid]);
+        this.player.prompts.prompts_remove(this['!invite_uid_'+this.tsid]);
         this.apiSendAnnouncement({
             uid: "race_start_delay",
             type: "vp_overlay",
@@ -2585,7 +2585,7 @@ public function games_add_opponent(pc){
         this.apiSetTimer('games_invite_start', 5*1000);
     }
     else{
-        this.updateActionRequest(null, this.games_invite.opponents.length);
+        this.player.requests.updateActionRequest(null, this.games_invite.opponents.length);
 
         pc['!invite_uid_'+this.tsid] = pc.prompts_add({
             txt     : 'Waiting for other players...',
@@ -2609,7 +2609,7 @@ public function games_remove_opponent(pc){
 
     array_remove_value(this.games_invite.opponents, pc.tsid);
 
-    this.updateActionRequest(null, this.games_invite.opponents.length);
+    this.player.requests.updateActionRequest(null, this.games_invite.opponents.length);
 
     pc.prompts_remove(pc['!invite_uid_'+this.tsid]);
 }
@@ -2638,8 +2638,8 @@ public function games_invite_start(){
 
 public function games_init_general(){
     log.info('games_init_general');
-    if (this.buffs_has('hairball_dash')) this.buffs_remove('hairball_dash');
-    if (this.buffs_has('hairball_flower')) this.buffs_remove('hairball_flower')
+    if (this.player.buffs.buffs_has('hairball_dash')) this.player.buffs.buffs_remove('hairball_dash');
+    if (this.player.buffs.buffs_has('hairball_flower')) this.player.buffs.buffs_remove('hairball_flower')
 }
 
     }

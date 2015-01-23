@@ -44,7 +44,7 @@ public function visiting_can_opt_in(){
         };
     }
 
-    if (!this.has_butler()){
+    if (!this.player.butler.has_butler()){
         return {
             ok: 0,
             error: 'no_butler'
@@ -58,12 +58,12 @@ public function visiting_can_opt_in(){
 
 public function visiting_opt_in_done(){
     this.home_allow_visits = true;
-    this.sendActivity("You've been opted in - you will recieve random visitors to your street.");
+    this.player.sendActivity("You've been opted in - you will recieve random visitors to your street.");
 }
 
 public function visiting_opt_out_done(){
     delete this.home_allow_visits;
-    this.sendActivity("You've been opted out - you will no longer receive random visitors to your street.");
+    this.player.sendActivity("You've been opted out - you will no longer receive random visitors to your street.");
 }
 
 public function visiting_opt_in(){
@@ -121,7 +121,7 @@ public function visiting_visit_random_go(){
     }
 
     if (config.is_dev){
-        this.sendActivity("(DEBUG) Targets: "+tsids.join(','));
+        this.player.sendActivity("(DEBUG) Targets: "+tsids.join(','));
     }
 
     var errors = [];
@@ -132,9 +132,9 @@ public function visiting_visit_random_go(){
 
             errors.push('self');
         }else{
-            var ret = this.houses_visit(tsids[i]);
+            var ret = this.player.houses.houses_visit(tsids[i]);
             if (ret.ok){
-                this.achievements_increment('visit_random', tsids[i], 1);
+                this.player.achievements.achievements_increment('visit_random', tsids[i], 1);
                 return;
             }
             errors.push(ret.error);
@@ -142,10 +142,10 @@ public function visiting_visit_random_go(){
     }
 
     if (config.is_dev){
-        this.sendActivity("(DEBUG) Failed all targets: "+errors.join(', '));
+        this.player.sendActivity("(DEBUG) Failed all targets: "+errors.join(', '));
     }
 
-    this.sendActivity("Hmm, something went wrong :(");
+    this.player.sendActivity("Hmm, something went wrong :(");
 }
 
     }

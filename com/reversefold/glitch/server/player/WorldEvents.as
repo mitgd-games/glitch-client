@@ -84,9 +84,9 @@ public function startLoneliness(source_item, type, test_only, uid) {
         args.corner_offset_y = intval(source_item.getClassProp('loneliness_y_offset'));
     }
 
-    this.announce_remote_item_speech(source_item.class_tsid, text, args)
-    this.events_add(state_event1, 1);
-    this.events_add(state_event2, 13);
+    this.player.announcements.announce_remote_item_speech(source_item.class_tsid, text, args)
+    this.player.events.events_add(state_event1, 1);
+    this.player.events.events_add(state_event2, 13);
 
     var loc = source_item.container;
 }
@@ -95,7 +95,7 @@ public function cancelLoneliness() {
     if (this.world_events.loneliness && this.world_events.loneliness.running) {
         this.world_events.loneliness.running = false;
 
-        this.prompts_add({
+        this.player.prompts.prompts_add({
             txt     : 'Someone else cheered up the Street Spirit in '+this.world_events.loneliness.location.label+'. Looks like you missed your chance!',
             choices     : [
                 { value : 'ok', label : 'OK' }
@@ -140,7 +140,7 @@ public function showLonelinessPrompt() {
     if (!this.world_events || !this.world_events.loneliness || !this.world_events.loneliness.running) {
         return;
     }
-    this.prompts_add({
+    this.player.prompts.prompts_add({
         txt     : 'A Street Spirit in '+this.world_events.loneliness.location.label+' needs your help. Would you like to set that as your destination?',
         choices     : [
             { value : 'yes', label : 'Yes' },
@@ -152,7 +152,7 @@ public function showLonelinessPrompt() {
 
 public function prompts_loneliness_callback(value, details) {
     if (value == 'yes') {
-        var ret = this.buildPath(this.world_events.loneliness.location.tsid, this.location.tsid);
+        var ret = this.player.buildPath(this.world_events.loneliness.location.tsid, this.location.tsid);
 
         var rsp = {
             type: 'get_path_to_location',

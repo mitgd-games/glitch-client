@@ -95,33 +95,33 @@ public function instances_enter(id, x, y, immediate){
     log.info(this+' Entering instance '+id);
 
     // delete follow references */
-    this.removeFollowers();
+    this.player.removeFollowers();
 
     if (instance.player_enter(this)){
         if (this.location.pols_is_pol() && !this.location.pols_is_owner(this) && !this.location.getProp('is_public')){
             this.instances.previously[id] = this.location.pols_get_entrance_outside();
         }
         else{
-            this.instances.previously[id] = this.get_simple_location();
+            this.instances.previously[id] = this.player.get_simple_location();
         }
 
         if (immediate){
-            this.teleportToLocation(instance.get_entrance(), x, y);
+            this.player.teleportToLocation(instance.get_entrance(), x, y);
         }
         else{
-            this.teleportToLocationDelayed(instance.get_entrance(), x, y);
+            this.player.teleportToLocationDelayed(instance.get_entrance(), x, y);
         }
 
         return true;
     }
     else if (instance.is_member(this)){
         // Already a member, move to the entrance
-        if (!this.instances.previously[id]) this.instances.previously[id] = this.get_simple_location();
+        if (!this.instances.previously[id]) this.instances.previously[id] = this.player.get_simple_location();
         if (immediate){
-            this.teleportToLocation(instance.get_entrance(), x, y);
+            this.player.teleportToLocation(instance.get_entrance(), x, y);
         }
         else{
-            this.teleportToLocationDelayed(instance.get_entrance(), x, y);
+            this.player.teleportToLocationDelayed(instance.get_entrance(), x, y);
         }
 
         return true;
@@ -181,8 +181,8 @@ public function instances_left(id, randomize, no_auto_return, force){
                     }
                 }
             }
-            else if (this.is_dead && prev != this.resurrect_location){
-                this.resurrect_location = prev;
+            else if (this.is_dead && prev != this.player.resurrect_location){
+                this.player.resurrect_location = prev;
             }
             else{
                 var x = prev.x;
@@ -192,7 +192,7 @@ public function instances_left(id, randomize, no_auto_return, force){
                 if (prev_loc && prev_loc.pols_is_pol() && !prev_loc.pols_is_owner(this) && !prev_loc.getProp('is_public')){
                     prev_loc = prev_loc.pols_get_entrance_outside();
                 }
-                this.teleportToLocationDelayed(prev_loc.tsid, x, prev.y);
+                this.player.teleportToLocationDelayed(prev_loc.tsid, x, prev.y);
             }
         }
         else{
@@ -213,8 +213,8 @@ public function instances_left(id, randomize, no_auto_return, force){
                     }
                 }
             }
-            else if (this.is_dead && prev != this.resurrect_location){
-                this.resurrect_location = prev;
+            else if (this.is_dead && prev != this.player.resurrect_location){
+                this.player.resurrect_location = prev;
             }
         }
         else{
@@ -239,7 +239,7 @@ public function instances_get_exit(id){
 //
 
 public function instances_exit_familiar(id, txt){
-    this.familiar_send_alert_now({
+    this.player.familiar.familiar_send_alert_now({
         'callback'  : 'instances_exit_familiar_do',
         'txt'       : txt,
         'instance_id'   : id
@@ -267,7 +267,7 @@ public function instances_exit_familiar_do(choice, details){
             this.instances_exit(details.instance_id);
         }
         else{
-            this.teleportSomewhere();
+            this.player.teleportSomewhere();
         }
         return {
             done: true
@@ -336,7 +336,7 @@ public function instances_location_enter(loc){
 
 public function instances_schedule_exit_prompt(id, show_after){
     log.info(this+' schedling exit prompt '+id+' in '+show_after);
-    return this.events_add({callback: 'instances_show_exit_prompt', instance_id: id}, show_after);
+    return this.player.events.events_add({callback: 'instances_show_exit_prompt', instance_id: id}, show_after);
 }
 
 public function instances_show_exit_prompt(details){
@@ -346,7 +346,7 @@ public function instances_show_exit_prompt(details){
     var instance = this.instances_get(details.instance_id);
     if (!instance) return false;
 
-    var uid = this.prompts_add({
+    var uid = this.player.prompts.prompts_add({
         txt     : 'Are you stuck? Do you want to leave this place?',
         icon_buttons    : true,
         timeout     : 0,
@@ -381,11 +381,11 @@ public function instances_cancel_exit_prompt(id){
     var instance = this.instances_get(id);
     if (!instance) return false;
 
-    this.events_remove(function(details){ return details.callback == 'instances_show_exit_prompt' && details.instance_id == id; });
+    this.player.events.events_remove(function(details){ return details.callback == 'instances_show_exit_prompt' && details.instance_id == id; });
 
     var prompt_uid = instance.get_prompt_uid();
     if (prompt_uid){
-        this.prompts_remove(prompt_uid);
+        this.player.prompts.prompts_remove(prompt_uid);
     }
 }
 
@@ -427,7 +427,7 @@ public function hintPrompt(text, time_delay, location_event_yes, location_event_
     if (!yes_label) { yes_label = "Yes, please" };
     if (!no_label) { no_label = "No thanks" };
 
-    var uid = this.prompts_add({
+    var uid = this.player.prompts.prompts_add({
         txt     : text,
         icon_buttons    : true,
         timeout     : 0,

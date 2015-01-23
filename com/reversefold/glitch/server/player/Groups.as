@@ -60,13 +60,13 @@ public function groups_create(name, desc, mode){
 
     group.doCreate(name, desc, mode, this);
 
-    if (!this.groups) this.init();
+    if (!this.groups) this.player.init();
     this.groups.groups[group.tsid] = group;
 
     var info = group.get_basic_info();
 
     if (info.mode != 'private'){
-        this.activity_notify({
+        this.player.activity_notify({
             type    : 'group_join',
             group   : group.tsid
         });
@@ -81,7 +81,7 @@ public function groups_create(name, desc, mode){
     info.type = 'groups_join';
     info.tsid = group.tsid;
 
-    this.sendMsgOnline(info);
+    this.player.sendMsgOnline(info);
 
     utils.http_get('callbacks/groups_joined.php', {
         group_tsid: group.tsid,
@@ -123,13 +123,13 @@ public function groups_join(tsid){
     var ret = group.join(this);
     if (!ret['ok']) return ret;
 
-    if (!this.groups) this.init();
+    if (!this.groups) this.player.init();
     this.groups.groups[group.tsid] = group;
 
     var info = group.get_basic_info();
 
     if (info.mode != 'private'){
-        this.activity_notify({
+        this.player.activity_notify({
             type    : 'group_join',
             group   : group.tsid
         });
@@ -144,7 +144,7 @@ public function groups_join(tsid){
     info.type = 'groups_join';
     info.tsid = group.tsid;
 
-    this.sendMsgOnline(info);
+    this.player.sendMsgOnline(info);
 
     utils.http_get('callbacks/groups_joined.php', {
         group_tsid: group.tsid,
@@ -202,7 +202,7 @@ public function groups_leave(tsid, promote_tsid){
     // if we're online, point out we left the group
     //
 
-    this.sendMsgOnline({
+    this.player.sendMsgOnline({
         type: 'groups_leave',
         tsid: tsid
     });
@@ -234,7 +234,7 @@ public function groups_left(tsid){
     // if we're online, point out we left the group
     //
 
-    this.sendMsgOnline({
+    this.player.sendMsgOnline({
         type: 'groups_leave',
         tsid: tsid
     });
@@ -280,7 +280,7 @@ public function adminGetGroups(){
     out.max_groups = config.max_groups;
     out.num_invites = num_keys(out.invites);
 
-    if (this.isGreeter()) out.max_groups++;
+    if (this.player.isGreeter()) out.max_groups++;
 
     return out;
 }
@@ -345,7 +345,7 @@ public function groups_chat(tsid, txt){
 
         this.groups.groups[tsid].chat_send(this, txt);
     }else{
-        this.sendActivity("Group not found");
+        this.player.sendActivity("Group not found");
     }
 }
 
@@ -362,7 +362,7 @@ public function groups_chat_join(tsid){
 
         this.groups.groups[tsid].chat_join(this);
     }else{
-        this.sendActivity("Group not found");
+        this.player.sendActivity("Group not found");
     }
 
 }
@@ -382,7 +382,7 @@ public function groups_chat_leave(tsid){
 
         this.groups.groups[tsid].chat_leave(this);
     }else{
-        this.sendActivity("Group not found");
+        this.player.sendActivity("Group not found");
     }
 
 }

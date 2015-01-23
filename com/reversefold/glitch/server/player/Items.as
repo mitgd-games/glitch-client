@@ -173,7 +173,7 @@ public function findArtifactForPiece(class_tsid){
 
 public function createArtifact(artifact_type){
     var prot = apiFindItemPrototype(artifact_map[artifact_type].artifact);
-    this.announce_vp_overlay({
+    this.player.announcements.announce_vp_overlay({
             duration: 5000,
             locking: true,
             width: 500,
@@ -193,13 +193,13 @@ public function createArtifact(artifact_type){
     }
 
     this.apiSetTimerX('createItemFromGround', 5000, artifact_map[artifact_type].artifact, 1);
-    this.achievements_increment('artifacts_made', artifact_map[artifact_type].artifact, 1);
+    this.player.achievements.achievements_increment('artifacts_made', artifact_map[artifact_type].artifact, 1);
 }
 
 
 public function createArtifactNecklace(piece_type){
     var prot = apiFindItemPrototype(artifact_necklaces[piece_type].produces);
-    this.announce_vp_overlay({
+    this.player.announcements.announce_vp_overlay({
             duration: 5000,
             locking: true,
             width: 500,
@@ -214,7 +214,7 @@ public function createArtifactNecklace(piece_type){
     this.items_destroy(piece_type, artifact_necklaces[piece_type].required);
 
     this.apiSetTimerX('createItemFromGround', 5000, artifact_necklaces[piece_type].produces, 1);
-    this.achievements_increment('necklaces_made', artifact_necklaces[piece_type].produces, 1);
+    this.player.achievements.achievements_increment('necklaces_made', artifact_necklaces[piece_type].produces, 1);
 }
 
 // END inc_artifacts.js
@@ -265,7 +265,7 @@ public function items_give_multiple(items, from_familiar){
 
         if (i == '_currants'){
 
-            this.stats_add_currants(items[i]);
+            this.player.stats.stats_add_currants(items[i]);
         }else{
             if (from_familiar){
                 this.createItemFromFamiliar(i, items[i]);
@@ -588,7 +588,7 @@ public function createItemFromFamiliar(class_id, num, props){
 
     if (remaining){
         // Anything remaining from the familiar we automatically place in rewards overflow storage
-        this.rewards_store(apiNewItemStack(class_id, remaining));
+        this.player.rewards.rewards_store(apiNewItemStack(class_id, remaining));
         s.apiDelete();
     }
 
@@ -660,7 +660,7 @@ public function createDelayedItems() {
             throw e;
         }
         if(newItem.message) {
-            this.sendActivity(newItem.message);
+            this.player.sendActivity(newItem.message);
         }
         delete this.delayedCreateItems[i];
     }
@@ -711,7 +711,7 @@ public function createItemFromOffsetWithEscrow(class_id, num, sourcePosition, de
     if (this.isBagFull(s)){
         if (!destroy_remainder){
             //log.info("ESCROW: putting item into escrow "+s);
-            return this.rewards_store(s);
+            return this.player.rewards.rewards_store(s);
         }
         else{
             //log.info("ESCROW: deleting item");
@@ -807,12 +807,12 @@ public function items_added(stack){
 
     //if (config.is_dev) log.info(this+' items_added: '+stack+' ('+this.countItemClass(stack.class_id)+')');
 
-    this.quests_changed_item(stack.class_id); // For when we care that you are always carrying it during the quest
-    this.quests_set_flag('acquired_'+stack.class_id); // For when we care that at some point during the quest, you got it
-    var achievements_to_check = this.achievements_get_from_counter('in_inventory', stack.class_id);
+    this.player.quests.quests_changed_item(stack.class_id); // For when we care that you are always carrying it during the quest
+    this.player.quests.quests_set_flag('acquired_'+stack.class_id); // For when we care that at some point during the quest, you got it
+    var achievements_to_check = this.player.achievements.achievements_get_from_counter('in_inventory', stack.class_id);
     for (var id in achievements_to_check){
-        if (!this.achievements_has(id) && this.achievements_check_in_inventory(id)){
-            this.achievements_grant(id);
+        if (!this.player.achievements.achievements_has(id) && this.player.achievements.achievements_check_in_inventory(id)){
+            this.player.achievements.achievements_grant(id);
         }
     }
 
@@ -820,18 +820,18 @@ public function items_added(stack){
     // Is this our first time seeing this?
     //
 
-    this.counters_increment('items_collected', stack.class_tsid);
-    var seen_count = this.counters_get_label_count('items_collected', stack.class_tsid);
+    this.player.counters.counters_increment('items_collected', stack.class_tsid);
+    var seen_count = this.player.counters.counters_get_label_count('items_collected', stack.class_tsid);
     var discovery_dialog_shown = false;
-    if (seen_count == 1 && this.isOnline() && (this.has_done_intro || this.location.class_tsid == 'newbie_island')){
+    if (seen_count == 1 && this.player.isOnline() && (this.has_done_intro || this.location.class_tsid == 'newbie_island')){
         var context = {'verb':'new_item','stack':stack.class_tsid};
-        var xp = this.stats_add_xp(config.qurazy_rewards[this.stats.level-1], false, context);
+        var xp = this.player.stats.stats_add_xp(config.qurazy_rewards[this.stats.level-1], false, context);
         if (stack.suppress_discovery) {
             // This stack has been set to supress the discovery dialogue when added. Remove that property.
             delete stack.suppress_discovery;
         } else if (!stack.hasTag('no_discovery_dialog')){
-            if (this.location.class_tsid == 'newbie_island' && !this.imagination_has_upgrade('encyclopeddling')){
-                this.sendActivity(stack.label+'!. You discovered a useful new item +'+xp+'IMG', null, false, true);
+            if (this.location.class_tsid == 'newbie_island' && !this.player.imagination.imagination_has_upgrade('encyclopeddling')){
+                this.player.sendActivity(stack.label+'!. You discovered a useful new item +'+xp+'IMG', null, false, true);
             }else{
                 var rsp = {
                     'type'      : 'get_item_info',
@@ -842,18 +842,18 @@ public function items_added(stack){
                 };
 
                 this.apiSendMsg(rsp);
-                this.announce_sound('DISCOVER_USEFUL_NEW_ITEM');
+                this.player.announcements.announce_sound('DISCOVER_USEFUL_NEW_ITEM');
                 discovery_dialog_shown = true;
             }
         }
     }
     else if (seen_count == 1 && (!this.has_done_intro)){
-        this.overlay_dismiss('pack_instructions');
-        this.showPack();
+        this.player.announcements.overlay_dismiss('pack_instructions');
+        this.player.showPack();
     }
     else if (seen_count == 2 && stack.class_tsid == 'your_papers'){
-        if (this.achievements_has('you_have_papers')){
-            this.prompts_add({
+        if (this.player.achievements.achievements_has('you_have_papers')){
+            this.player.prompts.prompts_add({
                 txt     : 'You have already completed Your Papers, but you can sell, trade, or give these to other players so they can complete Their Papers.',
                 timeout     : 60,
                 choices     : [
@@ -863,8 +863,8 @@ public function items_added(stack){
         }
     }
 
-    if (!this.buffs_has('hog_tie') && (stack.class_tsid == 'hogtied_piggy' || (stack.is_bag && stack.countItemClass('hogtied_piggy')))){
-        this.buffs_apply('hog_tie');
+    if (!this.player.buffs.buffs_has('hog_tie') && (stack.class_tsid == 'hogtied_piggy' || (stack.is_bag && stack.countItemClass('hogtied_piggy')))){
+        this.player.buffs.buffs_apply('hog_tie');
     }
 
     // Check for glitch game item
@@ -885,7 +885,7 @@ public function items_added(stack){
     }
 
     if (stack.class_tsid == 'camera' || (stack.is_bag && stack.countItemClass('camera'))){
-        this.sendCameraAbilities();
+        this.player.sendCameraAbilities();
     }
 
     if (this.location && this.location.eventFired){
@@ -907,20 +907,20 @@ public function items_removed(stack){
 
     if (config.is_dev) log.info(this+' items_removed: '+stack+' ('+this.countItemClass(stack.class_id)+'), count: '+stack.count);
 
-    this.quests_changed_item(stack.class_id);
+    this.player.quests.quests_changed_item(stack.class_id);
 
-    if (!this['!is_trading'] && this.trading_has_escrow_items()){
-        this.trading_rollback();
+    if (!this['!is_trading'] && this.player.trading.trading_has_escrow_items()){
+        this.player.trading.trading_rollback();
     }
 
-    this.rewards_return();
+    this.player.rewards.rewards_return();
 
-    if (this.buffs_has('hog_tie') && (stack.class_tsid == 'hogtied_piggy' || (stack.is_bag && stack.countItemClass('hogtied_piggy')))){
-        this.buffs_remove('hog_tie');
+    if (this.player.buffs.buffs_has('hog_tie') && (stack.class_tsid == 'hogtied_piggy' || (stack.is_bag && stack.countItemClass('hogtied_piggy')))){
+        this.player.buffs.buffs_remove('hog_tie');
     }
 
     if (stack.class_tsid == 'camera' || (stack.is_bag && stack.countItemClass('camera'))){
-        this.sendCameraAbilities();
+        this.player.sendCameraAbilities();
     }
 }
 
@@ -955,7 +955,7 @@ public function items_find_working_tool(class_tsid){
 
 public function createGlitchGame() {
 
-    this.announce_vp_overlay({
+    this.player.announcements.announce_vp_overlay({
             duration: 5000,
             locking: true,
             width: 500,

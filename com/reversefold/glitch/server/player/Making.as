@@ -72,7 +72,7 @@ public function making_can_use(item, verb){
     if (!skill) return 1;
 
     // player has skill
-    if (skill && this.skills_has(skill)){
+    if (skill && this.player.skills.skills_has(skill)){
         return 1;
     }
 
@@ -86,7 +86,7 @@ public function making_required_skill(item, verb){
 
     // What skill do we say we need?
     var skill = item.getClassProp('required_skill');
-    if (this.skills_get_name(skill)){
+    if (this.player.skills.skills_get_name(skill)){
         // Skill exists!
         return skill;
     }
@@ -109,8 +109,8 @@ public function making_check_allowed(item, verb){
         }
 
         var skill = this.making_required_skill(item, verb);
-        if (!this.skills_has(skill)){
-            return {state:'disabled', reason:"You need to know "+this.skills_get_name(skill)+" to use this."};
+        if (!this.player.skills.skills_has(skill)){
+            return {state:'disabled', reason:"You need to know "+this.player.skills.skills_get_name(skill)+" to use this."};
         }
 
         // working item
@@ -140,10 +140,10 @@ public function making_open_interface(item, verb){
         var ret = item.verbs[verb].conditions.call(item, this);
         if (ret.state != 'enabled'){
             if (ret.reason){
-                this.sendActivity(ret.reason);
+                this.player.sendActivity(ret.reason);
             }
             else{
-                this.sendActivity("You don't know how to use that!");
+                this.player.sendActivity("You don't know how to use that!");
             }
             return false;
         }
@@ -215,7 +215,7 @@ public function computeEnergyAndTimeCost(recipe, item, count, verb) {
         if (skill){
             //log.info('Cooking skill is: '+skill);
 
-            var highest_level = this.skills_get_highest_level(skill);
+            var highest_level = this.player.skills.skills_get_highest_level(skill);
             //log.info('Highest level is: '+highest_level);
             if (highest_level >= 2){
                 wait_time *= 0.5;
@@ -235,7 +235,7 @@ public function computeEnergyAndTimeCost(recipe, item, count, verb) {
     else if (item.getClassProp('making_type') == 'transmogrification'){
         var wait_time = this.making_get_transmogrification_time(count) * 1000;
 
-        if (!this.skills_has(item.getClassProp('required_skill'))){
+        if (!this.player.skills.skills_has(item.getClassProp('required_skill'))){
             // You should be able to use any of the transmogrification tools without a skill:
             // 20% of the time you should fail, taking a flat penalty of 2 energy and 2 mood, regardless of recipe or quantity
             // recipe time should be increased by 50% and energy cost should be increased by 25%
@@ -276,7 +276,7 @@ public function making_make_known(msg, item){
     if (item && item.canUse) {
         if (!item.canUse(this)) {
             log.info("make failed - machine already in use");
-            this.sendActivity("This item is already in use!");
+            this.player.sendActivity("This item is already in use!");
             return this.apiSendMsg(make_fail_rsp(msg, 0, "machine already in use"));
         }
     }
@@ -363,7 +363,7 @@ public function making_make_known(msg, item){
     // make sure we have enough energy
     //
 
-    if (energy_cost && energy_cost >= this.metabolics_get_energy()){
+    if (energy_cost && energy_cost >= this.player.metabolics.metabolics_get_energy()){
         log.info("make failed - not enough energy");
         return this.apiSendMsg(make_fail_rsp(msg, 0, "You don't have enough energy."));
     }
@@ -383,10 +383,10 @@ public function making_make_known(msg, item){
         }
 
         if (item.class_tsid == 'blockmaker'){
-            if (this.imagination_has_upgrade('blockmaking_save_fuel_2')){
+            if (this.player.imagination.imagination_has_upgrade('blockmaking_save_fuel_2')){
                 tool_uses -= Math.round(tool_uses*0.40);
             }
-            else if (this.imagination_has_upgrade('blockmaking_save_fuel_1')){
+            else if (this.player.imagination.imagination_has_upgrade('blockmaking_save_fuel_1')){
                 tool_uses -= Math.round(tool_uses*0.20);
             }
         }
@@ -456,7 +456,7 @@ public function making_make_known(msg, item){
         item.apiSetTimer('onLidClose', 1100);
 
         if (!item.isPlayingMusic || !item.isPlayingMusic(this)) {
-            this.announce_sound_delayed('ACTIVE', 999, 0, 2);
+            this.player.announcements.announce_sound_delayed('ACTIVE', 999, 0, 2);
         }
         item.setUser(this);
 
@@ -475,7 +475,7 @@ public function making_make_known(msg, item){
 
         // Move the player
         var distance = Math.abs(this.x-endpoint);
-        this.moveAvatar(endpoint, this.y, face);
+        this.player.moveAvatar(endpoint, this.y, face);
     }
     else{
         //log.info("Making is "+making);
@@ -492,7 +492,7 @@ public function making_make_known(msg, item){
             height: 40
         }, this);
 
-        this.announce_sound(item.class_tsid.toUpperCase(), 999);
+        this.player.announcements.announce_sound(item.class_tsid.toUpperCase(), 999);
     }
 
     // Schedule the finish making timer
@@ -655,7 +655,7 @@ public function tryToMake(msg, item){
         item.setAndBroadcastState('loadOpen');
         item.apiSetTimer('onLidClose', 1100);
 
-        this.announce_sound_delayed('ACTIVE', 999, 0, 2);
+        this.player.announcements.announce_sound_delayed('ACTIVE', 999, 0, 2);
         item.setUser(this);
 
         var pc_action_distance = item.getClassProp('pc_action_distance');
@@ -673,7 +673,7 @@ public function tryToMake(msg, item){
 
         // Move the player
         var distance = Math.abs(this.x-endpoint);
-        this.moveAvatar(endpoint, this.y, face);
+        this.player.moveAvatar(endpoint, this.y, face);
     }
     else{
         //log.info("Making is "+making);
@@ -691,8 +691,8 @@ public function tryToMake(msg, item){
         }, this);
     }
 
-    //this.announce_sound('MAKING_WAITING_COOKING', 999);
-    this.announce_sound(item.class_tsid.toUpperCase(), 999);
+    //this.player.announcements.announce_sound('MAKING_WAITING_COOKING', 999);
+    this.player.announcements.announce_sound(item.class_tsid.toUpperCase(), 999);
 
 
     // Schedule the finish making timer
@@ -755,14 +755,14 @@ public function finishMakingKnown(inf){
         return;
     }
 
-    //this.announce_sound_stop('MAKING_WAITING_COOKING');
+    //this.player.announcements.announce_sound_stop('MAKING_WAITING_COOKING');
     if (info.item.getClassProp('making_type') == 'machine'){
         if (!this.machinesRunning(info.item)) {
-            this.announce_sound_stop('ACTIVE');
+            this.player.announcements.announce_sound_stop('ACTIVE');
         }
     }
     else{
-        this.announce_sound_stop(info.item.class_tsid.toUpperCase());
+        this.player.announcements.announce_sound_stop(info.item.class_tsid.toUpperCase());
     }
 
     if (!info.known){
@@ -787,10 +787,10 @@ public function finishMakingKnown(inf){
             }
 
             if (info.item.class_tsid == 'blockmaker'){
-                if (this.imagination_has_upgrade('blockmaking_save_fuel_2')){
+                if (this.player.imagination.imagination_has_upgrade('blockmaking_save_fuel_2')){
                     tool_uses -= Math.round(tool_uses*0.40);
                 }
-                else if (this.imagination_has_upgrade('blockmaking_save_fuel_1')){
+                else if (this.player.imagination.imagination_has_upgrade('blockmaking_save_fuel_1')){
                     tool_uses -= Math.round(tool_uses*0.20);
                 }
             }
@@ -799,17 +799,17 @@ public function finishMakingKnown(inf){
     }
 
 
-    if (info.item.getClassProp('making_type') == 'transmogrification' && !this.skills_has(info.item.getClassProp('required_skill'))){
+    if (info.item.getClassProp('making_type') == 'transmogrification' && !this.player.skills.skills_has(info.item.getClassProp('required_skill'))){
         // You should be able to use any of the transmogrification tools without a skill:
         // 20% of the time you should fail, taking a flat penalty of 2 energy and 2 mood, regardless of recipe or quantity
         // recipe time should be increased by 50% and energy cost should be increased by 25%
 
         if (is_chance(0.20)){
             var msg = "<span class=\"making_error\">Well, that didn't work.</span><br />I suggest you get some more skillz! ";
-            var energy = this.metabolics_lose_energy(2);
-            var mood = this.metabolics_lose_mood(2);
+            var energy = this.player.metabolics.metabolics_lose_energy(2);
+            var mood = this.player.metabolics.metabolics_lose_mood(2);
             msg += "("+energy+" energy, "+mood+" mood)";
-            this.announce_sound('CRAFTING_RESULT_NOTHING');
+            this.player.announcements.announce_sound('CRAFTING_RESULT_NOTHING');
 
             if (info.item.onMakingFailed) info.item.onMakingFailed();
 
@@ -844,7 +844,7 @@ public function finishMakingKnown(inf){
     if (info.item.getClassProp('making_type') == 'machine'){
         //log.info("Making finished, setting machine state for item "+info.item);
         //log.info("Making - state is now "+info.item.state);
-        this.announce_sound('READY');
+        this.player.announcements.announce_sound('READY');
         info.item.callPlayer(this);
         info.item.setContents(this, making_rewards.outputs);
         info.item.broadcastStatus();
@@ -855,8 +855,8 @@ public function finishMakingKnown(inf){
 
 
     if (info.item.class_tsid == 'tinkertool'){
-        if (this.imagination_has_upgrade("toolcrafting_bonus_tool")) {
-            if (is_chance(.05) || this.buffs_has('max_luck')) { // 5% chance
+        if (this.player.imagination.imagination_has_upgrade("toolcrafting_bonus_tool")) {
+            if (is_chance(.05) || this.player.buffs.buffs_has('max_luck')) { // 5% chance
                 // assume we're only making one thing
                 var output_class = recipe_info.outputs[0][0];
                 var proto = apiFindItemPrototype(output_class);
@@ -893,16 +893,16 @@ public function finishMakingKnown(inf){
         }
     }
 
-    this.achievements_increment('making_known_recipe', info.recipe, info.count);
-    this.achievements_increment('making_known_tool', info.item.class_id, info.count);
-    this.achievements_increment('making_tool', info.item.class_id, info.count);
+    this.player.achievements.achievements_increment('making_known_recipe', info.recipe, info.count);
+    this.player.achievements.achievements_increment('making_known_tool', info.item.class_id, info.count);
+    this.player.achievements.achievements_increment('making_tool', info.item.class_id, info.count);
     if(info.item.getClassProp('making_type') == 'cooking') {
         for(var i = 0; i < recipe_info.outputs.length; i++) {
-            this.achievements_increment('making_food', recipe_info.outputs[i][0], info.count);
+            this.player.achievements.achievements_increment('making_food', recipe_info.outputs[i][0], info.count);
         }
     }
 
-    this.quests_made_recipe(info.recipe, info.count);
+    this.player.quests.quests_made_recipe(info.recipe, info.count);
 
 
     //
@@ -942,10 +942,10 @@ public function finishMakingKnown(inf){
         var gift_proto = apiFindItemPrototype(gift);
         msg += " You took the extra parts and made "+gift_proto.article+" "+gift_proto.name_single+".";
 
-        this.createItem(gift, 1);
+        this.player.items.createItem(gift, 1);
     }
 
-    this.sendActivity(msg);
+    this.player.sendActivity(msg);
 
 
     var knowns = {};
@@ -1074,7 +1074,7 @@ public function checkIngredients(inputs, count, remove, item){
         // Consumable?
         if (find[i][2]){
             var has = 0;
-            var stacks = this.get_stacks_by_class(find[i][0]);
+            var stacks = this.player.items.get_stacks_by_class(find[i][0]);
             for (var s=0; s<stacks.length; s++){
                 has += stacks[s].canConsume();
             }
@@ -1084,7 +1084,7 @@ public function checkIngredients(inputs, count, remove, item){
                 return 0;
             }
         }
-        else if (!this.checkItemsInBag(find[i][0], find[i][1])){
+        else if (!this.player.items.checkItemsInBag(find[i][0], find[i][1])){
             log.info(this+' -- checkIngredients failed due to a missing '+find[i][0]+' ['+find[i][1]+']');
             return 0;
         }
@@ -1096,14 +1096,14 @@ public function checkIngredients(inputs, count, remove, item){
             // Consumable?
             if (find[i][2]){
                 var remaining = find[i][1];
-                var stacks = this.get_stacks_by_class(find[i][0]);
+                var stacks = this.player.items.get_stacks_by_class(find[i][0]);
                 for (var s=0; s<stacks.length; s++){
                     remaining = stacks[s].consume(remaining);
                     if (!remaining) break;
                 }
             }
             else{
-                this.items_destroy(find[i][0], find[i][1]);
+                this.player.items.items_destroy(find[i][0], find[i][1]);
             }
         }
     }
@@ -1140,7 +1140,7 @@ public function finishMakingUnknown(inf){
         return;
     }
 
-    //this.announce_sound_stop('MAKING_WAITING_COOKING');
+    //this.player.announcements.announce_sound_stop('MAKING_WAITING_COOKING');
     this.player.announcements.announce_sound_stop(info.item.class_tsid.toUpperCase());
     if (!info.unknown) {
         this.scheduleNextTimer(info);
@@ -1168,7 +1168,7 @@ public function finishMakingUnknown(inf){
     var match_id = this.makingFindBestMatch(info.inputs, making_info.recipes, making_info.specify_quantities);
 
     if (!match_id){
-        this.achievements_increment('making_unknown_tool_fail', info.item.class_id);
+        this.player.achievements.achievements_increment('making_unknown_tool_fail', info.item.class_id);
 
         // 50% of the time you'll get all your ingredients back with a message like "Sorry that wasn't correct"
         // 50% of the time you'll lose all the ingredients but get 75% of the base cost of those ingredients as experience
@@ -1184,7 +1184,7 @@ public function finishMakingUnknown(inf){
                 if (info.inputs[i][2]){
                     // TODO: how do we give xp here!?
                     var remaining = info.inputs[i][1];
-                    var stacks = this.get_stacks_by_class(input);
+                    var stacks = this.player.items.get_stacks_by_class(input);
                     for (var s=0; s<stacks.length; s++){
                         remaining = stacks[s].consume(remaining);
                         if (!remaining) break;
@@ -1193,7 +1193,7 @@ public function finishMakingUnknown(inf){
                 else{
                     var proto = apiFindItemPrototype(input);
                     xp += (proto.base_cost * info.inputs[i][1]);
-                    this.items_destroy(input, info.inputs[i][1]);
+                    this.player.items.items_destroy(input, info.inputs[i][1]);
                 }
             }
 
@@ -1206,7 +1206,7 @@ public function finishMakingUnknown(inf){
             msg += '.';
         }
 
-        this.announce_sound('CRAFTING_RESULT_NOTHING');
+        this.player.announcements.announce_sound('CRAFTING_RESULT_NOTHING');
         log.info('async make failed - no matching recipe');
         this.scheduleNextTimer(info);
         return this.apiSendMsg(make_fail_msg('make_failed', 0, msg));
@@ -1219,7 +1219,7 @@ public function finishMakingUnknown(inf){
     // make sure we have enough energy
     //
 
-    if (recipe_info.energy_cost && recipe_info.energy_cost >= this.metabolics_get_energy()){
+    if (recipe_info.energy_cost && recipe_info.energy_cost >= this.player.metabolics.metabolics_get_energy()){
         log.info("make failed - not enough energy");
         this.scheduleNextTimer(info);
         return this.apiSendMsg(make_fail_msg("make_failed", 0, "You don't have enough energy."));
@@ -1239,7 +1239,7 @@ public function finishMakingUnknown(inf){
         var missing = [];
         for (var i=0; i<recipe_info.inputs.length; i++){
             var input = recipe_info.inputs[i];
-            if (!this.checkItemsInBag(input[0], input[1])) missing.push(input[0]);
+            if (!this.player.items.checkItemsInBag(input[0], input[1])) missing.push(input[0]);
         }
 
         var rsp = '';
@@ -1247,7 +1247,7 @@ public function finishMakingUnknown(inf){
             rsp = "<span class=\"making_error\">You need more "+pretty_list(missing, ' and ')+"!</span>";
         }
 
-        this.announce_sound('CRAFTING_RESULT_NOTHING');
+        this.player.announcements.announce_sound('CRAFTING_RESULT_NOTHING');
         log.info("async make failed - need more "+pretty_list(missing, ' and '));
         this.scheduleNextTimer(info);
         return this.apiSendMsg({
@@ -1275,7 +1275,7 @@ public function finishMakingUnknown(inf){
         if (!required[input] || info.inputs[i][1] > required[input]){
             var to_destroy = info.inputs[i][1];
             if (required[input]) to_destroy = info.inputs[i][1] - required[input];
-            this.items_destroy(input, to_destroy);
+            this.player.items.items_destroy(input, to_destroy);
 
             var proto = apiFindItemPrototype(input);
             extras.push(pluralize(to_destroy, proto.name_single, proto.name_plural));
@@ -1296,11 +1296,11 @@ public function finishMakingUnknown(inf){
     //
 
     this.recipes.recipes[match_id] = time();
-    this.achievements_increment('making_unknown_recipe', str(match_id));
-    this.achievements_increment('making_unknown_tool', info.item.class_id);
-    this.achievements_increment('making_tool', info.item.class_id);
+    this.player.achievements.achievements_increment('making_unknown_recipe', str(match_id));
+    this.player.achievements.achievements_increment('making_unknown_tool', info.item.class_id);
+    this.player.achievements.achievements_increment('making_tool', info.item.class_id);
 
-    this.quests_made_recipe(match_id, 1);
+    this.player.quests.quests_made_recipe(match_id, 1);
 
 
     //
@@ -1310,7 +1310,7 @@ public function finishMakingUnknown(inf){
     //log.info('async make succeeded');
     var msg = "You discovered how to make recipe "+recipe_info.name+"! ";
     var context = {'verb':'make_unknown', 'recipe_id':match_id};
-    var bonus_xp = this.stats_add_xp(50, false, context);
+    var bonus_xp = this.player.stats.stats_add_xp(50, false, context);
     var effects = {
         "energy": (recipe_info.energy_cost * -1),
         "xp": making_rewards.xp + bonus_xp // bonus xp reward
@@ -1323,7 +1323,7 @@ public function finishMakingUnknown(inf){
 
     if (making_rewards.msg) msg += ('. '+making_rewards.msg);
 
-    this.sendActivity(msg);
+    this.player.sendActivity(msg);
 
     var knowns = {};
 
@@ -1388,10 +1388,10 @@ public function makingFindBestMatch(inputs, available_recipes, exact_quantities)
             for (var j in recipe.skills){
                 var s = recipe.skills[j];
 
-                if (!this.skills_has(s) && this.skills_get_name(s)) has_all_skills = false;
+                if (!this.player.skills.skills_has(s) && this.player.skills.skills_get_name(s)) has_all_skills = false;
             }
 
-            if (this.skills_has(recipe.skill) || !this.skills_get_name(recipe.skill) || has_all_skills){
+            if (this.player.skills.skills_has(recipe.skill) || !this.player.skills.skills_get_name(recipe.skill) || has_all_skills){
 
                 //log.info("R"+recipe_id+" - match with score "+score);
                 matches.push({score: score, recipe_id: recipe_id});
@@ -1491,7 +1491,7 @@ public function making_learn_recipe(recipe_id){
 
     this.recipes.recipes[recipe_id] = time();
 
-    this.sendOnlineActivity("You learned how to make "+recipe_info.name+"!");
+    this.player.sendOnlineActivity("You learned how to make "+recipe_info.name+"!");
 }
 
 public function making_recipe_is_known(recipe_id){
@@ -1528,14 +1528,14 @@ public function making_execute_recipe(recipe_id, count, energy_cost, item){
         var output = recipe_info.outputs[i];
         outputs.push({class_id: output[0], count: output[1] * count})
         if (item.getClassProp('making_type') != 'machine'){
-            var remainder = this.createItem(output[0], output[1] * count);
+            var remainder = this.player.items.createItem(output[0], output[1] * count);
             if (remainder){
                 this.location.createItem(output[0], remainder, this.x, this.y, 250);
             }
 
             var proto = apiFindItemPrototype(output[0]);
             if (proto && proto.hasTag('bean')){
-                this.quests_inc_counter('beans_seasoned', count);
+                this.player.quests.quests_inc_counter('beans_seasoned', count);
             }
         }
     }
@@ -1544,7 +1544,7 @@ public function making_execute_recipe(recipe_id, count, energy_cost, item){
     // effects..
     //
     var context = {'verb':'make_known', 'recipe_id':recipe_id, 'count':count}
-    var energy = this.metabolics_lose_energy(energy_cost);
+    var energy = this.player.metabolics.metabolics_lose_energy(energy_cost);
 
     var xp_reward = recipe_info.xp_reward * count;
 
@@ -1554,13 +1554,13 @@ public function making_execute_recipe(recipe_id, count, energy_cost, item){
     if (xp_reward){
         var actual = xp_reward;
         if (config.recipe_xp_caps){
-            actual = this.stats_add_making_xp_today(recipe_id, xp_reward);
+            actual = this.player.stats.stats_add_making_xp_today(recipe_id, xp_reward);
             if (actual < xp_reward){
                 msg = "You'll receive no more iMG from making these today. The creation process has ceased to stimulate your frontal cortex.";
                 over_xp_limit = 1;
             }
         }
-        xp = this.stats_add_xp(actual, false, context);
+        xp = this.player.stats.stats_add_xp(actual, false, context);
 
     }
     //log.info('Making rewards: '+energy+' energy, '+xp+' xp');
@@ -1578,14 +1578,14 @@ public function making_get_xp_ceiling(){
         return 500;
     }
     else if (my_level <= 30){
-        var ret = this.stats_calc_level_from_xp(this.stats.xp.value);
+        var ret = this.player.stats.stats_calc_level_from_xp(this.stats.xp.value);
         return (0.10-(0.0025*(my_level-11))) * (ret.xp_for_next-ret.xp_for_this);
     }
     else if (my_level == 60){
         return 85447.4; // hard-coded value for what you get at level 59: http://bugs.tinyspeck.com/8535
     }
     else{
-        var ret = this.stats_calc_level_from_xp(this.stats.xp.value);
+        var ret = this.player.stats.stats_calc_level_from_xp(this.stats.xp.value);
         return 0.05 * (ret.xp_for_next-ret.xp_for_this);
     }
 }
@@ -1624,10 +1624,10 @@ public function making_get_recipes(item, verb){
                 }
 
                 if (item.class_tsid == 'blockmaker'){
-                    if (this.imagination_has_upgrade('blockmaking_save_fuel_2')){
+                    if (this.player.imagination.imagination_has_upgrade('blockmaking_save_fuel_2')){
                         fuel -= Math.round(fuel*0.40);
                     }
-                    else if (this.imagination_has_upgrade('blockmaking_save_fuel_1')){
+                    else if (this.player.imagination.imagination_has_upgrade('blockmaking_save_fuel_1')){
                         fuel -= Math.round(fuel*0.20);
                     }
                 }
@@ -1717,9 +1717,9 @@ public function making_recipe_request(msg){
                         rsp[class_id].disabled = false;
                         if (r.skills){
                             for (var s in r.skills){
-                                if (!this.skills_has(r.skills[s])){
+                                if (!this.player.skills.skills_has(r.skills[s])){
                                     rsp[class_id].disabled = true;
-                                    rsp[class_id].disabled_reason = "You need to learn the "+this.skills_linkify(r.skills[s])+" skill.";
+                                    rsp[class_id].disabled_reason = "You need to learn the "+this.player.skills.skills_linkify(r.skills[s])+" skill.";
                                     break;
                                 }
                             }
@@ -1727,9 +1727,9 @@ public function making_recipe_request(msg){
 
                         if (r.achievements){
                             for (var a in r.achievements){
-                                if (!this.achievements_has(r.achievements[a])){
+                                if (!this.player.achievements.achievements_has(r.achievements[a])){
                                     rsp[class_id].disabled = true;
-                                    rsp[class_id].disabled_reason = "You need to get the "+this.achievements_linkify(r.achievements[a])+" achievement.";
+                                    rsp[class_id].disabled_reason = "You need to get the "+this.player.achievements.achievements_linkify(r.achievements[a])+" achievement.";
                                     break;
                                 }
                             }
@@ -1776,45 +1776,45 @@ public function get_task_limit_multiplier(item){
 
     var task_limit_multiplier = 1.0;
     if (item.hasTag('food_task_limit_upgrade')){
-        if (this.imagination_has_upgrade('recipe_task_limit_food_2')){
+        if (this.player.imagination.imagination_has_upgrade('recipe_task_limit_food_2')){
             task_limit_multiplier = 2.0;
-        }else if (this.imagination_has_upgrade('recipe_task_limit_food_1')){
+        }else if (this.player.imagination.imagination_has_upgrade('recipe_task_limit_food_1')){
             task_limit_multiplier = 1.5;
         }
     }
 
     if (item.hasTag('transmog_task_limit_upgrade')){
-        if (this.imagination_has_upgrade('recipe_task_limit_transmog_2')){
+        if (this.player.imagination.imagination_has_upgrade('recipe_task_limit_transmog_2')){
             task_limit_multiplier = 2.0;
-        }else if (this.imagination_has_upgrade('recipe_task_limit_transmog_1')){
+        }else if (this.player.imagination.imagination_has_upgrade('recipe_task_limit_transmog_1')){
             task_limit_multiplier = 1.5;
         }
     }
 
     if (item.hasTag('drink_task_limit_upgrade')){
-        if (this.imagination_has_upgrade('recipe_task_limit_drink_2')){
+        if (this.player.imagination.imagination_has_upgrade('recipe_task_limit_drink_2')){
             task_limit_multiplier = 2.0;
-        }else if (this.imagination_has_upgrade('recipe_task_limit_drink_1')){
+        }else if (this.player.imagination.imagination_has_upgrade('recipe_task_limit_drink_1')){
             task_limit_multiplier = 1.5;
         }
     }
 
     if (item.hasTag('machine_task_limit_upgrade')){
-        if (this.imagination_has_upgrade('recipe_task_limit_machines_2')){
+        if (this.player.imagination.imagination_has_upgrade('recipe_task_limit_machines_2')){
             task_limit_multiplier = 2.0;
-        }else if (this.imagination_has_upgrade('recipe_task_limit_machines_1')){
+        }else if (this.player.imagination.imagination_has_upgrade('recipe_task_limit_machines_1')){
             task_limit_multiplier = 1.5;
         }
     }
 
     if (item.hasTag('fiberarts_task_limit_upgrade')){
-        if (this.imagination_has_upgrade('recipe_task_limit_loomer_1')){
+        if (this.player.imagination.imagination_has_upgrade('recipe_task_limit_loomer_1')){
             task_limit_multiplier = 2.5;
         }
     }
 
     if (item.hasTag('tincturing_task_limit_upgrade')){
-        if (this.imagination_has_upgrade('recipe_task_limit_tincturing_1')){
+        if (this.player.imagination.imagination_has_upgrade('recipe_task_limit_tincturing_1')){
             task_limit_multiplier = 2.0;
         }
     }

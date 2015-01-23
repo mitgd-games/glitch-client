@@ -754,7 +754,7 @@ public function stats_add_quoins_today(num){
         Server.instance.apiLogAction('QUOIN_LIMIT', 'pc='+this.player.tsid, 'limit='+this.stats.quoins_today.top);
 
         // http://bugs.tinyspeck.com/9138
-        //this.buffs_remove('crazy_coin_collector');
+        //this.player.buffs.buffs_remove('crazy_coin_collector');
     }
 
     if (change && this.player.isOnline()){

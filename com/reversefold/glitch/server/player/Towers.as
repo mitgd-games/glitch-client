@@ -54,7 +54,7 @@ public function visitTower(){
     var tower = this.getTestTower();
     tower.tower_rebuild();
     var pos = tower.tower_get_teleport_point();
-    this.teleportToLocationDelayed(tower.tsid, pos[0], pos[1]);
+    this.player.teleportToLocationDelayed(tower.tsid, pos[0], pos[1]);
 }
 
 public function rebuildTower(){

@@ -72,7 +72,7 @@ public function startSecretLocationsQuest() {
 public function resetSecretLocationsQuest() {
     log.info("Reset 11 secret locations for "+this.tsid);
 
-    this.announce_sound_stop('11_SECRET_LOCATIONS_BEACON_LOOP');
+    this.player.announcements.announce_sound_stop('11_SECRET_LOCATIONS_BEACON_LOOP');
 
     if (this.secret_locations) {
         var num = this.secret_locations.length;
@@ -86,7 +86,7 @@ public function resetSecretLocationsQuest() {
     // dismiss the overlays
     for (var i = 0; i < num; i ++) {
         if (this.secret_locations[i]) {
-            //this.sendActivity('Canceling overlay for '+ this.secret_locations[i].id);
+            //this.player.sendActivity('Canceling overlay for '+ this.secret_locations[i].id);
             this.apiSendMsg({type: 'overlay_cancel', uid: 'secret_location_marker '+ this.secret_locations[i].id});
         }
     }
@@ -94,8 +94,8 @@ public function resetSecretLocationsQuest() {
     // remove all locations data
     delete this.secret_locations;
     delete this.secret_giants;
-    this.achievements_reset_group('eleven_secret_locations');
-    this.counters_reset_group('eleven_secret_locations');
+    this.player.achievements.achievements_reset_group('eleven_secret_locations');
+    this.player.counters.counters_reset_group('eleven_secret_locations');
 }
 
 // For testing
@@ -187,7 +187,7 @@ public function hasSecretLocation(loc, id) {
         for (var i = 0; i < num; i ++) {
             this.fixBrokenMarker(i);
 
-            //this.sendActivity('Checking '+this.secret_locations[i].id+' in '+this.secret_locations[i].tsid+' against '+id+' in '+loc.tsid);
+            //this.player.sendActivity('Checking '+this.secret_locations[i].id+' in '+this.secret_locations[i].tsid+' against '+id+' in '+loc.tsid);
             if (    this.secret_locations[i]
                 &&  this.secret_locations[i].tsid == loc.tsid
                 &&  this.secret_locations[i].id == id
@@ -234,7 +234,7 @@ public function showSecretLocationMarker(loc) {
                     uid: 'secret_location_marker '+this.secret_locations[i].id
                 });
 
-                this.announce_sound('11_SECRET_LOCATIONS_BEACON_LOOP', 1000000);
+                this.player.announcements.announce_sound('11_SECRET_LOCATIONS_BEACON_LOOP', 1000000);
             }
         }
     }
@@ -255,8 +255,8 @@ public function triggerSecretLocationMarker(loc, id) {
                 &&  this.secret_locations[i].tsid == loc.tsid
                 &&  this.secret_locations[i].id == id
                 ) {
-                this.announce_sound('11_SECRET_LOCATIONS_COLLISION');
-                this.announce_sound_stop('11_SECRET_LOCATIONS_BEACON_LOOP');
+                this.player.announcements.announce_sound('11_SECRET_LOCATIONS_COLLISION');
+                this.player.announcements.announce_sound_stop('11_SECRET_LOCATIONS_BEACON_LOOP');
                 this.location.apiSendMsg({type: 'overlay_state', uid: 'secret_location_marker '+this.secret_locations[i].id, state: 'off'});
             }
         }
@@ -365,11 +365,11 @@ public function handleElevenSecrets(id) {
     if (!this.secret_giants) return;
     this.secret_id = id;
 
-    if (this.counters_get_group_count('eleven_secret_locations') == 0){
+    if (this.player.counters.counters_get_group_count('eleven_secret_locations') == 0){
         var count = 1;
     }
     else {
-        var count = this.counters_get_group_count('eleven_secret_locations') + 1;
+        var count = this.player.counters.counters_get_group_count('eleven_secret_locations') + 1;
     }
 
     if (count != 11){
@@ -412,9 +412,9 @@ public function handleElevenSecrets(id) {
 // Called on a timer after the VoG message to increment the achievement. This prevents the last message from
 // being hidden by the achievement notification.
 public function elevenSecretsIncrement() {
-    //this.sendActivity('Incrementing '+this.secret_id);
-    this.achievements_increment('eleven_secret_locations', this.secret_id);
-    this.counters_increment('eleven_secret_locations', this.secret_id);
+    //this.player.sendActivity('Incrementing '+this.secret_id);
+    this.player.achievements.achievements_increment('eleven_secret_locations', this.secret_id);
+    this.player.counters.counters_increment('eleven_secret_locations', this.secret_id);
 }
 
 // Intro text:
@@ -467,11 +467,11 @@ public function introSecond() {
 public function doGrowl() {
     if (!this.secret_giants) return;
 
-    if (this.counters_get_group_count('eleven_secret_locations') == 0){
+    if (this.player.counters.counters_get_group_count('eleven_secret_locations') == 0){
         var count = 1;
     }
     else {
-        var count = this.counters_get_group_count('eleven_secret_locations') + 1;
+        var count = this.player.counters.counters_get_group_count('eleven_secret_locations') + 1;
     }
 
     if (count != 11){
@@ -482,20 +482,20 @@ public function doGrowl() {
     }
 
     if (giant == 'tii') {
-        var favorval = this.stats_add_favor_points('ti', 50);
-        var xpval = this.stats_add_xp(100, true);   // no adjustment for mood bonus
+        var favorval = this.player.stats.stats_add_favor_points('ti', 50);
+        var xpval = this.player.stats.stats_add_xp(100, true);   // no adjustment for mood bonus
 
 
     }
     else {
         if (count != 11) {
-            var favorval = this.stats_add_favor_points(giant, 50);
-            var xpval = this.stats_add_xp(100, true);   // no adjustment for mood bonus
+            var favorval = this.player.stats.stats_add_favor_points(giant, 50);
+            var xpval = this.player.stats.stats_add_xp(100, true);   // no adjustment for mood bonus
         }
         else
         {
             // No XP, since you'll get the achievement right after this.
-            var favorval = this.stats_add_favor_points(giant, 100); // Extra favor for Lem, since he likes exploration and stuff
+            var favorval = this.player.stats.stats_add_favor_points(giant, 100); // Extra favor for Lem, since he likes exploration and stuff
             this.secret_locations = []; // clear data
         }
     }
@@ -518,7 +518,7 @@ public function doGrowl() {
         var message = Math.floor(Math.random() * 3);
     }
 
-    this.sendActivity(secret_giant_growls[giant][message] + effects_msg);
+    this.player.sendActivity(secret_giant_growls[giant][message] + effects_msg);
     this.apiSetTimer('elevenSecretsIncrement', 1000);
 }
 

@@ -88,11 +88,11 @@ public function setHiEmoteVariantFromInfector(infector) {
             apiLogAction('HI_SIGN_INFECTED_PC', 'pc='+infector.tsid,'variant='+variant,'infectee='+this.tsid);
 
             infector.achievements_increment('infected_pc', variant, 1);
-            this.achievements_increment('infected_by_pc', variant, 1);
+            this.player.achievements.achievements_increment('infected_by_pc', variant, 1);
         } else {
             apiLogAction('HI_SIGN_INFECTED_BY_BUTLER', 'pc='+this.tsid,'variant='+variant,'infector='+infector.tsid);
 
-            this.achievements_increment('infected_by_butler', variant, 1);
+            this.player.achievements.achievements_increment('infected_by_butler', variant, 1);
         }
     }
 
@@ -140,7 +140,7 @@ public function doEmote(msg){
     var butler_is_target = false;
 
     // so we know the polayer has said hi at some point
-    this.counters_increment("emotes", "hi");
+    this.player.counters.counters_increment("emotes", "hi");
 
     // Find a butler
     var items = this.location.apiGetItemsInTheRadius(center_x, center_y, radius);
@@ -171,7 +171,7 @@ public function doEmote(msg){
             if (players[i].pc == this) continue;
 
             // not with people blocked or blocking
-            if (this.buddies_is_ignored_by(players[i].pc)) continue;
+            if (this.player.buddies.buddies_is_ignored_by(players[i].pc)) continue;
             if (players[i].pc.buddies_is_ignored_by(this)) continue;
 
             // Check to make sure players[i].pc has not been said "hi" to by pc in this game day
@@ -223,12 +223,12 @@ public function doEmote(msg){
         }
 
         // Achievements
-        this.achievements_increment_daily('said_hi', target_pc.tsid, 1);
-        if (this.achievements_get_daily_group_count('said_hi') >= 53){
-            this.achievements_grant('social_butterfly');
+        this.player.achievements.achievements_increment_daily('said_hi', target_pc.tsid, 1);
+        if (this.player.achievements.achievements_get_daily_group_count('said_hi') >= 53){
+            this.player.achievements.achievements_grant('social_butterfly');
         }
 
-        this.achievements_increment('hi_variants', variant, 1);
+        this.player.achievements.achievements_increment('hi_variants', variant, 1);
 
         // Give rewards
         if (do_bonus) {
@@ -250,7 +250,7 @@ public function doEmote(msg){
                 did_infect_butler = true;
                 target_variant = nearby_butler.setHiEmoteVariantFromInfector(this);
 
-                this.achievements_increment('infected_butler', target_variant, 1);
+                this.player.achievements.achievements_increment('infected_butler', target_variant, 1);
             }
 
             // if the target of the hi emote recently targeted this player with an emote of the same variant, bonus!
@@ -265,7 +265,7 @@ public function doEmote(msg){
             }
 
 
-            this.achievements_increment('hi_variants_butler', variant, 1);
+            this.player.achievements.achievements_increment('hi_variants_butler', variant, 1);
 
         }
 
@@ -305,16 +305,16 @@ public function doEmote(msg){
         }
 
         if (activity_str) {
-            this.sendActivity(activity_str);
+            this.player.sendActivity(activity_str);
         }
 
         // for the target
         if (target_pc) {
             if (did_infect_target_pc) {
-                target_activity_str = this.getLabel()+' just passed their daily hi sign to you — you\'ve got "'+variant_name+'"!'+
+                target_activity_str = this.player.getLabel()+' just passed their daily hi sign to you — you\'ve got "'+variant_name+'"!'+
                                           ' Say "hi" back with the "H" or "5" key and get a bonus!';
             } else if (do_bonus) {
-                target_activity_str = 'You and '+this.getLabel()+' have the hi sign "'+variant_name+'". Bonus time!'
+                target_activity_str = 'You and '+this.player.getLabel()+' have the hi sign "'+variant_name+'". Bonus time!'
             }
 
             if (target_activity_str) {
@@ -336,7 +336,7 @@ public function doEmote(msg){
 
 public function doHiEmoteBonusWithButler(target_butler, emote, variant, pc_mood) {
     var emote_bonus_mood_granted = {};
-    emote_bonus_mood_granted[this.tsid] = this.metabolics_add_mood(pc_mood);
+    emote_bonus_mood_granted[this.tsid] = this.player.metabolics.metabolics_add_mood(pc_mood);
     var bonus_annc = {
         type: 'emote_bonus',
         emote: emote,
@@ -349,12 +349,12 @@ public function doHiEmoteBonusWithButler(target_butler, emote, variant, pc_mood)
 
     this.apiSendAnnouncement(bonus_annc);
 
-    this.achievements_increment('hi_jackpot_butler', target_butler.tsid, 1);
+    this.player.achievements.achievements_increment('hi_jackpot_butler', target_butler.tsid, 1);
 }
 
 public function doHiEmoteBonusWithOtherPlayer(target_pc, emote, variant, pc_mood, target_mood) {
     var emote_bonus_mood_granted = {};
-    emote_bonus_mood_granted[this.tsid] = this.metabolics_add_mood(pc_mood);
+    emote_bonus_mood_granted[this.tsid] = this.player.metabolics.metabolics_add_mood(pc_mood);
     emote_bonus_mood_granted[target_pc.tsid] = target_pc.metabolics_add_mood(target_mood);
 
     var bonus_annc = {
@@ -370,10 +370,10 @@ public function doHiEmoteBonusWithOtherPlayer(target_pc, emote, variant, pc_mood
     this.apiSendAnnouncement(bonus_annc);
     target_pc.apiSendAnnouncement(bonus_annc);
 
-    this.achievements_increment('hi_jackpot', target_pc.tsid, 1);
-    this.achievements_increment_daily('hi_jackpot', target_pc.tsid, 1);
-    if (this.achievements_get_daily_group_count('hi_jackpot') >= 17){
-        this.achievements_grant('hi_and_mighty');
+    this.player.achievements.achievements_increment('hi_jackpot', target_pc.tsid, 1);
+    this.player.achievements.achievements_increment_daily('hi_jackpot', target_pc.tsid, 1);
+    if (this.player.achievements.achievements_get_daily_group_count('hi_jackpot') >= 17){
+        this.player.achievements.achievements_grant('hi_and_mighty');
     }
 
     target_pc.achievements_increment('hi_jackpot', this.tsid, 1);
@@ -515,7 +515,7 @@ public function make_and_store_evasion_record(msg, location, today_key, alltime)
         location.hi_sign_evasion_record = utils.copy_hash(ob);
 
         if (config.feature_report_hi_records) {
-            //this.achievements_increment('alltime_evasion_record_made', 'set', 1);
+            //this.player.achievements.achievements_increment('alltime_evasion_record_made', 'set', 1);
         }
 
         var args = {
@@ -547,7 +547,7 @@ public function doHiEmoteMissileHit(msg){
     var record_status;
 
     if (!from_tsid) {
-        if (this.is_god) this.sendActivity('ADMIN: NO FROM TSID?');
+        if (this.is_god) this.player.sendActivity('ADMIN: NO FROM TSID?');
         apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=no from_tsid');
         return;
     }
@@ -555,7 +555,7 @@ public function doHiEmoteMissileHit(msg){
     var from_ob = apiFindObject(from_tsid); // could be a butler or another pc
 
     if (!from_ob) {
-        if (this.is_god) this.sendActivity('ADMIN: NO from_ob?');
+        if (this.is_god) this.player.sendActivity('ADMIN: NO from_ob?');
         apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=no from_ob');
         return;
     }
@@ -563,13 +563,13 @@ public function doHiEmoteMissileHit(msg){
     var targets = from_ob.getProp('hi_emote_daily_targets');
 
     if (!targets) {
-        if (this.is_god) this.sendActivity('ADMIN: NO from_ob.hi_emote_daily_targets?');
+        if (this.is_god) this.player.sendActivity('ADMIN: NO from_ob.hi_emote_daily_targets?');
         apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=no from_ob.hi_emote_daily_targets');
         return;
     }
 
     if (!targets.pcs) {
-        if (this.is_god) this.sendActivity('ADMIN: NO from_ob.hi_emote_daily_targets.pcs?');
+        if (this.is_god) this.player.sendActivity('ADMIN: NO from_ob.hi_emote_daily_targets.pcs?');
         apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=no from_ob.hi_emote_daily_targets.pcs');
         return;
     }
@@ -586,7 +586,7 @@ public function doHiEmoteMissileHit(msg){
             time_targeted = time()-client_seconds;
         } else {
             // we have no record of a missile being sent from from_tsid to this player!
-            if (this.is_god) this.sendActivity('ADMIN: no time_targeted?');
+            if (this.is_god) this.player.sendActivity('ADMIN: no time_targeted?');
             apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=no time_targeted');
             return;
         }
@@ -594,7 +594,7 @@ public function doHiEmoteMissileHit(msg){
 
     if (loc_tsid && loc_tsid != this.location.tsid) {
         // cheating?
-        if (this.is_god) this.sendActivity('ADMIN: loc_tsid:'+loc_tsid+' does not match this.location.tsid'+this.location.tsid);
+        if (this.is_god) this.player.sendActivity('ADMIN: loc_tsid:'+loc_tsid+' does not match this.location.tsid'+this.location.tsid);
         apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=loc_tsid:'+loc_tsid+' does not match this.location.tsid'+this.location.tsid);
         return;
     }
@@ -604,7 +604,7 @@ public function doHiEmoteMissileHit(msg){
     if (diff > 5) {
         // diff is how much time has passed since this player was targeted, minus how much time the client reported the player evaded
         // we allow 5 seconds for lag: longer than that we think there is cheating
-        if (this.is_god) this.sendActivity('ADMIN: diff:'+diff+' seems bogus');
+        if (this.is_god) this.player.sendActivity('ADMIN: diff:'+diff+' seems bogus');
         apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=no time_targeted');
         return;
     }
@@ -612,19 +612,19 @@ public function doHiEmoteMissileHit(msg){
     // achievements --------------------------------------------------------------
 
     if (client_seconds >= 11) {
-        this.achievements_grant('hi_flyer');
+        this.player.achievements.achievements_grant('hi_flyer');
     }
 
     if (client_seconds >= 61) {
-        this.achievements_grant('hi_speed_chase');
+        this.player.achievements.achievements_grant('hi_speed_chase');
     }
 
     if (client_seconds >= 151) {
-        this.achievements_grant('hi_as_a_kite');
+        this.player.achievements.achievements_grant('hi_as_a_kite');
     }
 
     if (client_seconds >= 311) {
-        this.achievements_grant('hi_velocity');
+        this.player.achievements.achievements_grant('hi_velocity');
     }
 
     // end achievements --------------------------------------------------------------
@@ -636,13 +636,13 @@ public function doHiEmoteMissileHit(msg){
     }
 
     if (this.is_god) {
-        this.sendActivity('ADMIN: '+client_seconds+ ' '+(record_status || 'no record_status'));
+        this.player.sendActivity('ADMIN: '+client_seconds+ ' '+(record_status || 'no record_status'));
     }
 
     if (config.feature_report_hi_records && record_status && record_status.status != 'fail') {
-        this.location.sendActivity(this.getLabel()+"'s "+record_status.msg);
+        this.location.sendActivity(this.player.getLabel()+"'s "+record_status.msg);
     } else if (client_seconds >= min_feedback_seconds) {
-        this.sendActivity('You evaded that hi sign for '+client_seconds+' seconds!');
+        this.player.sendActivity('You evaded that hi sign for '+client_seconds+' seconds!');
     }
 }
 
@@ -651,17 +651,17 @@ public function resetTheShitOutOfHiOverlays() {
     this.hi_emote_variant='';
     this.hi_emote_daily_targets.pcs = {};
     this.hi_emote_daily_targets.butlers = {};
-    if (this.getButler()) {
-        this.getButler().clearHi();
-        this.getButler().hi_emote_variant='';
-        this.getButler().hi_emote_daily_targets.pcs = {};
+    if (this.player.butler.getButler()) {
+        this.player.butler.getButler().clearHi();
+        this.player.butler.getButler().hi_emote_variant='';
+        this.player.butler.getButler().hi_emote_daily_targets.pcs = {};
     }
     this.apiSendMsg({
         type: 'hi_emote_variant_set',
         variant: ''
 
     });
-    this.sendActivity('reset the shit out of it!');
+    this.player.sendActivity('reset the shit out of it!');
 }
 
     }

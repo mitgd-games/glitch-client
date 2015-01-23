@@ -736,8 +736,8 @@ public function avatar_set_sheets(args){
     }
 
     if (args.url){
-        if (this.buffs_has('nekkid') && !this.avatar_is_nekkid()) this.buffs_remove('nekkid');
-        if (!this.buffs_has('nekkid') && this.avatar_is_nekkid()) this.buffs_apply('nekkid');
+        if (this.player.buffs.buffs_has('nekkid') && !this.avatar_is_nekkid()) this.player.buffs.buffs_remove('nekkid');
+        if (!this.player.buffs.buffs_has('nekkid') && this.avatar_is_nekkid()) this.player.buffs.buffs_apply('nekkid');
     }
 
     if (!this.apiTimerExists('buddies_update_reverse_cache')) this.apiSetTimer('buddies_update_reverse_cache', 1000);
@@ -1056,7 +1056,7 @@ public function avatar_admin_set_default(args){
         if (this.quickstart_needs_player){
             var flamingo = this.location.getFlamingo();
             if (flamingo){
-                this.openInputBox('player_name_picker', 'What should we call you?', {check_user_name: true, input_max_chars: 19, cancelable: false, itemstack_tsid: flamingo.tsid, follow: true, input_label: 'What should we call you?'});
+                this.player.openInputBox('player_name_picker', 'What should we call you?', {check_user_name: true, input_max_chars: 19, cancelable: false, itemstack_tsid: flamingo.tsid, follow: true, input_label: 'What should we call you?'});
             }
         }
         else{

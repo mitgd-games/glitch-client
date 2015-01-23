@@ -102,13 +102,13 @@ public function organizations_join(tsid){
     var ret = org.join(this);
     if (!ret['ok']) return ret;
 
-    if (!this.organizations) this.init();
+    if (!this.organizations) this.player.init();
     this.organizations.organizations[org.tsid] = org;
 
     var info = org.get_basic_info();
 
     if (info.mode != 'private'){
-        this.activity_notify({
+        this.player.activity_notify({
             type    : 'group_join',
             group   : group.tsid
         });
@@ -123,7 +123,7 @@ public function organizations_join(tsid){
     info.type = 'organizations_join';
     info.tsid = org.tsid;
 
-    this.sendMsgOnline(info);
+    this.player.sendMsgOnline(info);
 
     utils.http_get('callbacks/organizations_joined.php', {
         organization_tsid: org.tsid,
@@ -155,7 +155,7 @@ public function organizations_left(organization){
     // if we're online, point out we left the organization
     //
 
-    this.sendMsgOnline({
+    this.player.sendMsgOnline({
         type: 'organizations_leave',
         tsid: organization.tsid
     });

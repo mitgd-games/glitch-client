@@ -35,15 +35,15 @@ log.info('arg', loc);
 }
 
 public function adminSendActivity(arg){
-    this.sendActivity(arg.msg);
+    this.player.sendActivity(arg.msg);
 }
 
 public function adminTeleport(arg){
     //if (!this.is_god) return {ok: 0, error: "You're not allowed to do that."};
 
     if (arg.sudo_make_me_an_instance){
-        var instance = this.instances_create('admin_teleport_'+arg.tsid, arg.tsid, {preserve_links: true});
-        this.instances_enter('admin_teleport_'+arg.tsid, arg.x, arg.y);
+        var instance = this.player.instances.instances_create('admin_teleport_'+arg.tsid, arg.tsid, {preserve_links: true});
+        this.player.instances.instances_enter('admin_teleport_'+arg.tsid, arg.x, arg.y);
 
         return {
             'ok' : 1,
@@ -55,12 +55,12 @@ public function adminTeleport(arg){
 
     if (arg.really_the_freaking_template && arg.really_the_freaking_template == "0") arg.really_the_freaking_template = false;
     var ignore_instance_me = arg.really_the_freaking_template ? true : false;
-    return this.teleportToLocation(arg.tsid, arg.x, arg.y, {'ignore_instance_me': ignore_instance_me});
+    return this.player.teleportToLocation(arg.tsid, arg.x, arg.y, {'ignore_instance_me': ignore_instance_me});
 }
 
 public function adminLocationTeleport(arg){
-    if (arg.is_token && this.teleportation_get_token_balance()){
-        return this.teleportation_map_teleport(arg.dst, true);
+    if (arg.is_token && this.player.teleportation.teleportation_get_token_balance()){
+        return this.player.teleportation.teleportation_map_teleport(arg.dst, true);
     }
     else{
         return {ok: 0, error: 'Whaaaaa????'};
@@ -88,19 +88,19 @@ public function adminGetBuddyTsids(arg){
 
 public function adminAddBuddyToGroup(args){
 
-    return this.addToBuddyGroup(args.group_id, args.player_tsid, args.ignore_limit, args.skip_notify);
+    return this.player.buddies.addToBuddyGroup(args.group_id, args.player_tsid, args.ignore_limit, args.skip_notify);
 }
 
 public function adminRemoveBuddy(args){
 
-    return this.removeBuddy(args.player_tsid);
+    return this.player.buddies.removeBuddy(args.player_tsid);
 }
 
 public function adminBuddiesAddIgnore(args){
     var pc = getPlayer(args.player_tsid);
     if (!pc) return 'invalid_player';
 
-    this.buddies_add_ignore(pc);
+    this.player.buddies.buddies_add_ignore(pc);
 
     return 'ok';
 }
@@ -109,23 +109,23 @@ public function adminBuddiesRemoveIgnore(args){
     var pc = getPlayer(args.player_tsid);
     if (!pc) return 'invalid_player';
 
-    this.buddies_remove_ignore(pc);
+    this.player.buddies.buddies_remove_ignore(pc);
 
     return 'ok';
 }
 
 public function adminBuddiesHasMax(args){
     var out = {};
-    out.has_max = this.buddiesHasMax();
+    out.has_max = this.player.buddies.buddiesHasMax();
     if (out.has_max){
-        out.reverse_buddies = this.buddies_get_reverse_tsids();
+        out.reverse_buddies = this.player.buddies.buddies_get_reverse_tsids();
     }
     return out;
 }
 
 public function adminIsBuddy(args){
 
-    return this.getBuddyGroup(args.tsid) ? 1 : 0;
+    return this.player.buddies.getBuddyGroup(args.tsid) ? 1 : 0;
 }
 
 
@@ -181,7 +181,7 @@ public function adminDebugSkills(){
 
 public function adminGetProfile(args){
 
-    this.init();
+    this.player.init();
 
     var out = {};
 
@@ -196,7 +196,7 @@ public function adminGetProfile(args){
     // core stats
     //
 
-    out.stats = this.stats_get();
+    out.stats = this.player.stats.stats_get();
 
 
     //
@@ -216,7 +216,7 @@ public function adminGetProfile(args){
         // do we count the viewer as a contact
         //
 
-        var ret = this.getBuddyGroup(args.viewer_tsid);
+        var ret = this.player.buddies.getBuddyGroup(args.viewer_tsid);
         if (ret != null){
             out.is_contact = 1;
             out.contact_group = ret;
@@ -239,8 +239,8 @@ public function adminGetProfile(args){
         // are we ignoring the viewer/are they ignoring us?
         //
 
-        out.is_ignoring = viewer && this.buddies_is_ignoring(viewer) ? true : false;
-        out.is_ignored_by = viewer && this.buddies_is_ignored_by(viewer) ? true : false;
+        out.is_ignoring = viewer && this.player.buddies.buddies_is_ignoring(viewer) ? true : false;
+        out.is_ignored_by = viewer && this.player.buddies.buddies_is_ignored_by(viewer) ? true : false;
 
 
         //
@@ -257,29 +257,29 @@ public function adminGetProfile(args){
     // everything else
     //
 
-    if (!args.skip_inventory) out.inventory = this.profile_get_inventory();
+    if (!args.skip_inventory) out.inventory = this.player.profile.profile_get_inventory();
 
     if (!args.skip_skills){
-        out.skills = this.skills_get_list();
-        out.skills_learning = this.skills_get_learning();
-        out.can_unlearn = this.imagination_has_upgrade('unlearning_ability');
+        out.skills = this.player.skills.skills_get_list();
+        out.skills_learning = this.player.skills.skills_get_learning();
+        out.can_unlearn = this.player.imagination.imagination_has_upgrade('unlearning_ability');
     }
 
-    if (!args.skip_groups) out.groups = this.profile_get_groups(out.is_me);
+    if (!args.skip_groups) out.groups = this.player.profile.profile_get_groups(out.is_me);
 
-    if (!args.skip_metabolics) out.metabolics = this.profile_get_metabolics();
+    if (!args.skip_metabolics) out.metabolics = this.player.profile.profile_get_metabolics();
 
     if (!args.skip_buddies){
         if (!args.limit_buddies){
-            this.buddies_init();
-            out.friends = this.buddies_get_login(1000);
-            out.ignoring = this.buddies_get_ignoring_login();
+            this.player.buddies.buddies_init();
+            out.friends = this.player.buddies.buddies_get_login(1000);
+            out.ignoring = this.player.buddies.buddies_get_ignoring_login();
         } else {
-            out.friends = this.buddies_get_random_slice(args.limit_buddies);
+            out.friends = this.player.buddies.buddies_get_random_slice(args.limit_buddies);
         }
     }
 
-    if (!args.skip_achievements) out.achievements = this.achievements_get_profile();
+    if (!args.skip_achievements) out.achievements = this.player.achievements.achievements_get_profile();
 
     out.location = {
         'name' : this.location.label,
@@ -289,10 +289,10 @@ public function adminGetProfile(args){
         'is_hidden' : this.location.is_hidden()
     };
 
-    out.a2 = this.avatar_hash();
+    out.a2 = this.player.avatar.avatar_hash();
 
-    out.houses = this.profile_get_houses();
-    out.home_street = this.profile_get_home_street();
+    out.houses = this.player.profile.profile_get_houses();
+    out.home_street = this.player.profile.profile_get_home_street();
 
     out.has_done_intro = this.has_done_intro ? 1 : 0;
     out.new_player_goodbye_familiar = this.has_done_intro ? 1 : 0;
@@ -301,13 +301,13 @@ public function adminGetProfile(args){
     // Moderation flgs
     //
 
-    out.is_in_timeout = this.isInTimeout();
-    out.is_in_coneofsilence = this.isInConeOfSilence();
-    out.is_in_help_coneofsilence = this.isInConeOfSilence('help');
+    out.is_in_timeout = this.player.isInTimeout();
+    out.is_in_coneofsilence = this.player.isInConeOfSilence();
+    out.is_in_help_coneofsilence = this.player.isInConeOfSilence('help');
 
     if (!args.skip_upgrades){
-        out.upgrades = this.admin_imagination_latest_upgrades(args);
-        out.upgrades_total = this.admin_imagination_count_upgrades();
+        out.upgrades = this.player.imagination.admin_imagination_latest_upgrades(args);
+        out.upgrades_total = this.player.imagination.admin_imagination_count_upgrades();
     }
 
     return out;
@@ -318,7 +318,7 @@ public function adminGetProfile(args){
 //
 public function adminGetFullInfo(args){
 
-    this.init();
+    this.player.init();
 
     var out = {};
 
@@ -338,7 +338,7 @@ public function adminGetFullInfo(args){
     // core stats
     //
 
-    out.stats = this.stats_get();
+    out.stats = this.player.stats.stats_get();
 
     //
     // contact status
@@ -355,7 +355,7 @@ public function adminGetFullInfo(args){
         // do we count the viewer as a contact
         //
 
-        var ret = this.getBuddyGroup(args.viewer_tsid);
+        var ret = this.player.buddies.getBuddyGroup(args.viewer_tsid);
         if (ret != null){
             out.is_contact = true;
             out.contact_group = ret;
@@ -377,7 +377,7 @@ public function adminGetFullInfo(args){
         // (For now, this boils down to "is there an ignore in place?")
         //
 
-        out.can_contact = (viewer && this.buddies_is_ignoring(viewer)) || (viewer && this.buddies_is_ignored_by(viewer)) || (args.viewer_tsid == this.tsid) ? false : true;
+        out.can_contact = (viewer && this.player.buddies.buddies_is_ignoring(viewer)) || (viewer && this.player.buddies.buddies_is_ignored_by(viewer)) || (args.viewer_tsid == this.tsid) ? false : true;
 
         //
         // Iiii'm looking at the man inthemirror...
@@ -390,21 +390,21 @@ public function adminGetFullInfo(args){
     //
     // everything else
     //
-    out.num_skills = this.skillsGetCount();
+    out.num_skills = this.player.skills.skillsGetCount();
 
-    var skill = this.skillsGetLatest();
+    var skill = this.player.skills.skillsGetLatest();
 
     out.latest_skill = {};
 
     if (typeof(skill) != 'undefined'){
         out.latest_skill = {
             'id' : skill.id,
-            'name' : this.skills_get_name(skill.id)
+            'name' : this.player.skills.skills_get_name(skill.id)
         };
     }
-    out.num_achievements = this.achievementsGetCount();
+    out.num_achievements = this.player.achievements.achievementsGetCount();
 
-    var latest_achievement = this.achievementsGetLatest();
+    var latest_achievement = this.player.achievements.achievementsGetLatest();
 
     out.latest_achievement = {};
 
@@ -421,9 +421,9 @@ public function adminGetFullInfo(args){
         };
     }
 
-    out.num_upgrades = this.imagination_get_list().length;
+    out.num_upgrades = this.player.imagination.imagination_get_list().length;
 
-    out.metabolics = this.profile_get_metabolics();
+    out.metabolics = this.player.profile.profile_get_metabolics();
 
     out.location = {
         'name' : this.location.label,
@@ -434,7 +434,7 @@ public function adminGetFullInfo(args){
         'is_pol' : this.location.pols_is_pol()
     };
 
-    out.houses = this.houses_get_with_streets();
+    out.houses = this.player.houses.houses_get_with_streets();
 
     return out;
 }
@@ -454,7 +454,7 @@ public function adminGetLocationInfo(){
             'is_hidden' : this.location.is_hidden(),
             'is_pol' : this.location.pols_is_pol()
         },
-        houses: this.houses_get_with_streets()
+        houses: this.player.houses.houses_get_with_streets()
     };
 
     return out;
@@ -465,28 +465,28 @@ public function adminIsOnline(){
 }
 
 public function adminHasUnlearningAbility() {
-    return this.imagination_has_upgrade("unlearning_ability");
+    return this.player.imagination.imagination_has_upgrade("unlearning_ability");
 }
 
 public function adminGetSkills(args){
     var is_admin = !!(args && args.is_admin);
     return {
-        skills: this.skills_get_all(is_admin),
-        skill_queue: this.skills_get_queue(),
-        unlearn_queue: this.skills_get_unlearning()
+        skills: this.player.skills.skills_get_all(is_admin),
+        skill_queue: this.player.skills.skills_get_queue(),
+        unlearn_queue: this.player.skills.skills_get_unlearning()
     };
 }
 
 public function adminSkillsTrain(args){
-    return this.skills_train(args.skill_id);
+    return this.player.skills.skills_train(args.skill_id);
 }
 
 public function adminSkillsUnlearn(args){
-    return this.skills_unlearn(args.skill_id);
+    return this.player.skills.skills_unlearn(args.skill_id);
 }
 
 public function adminSkillsCancelUnlearn(args){
-    return this.skills_cancel_unlearning(args.skill_id);
+    return this.player.skills.skills_cancel_unlearning(args.skill_id);
 }
 
 public function adminGetCurrants(args){
@@ -497,7 +497,7 @@ public function adminGetCurrants(args){
 
 public function adminGetGodProfile(args){
 
-    this.init();
+    this.player.init();
 
     var out = {};
 
@@ -513,13 +513,13 @@ public function adminGetGodProfile(args){
     // core stats
     //
 
-    out.stats = this.stats_get();
+    out.stats = this.player.stats.stats_get();
 
     if (args.wants && args.wants.max_favor){
         out.stats.favor_points_max = {};
 
         for (var i in out.stats.favor_points){
-            out.stats.favor_points_max[i] = this.stats_get_max_favor(i);
+            out.stats.favor_points_max[i] = this.player.stats.stats_get_max_favor(i);
         }
     }
 
@@ -556,7 +556,7 @@ public function adminGetGodProfile(args){
     //
 
     if (args.wants && args.wants.quests){
-        out.quests = this.quests_get_all();
+        out.quests = this.player.quests.quests_get_all();
     }
 
 
@@ -565,7 +565,7 @@ public function adminGetGodProfile(args){
     //
 
     if (args.wants && args.wants.skills){
-        out.skills = this.skills_get_list();
+        out.skills = this.player.skills.skills_get_list();
     }
 
     //
@@ -573,7 +573,7 @@ public function adminGetGodProfile(args){
     //
 
     if (args.wants && args.wants.recipes){
-        var recipes = this.making_get_known_recipes();
+        var recipes = this.player.making.making_get_known_recipes();
 
         out.recipes = {};
 
@@ -603,8 +603,8 @@ public function adminGetGodProfile(args){
     //
 
     if (args.wants && args.wants.achievements){
-        out.achievements = this.achievements_get_profile();
-        out.achievements_queue = this.achievements_get_queue();
+        out.achievements = this.player.achievements.achievements_get_profile();
+        out.achievements_queue = this.player.achievements.achievements_get_queue();
     }
 
     //
@@ -612,7 +612,7 @@ public function adminGetGodProfile(args){
     //
 
     if (args.wants && args.wants.buffs){
-        out.buffs = this.buffs_get_active();
+        out.buffs = this.player.buffs.buffs_get_active();
     }
 
 
@@ -627,51 +627,51 @@ public function adminGetGodProfile(args){
 }
 
 public function adminAddMood(args){
-    this.metabolics_add_mood(args.amount);
+    this.player.metabolics.metabolics_add_mood(args.amount);
 }
 
 public function adminAddEnergy(args){
-    this.metabolics_add_energy(args.amount);
+    this.player.metabolics.metabolics_add_energy(args.amount);
 }
 
 public function adminRemoveMood(args){
-    this.metabolics_lose_mood(args.amount);
+    this.player.metabolics.metabolics_lose_mood(args.amount);
 }
 
 public function adminRemoveEnergy(args){
-    this.metabolics_lose_energy(args.amount);
+    this.player.metabolics.metabolics_lose_energy(args.amount);
 }
 
 public function adminAddXP(args){
-    this.stats_add_xp(args.amount, true, {type: 'god_page'});
+    this.player.stats.stats_add_xp(args.amount, true, {type: 'god_page'});
 }
 
 public function adminAddCurrants(args){
-    this.stats_add_currants(args.amount);
+    this.player.stats.stats_add_currants(args.amount);
 }
 
 public function adminRemoveCurrants(args){
-    this.stats_remove_currants(args.amount, {type: 'admin_call'});
+    this.player.stats.stats_remove_currants(args.amount, {type: 'admin_call'});
 }
 
 public function adminAddFavorPoints(args){
-    this.stats_add_favor_points(args.giant,args.amount,0);
+    this.player.stats.stats_add_favor_points(args.giant,args.amount,0);
 }
 
 public function adminRemoveFavorPoints(args){
-    this.stats_remove_favor_points(args.giant,args.amount);
+    this.player.stats.stats_remove_favor_points(args.giant,args.amount);
 }
 
 public function adminAddImagination(args){
-    this.stats_add_imagination(args.amount, {type: 'god_page'});
+    this.player.stats.stats_add_imagination(args.amount, {type: 'god_page'});
 }
 
 public function adminAddBrainCapacity(args){
-    this.skills_increase_brain_capacity(args.amount);
+    this.player.skills.skills_increase_brain_capacity(args.amount);
 }
 
 public function adminAddQuoinMultiplier(args){
-    this.stats_increase_quoin_multiplier(args.amount);
+    this.player.stats.stats_increase_quoin_multiplier(args.amount);
 }
 
 public function admin_get_visited_streets(){
@@ -685,8 +685,8 @@ public function admin_get_visited_streets(){
 public function adminStreetHistory() {
     var out = {};
 
-    out.streets = this.stats_get_street_history();
-    out.pols = this.stats_get_pol_history();
+    out.streets = this.player.stats.stats_get_street_history();
+    out.pols = this.player.stats.stats_get_pol_history();
 
     return out;
 }
@@ -696,21 +696,21 @@ public function admin_get_player_progress() {
     var out = {};
 
     out.level = this.stats.level;
-    out.skills = this.skills_get_list().length;
-    out.time_played = this.getTimePlayed();
-    out.got_walk_speed1 = this.imagination_has_upgrade("walk_speed_1");
-    out.got_walk_speed2 = this.imagination_has_upgrade("walk_speed_2");
-    out.got_jump1 = this.imagination_has_upgrade("jump_1");
-    out.got_jump2 = this.imagination_has_upgrade("jump_2");
-    out.got_mappery = this.imagination_has_upgrade("mappery");
-    out.completed_buy_bag = (this.getQuestStatus("buy_two_bags") == 'done');
-    out.completed_leave_gentle_island = (this.getQuestStatus("leave_gentle_island") == 'done');
+    out.skills = this.player.skills.skills_get_list().length;
+    out.time_played = this.player.getTimePlayed();
+    out.got_walk_speed1 = this.player.imagination.imagination_has_upgrade("walk_speed_1");
+    out.got_walk_speed2 = this.player.imagination.imagination_has_upgrade("walk_speed_2");
+    out.got_jump1 = this.player.imagination.imagination_has_upgrade("jump_1");
+    out.got_jump2 = this.player.imagination.imagination_has_upgrade("jump_2");
+    out.got_mappery = this.player.imagination.imagination_has_upgrade("mappery");
+    out.completed_buy_bag = (this.player.quests.getQuestStatus("buy_two_bags") == 'done');
+    out.completed_leave_gentle_island = (this.player.quests.getQuestStatus("leave_gentle_island") == 'done');
     out.max_energy = this.metabolics.energy.top;
-    out.quoin_multiplier = this.stats_get_quoin_multiplier();
-    out.enter_clouds = (this.stats_get_last_street_visit('LIFBFC7TDJ535UL') > 0);
-    out.enter_training1 = (this.stats_get_last_street_visit('LIFBLMAVDJ53NP1') > 0);
+    out.quoin_multiplier = this.player.stats.stats_get_quoin_multiplier();
+    out.enter_clouds = (this.player.stats.stats_get_last_street_visit('LIFBFC7TDJ535UL') > 0);
+    out.enter_training1 = (this.player.stats.stats_get_last_street_visit('LIFBLMAVDJ53NP1') > 0);
     out.date_last_login = this.date_last_loggedin;
-    out.num_friends = this.buddies_count();
+    out.num_friends = this.player.buddies.buddies_count();
 
     return out;
 }
@@ -749,22 +749,22 @@ public function admin_test_data(){
         out.inventory[it.class_id] += it.count;
     }
     out.skills = this.skills ? this.skills.skills : {};
-    out.visited_streets = this.counters_get_group_count('locations_visited');
-    out.buddies = this.buddies_count();
-    out.buddies_rev = this.buddies_reverse_count();
+    out.visited_streets = this.player.counters.counters_get_group_count('locations_visited');
+    out.buddies = this.player.buddies.buddies_count();
+    out.buddies_rev = this.player.buddies.buddies_reverse_count();
     out.recipes = this.recipes ? array_keys(this.recipes.recipes) : 0;
     out.completed_tutorial = this.has_done_intro ? 1 : 0;
     out.date_last_login = this.date_last_login;
     out.time_played = this.counters.counters.time_played;
-    out.count_ignoring = this.buddies_get_ignoring_count();
-    out.count_ignored_by = this.buddies_get_ignored_by_count();
+    out.count_ignoring = this.player.buddies.buddies_get_ignoring_count();
+    out.count_ignored_by = this.player.buddies.buddies_get_ignored_by_count();
 
     // get all items in an owned POL and items in cabinets in owned POLs
 
     /*
     out.house_items = {};
     out.house_cabinet_items = {};
-    var houses = this.houses_get_all();
+    var houses = this.player.houses.houses_get_all();
 
     for (var i in houses) {
         var house = houses[i];
@@ -807,7 +807,7 @@ public function admin_test_data(){
 
     if (this.home) {
         out.furniture = {};
-        out.furniture.bag = this.furniture_count();
+        out.furniture.bag = this.player.furniture.furniture_count();
         if (this.home.interior) {
             var interior_items = this.home.interior.admin_get_items().items;
             out.furniture.interior = num_keys(interior_items);
@@ -827,26 +827,26 @@ public function admin_test_data(){
 
 public function admin_reset_skills(){
 
-    this.skills_remove("croppery");
-    this.skills_remove("animal_husbandry");
-    this.skills_remove("botany");
-    this.skills_remove("cheffery");
-    this.skills_remove("cocktail_crafting");
-    this.skills_remove("herdkeeping");
-    this.skills_remove("remote_herdkeeping");
-    this.skills_remove("gasmogrification");
-    this.skills_remove("spice_milling");
-    this.skills_remove("blending");
-    this.skills_remove("fruit_changing");
-    this.skills_remove("master_chef");
-    this.skills_remove("grilling");
-    this.skills_remove("saucery");
-    this.skills_remove("bubble_tuning");
+    this.player.skills.skills_remove("croppery");
+    this.player.skills.skills_remove("animal_husbandry");
+    this.player.skills.skills_remove("botany");
+    this.player.skills.skills_remove("cheffery");
+    this.player.skills.skills_remove("cocktail_crafting");
+    this.player.skills.skills_remove("herdkeeping");
+    this.player.skills.skills_remove("remote_herdkeeping");
+    this.player.skills.skills_remove("gasmogrification");
+    this.player.skills.skills_remove("spice_milling");
+    this.player.skills.skills_remove("blending");
+    this.player.skills.skills_remove("fruit_changing");
+    this.player.skills.skills_remove("master_chef");
+    this.player.skills.skills_remove("grilling");
+    this.player.skills.skills_remove("saucery");
+    this.player.skills.skills_remove("bubble_tuning");
 }
 
 public function admin_place_pol(){
 
-    this.familiar_send_alert_now({
+    this.player.familiar.familiar_send_alert_now({
         'callback' : 'admin_place_pol_callback'
     });
 }
@@ -926,15 +926,15 @@ public function admin_test_teleporting(){
     var street = this.admin_get_remote_location();
 
     if (street){
-        this.sendActivity("found a remote street: "+street.tsid);
+        this.player.sendActivity("found a remote street: "+street.tsid);
     }else{
-        this.sendActivity("can't find a remote street");
+        this.player.sendActivity("can't find a remote street");
         return;
     }
 
-    this.sendActivity('pre-teleport');
-    this.teleportToLocation(street.tsid, 0, 0);
-    this.sendActivity('post-teleport');
+    this.player.sendActivity('pre-teleport');
+    this.player.teleportToLocation(street.tsid, 0, 0);
+    this.player.sendActivity('post-teleport');
 }
 
 public function admin_get_remote_location(){
@@ -958,11 +958,11 @@ public function admin_get_leaderboards(){
 
     var out = {
         'players': {
-            'xp'        : this.stats_get_xp(),
-            'currants'  : this.stats_get_currants(),
-            'locations' : this.counters_get_group_count('locations_visited'),
-            'achievements'  : this.achievements_get_leaderboard_count(),
-            'quests'    : this.quests_get_complete_count()
+            'xp'        : this.player.stats.stats_get_xp(),
+            'currants'  : this.player.stats.stats_get_currants(),
+            'locations' : this.player.counters.counters_get_group_count('locations_visited'),
+            'achievements'  : this.player.achievements.achievements_get_leaderboard_count(),
+            'quests'    : this.player.quests.quests_get_complete_count()
         }
     };
 
@@ -1010,7 +1010,7 @@ public function admin_get_inventory_cabinets(){
 
 public function admin_get_inventory_furniture(){
 
-    var bag = this.furniture_get_bag();
+    var bag = this.player.furniture.furniture_get_bag();
 
     var contents = bag.getContents();
 
@@ -1039,7 +1039,7 @@ public function admin_get_stats(){
 
     var out = {};
 
-    this.stats_get_login(out);
+    this.player.stats.stats_get_login(out);
 
     out.energy = {
         value: this.metabolics.energy.value,
@@ -1050,7 +1050,7 @@ public function admin_get_stats(){
         value: this.metabolics.mood.value,
         max: this.metabolics.mood.top
     };
-    out.mail_unread = this.mail_count_unread();
+    out.mail_unread = this.player.mail.mail_count_unread();
 
     return out;
 }
@@ -1061,26 +1061,26 @@ public function adminDebug(args){
 }
 
 public function adminCheckDoneIntro(args){
-    if (!this.has_done_intro && (config.force_intro || this.quickstart_needs_player) && (!this.intro_steps || this.intro_steps['new_player_part1']) && this.stats_get_level() < 2 && !this.location.is_newxp && !this.location.is_skillquest){
+    if (!this.has_done_intro && (config.force_intro || this.quickstart_needs_player) && (!this.intro_steps || this.intro_steps['new_player_part1']) && this.player.stats.stats_get_level() < 2 && !this.location.is_newxp && !this.location.is_skillquest){
         this.no_reset_teleport = true;
-        this.resetForTesting();
-        this.goToNewNewStartingLevel();
+        this.player.resetForTesting();
+        this.player.goToNewNewStartingLevel();
         log.info(this+' adminCheckDoneIntro reset because not has_done_intro original');
     }
-    else if (!this.has_done_intro && (config.force_intro || this.quickstart_needs_player) && !this.location.is_newxp && !this.location.is_skillquest && this.stats_get_level() < 4){
+    else if (!this.has_done_intro && (config.force_intro || this.quickstart_needs_player) && !this.location.is_newxp && !this.location.is_skillquest && this.player.stats.stats_get_level() < 4){
         this.no_reset_teleport = true;
-        this.resetForTesting();
-        this.goToNewNewStartingLevel();
+        this.player.resetForTesting();
+        this.player.goToNewNewStartingLevel();
         log.info(this+' adminCheckDoneIntro reset because not has_done_intro');
     }
     else if (this.location.isInstance('new_starting')){
         this.no_reset_teleport = true;
-        this.resetForTesting();
-        this.goToNewNewStartingLevel();
+        this.player.resetForTesting();
+        this.player.goToNewNewStartingLevel();
         log.info(this+' adminCheckDoneIntro reset because old newxp');
     }
 
-    var leave_gentle_island_status = this.getQuestStatus('leave_gentle_island');
+    var leave_gentle_island_status = this.player.quests.getQuestStatus('leave_gentle_island');
     return {
         has_done_intro : this.has_done_intro,
         // the following makes the assumption that they cannot have done the leave_gentle_island_status quest if !has_done_intro
@@ -1131,7 +1131,7 @@ public function admin_is_instanced(){
 
 public function admin_renamed(args){
     // called after player-initiated rename
-    if (args.cost) this.stats_try_remove_currants(args.cost);
+    if (args.cost) this.player.stats.stats_try_remove_currants(args.cost);
 
     if (this.home){
         var label = utils.escape(this.label)+"'s";
@@ -1143,7 +1143,7 @@ public function admin_renamed(args){
     if (apiIsPlayerOnline(this.tsid)) {
         this.apiSendMsg({
             type: 'pc_rename',
-            pc: this.make_hash()
+            pc: this.player.make_hash()
         });
     }
 
@@ -1160,9 +1160,9 @@ public function adminGetItemDescExtras(args){
 
 public function adminGetGodExtras(args){
     return {
-        is_in_timeout: this.isInTimeout(),
-        is_in_coneofsilence: this.isInConeOfSilence(),
-        is_in_help_coneofsilence: this.isInConeOfSilence('help'),
+        is_in_timeout: this.player.isInTimeout(),
+        is_in_coneofsilence: this.player.isInConeOfSilence(),
+        is_in_help_coneofsilence: this.player.isInConeOfSilence('help'),
         img_migrated: (this.imagination && this.imagination.converted_at) ? this.imagination.converted_at : 0,
         is_online: apiIsPlayerOnline(this.tsid)
     };
@@ -1171,7 +1171,7 @@ public function adminGetGodExtras(args){
 public function adminBuildPath(args){
     var dst = args.dst;
 
-    var ret = this.buildPath(dst);
+    var ret = this.player.buildPath(dst);
     if (!ret.ok){
         return ret;
     }
@@ -1187,21 +1187,21 @@ public function adminBuildPath(args){
 }
 
 public function adminSetTeleportationTokens(args){
-    this.teleportation_init();
+    this.player.teleportation.teleportation_init();
     this.teleportation.token_balance = intval(args.tokens);
-    this.teleportation_notify_client();
+    this.player.teleportation.teleportation_notify_client();
     return {ok: 1};
 }
 
 public function adminSetCredits(args){
-    this.stats_init();
-    this.stats_set_credits(args.credits);
+    this.player.stats.stats_init();
+    this.player.stats.stats_set_credits(args.credits);
     return {ok: 1};
 }
 
 public function adminSetSubscriptionStatus(args){
-    this.stats_init();
-    this.stats_set_sub(args.is_subscriber, args.sub_expires);
+    this.player.stats.stats_init();
+    this.player.stats.stats_set_sub(args.is_subscriber, args.sub_expires);
     return {ok: 1};
 }
 
@@ -1256,30 +1256,30 @@ public function admin_fix_quest_containers(){
 }
 
 public function admin_mail_has_unread(args){
-    return { 'ok': 1, 'has_unread_mail': this.mail_has_unread() };
+    return { 'ok': 1, 'has_unread_mail': this.player.mail.mail_has_unread() };
 }
 
 public function admin_mail_get_count(args){
-    return { 'ok': 1, 'message_count': this.mail_count_messages() };
+    return { 'ok': 1, 'message_count': this.player.mail.mail_count_messages() };
 }
 
 public function admin_mail_unread_count(args){
-    return { 'ok': 1, 'unread_count': this.mail_count_unread() };
+    return { 'ok': 1, 'unread_count': this.player.mail.mail_count_unread() };
 }
 
 public function admin_mail_get_inbox(args){
     return {
         'ok'        : 1,
-        'inbox'     : args.fetch_all ? this.build_mail_check_msg(null, null, true) : this.build_mail_check_msg(null),
-        'unread_count'  : this.mail_count_unread(),
-        'replied_count' : this.mail_count_replied()
+        'inbox'     : args.fetch_all ? this.player.mail.build_mail_check_msg(null, null, true) : this.player.mail.build_mail_check_msg(null),
+        'unread_count'  : this.player.mail.mail_count_unread(),
+        'replied_count' : this.player.mail.mail_count_replied()
     };
 }
 
 public function admin_mail_get_message(args){
-    var message = this.mail_get_player_message_data(args.msg_id);
+    var message = this.player.mail.mail_get_player_message_data(args.msg_id);
 
-    if (!args.keep_read_status) this.mail_read(args.msg_id, args.mark_as_read);
+    if (!args.keep_read_status) this.player.mail.mail_read(args.msg_id, args.mark_as_read);
 
     if (!message) return {'ok': 1, 'message_not_found' : 1};
     if (message.sender_tsid) {
@@ -1292,7 +1292,7 @@ public function admin_mail_get_message(args){
 }
 
 public function admin_mail_delete_message(args){
-    this.mail_remove_player_message(args.msg_id);
+    this.player.mail.mail_remove_player_message(args.msg_id);
     return { 'ok': 1 };
 }
 
@@ -1312,14 +1312,14 @@ public function admin_mail_send(args){
     }
 
     log.info("MAIL: admin_mail_send");
-    this.mail_add_player_delivery(null, args.sender_tsid, 0, args.message, delay, true, args.in_reply_to);
+    this.player.mail.mail_add_player_delivery(null, args.sender_tsid, 0, args.message, delay, true, args.in_reply_to);
 
     return { 'ok': 1 };
 }
 
 public function adminGetHomepage(args){
 
-    this.init();
+    this.player.init();
 
     var out = {};
 
@@ -1327,16 +1327,16 @@ public function adminGetHomepage(args){
     // structured data
     //
 
-    out.stats = this.stats_get();
-    out.skills_learning = this.skills_get_learning();
-    out.friends = this.buddies_get_simple_online();
+    out.stats = this.player.stats.stats_get();
+    out.skills_learning = this.player.skills.skills_get_learning();
+    out.friends = this.player.buddies.buddies_get_simple_online();
 
     // flags
     out.has_done_intro = !!this.has_done_intro;
     out.new_player_goodbye_familiar = !!this.has_done_intro;
-    out.is_in_timeout = this.isInTimeout();
-    out.is_in_coneofsilence = this.isInConeOfSilence();
-    out.is_in_help_coneofsilence = this.isInConeOfSilence('help');
+    out.is_in_timeout = this.player.isInTimeout();
+    out.is_in_coneofsilence = this.player.isInConeOfSilence();
+    out.is_in_help_coneofsilence = this.player.isInConeOfSilence('help');
 
     return out;
 }
@@ -1344,7 +1344,7 @@ public function adminGetHomepage(args){
 public function adminGetProfileFriends(args){
 
     var out = {};
-    out.friends = this.buddies_get_simple_online();
+    out.friends = this.player.buddies.buddies_get_simple_online();
 
     return out;
 }
@@ -1357,8 +1357,8 @@ public function adminCleanLostHiddenItems(){
 
     for (var i in hidden){
         var stack = hidden[i];
-        if (!stack.is_bag && !this.auctions_get_uid_for_item(stack.tsid)){
-            this.mail_add_auction_delivery(stack.tsid, config.auction_delivery_time, null, this.tsid, 'expired');
+        if (!stack.is_bag && !this.player.auctions.auctions_get_uid_for_item(stack.tsid)){
+            this.player.mail.mail_add_auction_delivery(stack.tsid, config.auction_delivery_time, null, this.tsid, 'expired');
         }
     }
 }
@@ -1370,7 +1370,7 @@ public function adminCountLostHiddenItems(){
     var item_count = 0;
 
     for (var i in hidden){
-        if (!hidden[i].is_bag && !this.auctions_get_uid_for_item(hidden[i].tsid)){
+        if (!hidden[i].is_bag && !this.player.auctions.auctions_get_uid_for_item(hidden[i].tsid)){
             currants += intval(Math.round(hidden[i].base_cost * hidden[i].count * 0.9));
             item_count++;
         }
@@ -1380,11 +1380,11 @@ public function adminCountLostHiddenItems(){
 }
 
 public function admin_fix_elixir_of_avarice(){
-    if (this.achievements_has('numismatizer_leprechaun_class')) this.making_try_learn_recipe(241);
+    if (this.player.achievements.achievements_has('numismatizer_leprechaun_class')) this.player.making.making_try_learn_recipe(241);
 }
 
 public function admin_create_new_home(){
-    this.houses_go_to_new_house(false, true, false);
+    this.player.houses.houses_go_to_new_house(false, true, false);
 }
 
 public function admin_craftytasking_robot_category_items(args){
@@ -1608,20 +1608,20 @@ public function admin_craftytasking_robot_queueItem(args){
 }
 
 public function admin_furniture_populate(){
-    this.furniture_populate(false);
+    this.player.furniture.furniture_populate(false);
 }
 
 public function admin_photos_state(){
     var ret = {};
-    ret.has_snapshotting = this.imagination_has_upgrade('snapshotting');
+    ret.has_snapshotting = this.player.imagination.imagination_has_upgrade('snapshotting');
     return ret;
 }
 
 public function admin_grant_perftesting_rewards(args){
-    this.stats_add_currants(1000, {type: 'perftesting_reward'});
+    this.player.stats.stats_add_currants(1000, {type: 'perftesting_reward'});
 
     if (args.test_count == 1){
-        this.stats_add_xp(500, 0, {type: 'perftesting_reward'});
+        this.player.stats.stats_add_xp(500, 0, {type: 'perftesting_reward'});
     }
 }
 
@@ -1647,7 +1647,7 @@ public function admin_pack_more_moving_boxes(){
 
     if (this.houses_backup){
         for (var i in this.houses_backup){
-            if (this.houses_is_our_home(i)) continue;
+            if (this.player.houses.houses_is_our_home(i)) continue;
 
             var pol = apiFindObject(i);
             if (pol){
@@ -1660,10 +1660,10 @@ public function admin_pack_more_moving_boxes(){
 public function admin_evacuate_houses(){
     if (this.location.pols_is_pol()){
         if (this.location.getProp('is_home')){
-            this.houses_leave();
+            this.player.houses.houses_leave();
         }
         else{
-            this.teleportHome();
+            this.player.teleportHome();
         }
     }
 }
@@ -1682,11 +1682,11 @@ public function admin_remove_deleted_houses(){
         if (!loc) continue;
 
         if (loc.getProp('is_deleted')){
-            if (this.houses_is_our_home(i)){
+            if (this.player.houses.houses_is_our_home(i)){
                 delete loc.is_deleted;
             }
             else{
-                this.houses_remove_property(i);
+                this.player.houses.houses_remove_property(i);
             }
         }
     }
@@ -1710,68 +1710,68 @@ public function adminBackfillNewxpPhysics(args){
     if (this.use_img) return;
 
     this.physics_new = {};
-    this.setDefaultPhysics();
+    this.player.physics.setDefaultPhysics();
     this.use_img = true;
 
-    this.imagination_grant('walk_speed_1', 1, undefined, true, true);
-    this.imagination_grant('walk_speed_2', 1, undefined, true, true);
-    this.imagination_grant('walk_speed_3', 1, undefined, true, true);
-    this.imagination_grant('jump_1', 1, undefined, true, true);
-    this.imagination_grant('jump_2', 1, undefined, true, true);
-    this.imagination_grant('jump_triple_1', 1, undefined, true, true);
+    this.player.imagination.imagination_grant('walk_speed_1', 1, undefined, true, true);
+    this.player.imagination.imagination_grant('walk_speed_2', 1, undefined, true, true);
+    this.player.imagination.imagination_grant('walk_speed_3', 1, undefined, true, true);
+    this.player.imagination.imagination_grant('jump_1', 1, undefined, true, true);
+    this.player.imagination.imagination_grant('jump_2', 1, undefined, true, true);
+    this.player.imagination.imagination_grant('jump_triple_1', 1, undefined, true, true);
 }
 
 public function adminResetPlayer(){
-    this.resetForTesting(false);
+    this.player.resetForTesting(false);
 }
 
 public function adminBackfillSnapUpgrades(){
 
     // Grant new snap_pack upgrades, based on what they snapshot upgrades they already had
-    if (this.imagination_has_upgrade('snapshottery_filter_piggy') || this.imagination_has_upgrade('snapshottery_filter_beryl') || this.imagination_has_upgrade('snapshottery_filter_firefly')){
-        this.imagination_grant('snapshottery_filter_pack_1');
+    if (this.player.imagination.imagination_has_upgrade('snapshottery_filter_piggy') || this.player.imagination.imagination_has_upgrade('snapshottery_filter_beryl') || this.player.imagination.imagination_has_upgrade('snapshottery_filter_firefly')){
+        this.player.imagination.imagination_grant('snapshottery_filter_pack_1');
     }
-    if (this.imagination_has_upgrade('snapshottery_filter_holga') || this.imagination_has_upgrade('snapshottery_filter_vintage') || this.imagination_has_upgrade('snapshottery_filter_ancient')){
-        this.imagination_grant('snapshottery_filter_pack_2');
+    if (this.player.imagination.imagination_has_upgrade('snapshottery_filter_holga') || this.player.imagination.imagination_has_upgrade('snapshottery_filter_vintage') || this.player.imagination.imagination_has_upgrade('snapshottery_filter_ancient')){
+        this.player.imagination.imagination_grant('snapshottery_filter_pack_2');
     }
-    if (this.imagination_has_upgrade('snapshottery_filter_dither') || this.imagination_has_upgrade('snapshottery_filter_shift') || this.imagination_has_upgrade('snapshottery_filter_outline')){
-        this.imagination_grant('snapshottery_filter_pack_3');
+    if (this.player.imagination.imagination_has_upgrade('snapshottery_filter_dither') || this.player.imagination.imagination_has_upgrade('snapshottery_filter_shift') || this.player.imagination.imagination_has_upgrade('snapshottery_filter_outline')){
+        this.player.imagination.imagination_grant('snapshottery_filter_pack_3');
     }
-    if (this.imagination_has_upgrade('snapshottery_filter_memphis')){
-        this.imagination_grant('snapshottery_basic_filter_pack');
+    if (this.player.imagination.imagination_has_upgrade('snapshottery_filter_memphis')){
+        this.player.imagination.imagination_grant('snapshottery_basic_filter_pack');
     }
 
     // Delete the out of date upgrades
-    this.imagination_delete_upgrade('snapshottery_filter_piggy');
-    this.imagination_delete_upgrade('snapshottery_filter_beryl');
-    this.imagination_delete_upgrade('snapshottery_filter_firefly');
-    this.imagination_delete_upgrade('snapshottery_filter_holga');
-    this.imagination_delete_upgrade('snapshottery_filter_vintage');
-    this.imagination_delete_upgrade('snapshottery_filter_ancient');
-    this.imagination_delete_upgrade('snapshottery_filter_dither');
-    this.imagination_delete_upgrade('snapshottery_filter_shift');
-    this.imagination_delete_upgrade('snapshottery_filter_outline');
-    this.imagination_delete_upgrade('snapshottery_filter_memphis');
+    this.player.imagination.imagination_delete_upgrade('snapshottery_filter_piggy');
+    this.player.imagination.imagination_delete_upgrade('snapshottery_filter_beryl');
+    this.player.imagination.imagination_delete_upgrade('snapshottery_filter_firefly');
+    this.player.imagination.imagination_delete_upgrade('snapshottery_filter_holga');
+    this.player.imagination.imagination_delete_upgrade('snapshottery_filter_vintage');
+    this.player.imagination.imagination_delete_upgrade('snapshottery_filter_ancient');
+    this.player.imagination.imagination_delete_upgrade('snapshottery_filter_dither');
+    this.player.imagination.imagination_delete_upgrade('snapshottery_filter_shift');
+    this.player.imagination.imagination_delete_upgrade('snapshottery_filter_outline');
+    this.player.imagination.imagination_delete_upgrade('snapshottery_filter_memphis');
 
     // and remove any from their hand
-    this.imagination_remove_from_hand('snapshottery_filter_piggy');
-    this.imagination_remove_from_hand('snapshottery_filter_beryl');
-    this.imagination_remove_from_hand('snapshottery_filter_firefly');
-    this.imagination_remove_from_hand('snapshottery_filter_holga');
-    this.imagination_remove_from_hand('snapshottery_filter_vintage');
-    this.imagination_remove_from_hand('snapshottery_filter_ancient');
-    this.imagination_remove_from_hand('snapshottery_filter_dither');
-    this.imagination_remove_from_hand('snapshottery_filter_shift');
-    this.imagination_remove_from_hand('snapshottery_filter_outline');
-    this.imagination_remove_from_hand('snapshottery_filter_memphis');
+    this.player.imagination.imagination_remove_from_hand('snapshottery_filter_piggy');
+    this.player.imagination.imagination_remove_from_hand('snapshottery_filter_beryl');
+    this.player.imagination.imagination_remove_from_hand('snapshottery_filter_firefly');
+    this.player.imagination.imagination_remove_from_hand('snapshottery_filter_holga');
+    this.player.imagination.imagination_remove_from_hand('snapshottery_filter_vintage');
+    this.player.imagination.imagination_remove_from_hand('snapshottery_filter_ancient');
+    this.player.imagination.imagination_remove_from_hand('snapshottery_filter_dither');
+    this.player.imagination.imagination_remove_from_hand('snapshottery_filter_shift');
+    this.player.imagination.imagination_remove_from_hand('snapshottery_filter_outline');
+    this.player.imagination.imagination_remove_from_hand('snapshottery_filter_memphis');
 
     // Update the hand (if necessary)
-    this.imagination_get_next_upgrades();
+    this.player.imagination.imagination_get_next_upgrades();
 
     // And reload the hand in the client
     this.apiSendMsg({
         type: 'imagination_hand',
-        hand: this.imagination_get_login(),
+        hand: this.player.imagination.imagination_get_login(),
         is_redeal: true
     });
 }
@@ -1784,8 +1784,8 @@ public function adminBackfillSnapUpgrades(){
 public function adminGetFriends(args){
 
     var out = {
-        'fwd' : this.buddies_get_tsids(),
-        'rev' : this.buddies_get_reverse_tsids()
+        'fwd' : this.player.buddies.buddies_get_tsids(),
+        'rev' : this.player.buddies.buddies_get_reverse_tsids()
     };
 
     if (args.fetch_online){
@@ -1803,22 +1803,22 @@ public function adminAchievementsCheckHas(args){
 
     for (var i in args.class_tsids){
         var class_tsid = args.class_tsids[i];
-        out[class_tsid] = this.achievements_has(class_tsid);
+        out[class_tsid] = this.player.achievements.achievements_has(class_tsid);
     }
 
     return out;
 }
 
 public function adminAchievementsGetAll(args){
-    return this.achievements_get_all();
+    return this.player.achievements.achievements_get_all();
 }
 
 public function adminAchievementsGetProfile(args){
-    return this.achievements_get_profile();
+    return this.player.achievements.achievements_get_profile();
 }
 
 public function adminQuestsGetStatus(args){
-    return this.getQuestStatus(args.quest_id);
+    return this.player.quests.getQuestStatus(args.quest_id);
 }
 
 public function adminRoleAdd(args){
@@ -1834,101 +1834,101 @@ public function adminRoleRemove(args){
 }
 
 public function adminBuffsApply(args){
-    return this.buffs_apply(args.buff_id);
+    return this.player.buffs.buffs_apply(args.buff_id);
 }
 
 public function adminBuffsRemove(args){
-    return this.buffs_remove(args.buff_id);
+    return this.player.buffs.buffs_remove(args.buff_id);
 }
 
 public function adminItemsGive(args){
     if (args.item_class == '_currants'){
-        this.stats_add_currants(args.count);
+        this.player.stats.stats_add_currants(args.count);
     } else {
-        this.createItemFromFamiliar(args.item_class, args.count);
+        this.player.items.createItemFromFamiliar(args.item_class, args.count);
     }
 }
 
 public function adminItemsDestroy(args){
-    return this.items_destroy(args.item_class, args.count);
+    return this.player.items.items_destroy(args.item_class, args.count);
 }
 
 public function adminQuestsOffer(args){
-    return this.quests_offer(args.quest_id, true);
+    return this.player.quests.quests_offer(args.quest_id, true);
 }
 
 public function adminQuestsRemove(args){
-    return this.quests_remove(args.quest_id);
+    return this.player.quests.quests_remove(args.quest_id);
 }
 
 public function adminQuestsMadeRecipe(args){
-    return this.quests_made_recipe(args.recipe_id, args.count);
+    return this.player.quests.quests_made_recipe(args.recipe_id, args.count);
 }
 
 public function adminQuestsIncCounter(args){
-    return this.quests_inc_counter(args.counter_name, args.count);
+    return this.player.quests.quests_inc_counter(args.counter_name, args.count);
 }
 
 public function adminQuestsSetFlag(args){
-    return this.quests_set_flag(args.flag_name);
+    return this.player.quests.quests_set_flag(args.flag_name);
 }
 
 public function adminAchievementsIncrement(args){
-    return this.achievements_increment(args.group, args.label, args.count);
+    return this.player.achievements.achievements_increment(args.group, args.label, args.count);
 }
 
 public function adminAchievementsGrant(args){
-    return this.achievements_grant(args.achievement_id);
+    return this.player.achievements.achievements_grant(args.achievement_id);
 }
 
 public function adminAchievementsGrantMulti(args){
     for (var i in args.achievements){
-        this.achievements_grant(args.achievements[i]);
+        this.player.achievements.achievements_grant(args.achievements[i]);
     }
 }
 
 public function adminAchievementsDelete(args){
-    return this.achievements_delete(args.achievement_id);
+    return this.player.achievements.achievements_delete(args.achievement_id);
 }
 
 public function adminSkillsGive(args){
-    return this.skills_give(args.skill_id);
+    return this.player.skills.skills_give(args.skill_id);
 }
 
 public function adminSkillsRemove(args){
-    return this.skills_remove(args.skill_id);
+    return this.player.skills.skills_remove(args.skill_id);
 }
 
 public function adminSkillsGetUnlearning(args){
-    return this.skills_get_unlearning();
+    return this.player.skills.skills_get_unlearning();
 }
 
 public function adminSkillsCanUnlearn(args){
-    return this.skills_can_unlearn(args.skill_id);
+    return this.player.skills.skills_can_unlearn(args.skill_id);
 }
 
 public function adminMakingLearnRecipe(args){
-    return this.making_learn_recipe(args.recipe_id);
+    return this.player.making.making_learn_recipe(args.recipe_id);
 }
 
 public function adminMakingUnlearnRecipe(args){
-    return this.making_unlearn_recipe(args.recipe_id);
+    return this.player.making.making_unlearn_recipe(args.recipe_id);
 }
 
 public function adminImaginationGrantUpgrade(args){
-    return this.imagination_grant(args.upgrade_id, args.amount);
+    return this.player.imagination.imagination_grant(args.upgrade_id, args.amount);
 }
 
 public function adminImaginationDeleteUpgrade(args){
-    return this.imagination_delete_upgrade(args.upgrade_id);
+    return this.player.imagination.imagination_delete_upgrade(args.upgrade_id);
 }
 
 public function adminGrantFirstEleven(args){
-    if (this.skills_get_count() >= 11) this.achievements_grant('first_eleven_skills');
+    if (this.player.skills.skills_get_count() >= 11) this.player.achievements.achievements_grant('first_eleven_skills');
 }
 
 public function adminRebuildSocialSignpost(args){
-    var exterior = this.houses_get_external_street();
+    var exterior = this.player.houses.houses_get_external_street();
     if (exterior){
         exterior.updateNeighborSignpost();
     }
@@ -1944,12 +1944,12 @@ public function admin_quickstart_flags(){
 
 public function admin_feats_increment(args){
     if (config.is_dev) log.info(this+' admin_feats_increment: '+args);
-    return this.feats_increment(args.class_tsid, args.amount);
+    return this.player.feats.feats_increment(args.class_tsid, args.amount);
 }
 
 public function admin_can_feat(args){
     return {
-        quest: this.getQuestStatus('last_pilgrimage_of_esquibeth') == 'done',
+        quest: this.player.quests.getQuestStatus('last_pilgrimage_of_esquibeth') == 'done',
         conch: !!this.has_blown_conch
     };
 }
@@ -1959,7 +1959,7 @@ public function admin_set_flag(args){
 }
 
 public function admin_prompts_add_simple(args){
-    this.prompts_add_simple(args.txt, intval(args.timeout));
+    this.player.prompts.prompts_add_simple(args.txt, intval(args.timeout));
 }
 
     }

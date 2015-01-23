@@ -35,12 +35,12 @@ public function displayFreeze(rung, isFaded=false){
     for (var id in data.ids) {
         if (isFaded) {
             //log.info("MT Turning on "+data.ids[id]+" with fade time "+data.freezeTime*1500);
-            this.geo_deco_toggle_visibility(data.ids[id], true, data.freezeTime * 1500);
+            this.player.announcements.geo_deco_toggle_visibility(data.ids[id], true, data.freezeTime * 1500);
         }
         else {
             //log.info("MT Turning on "+data.ids[id]);
 
-            this.geo_deco_toggle_visibility(data.ids[id], true);
+            this.player.announcements.geo_deco_toggle_visibility(data.ids[id], true);
         }
     }
 }
@@ -59,7 +59,7 @@ public function removeFreeze(rung) {
 
     for (var id in data.ids) {
         //log.info("MT Turning off "+data.ids[id]);
-        this.geo_deco_toggle_visibility(data.ids[id], false, 1);
+        this.player.announcements.geo_deco_toggle_visibility(data.ids[id], false, 1);
     }
 }
 
@@ -83,7 +83,7 @@ public function displayAllRungs() {
 // Pan the camera to a rung and turn the deco on for that rung if necessary.
 // Then schedule a timer to show the next rung.
 public function showRung(rung) {
-    //this.sendActivity("Showing rung "+rung+" current freeze at "+current_freeze_rung);
+    //this.player.sendActivity("Showing rung "+rung+" current freeze at "+current_freeze_rung);
 
     if (!this.party || !this.party.get_space()) {
         log.error("MT mountain function called on player who's not in a party space");
@@ -94,7 +94,7 @@ public function showRung(rung) {
     var rung_data = rungs[rung];
 
     var height = rung_data.yPos - /*0.5*/rung_data.height;
-    this.sendActivity("MT Intro moving camera to "+height);
+    this.player.sendActivity("MT Intro moving camera to "+height);
     log.info("MT intro moving camera to "+height);
 
     this.apiSendMsg({
@@ -104,7 +104,7 @@ public function showRung(rung) {
     });
 
     //if (rung == current_freeze_rung) {
-        //this.sendActivity("Scheduling freeze display");
+        //this.player.sendActivity("Scheduling freeze display");
         this.apiSetTimerX('displayAllRungs', 3000);
     //}
 
@@ -121,7 +121,7 @@ public function onColdZone(box) {
         this.x-(player_width/2) <= box.x+(box.w/2) &&
         this.y - player_height <= box.y &&                          // top of player above bottom of box
         this.y >= box.y-box.h){     // bottom of player below top of box
-        this.metabolics_lose_energy(3);
+        this.player.metabolics.metabolics_lose_energy(3);
         this.apiSetTimerX('onColdZone', 1000, box);
 
         log.info("MT player in coldzone");
@@ -150,12 +150,12 @@ public function onColdZone(box) {
             }
         });
 
-        this.sendActivity(choose_one(messages));
+        this.player.sendActivity(choose_one(messages));
     }
 }
 
 public function onEnterVWindZone(id) {
-    this.addCTPCPhysics({   gravity: 4,
+    this.player.physics.addCTPCPhysics({   gravity: 4,
                             vx_max: 1.0
                         }, this.tsid
                         );
@@ -166,7 +166,7 @@ public function onEnterVWindZone(id) {
 }
 
 public function onEnterHWindZone(id) {
-    this.addCTPCPhysics({
+    this.player.physics.addCTPCPhysics({
                         //gravity: 4,
                         vx_accel_add_in_air : 2,
                         vx_accel_add_in_floor: 2
@@ -187,11 +187,11 @@ public function onSendWindMessage() {
                         "Woah! It's windy here."
                         ];
 
-    this.sendActivity(choose_one(messages));
+    this.player.sendActivity(choose_one(messages));
 }
 
 public function onExitWindZone(id) {
-    this.removePhysics(this.tsid, true);
+    this.player.physics.removePhysics(this.tsid, true);
 
     this.location.removePlayerFromWind(this.tsid, id);
 }
@@ -230,7 +230,7 @@ public function onWindZone(id, box) {
     }
     else {
         //log.info("MT out of windzone");
-        //this.sendActivity("Whew. You're out of the wind. ");
+        //this.player.sendActivity("Whew. You're out of the wind. ");
         this.onExitWindZone(id);
     }
 }

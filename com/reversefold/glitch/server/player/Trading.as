@@ -142,7 +142,7 @@ public function trading_request_start(target_tsid){
         };
     }
 
-    if (this.buddies_is_ignored_by(target) || this.buddies_is_ignoring(target)){
+    if (this.player.buddies.buddies_is_ignored_by(target) || this.player.buddies.buddies_is_ignoring(target)){
         return {
             ok: 0,
             error: 'You are blocking or blocked by that player.'
@@ -331,7 +331,7 @@ public function trading_rollback(){
 
         if (overflow){
             //log.info('trading_rollback overflow detected');
-            this.prompts_add({
+            this.player.prompts.prompts_add({
                 txt     : "Your magic rock is holding items from a previous trade for you. Make room in your pack to hold them.",
                 icon_buttons    : false,
                 timeout     : 30,
@@ -344,7 +344,7 @@ public function trading_rollback(){
         }
 
         if (returned.length){
-            this.prompts_add({
+            this.player.prompts.prompts_add({
                 txt     : "Your "+pretty_list(returned, ' and ')+" "+(returned.length == 1 ? 'has' : 'have')+" been returned to you.",
                 icon_buttons    : false,
                 timeout     : 5,
@@ -361,7 +361,7 @@ public function trading_rollback(){
     //
 
     if (this.trading.currants){
-        this.stats_add_currants(this.trading.currants);
+        this.player.stats.stats_add_currants(this.trading.currants);
         this.trading.currants = 0;
     }
 
@@ -452,7 +452,7 @@ public function trading_add_item_do(itemstack_tsid, amount, destination_slot){
     var target = getPlayer(this['!is_trading']);
     if (!item.has_parent('furniture_base') && target.isBagFull(item)){
         target.sendOnlineActivity(this.label+' tried to offer some '+item.label+' for trade, but you cannot hold it.');
-        this.items_put_back(item);
+        this.player.items.items_put_back(item);
         return {
             ok: 0,
             error: "The other player cannot hold that item."
@@ -462,7 +462,7 @@ public function trading_add_item_do(itemstack_tsid, amount, destination_slot){
     var item_class = item.class_tsid;
     var have_count = this.countItemClass(item_class);
     if (item.has_parent('furniture_base')){
-        have_count = this.furniture_get_bag().countItemClass(item_class);
+        have_count = this.player.furniture.furniture_get_bag().countItemClass(item_class);
     }
 
     // If this is a stack we split off from somewhere, we need to add it to the count
@@ -470,7 +470,7 @@ public function trading_add_item_do(itemstack_tsid, amount, destination_slot){
 
     //log.info('trading_add_item_do have_count: '+have_count+', amount: '+amount);
     if (have_count < amount){
-        this.items_put_back(item);
+        this.player.items.items_put_back(item);
         return {
             ok: 0,
             error: "You don't have enough of that item."
@@ -483,7 +483,7 @@ public function trading_add_item_do(itemstack_tsid, amount, destination_slot){
     //
 
     if (item.is_bag && item.countContents() > 0){
-        this.items_put_back(item);
+        this.player.items.items_put_back(item);
         return {
             ok: 0,
             error: "You may not trade non-empty bags."
@@ -491,7 +491,7 @@ public function trading_add_item_do(itemstack_tsid, amount, destination_slot){
     }
 
     if (item.isSoulbound()){
-        this.items_put_back(item);
+        this.player.items.items_put_back(item);
         return {
             ok: 0,
             error: "That item is locked to you, and can't be traded."
@@ -514,7 +514,7 @@ public function trading_add_item_do(itemstack_tsid, amount, destination_slot){
     var remaining = escrow.addItemStack(item, destination_slot);
     if (remaining == item_count){
         var restore = escrow.removeItemStackClass(item.class_tsid, remaining);
-        this.items_put_back(item);
+        this.player.items.items_put_back(item);
 
         this.addItemStack(restore);
         return {
@@ -539,7 +539,7 @@ public function trading_add_item_do(itemstack_tsid, amount, destination_slot){
             remaining = escrow.addItemStack(stack);
             if (remaining){
                 var restore = escrow.removeItemStackClass(item.class_tsid, remaining);
-                this.items_put_back(stack);
+                this.player.items.items_put_back(stack);
 
                 this.addItemStack(restore);
                 return {
@@ -669,7 +669,7 @@ public function trading_remove_item_do(itemstack_tsid, amount){
     }
 
     if (item.count != amount){
-        this.items_put_back(item);
+        this.player.items.items_put_back(item);
         return {
             ok: 0,
             error: "You don't have enough of that item in escrow."
@@ -682,7 +682,7 @@ public function trading_remove_item_do(itemstack_tsid, amount){
     var remaining = this.addItemStack(item);
     if (remaining){
         var restore = this.removeItemStackClass(item.class_tsid, remaining);
-        this.items_put_back(item);
+        this.player.items.items_put_back(item);
 
         escrow.addItemStack(restore);
         return {
@@ -857,10 +857,10 @@ public function trading_update_currants(target_tsid, amount){
     if (amount_diff != 0){
         if (amount_diff < 0){
             //log.info('Restoring '+Math.abs(amount_diff));
-            this.stats_add_currants(Math.abs(amount_diff));
+            this.player.stats.stats_add_currants(Math.abs(amount_diff));
         }
         else{
-            if (!this.stats_try_remove_currants(amount_diff, {type: 'trading', target: target_tsid})){
+            if (!this.player.stats.stats_try_remove_currants(amount_diff, {type: 'trading', target: target_tsid})){
                 return {
                     ok: 0,
                     error: "You don't have enough currants for that."
@@ -1144,7 +1144,7 @@ public function trading_transfer(target_tsid){
         // Achievements
         //
 
-        this.achievements_increment('players_traded', target_tsid);
+        this.player.achievements.achievements_increment('players_traded', target_tsid);
         target.achievements_increment('players_traded', this.tsid);
     }
 }

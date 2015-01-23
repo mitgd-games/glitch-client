@@ -44,8 +44,8 @@ public function teleportation_reset(){
         this.teleportation.map_paid_teleports_today = 0;
     }
 
-    if (this.buffs_has('teleportation_cooldown')){
-        this.buffs_remove('teleportation_cooldown');
+    if (this.player.buffs.buffs_has('teleportation_cooldown')){
+        this.player.buffs.buffs_remove('teleportation_cooldown');
     }
 }
 
@@ -66,7 +66,7 @@ public function teleportation_set_target(teleport_id){
     var ret = this.teleportation_can_set_target(teleport_id);
     if (!ret['ok']) return ret;
 
-    var target = this.get_simple_location();
+    var target = this.player.get_simple_location();
     var pol = this.location.pols_get_status();
 
     // Rewrite pols to be the door coming in
@@ -87,7 +87,7 @@ public function teleportation_set_target(teleport_id){
 
 
     if(this.location.hubid == 95 || (config.is_dev && this.location.hubid == 8)) {
-        this.quests_set_flag('teleportation_point_in_xalanga');
+        this.player.quests.quests_set_flag('teleportation_point_in_xalanga');
     }
 
     return {
@@ -172,21 +172,21 @@ public function teleportation_can_teleport(teleport_id, skip_skill, target){
         };
     }
 
-    if (this.buffs_has('pooped')) {
+    if (this.player.buffs.buffs_has('pooped')) {
         return {
             ok: 0,
             error: "You are too Pooped to teleport. Eat something first!"
         };
     }
 
-    if (this.buffs_has('dont_get_caught')){
+    if (this.player.buffs.buffs_has('dont_get_caught')){
         return {
             ok: 0,
             error: "That fragile Contraband won't survive teleportation."
         };
     }
 
-    if (!skip_skill && !this.skills_has('teleportation_1')){
+    if (!skip_skill && !this.player.skills.skills_has('teleportation_1')){
         return {
             ok: 0,
             error: "You don't know how to teleport."
@@ -202,7 +202,7 @@ public function teleportation_can_teleport(teleport_id, skip_skill, target){
             };
         }
 
-        var location = this.get_simple_location();
+        var location = this.player.get_simple_location();
         if (target.tsid == location.tsid){
             return {
                 ok: 0,
@@ -260,7 +260,7 @@ public function teleportation_can_teleport(teleport_id, skip_skill, target){
                 };
             }
 
-            if (!loc.pols_is_owner(this) && this.countFollowers()){
+            if (!loc.pols_is_owner(this) && this.player.countFollowers()){
                 var followers_have_clearance = 1;
 
                 for (var i in this.followers){
@@ -284,7 +284,7 @@ public function teleportation_can_teleport(teleport_id, skip_skill, target){
 
         }
 
-        if (this.countFollowers){
+        if (this.player.countFollowers){
             for (var i in this.followers){
                 var follower = apiFindObject(i);
 
@@ -298,14 +298,14 @@ public function teleportation_can_teleport(teleport_id, skip_skill, target){
         }
     }
 
-    if (this.buffs_has('teleportation_cooldown')){
+    if (this.player.buffs.buffs_has('teleportation_cooldown')){
         return {
             ok: 0,
             error: "You teleported too recently."
         };
     }
 
-    if (this.isRooked() || this.buffs_has('rooked_recovery')){
+    if (this.player.rook.isRooked() || this.player.buffs.buffs_has('rooked_recovery')){
         return {
             ok: 0,
             error: "You are still under the effects of a Rook attack."
@@ -323,7 +323,7 @@ public function teleportation_can_set_target(teleport_id){
         };
     }
 
-    if (!this.skills_has('teleportation_1')){
+    if (!this.player.skills.skills_has('teleportation_1')){
         return {
             ok: 0,
             error: "You don't know how to teleport."
@@ -365,15 +365,15 @@ public function teleportation_teleport(teleport_id, skip_skill, target, skip_cos
 
     if (!skip_costs){
         var energy_cost = this.teleportation_get_energy_cost();
-        if (this.metabolics_get_energy() <= energy_cost){
+        if (this.player.metabolics.metabolics_get_energy() <= energy_cost){
             return {
                 ok: 0,
                 error: "You don't have enough energy."
             };
         }
 
-        this.metabolics_lose_energy(energy_cost);
-        this.buffs_apply('teleportation_cooldown', {duration: this.teleportation_get_cooldown_time()});
+        this.player.metabolics.metabolics_lose_energy(energy_cost);
+        this.player.buffs.buffs_apply('teleportation_cooldown', {duration: this.teleportation_get_cooldown_time()});
     }
 
 
@@ -382,7 +382,7 @@ public function teleportation_teleport(teleport_id, skip_skill, target, skip_cos
     //
 
     if (this.location.isInstance()){
-        this.instances_left(this.location.instance_id, false, true);
+        this.player.instances.instances_left(this.location.instance_id, false, true);
     }
 
     if (!target) var target = this.teleportation_get_target(teleport_id);
@@ -393,43 +393,43 @@ public function teleportation_teleport(teleport_id, skip_skill, target, skip_cos
     }
 
     if (loc.pols_is_pol() && loc.getProp('is_home')){
-        this.houses_record_leave();
+        this.player.houses.houses_record_leave();
     }
 
     // Check quests
     var target_info = apiFindObject(target.tsid).get_info();
     if (this.location.hubid == 63){
         if (target_info.hub_id == 92){
-            this.quests_set_flag('teleport_between_zones');
+            this.player.quests.quests_set_flag('teleport_between_zones');
         }
     }
     if (this.location.hubid != 95){
         if (target_info.hub_id == 95){
-            this.quests_set_flag('teleport_to_xalanga');
+            this.player.quests.quests_set_flag('teleport_to_xalanga');
         }
     }
     if (config.is_dev){
         if (this.location.hubid != 8){
             if (target_info.hub_id == 8){
-                this.quests_set_flag('teleport_to_xalanga');
+                this.player.quests.quests_set_flag('teleport_to_xalanga');
             }
         }
     }
 
-    this.playHitAnimation('hit1', 1000);
-    this.teleportToLocationDelayed(target.tsid, target.x, target.y);
+    this.player.playHitAnimation('hit1', 1000);
+    this.player.teleportToLocationDelayed(target.tsid, target.x, target.y);
 
     this.apiSetTimer('teleport_complete', 3000);
-    this.achievements_increment('teleportation_self', 'plain');
-    if (this.countFollowers()){
-        this.achievements_increment('teleportation_self_withfollowers', 'plain');
+    this.player.achievements.achievements_increment('teleportation_self', 'plain');
+    if (this.player.countFollowers()){
+        this.player.achievements.achievements_increment('teleportation_self_withfollowers', 'plain');
 
-        if (this.countFollowers() >= 5){
-            this.achievements_increment('teleportation_self_withfollowers_5', 'plain');
+        if (this.player.countFollowers() >= 5){
+            this.player.achievements.achievements_increment('teleportation_self_withfollowers_5', 'plain');
         }
 
-        if (this.countFollowers() >= 11){
-            this.achievements_increment('teleportation_self_withfollowers_11', 'plain');
+        if (this.player.countFollowers() >= 11){
+            this.player.achievements.achievements_increment('teleportation_self_withfollowers_11', 'plain');
         }
     }
 
@@ -474,7 +474,7 @@ public function teleportation_map_teleport(tsid, use_token){
         }
 
         var energy_cost = this.teleportation_get_energy_cost();
-        if (this.metabolics_get_energy() <= energy_cost){
+        if (this.player.metabolics.metabolics_get_energy() <= energy_cost){
             return {
                 ok: 0,
                 error: "You don't have enough energy."
@@ -532,33 +532,33 @@ public function teleportation_map_teleport(tsid, use_token){
     }
     else{
         this.teleportation.map_teleports_today++;
-        this.metabolics_lose_energy(energy_cost);
+        this.player.metabolics.metabolics_lose_energy(energy_cost);
 
-        this.buffs_apply('teleportation_cooldown', {duration: this.teleportation_get_cooldown_time()});
+        this.player.buffs.buffs_apply('teleportation_cooldown', {duration: this.teleportation_get_cooldown_time()});
     }
 
     // Check quests
     if (this.location.hubid == 63){
         var target_info = target.get_info();
         if (target_info.hub_id == 92){
-            this.quests_set_flag('teleport_between_zones');
+            this.player.quests.quests_set_flag('teleport_between_zones');
         }
     }
 
-    this.playHitAnimation('hit1', 1000);
-    this.teleportToLocationDelayed(target.tsid, pt.x, pt.y);
+    this.player.playHitAnimation('hit1', 1000);
+    this.player.teleportToLocationDelayed(target.tsid, pt.x, pt.y);
 
     this.apiSetTimer('teleport_complete', 3000);
-    this.achievements_increment('teleportation_self', 'map');
-    if (this.countFollowers()){
-        this.achievements_increment('teleportation_self_withfollowers', 'map');
+    this.player.achievements.achievements_increment('teleportation_self', 'map');
+    if (this.player.countFollowers()){
+        this.player.achievements.achievements_increment('teleportation_self_withfollowers', 'map');
 
-        if (this.countFollowers() >= 5){
-            this.achievements_increment('teleportation_self_withfollowers_5', 'map');
+        if (this.player.countFollowers() >= 5){
+            this.player.achievements.achievements_increment('teleportation_self_withfollowers_5', 'map');
         }
 
-        if (this.countFollowers() >= 11){
-            this.achievements_increment('teleportation_self_withfollowers_11', 'map');
+        if (this.player.countFollowers() >= 11){
+            this.player.achievements.achievements_increment('teleportation_self_withfollowers_11', 'map');
         }
     }
 
@@ -614,7 +614,7 @@ public function teleportation_random_teleport() {
         };
     }
 
-    this.teleportToLocationDelayed(street, targets[choice].x, targets[choice].y - 20);
+    this.player.teleportToLocationDelayed(street, targets[choice].x, targets[choice].y - 20);
 
     this.apiSetTimer('teleport_complete', 3000);
 }
@@ -631,19 +631,19 @@ public function teleportation_accept_summons(value, details){
     }
     else{
         var ret = summoner.teleportation_summon(this);
-        if (!ret.ok) this.sendActivity("Oops. Something happened with that teleport.");
+        if (!ret.ok) this.player.sendActivity("Oops. Something happened with that teleport.");
     }
 }
 
 public function teleportation_summon(pc){
     if (this['!summons_uid']){
-        this.prompts_remove(this['!summons_uid']);
+        this.player.prompts.prompts_remove(this['!summons_uid']);
         delete this['!summons_uid'];
     }
 
     var summonses = this.teleportation_get_max_summons();
 
-    if (!this.location.isGreetingLocation() || !this.isGreeter() || !pc.isGreeter()){
+    if (!this.location.isGreetingLocation() || !this.player.isGreeter() || !pc.isGreeter()){
         var ret = this.teleportation_can_summon(pc);
         if (!ret['ok']) return ret;
     }
@@ -653,7 +653,7 @@ public function teleportation_summon(pc){
     if (!this.location.isGreetingLocation()){
         if (summonses[0] > this.teleportation.free_summons_today){
             this.teleportation.free_summons_today++;
-            this.metabolics_lose_energy(this.teleportation_get_energy_cost());
+            this.player.metabolics.metabolics_lose_energy(this.teleportation_get_energy_cost());
             method = 'energy';
         }
         else if (summonses[1] == -1 || summonses[1] > this.teleportation.paid_summons_today){
@@ -665,7 +665,7 @@ public function teleportation_summon(pc){
         }
     }
 
-    this.prompts_add({
+    this.player.prompts.prompts_add({
         txt     : pc.linkifyLabel()+' is on their way!',
         icon_buttons    : false,
         timeout         : 10,
@@ -695,16 +695,16 @@ public function teleportation_summon(pc){
         pc.teleportToLocationDelayed(target.tsid, target.x, target.y);
         pc.achievements_increment('teleportation_others', 'summonee');
 
-        if (method == 'energy') this.buffs_apply('teleportation_cooldown', {duration: this.teleportation_get_cooldown_time()});
-        this.achievements_increment('teleportation_others', 'summoner');
+        if (method == 'energy') this.player.buffs.buffs_apply('teleportation_cooldown', {duration: this.teleportation_get_cooldown_time()});
+        this.player.achievements.achievements_increment('teleportation_others', 'summoner');
     }
     else{
         if (this.location.isInstance('party_space')){
-            if (pc.party_get() == this.party_get()){
+            if (pc.party_get() == this.player.party.party_get()){
                 pc.party_enter_space();
             }
             else{
-                this.party_invite_accepted(pc, true);
+                this.player.party.party_invite_accepted(pc, true);
             }
         }
         else{
@@ -725,17 +725,17 @@ public function teleportation_summon(pc){
 
 public function teleportation_cancel_summons(target){
     if (this['!summons_uid']){
-        this.prompts_remove(this['!summons_uid']);
+        this.player.prompts.prompts_remove(this['!summons_uid']);
         delete this['!summons_uid'];
     }
 
     if (target){
 
-        if (this.location.isInstance('party_space') && target.party_get() != this.party_get()){
-            this.party_invite_declined(target);
+        if (this.location.isInstance('party_space') && target.party_get() != this.player.party.party_get()){
+            this.player.party.party_invite_declined(target);
         }
 
-        this.prompts_add({
+        this.player.prompts.prompts_add({
             txt     : target.linkifyLabel()+' did not accept your summons.',
             icon_buttons    : false,
             timeout         : 10,
@@ -785,7 +785,7 @@ public function teleportation_can_summon(target){
         };
     }
 
-    if (this.location.isGreetingLocation() && this.isGreeter() && target.isGreeter()){
+    if (this.location.isGreetingLocation() && this.player.isGreeter() && target.isGreeter()){
         return {
             ok: 1,
             free: 0,
@@ -795,14 +795,14 @@ public function teleportation_can_summon(target){
 
 
     if (this.location.isInstance() && !this.location.isInstance('party_space')){
-        if (target.party_get() != this.party_get()){
+        if (target.party_get() != this.player.party.party_get()){
             return {
                 ok: 0,
                 error: "They are in another party."
             };
         }
 
-        if (this.party_is_full()){
+        if (this.player.party.party_is_full()){
             return {
                 ok: 0,
                 error: "Your party is full."
@@ -840,7 +840,7 @@ public function teleportation_can_summon(target){
             error: "Buy more teleportation tokens!"
         };
     }
-    else if (summonses[0] > this.teleportation.free_summons_today && this.metabolics_get_energy() <= this.teleportation_get_energy_cost()){
+    else if (summonses[0] > this.teleportation.free_summons_today && this.player.metabolics.metabolics_get_energy() <= this.teleportation_get_energy_cost()){
         return {
             ok: 0,
             error: "You don't have enough energy."
@@ -899,8 +899,8 @@ public function teleportation_get_status(){
     var can_set_target = this.teleportation_can_set_target();
     var ret = {
         energy_cost: this.teleportation_get_energy_cost(),
-        has_teleportation_skill: this.skills_has('teleportation_1') ? true : false,
-        skill_level: this.skills_get_highest_level('teleportation_1'),
+        has_teleportation_skill: this.player.skills.skills_has('teleportation_1') ? true : false,
+        skill_level: this.player.skills.skills_get_highest_level('teleportation_1'),
         can_teleport: can_teleport['ok'] ? true : false,
         can_set_target: can_set_target['ok'] ? true : false,
         targets: this.teleportation_get_all_targets(),
@@ -924,13 +924,13 @@ public function teleportation_notify_client(){
 //////////////////////////////////////////////////////////////////////
 
 public function teleportation_get_max_targets(){
-    if (this.skills_has('teleportation_3')){
+    if (this.player.skills.skills_has('teleportation_3')){
         return 3;
     }
-    else if (this.skills_has('teleportation_2')){
+    else if (this.player.skills.skills_has('teleportation_2')){
         return 2;
     }
-    else if (this.skills_has('teleportation_1')){
+    else if (this.player.skills.skills_has('teleportation_1')){
         return 1;
     }
 
@@ -938,20 +938,20 @@ public function teleportation_get_max_targets(){
 }
 
 public function teleportation_get_energy_cost(){
-    if (this.skills_has('teleportation_5')){
-        return Math.round(this.metabolics_get_max_energy() * 0.10);
+    if (this.player.skills.skills_has('teleportation_5')){
+        return Math.round(this.player.metabolics.metabolics_get_max_energy() * 0.10);
     }
-    else if (this.skills_has('teleportation_4')){
-        return Math.round(this.metabolics_get_max_energy() * 0.15);
+    else if (this.player.skills.skills_has('teleportation_4')){
+        return Math.round(this.player.metabolics.metabolics_get_max_energy() * 0.15);
     }
-    else if (this.skills_has('teleportation_3')){
-        return Math.round(this.metabolics_get_max_energy() * 0.20);
+    else if (this.player.skills.skills_has('teleportation_3')){
+        return Math.round(this.player.metabolics.metabolics_get_max_energy() * 0.20);
     }
-    else if (this.skills_has('teleportation_2')){
-        return Math.round(this.metabolics_get_max_energy() * 0.25);
+    else if (this.player.skills.skills_has('teleportation_2')){
+        return Math.round(this.player.metabolics.metabolics_get_max_energy() * 0.25);
     }
-    else if (this.skills_has('teleportation_1')){
-        return Math.round(this.metabolics_get_max_energy() * 0.33);
+    else if (this.player.skills.skills_has('teleportation_1')){
+        return Math.round(this.player.metabolics.metabolics_get_max_energy() * 0.33);
     }
 
     return null;
@@ -961,13 +961,13 @@ public function teleportation_get_cooldown_time(){
 
     // End of the world - reduce all cooldowns by a factor of 60
 
-    if (this.skills_has('teleportation_5')){
+    if (this.player.skills.skills_has('teleportation_5')){
         return 5;
     }
-    else if (this.skills_has('teleportation_4')){
+    else if (this.player.skills.skills_has('teleportation_4')){
         return 5;
     }
-    else if (this.skills_has('teleportation_1')){
+    else if (this.player.skills.skills_has('teleportation_1')){
         return 5;
     }
 
@@ -976,10 +976,10 @@ public function teleportation_get_cooldown_time(){
 
 public function teleportation_get_max_map_teleports(){
 
-    if (this.skills_has('teleportation_5')){
+    if (this.player.skills.skills_has('teleportation_5')){
         return 1000;
     }
-    else if (this.skills_has('teleportation_4')){
+    else if (this.player.skills.skills_has('teleportation_4')){
         return 1000;
     }
 
@@ -989,7 +989,7 @@ public function teleportation_get_max_map_teleports(){
 // How many times per game day can this player use the 'summons' functionality?
 // First number is 'free', second number is how many with teleportation tokens
 public function teleportation_get_max_summons(){
-    if (this.skills_has('teleportation_5')){
+    if (this.player.skills.skills_has('teleportation_5')){
         return [2, -1];
     }
 
@@ -1033,9 +1033,9 @@ public function teleportation_imbue_script_prompt(value, details){
 
     if (value == 'yes'){
         var script = this.removeItemStackTsid(details.tsid, 1);
-        if (!script || script.class_tsid != 'teleportation_script') return this.sendActivity("That's not a Teleportation Script.");
+        if (!script || script.class_tsid != 'teleportation_script') return this.player.sendActivity("That's not a Teleportation Script.");
 
-        if (!this.teleportation_get_token_balance()) return this.sendActivity("Buy more Teleportation Tokens!");
+        if (!this.teleportation_get_token_balance()) return this.player.sendActivity("Buy more Teleportation Tokens!");
 
         this.teleportation_spend_token("Imbueing a Teleportation Script to "+script.destination.name+".");
 
@@ -1061,21 +1061,21 @@ public function teleportation_imbue_script_prompt(value, details){
 
 
 
-        return this.sendActivity("You imbued a Teleportation Script.");
+        return this.player.sendActivity("You imbued a Teleportation Script.");
     }
 }
 
 public function teleport_complete(){
-    var quest = this.getQuestInstance('teleportation_teleport_in_time_period');
+    var quest = this.player.quests.getQuestInstance('teleportation_teleport_in_time_period');
     if (quest && quest.isStarted(this) && !quest.isDone(this)){
         quest.sendGrowl(this);
     }
 
-    if (this.countFollowers() >= 3){
-        this.quests_set_flag('teleportation_self_withfollowers_3');
+    if (this.player.countFollowers() >= 3){
+        this.player.quests.quests_set_flag('teleportation_self_withfollowers_3');
     }
 
-    this.quests_inc_counter('teleportation_count', 1);
+    this.player.quests.quests_inc_counter('teleportation_count', 1);
 }
 
     }

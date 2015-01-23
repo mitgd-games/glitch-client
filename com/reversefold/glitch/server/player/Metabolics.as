@@ -28,8 +28,8 @@ public function metabolics_init(){
     }
 
     var max = this.metabolics_calc_max(this.stats.level);
-    this.init_prop('metabolics', 'energy', max, 0, max);
-    this.init_prop('metabolics', 'mood', max, 0, max);
+    this.player.init_prop('metabolics', 'energy', max, 0, max);
+    this.player.init_prop('metabolics', 'mood', max, 0, max);
 
     // This seems unnecessary
     //this.metabolics_recalc_limits(false);
@@ -63,20 +63,20 @@ public function metabolics_add_energy(x, quiet, force){
 
     if (this.is_dead){
         if (!quiet){
-            this.sendOnlineActivity("You would have gained energy, but you're dead!");
+            this.player.sendOnlineActivity("You would have gained energy, but you're dead!");
         }
         return 0;
     }
-    else if (this.buffs_has('super_pooped')){
+    else if (this.player.buffs.buffs_has('super_pooped')){
         if (!quiet){
-            this.sendOnlineActivity("You would have gained energy, but you're super pooped!");
+            this.player.sendOnlineActivity("You would have gained energy, but you're super pooped!");
         }
         return 0;
     }
 
     var change = this.metabolics.energy.apiInc(x);
 
-    this.daily_history_increment('energy_gained', change);
+    this.player.daily_history.daily_history_increment('energy_gained', change);
 
     if (change && !quiet){
         this.apiSendAnnouncement({
@@ -86,8 +86,8 @@ public function metabolics_add_energy(x, quiet, force){
     }
 
     if (this.metabolics_get_percentage('energy') > 5) {
-        if (this.buffs_has('pooped')){
-            this.buffs_remove('pooped');
+        if (this.player.buffs.buffs_has('pooped')){
+            this.player.buffs.buffs_remove('pooped');
         }
 
         if (this.dontGetPooped) {
@@ -102,7 +102,7 @@ public function metabolics_add_mood(x, quiet, force){
 
     if (this.is_dead){
         if (!quiet){
-            this.sendOnlineActivity("You would have gained some mood, but you're dead!");
+            this.player.sendOnlineActivity("You would have gained some mood, but you're dead!");
         }
         return 0;
     }
@@ -138,7 +138,7 @@ public function metabolics_lose_energy(x, quiet, force){
 
     if (this.is_dead){
         if (!quiet){
-            this.sendOnlineActivity("You would have lost energy, but you're dead!");
+            this.player.sendOnlineActivity("You would have lost energy, but you're dead!");
         }
         return 0;
     }
@@ -153,13 +153,13 @@ public function metabolics_lose_energy(x, quiet, force){
     }
 
 
-    this.daily_history_increment('energy_consumed', change * -1);
+    this.player.daily_history.daily_history_increment('energy_consumed', change * -1);
 
     // Check for croaking
-    if (this.metabolics_get_energy() == 0 && !this.deaths_today && !this.buffs_has('no_no_powder')){
+    if (this.metabolics_get_energy() == 0 && !this.deaths_today && !this.player.buffs.buffs_has('no_no_powder')){
         // 1. If you get down below the DEATH THRESHOLD (I think that's less than 2% of energy?) on a given day, you die. That will be the only time you die that day.
         log.info(this+' croaking due to low energy');
-        this.croak();
+        this.player.croak();
     }
     // Check for pooped
     else if (this.metabolics_get_percentage('energy') <= 5 && !this.is_dead && this.deaths_today && !this.dontGetPooped){
@@ -168,21 +168,21 @@ public function metabolics_lose_energy(x, quiet, force){
         tomorrow[4] = 0;
 
         var remaining = gametime_to_timestamp(tomorrow) - time();
-        if (this.daily_history_get(current_day_key(), 'energy_consumed') >= this.metabolics.energy.top * 20 && !this.buffs_has('super_pooped')){
-            if (this.buffs_has('pooped')) this.buffs_remove('pooped');
-            this.buffs_apply('super_pooped', {duration: remaining});
+        if (this.player.daily_history.daily_history_get(current_day_key(), 'energy_consumed') >= this.metabolics.energy.top * 20 && !this.player.buffs.buffs_has('super_pooped')){
+            if (this.player.buffs.buffs_has('pooped')) this.player.buffs.buffs_remove('pooped');
+            this.player.buffs.buffs_apply('super_pooped', {duration: remaining});
         }
-        else if (!this.buffs_has('pooped') && !this.buffs_has('super_pooped')){
-            this.buffs_apply('pooped', {duration: remaining});
+        else if (!this.player.buffs.buffs_has('pooped') && !this.player.buffs.buffs_has('super_pooped')){
+            this.player.buffs.buffs_apply('pooped', {duration: remaining});
         }
     };
 
-    if (this.metabolics_get_percentage('energy') <= 10 && !this.buffs_has('walking_dead') && !this.is_dead && time() - this['!last_energy_warning'] > 60){
+    if (this.metabolics_get_percentage('energy') <= 10 && !this.player.buffs.buffs_has('walking_dead') && !this.is_dead && time() - this['!last_energy_warning'] > 60){
         if (this.deaths_today){
-            this.sendOnlineActivity('You are extremely low on energy! Find something to eat.');
+            this.player.sendOnlineActivity('You are extremely low on energy! Find something to eat.');
         }
         else{
-            this.sendOnlineActivity('You are about to croak! Find something to eat.');
+            this.player.sendOnlineActivity('You are about to croak! Find something to eat.');
         }
 
         this['!last_energy_warning'] = time();
@@ -210,7 +210,7 @@ public function metabolics_lose_mood(x, quiet, force){
 
     if (this.is_dead){
         if (!quiet){
-            this.sendOnlineActivity("You would have lost some mood, but you're dead!");
+            this.player.sendOnlineActivity("You would have lost some mood, but you're dead!");
         }
         return 0;
     }
@@ -225,17 +225,17 @@ public function metabolics_lose_mood(x, quiet, force){
     }
 
     if (this.location.instance_id != 'tower_quest_desert'){
-        if (this.metabolics_get_percentage('mood') <= 20 && !this.buffs_has('walking_dead') && !this.is_dead){
-            this.sendOnlineActivity('Your mood is getting very low! Try drinking something tasty.');
+        if (this.metabolics_get_percentage('mood') <= 20 && !this.player.buffs.buffs_has('walking_dead') && !this.is_dead){
+            this.player.sendOnlineActivity('Your mood is getting very low! Try drinking something tasty.');
         }
-        else if (this.metabolics_get_percentage('mood') <= 50 && !this.buffs_has('walking_dead') && !this.is_dead){
-            //this.sendOnlineActivity('Your mood is getting low. Watch it: you\'ll start burning energy faster.');
-            this.sendOnlineActivity('Your mood is getting low. Drink something, else you\'ll earn less iMG for your actions.');
+        else if (this.metabolics_get_percentage('mood') <= 50 && !this.player.buffs.buffs_has('walking_dead') && !this.is_dead){
+            //this.player.sendOnlineActivity('Your mood is getting low. Watch it: you\'ll start burning energy faster.');
+            this.player.sendOnlineActivity('Your mood is getting low. Drink something, else you\'ll earn less iMG for your actions.');
         }
     }
 
     if (this.metabolics_get_mood() == 0 && this.is_god){
-        this.quests_offer('zero_mood');
+        this.player.quests.quests_offer('zero_mood');
     }
 
     return change;
@@ -301,8 +301,8 @@ public function metabolics_recalc_limits(set_to_max){
         this.metabolics.energy.apiSet(max);
         this.metabolics.mood.apiSet(max);
 
-        if (this.buffs_has('pooped')){
-            this.buffs_remove('pooped');
+        if (this.player.buffs.buffs_has('pooped')){
+            this.player.buffs.buffs_remove('pooped');
         }
 
         if (this.dontGetPooped) {
@@ -336,13 +336,13 @@ public function metabolics_calc_max(level, ignore_buffs){
 
     // Some buffs artificially restrict your max amounts
     if (!ignore_buffs){
-        if (this.buffs_has('real_bummer')){
+        if (this.player.buffs.buffs_has('real_bummer')){
             return 30;
         }
-        else if (this.buffs_has('bad_mood')){
+        else if (this.player.buffs.buffs_has('bad_mood')){
             return 60;
         }
-        else if (this.buffs_has('rooked_recovery')){
+        else if (this.player.buffs.buffs_has('rooked_recovery')){
             var actual_max = this.metabolics_calc_max(level, true);
             return actual_max / 2;
         }
@@ -394,7 +394,7 @@ public function metabolics_try_set(stat, val){
 
 public function metabolics_try_inc(stat, val){
     if (this.is_dead) return 0;
-    if (this.buffs_has('super_pooped')) return 0;
+    if (this.player.buffs.buffs_has('super_pooped')) return 0;
     var remain = this.metabolics[stat].top - this.metabolics[stat].value;
     return val > remain ? remain : val;
 }

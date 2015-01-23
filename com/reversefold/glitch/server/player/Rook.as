@@ -35,12 +35,12 @@ public function rookAttack(force){
     // Each player in a location at the time of an attack loses 20 energy and 20 mood, even if they are not rooked.
     if (this.is_player){
         var energy_modifier = 1;
-        if (!this.buffs_has('rook_armor')) energy_modifier = 0.5;
-        this.metabolics_lose_energy(20 * energy_modifier);
+        if (!this.player.buffs.buffs_has('rook_armor')) energy_modifier = 0.5;
+        this.player.metabolics.metabolics_lose_energy(20 * energy_modifier);
 
-        if (!this.buffs_has('rook_armor')) this.metabolics_lose_mood(20);
+        if (!this.player.buffs.buffs_has('rook_armor')) this.player.metabolics.metabolics_lose_mood(20);
 
-        if(!this.buffs_has('rook_wrath') && !force) {
+        if(!this.player.buffs.buffs_has('rook_wrath') && !force) {
             return;
         }
     }
@@ -66,7 +66,7 @@ public function rookAttack(force){
             //  - they cannot teleport
 
             this.broadcastPCRSChange();
-            this.buffs_apply('rooked');
+            this.player.buffs.buffs_apply('rooked');
         }
         else{
             // Common effects
@@ -125,7 +125,7 @@ public function broadcastPCRSChange(){
     };
 
     this.apiSendMsg(rsp);
-    this.reverseBuddiesSendMsg(rsp);
+    this.player.buddies.reverseBuddiesSendMsg(rsp);
 }
 
 public function startRevive(pc, msg){

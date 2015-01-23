@@ -27,7 +27,7 @@ public function runDropTable(class_id, source, preface, offsets, props, combine_
 
         var context = {'class_id': class_id, 'source': (source ? source.tsid : '')}; // For logs
 
-        var chance = /*this.buffs_has('max_luck') ? 0 : */ randInt(0, 100); // Change to allow testing of multiple drops
+        var chance = /*this.player.buffs.buffs_has('max_luck') ? 0 : */ randInt(0, 100); // Change to allow testing of multiple drops
         for (var drop_chance in table.drops){
             if (chance <= drop_chance){
 
@@ -42,13 +42,13 @@ public function runDropTable(class_id, source, preface, offsets, props, combine_
                         it.label = item_prot.label;
                         if (source){
                             if(offsets) {
-                                this.createItemFromOffset(it.class_id, it.count, offsets, false, source, props);
+                                this.player.items.createItemFromOffset(it.class_id, it.count, offsets, false, source, props);
                             } else {
-                                this.createItemFromSource(it.class_id, it.count, source, false, props);
+                                this.player.items.createItemFromSource(it.class_id, it.count, source, false, props);
                             }
                         }
                         else{
-                            this.createItemFromFamiliar(it.class_id, it.count, props);
+                            this.player.items.createItemFromFamiliar(it.class_id, it.count, props);
                         }
 
                         if (combine_messages){
@@ -58,24 +58,24 @@ public function runDropTable(class_id, source, preface, offsets, props, combine_
                             msg = "You got "+pluralize(it.count, item_prot.name_single, item_prot.name_plural)+"!";
                         }
 
-                        this.quests_inc_counter('drop_table_'+class_id+'_'+it.class_id, it.count);
+                        this.player.quests.quests_inc_counter('drop_table_'+class_id+'_'+it.class_id, it.count);
 
                         // Quest-specific hacks
                         if (class_id == 'ak_chicken_squeeze' && item_prot.is_musicblock){
-                            this.quests_inc_counter('chicken_music_block', 1);
+                            this.player.quests.quests_inc_counter('chicken_music_block', 1);
                         }
                         else if (class_id == 'light_green_thumb_pet' && item_prot.is_musicblock){
-                            this.quests_set_flag('trant_music_block');
+                            this.player.quests.quests_set_flag('trant_music_block');
                         }
                         else if ((class_id == 'soil_appreciation_small' || class_id == 'soil_appreciation_large') && item_prot.is_musicblock){
-                            this.quests_inc_counter('patch_music_block', 1);
+                            this.player.quests.quests_inc_counter('patch_music_block', 1);
                         }
                         else if (class_id == 'spinning_wheel' && (it.class_id == 'cubimal_package' || it.class_id == 'cubimal_package_2')){
-                            this.feats_increment('streaking', 5);
+                            this.player.feats.feats_increment('streaking', 5);
                         }
                     }
                     else if (it.currants){
-                        this.stats_add_currants(it.currants, context);
+                        this.player.stats.stats_add_currants(it.currants, context);
                         if (combine_messages){
                             combine_messages.push(pluralize(it.currants, 'currant', 'currants'));
                         }
@@ -83,10 +83,10 @@ public function runDropTable(class_id, source, preface, offsets, props, combine_
                             msg = "You got "+pluralize(it.currants, 'currant', 'currants')+"!";
                         }
 
-                        this.quests_inc_counter('drop_table_'+class_id+'_currants', it.currants);
+                        this.player.quests.quests_inc_counter('drop_table_'+class_id+'_currants', it.currants);
                     }
                     else if (it.favor && it.favor.giant && it.favor.points){
-                        this.stats_add_favor_points(it.favor.giant, it.favor.points);
+                        this.player.stats.stats_add_favor_points(it.favor.giant, it.favor.points);
                         var giantName = capitalize(it.favor.giant);
                         if (it.favor.giant == 'all'){
                             giantName = 'all the Giants';
@@ -99,10 +99,10 @@ public function runDropTable(class_id, source, preface, offsets, props, combine_
                             msg = "You got "+it.favor.points+" favor with "+giantName+"!";
                         }
 
-                        this.quests_inc_counter('drop_table_'+class_id+'_favor_'+it.favor.giant, it.favor.points);
+                        this.player.quests.quests_inc_counter('drop_table_'+class_id+'_favor_'+it.favor.giant, it.favor.points);
                     }
                     else if (it.mood){
-                        var actual = this.metabolics_add_mood(it.mood);
+                        var actual = this.player.metabolics.metabolics_add_mood(it.mood);
 
                         if (combine_messages){
                             combine_messages.push(actual+" mood");
@@ -113,7 +113,7 @@ public function runDropTable(class_id, source, preface, offsets, props, combine_
                     }
                     else if (it.energy){
 
-                        var actual = this.metabolics_add_energy(it.energy);
+                        var actual = this.player.metabolics.metabolics_add_energy(it.energy);
                         if (combine_messages){
                             combine_messages.push(actual+" energy");
                         }
@@ -123,7 +123,7 @@ public function runDropTable(class_id, source, preface, offsets, props, combine_
                     }
                     else if (it.xp){
 
-                        var actual = this.stats_add_xp(it.xp, false, context);
+                        var actual = this.player.stats.stats_add_xp(it.xp, false, context);
                         if (combine_messages){
                             combine_messages.push(actual+" iMG");
                         }
@@ -137,10 +137,10 @@ public function runDropTable(class_id, source, preface, offsets, props, combine_
 
                     if (msg && !combine_messages){
                         if (preface){
-                            this.sendOnlineActivity(preface + msg);
+                            this.player.sendOnlineActivity(preface + msg);
                         }
                         else{
-                            this.sendOnlineActivity(msg);
+                            this.player.sendOnlineActivity(msg);
                         }
                     }
                 }
@@ -194,8 +194,8 @@ public function runSkillPackage(class_id, source_item, args){
     // Enough energy?
     //
 
-    if (!args.ignore_energy_cost && this.metabolics_get_energy() <= details.energy_cost * source_item.count){
-        this.sendOnlineActivity("You're too tired to do that.");
+    if (!args.ignore_energy_cost && this.player.metabolics.metabolics_get_energy() <= details.energy_cost * source_item.count){
+        this.player.sendOnlineActivity("You're too tired to do that.");
         return {ok: 0, error: 'Not enough energy'};
     }
 
@@ -207,7 +207,7 @@ public function runSkillPackage(class_id, source_item, args){
 
     var duration = details.duration;
     if (details.duration_max){
-        if (this.buffs_has('max_luck')){
+        if (this.player.buffs.buffs_has('max_luck')){
             duration = details.duration_max;
         } else {
             duration = randInt(details.duration/1000, details.duration_max/1000)*1000;
@@ -262,13 +262,13 @@ public function runSkillPackage(class_id, source_item, args){
             // Move the player
             var distance = Math.abs(this.x-endpoint);
             if (distance && Math.abs(this.x-source_item.x) < Math.max(pc_action_distance * 0.125, 30) || Math.abs(this.x-source_item.x) > max_pc_action_distance){
-                //this.moveAvatar(endpoint, this.y, face);
+                //this.player.moveAvatar(endpoint, this.y, face);
                 distance = 0;
-                this.faceAvatar(face);
+                this.player.faceAvatar(face);
             }
             else{
                 distance = 0;
-                this.faceAvatar(face);
+                this.player.faceAvatar(face);
             }
 
             if (config.is_dev) log.info(this+' skill package movement action_distance: ', pc_action_distance, ', max_distance: ', max_pc_action_distance, ', distance: '+distance);
@@ -405,7 +405,7 @@ public function runSkillPackage(class_id, source_item, args){
                 pc: this
             };
 
-            this.announce_sound(args.tool_item.class_tsid.toUpperCase(), 50);
+            this.player.announcements.announce_sound(args.tool_item.class_tsid.toUpperCase(), 50);
         }
 
         this.apiSetTimer('finishSkillPackage', duration);
@@ -441,7 +441,7 @@ public function finishSkillPackage(){
     delete this['!skill_package_running'];
     source_item.clearSkillPackage();
     if (args.tool_item){
-        this.announce_sound_stop(args.tool_item.class_tsid.toUpperCase());
+        this.player.announcements.announce_sound_stop(args.tool_item.class_tsid.toUpperCase());
         args.tool_item.clearSkillPackage();
     }
 
@@ -456,7 +456,7 @@ public function finishSkillPackage(){
     // Huge success?
     //
 
-    if (details.success_rate && !args.no_fail && !this.buffs_has('max_luck')){
+    if (details.success_rate && !args.no_fail && !this.player.buffs.buffs_has('max_luck')){
         if (!is_chance(details.success_rate/100)){
             var ret = {ok: 0, error: 'Success rate failure', values: actuals, details: details, args: args};
             if (args.callback){
@@ -477,7 +477,7 @@ public function finishSkillPackage(){
         var limit = details.interval_limit;
 
         // This shouldn't really go here, but I don't see any other way of overriding this.
-        if (class_id === "peat_harvest" && this.imagination_has_upgrade("bog_specialization_dig_peat_bog_twice")) {
+        if (class_id === "peat_harvest" && this.player.imagination.imagination_has_upgrade("bog_specialization_dig_peat_bog_twice")) {
             limit = 2;
         }
 
@@ -504,7 +504,7 @@ public function finishSkillPackage(){
 
     actuals['energy_cost'] = 0;
     if (!args.ignore_energy_cost && details.energy_cost){
-        actuals['energy_cost'] = this.metabolics_lose_energy(details.energy_cost * source_item.getProp('count'));
+        actuals['energy_cost'] = this.player.metabolics.metabolics_lose_energy(details.energy_cost * source_item.getProp('count'));
         slugs.energy = actuals['energy_cost'];
     }
 
@@ -541,7 +541,7 @@ public function finishSkillPackage(){
 
     actuals['mood_bonus'] = 0;
     if (!args.ignore_mood_bonus && details.mood_bonus){
-        actuals['mood_bonus'] = this.metabolics_add_mood(details.mood_bonus);
+        actuals['mood_bonus'] = this.player.metabolics.metabolics_add_mood(details.mood_bonus);
         slugs.mood = actuals['mood_bonus'];
     }
 
@@ -549,7 +549,7 @@ public function finishSkillPackage(){
     if (!args.ignore_xp_bonus && details.xp_bonus){
         var context = {'skill':class_id};
 
-        actuals['xp_bonus'] = this.stats_add_xp(details.xp_bonus, false, context);
+        actuals['xp_bonus'] = this.player.stats.stats_add_xp(details.xp_bonus, false, context);
         slugs.xp = actuals['xp_bonus'];
     }
 
@@ -557,10 +557,10 @@ public function finishSkillPackage(){
     if (details.drop_class_id && !args.no_drop){
 
         // Rubeweed improves the drop chance.
-        var drop_chance = details.drop_chance * (this.buffs_has('rubeweed') ? 1.25 : 1.0);
+        var drop_chance = details.drop_chance * (this.player.buffs.buffs_has('rubeweed') ? 1.25 : 1.0);
         drop_chance = (drop_chance > 100) ? 100 : drop_chance;
 
-        if (is_chance(drop_chance / 100) || this.buffs_has('max_luck')){
+        if (is_chance(drop_chance / 100) || this.player.buffs.buffs_has('max_luck')){
             details['got_drop'] = this.runDropTable(details.drop_class_id, source_item);
 
             for (var i in details['got_drop']){
@@ -620,7 +620,7 @@ public function getSkillPackageDetails(class_id, no_img_upgrades){
     var details;
     for (var i in skill_package.skills){
         var s = skill_package.skills[i];
-        if ((!details || s.rank > details.rank) && (i == 'no_skill' || this.skills_has(i))){
+        if ((!details || s.rank > details.rank) && (i == 'no_skill' || this.player.skills.skills_has(i))){
             details = s;
         }
     }
@@ -643,7 +643,7 @@ public function getSkillPackageDetails(class_id, no_img_upgrades){
                 tmp_rank = intval(ranks[0]);
             }
 
-            if ((!details || !img_rank[tmp_cat] || img_rank[tmp_cat] < tmp_rank ) && this.imagination_has_upgrade(i)){
+            if ((!details || !img_rank[tmp_cat] || img_rank[tmp_cat] < tmp_rank ) && this.player.imagination.imagination_has_upgrade(i)){
                 img_rank[tmp_cat] = tmp_rank;
 
                 if (class_id == 'croppery_clear' || class_id == 'herbalism_clear'){
@@ -773,7 +773,7 @@ public function trySkillPackage(class_id, no_img_upgrades){
     var ret = {};
     ret.energy_cost = details.energy_cost;
     ret.mood = details.mood_bonus;
-    ret.xp = details.xp_bonus * this.stats_get_xp_mood_bonus();
+    ret.xp = details.xp_bonus * this.player.stats.stats_get_xp_mood_bonus();
     ret.seconds = Math.round(details.duration / 1000);
     ret.wear = details.tool_wear;
 

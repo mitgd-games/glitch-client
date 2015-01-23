@@ -94,7 +94,7 @@ public function prompts_add(details){
     var msg = this.prompts_get_msg(details);
     msg.type = 'prompt';
 
-    this.sendMsgOnline(msg);
+    this.player.sendMsgOnline(msg);
 
     return details.uid;
 }
@@ -109,7 +109,7 @@ public function prompts_add_delayed(details, seconds){
     if (details.callback) details.prompt_callback = details.callback;
     details.callback = 'prompts_add';
 
-    this.events_add(details, seconds);
+    this.player.events.events_add(details, seconds);
 }
 
 public function prompts_has(uid){
@@ -121,7 +121,7 @@ public function prompts_remove(uid){
 
     delete this.prompts[uid];
 
-    this.sendMsgOnline({
+    this.player.sendMsgOnline({
         type: 'prompt_remove',
         uid: uid
     });
@@ -182,25 +182,25 @@ public function prompts_choice(uid, value){
                 var pc = dst.getNonGreeters()[0];
                 if (!pc){
                     log.info(this+' greeter target player gone missing');
-                    return this.sendActivity("Wait, where'd they go?");
+                    return this.player.sendActivity("Wait, where'd they go?");
                 }
 
-                this.groups_chat(config.greeter_group, "I got "+pc.label+"!");
+                this.player.groups.groups_chat(config.greeter_group, "I got "+pc.label+"!");
                 utils.irc_inject('#greeters', this.label+': I got '+pc.label+'!');
 
                 this.greeting_previous_location = {tsid: this.location.tsid, x: this.x, y: this.y};
 
                 var instance_id = dst.getProp('instance_id');
                 if (instance_id){
-                    this.instances_add(instance_id, dst.getProp('instance'));
-                    return this.instances_enter(instance_id, pc.x-150, pc.y);
+                    this.player.instances.instances_add(instance_id, dst.getProp('instance'));
+                    return this.player.instances.instances_enter(instance_id, pc.x-150, pc.y);
                 }
                 else{
-                    return this.teleportToLocationDelayed(value, pc.x-150, pc.y);
+                    return this.player.teleportToLocationDelayed(value, pc.x-150, pc.y);
                 }
             }
             else{
-                return this.sendActivity("Oops, someone else beat you to it.");
+                return this.player.sendActivity("Oops, someone else beat you to it.");
             }
         }
 
@@ -248,12 +248,12 @@ public function prompts_test(){
         callback    : 'prompts_test_callback'
     });
 
-    this.sendActivity('The prompt uid is: '+uid);
+    this.player.sendActivity('The prompt uid is: '+uid);
 }
 
 public function prompts_test_callback(value, details){
 
-    this.sendActivity('You chose option '+value);
+    this.player.sendActivity('You chose option '+value);
 }
 
 public function prompts_itemstack_location_callback(value, details){
@@ -301,7 +301,7 @@ public function prompts_itemstack_modal_callback(value, details){
 public function prompts_buff_callback(value, details){
     //log.info(this+' prompts_buff_callback: '+details);
     if (details.buff_class_tsid){
-        this.buffs_apply(details.buff_class_tsid, details.buff_args);
+        this.player.buffs.buffs_apply(details.buff_class_tsid, details.buff_args);
     }
 }
 

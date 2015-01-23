@@ -101,7 +101,7 @@ public function rewards_store(stack, msg){
     var name = (stack.count > 1) ? stack.name_plural : (stack.article + " " + stack.name_single);
     var it = (stack.count > 1) ? 'them' : 'it';
 
-    this.prompts_add({
+    this.player.prompts.prompts_add({
         txt     : msg ? msg : "Your magic rock is holding "+name+" for you. Make room in your pack to hold "+it+".",
         icon_buttons    : false,
         timeout     : 30,
@@ -149,7 +149,7 @@ public function rewards_return(){
                     overflow_array.push(pluralize(overflow_items[i], proto.name_single, proto.name_plural));
                 }
             }
-            this.prompts_add({
+            this.player.prompts.prompts_add({
                 txt     : "Your magic rock is holding rewards for you ("+pretty_list(overflow_array, ' and ')+"). Make room in your pack to hold them.",
                 icon_buttons    : false,
                 timeout     : 30,
@@ -170,7 +170,7 @@ public function rewards_return(){
                 }
             }
 
-            this.prompts_add({
+            this.player.prompts.prompts_add({
                 txt     : "Your "+pretty_list(returned_array, ' and ')+" "+(is_plural ? 'have' : 'has')+" been given to you.",
                 icon_buttons    : false,
                 timeout     : 5,

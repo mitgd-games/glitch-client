@@ -150,7 +150,7 @@ public function skills_auto_learn_recipes(skill_id, tell_client){
 
         if (has_all_skills){
 
-            this.making_try_learn_recipe(i);
+            this.player.making.making_try_learn_recipe(i);
 
             var recipe = get_recipe(i);
 
@@ -168,9 +168,9 @@ public function skills_auto_learn_recipes(skill_id, tell_client){
     //
 
     if (tell_client){
-        var msg = this.making_recipe_request({class_tsids: updates});
+        var msg = this.player.making.making_recipe_request({class_tsids: updates});
         msg.type = 'recipe_request';
-        this.sendMsgOnline(msg);
+        this.player.sendMsgOnline(msg);
     }
 }
 
@@ -212,9 +212,9 @@ public function skills_get_all(is_admin){
             if (this.skills_can_unlearn(i)) {
                 out[i].unlearnable = 1;
 
-                var quest = this.quests_get_quest_for_unlearnt_skill(i);
+                var quest = this.player.quests.quests_get_quest_for_unlearnt_skill(i);
                 if (quest) {
-                    var qInst = this.getQuestInstance(quest);
+                    var qInst = this.player.quests.getQuestInstance(quest);
 
                     out[i].unlearn_quest_removal = quest;
 
@@ -351,7 +351,7 @@ public function skills_get_all(is_admin){
 
             out[i].reqs.push({
                 'type'  : 'achievement',
-                'ok'    : this.achievements_has(rs_id) ? 1 : 0,
+                'ok'    : this.player.achievements.achievements_has(rs_id) ? 1 : 0,
                 'achievement'   : rs_id
             });
         }
@@ -372,7 +372,7 @@ public function skills_get_all(is_admin){
 
             out[i].reqs.push({
                 'type'  : 'quest',
-                'ok'    : this.getQuestStatus(rs_id) == 'done' ? 1 : 0,
+                'ok'    : this.player.quests.getQuestStatus(rs_id) == 'done' ? 1 : 0,
                 'quest' : rs_id
             });
         }
@@ -393,7 +393,7 @@ public function skills_get_all(is_admin){
 
             out[i].reqs.push({
                 'type'  : 'upgrade',
-                'ok'    : this.imagination_has_upgrade(rs_id) ? 1 : 0,
+                'ok'    : this.player.imagination.imagination_has_upgrade(rs_id) ? 1 : 0,
                 'upgrade'   : rs_id
             });
         }
@@ -538,7 +538,7 @@ public function skills_remove(id){
 
             if (r.skill == id || in_array_real(id, r.skills)){
 
-                this.making_unlearn_recipe(i);
+                this.player.making.making_unlearn_recipe(i);
             }
         }
 
@@ -547,7 +547,7 @@ public function skills_remove(id){
         // remove quests related to this skill
         //
 
-        this.quests_unlearnt_skill(id);
+        this.player.quests.quests_unlearnt_skill(id);
     }
 }
 
@@ -587,10 +587,10 @@ public function skills_unlearning_time(point_cost) {
 
     duration = Math.round(duration);
 
-    if (this.imagination_has_upgrade("unlearning_time_2")){
+    if (this.player.imagination.imagination_has_upgrade("unlearning_time_2")){
         duration *= 0.5;
     }
-    else if (this.imagination_has_upgrade("unlearning_time_1")){
+    else if (this.player.imagination.imagination_has_upgrade("unlearning_time_1")){
         duration *= 0.75;
     }
 
@@ -605,10 +605,10 @@ public function skills_unlearn(id) {
         this.skills.unlearningQueue = {};
     }
 
-    if (!this.imagination_has_upgrade("unlearning_ability")) { this.sendActivity("You don't know how to unlearn"); return api_error("You don't know how to unlearn."); }
+    if (!this.player.imagination.imagination_has_upgrade("unlearning_ability")) { this.player.sendActivity("You don't know how to unlearn"); return api_error("You don't know how to unlearn."); }
 
     var skill = config.data_skills[id];
-    if (!skill) { this.sendActivity("bad skill"); return api_error('Invalid skill: '+id); }
+    if (!skill) { this.player.sendActivity("bad skill"); return api_error('Invalid skill: '+id); }
 
     if (!this.skills_has(id) && !this.skills_in_learning_queue(id)) { /*log.info("don't have skill");*/ return api_error("You don't have skill "+id+"."); }
     if (!this.skills_can_unlearn(id)) { /*log.info("skill needed for other skills");*/ return api_error("You can't unlearn a skill that is required for your other skills."); }
@@ -644,10 +644,10 @@ public function skills_unlearn(id) {
                     total_time: this.skills_points_to_seconds(config.data_skills[i].point_cost, config.data_skills[i].category_id)
                 };
 
-                this.sendMsgOnline(out);
+                this.player.sendMsgOnline(out);
 
                 if (i != id) {
-                    this.sendActivity('You paused learning '+out.name+'.', null, true);
+                    this.player.sendActivity('You paused learning '+out.name+'.', null, true);
                 }
                 else {
                     //log.info(this+" Unlearning current in progress skill "+id);
@@ -695,7 +695,7 @@ public function skills_unlearn(id) {
         //log.info(this+"Unlearning time: "+duration+" for "+id+" points: "+points);
 
         if (this.skills_has(id)){
-            var quest = this.quests_get_quest_for_unlearnt_skill(id);
+            var quest = this.player.quests.quests_get_quest_for_unlearnt_skill(id);
             if (quest) {
                 var quest_removal = quest;
 
@@ -724,15 +724,15 @@ public function skills_unlearn(id) {
             total_time: duration
         };
 
-        this.sendMsgOnline(out);
-        this.sendActivity('You started unlearning '+out.name+'.', null, true);
+        this.player.sendMsgOnline(out);
+        this.player.sendActivity('You started unlearning '+out.name+'.', null, true);
 
-        this.sendMsgOnline({
+        this.player.sendMsgOnline({
             type: 'familiar_state_change',
             accelerated: false
         });
 
-        //this.sendActivity("Will take "+(duration/60)+" minutes");
+        //this.player.sendActivity("Will take "+(duration/60)+" minutes");
     }
 
     this.apiSetTimer('skills_complete_unlearning', duration * 1000);
@@ -807,8 +807,8 @@ public function skills_train(id){
                     total_time: this.skills_points_to_seconds(config.data_skills[i].point_cost, config.data_skills[i].category_id)
                 };
 
-                this.sendMsgOnline(out);
-                this.sendActivity('You paused learning '+out.name+'.', null, true);
+                this.player.sendMsgOnline(out);
+                this.player.sendActivity('You paused learning '+out.name+'.', null, true);
 
 
                 // perform web callback for additional processing
@@ -869,9 +869,9 @@ public function skills_train(id){
             total_time: this.skills_points_to_seconds(skill.point_cost, skill.category_id)
         };
 
-        this.sendMsgOnline(out);
+        this.player.sendMsgOnline(out);
 
-        this.sendActivity('You resumed learning '+out.name+'.', null, true);
+        this.player.sendActivity('You resumed learning '+out.name+'.', null, true);
 
 
         // perform web callback for additional processing
@@ -895,8 +895,8 @@ public function skills_train(id){
             total_time: this.skills_points_to_seconds(skill.point_cost, skill.category_id)
         };
 
-        this.sendMsgOnline(out);
-        this.sendActivity('You started learning '+out.name+'.', null, true);
+        this.player.sendMsgOnline(out);
+        this.player.sendActivity('You started learning '+out.name+'.', null, true);
 
 
         // perform web callback for additional processing
@@ -909,19 +909,19 @@ public function skills_train(id){
         utils.http_get('callbacks/skill.php', args);
     }
 
-    this.quests_set_flag('learn_skill');
+    this.player.quests.quests_set_flag('learn_skill');
 
     //
     // make sure the client is showing the right anim (during skill switches, etc)
     //
 
     if (this.skills.queue[id].is_accelerated){
-        this.sendMsgOnline({
+        this.player.sendMsgOnline({
             type: 'familiar_state_change',
             accelerated: true
         });
     } else {
-        this.sendMsgOnline({
+        this.player.sendMsgOnline({
             type: 'familiar_state_change',
             accelerated: false
         });
@@ -1007,7 +1007,7 @@ public function skills_start_acceleration(acceleration_duration, ignore_max){
             // Tell the client
             //
 
-            this.sendMsgOnline({
+            this.player.sendMsgOnline({
                 type: 'familiar_state_change',
                 accelerated: true
             });
@@ -1024,7 +1024,7 @@ public function skills_stop_acceleration(){
     // Tell the client
     //
 
-    this.sendMsgOnline({
+    this.player.sendMsgOnline({
         type: 'familiar_state_change',
         accelerated: false
     });
@@ -1081,7 +1081,7 @@ public function skills_reschedule_queue(time_change){
                     // Tell the client
                     //
 
-                    this.sendMsgOnline({
+                    this.player.sendMsgOnline({
                         type: 'familiar_state_change',
                         accelerated: true
                     });
@@ -1100,7 +1100,7 @@ public function skills_reschedule_queue(time_change){
                     total_time: this.skills_points_to_seconds(skill.point_cost, skill.category_id)
                 };
 
-                this.sendMsgOnline(out);
+                this.player.sendMsgOnline(out);
 
                 return remaining;
             }
@@ -1186,8 +1186,8 @@ public function skills_cancel_unlearning(id) {
                         desc: skill.description
                     };
 
-                    this.sendMsgOnline(out);
-                    this.sendActivity('You are no longer unlearning '+out.name+'.', null, true);
+                    this.player.sendMsgOnline(out);
+                    this.player.sendActivity('You are no longer unlearning '+out.name+'.', null, true);
 
                     delete this.skills.unlearningQueue;
                 }
@@ -1209,8 +1209,8 @@ public function skills_cancel_unlearning(id) {
                             desc: skill.description
                         };
 
-                        this.sendMsgOnline(out);
-                        this.sendActivity('You are no longer unlearning '+out.name+'.', null, true);
+                        this.player.sendMsgOnline(out);
+                        this.player.sendActivity('You are no longer unlearning '+out.name+'.', null, true);
                     }
                     delete this.skills.unlearningQueue;
                 }
@@ -1232,7 +1232,7 @@ public function skills_cancel_unlearning(id) {
 // Finish unlearning a skill
 //
 public function skills_complete_unlearning() {
-    //this.sendActivity("completing unlearning");
+    //this.player.sendActivity("completing unlearning");
     if (!this.skills.unlearningQueue) {
         this.skills.unlearningQueue = {};
     }
@@ -1243,7 +1243,7 @@ public function skills_complete_unlearning() {
     for (var id in queue) {
         var skill = queue[id];
 
-        //this.sendActivity("Checking time on "+id);
+        //this.player.sendActivity("Checking time on "+id);
         if (skill.end <= time()){
             log.info(this+' skills_complete_unlearning '+id+' is complete');
 
@@ -1260,7 +1260,7 @@ public function skills_complete_unlearning() {
     }
 
     if (next){
-        //this.sendActivity("Scheduling another check");
+        //this.player.sendActivity("Scheduling another check");
         if (next <= 0) next = 0.1;
         log.info(this+' skills_complete_unlearning exiting with next: '+next);
         this.apiSetTimer('skills_complete_unlearning', next * 1000);
@@ -1341,9 +1341,9 @@ public function skills_complete_training(){
                     total_time: this.skills_points_to_seconds(config.data_skills[id].point_cost, config.data_skills[id].category_id)
                 };
 
-                this.sendMsgOnline(out);
+                this.player.sendMsgOnline(out);
 
-                this.sendActivity('You resumed learning '+out.name+'.', null, true);
+                this.player.sendActivity('You resumed learning '+out.name+'.', null, true);
 
                 // perform web callback for additional processing
                 var args = {
@@ -1456,13 +1456,13 @@ public function skills_give(id){
     };
 
     // Some skills affect your max stats, so...
-    this.stats_get_login(out.stats);
-    this.metabolics_get_login(out.stats);
+    this.player.stats.stats_get_login(out.stats);
+    this.player.metabolics.metabolics_get_login(out.stats);
 
-    if (this.has_done_intro) this.sendMsgOnline(out);
+    if (this.has_done_intro) this.player.sendMsgOnline(out);
     var activity = 'You finished learning '+out.name+'.';
     if (out.learned) activity += ' ' + out.learned;
-    this.sendActivity(activity, null, true);
+    this.player.sendActivity(activity, null, true);
 
     // TODO: apply any effects of learning this skill
 
@@ -1483,25 +1483,25 @@ public function skills_give(id){
     utils.http_get('callbacks/skill.php', args);
 
 
-    this.activity_notify({
+    this.player.activity_notify({
         type    : 'skill_learned',
         skill   : id
     });
 
-    this.daily_history_push('skills_learned', id);
+    this.player.daily_history.daily_history_push('skills_learned', id);
 
     //
     // OMG HAKCSSS
     //
 
     if (in_array_real(id, this.teleportation_skills)){
-        this.teleportation_notify_client();
+        this.player.teleportation.teleportation_notify_client();
     }
-    else if (this.buffs_has('zen') && in_array_real(id, this.meditation_skills)){
-        this.buffs_remove('zen ');
+    else if (this.player.buffs.buffs_has('zen') && in_array_real(id, this.meditation_skills)){
+        this.player.buffs.buffs_remove('zen ');
     }
     else if (in_array_real(id, this.camera_skills)){
-        this.sendCameraAbilities();
+        this.player.sendCameraAbilities();
     }
 
     //
@@ -1512,25 +1512,25 @@ public function skills_give(id){
         // Hard-code some quests that need to happen before the other skill quests but *only* when we learn the skill
         // outside of newxp (so they can't go in the normal map)
         if (id == 'animalkinship_1'){
-            this.quests_offer('animalkinship_1', true);
+            this.player.quests.quests_offer('animalkinship_1', true);
         }
         else if (id == 'light_green_thumb_1'){
-            this.quests_offer('lightgreenthumb_1', true);
+            this.player.quests.quests_offer('lightgreenthumb_1', true);
         }
         else if (id == 'ezcooking_1'){
-            this.quests_offer('ezcooking_1', true);
+            this.player.quests.quests_offer('ezcooking_1', true);
         }
         else if (id == 'soil_appreciation_1'){
-            this.quests_offer('soilappreciation_1', true);
+            this.player.quests.quests_offer('soilappreciation_1', true);
         }
         else{
-            this.quests_learnt_skill(id);
+            this.player.quests.quests_learnt_skill(id);
         }
     }
 
 
     if (this.skills_get_count() == 11){
-        this.achievements_grant('first_eleven_skills');
+        this.player.achievements.achievements_grant('first_eleven_skills');
     }
 }
 
@@ -1554,7 +1554,7 @@ public function skills_remove_notify(id){
 
     log.info(this+" Unlearning: notifying about skill "+id);
 
-    this.achievements_increment('skills_unlearned', id);    // track for achievements
+    this.player.achievements.achievements_increment('skills_unlearned', id);    // track for achievements
 
     var out = {
         type: 'skill_unlearn_complete',
@@ -1566,13 +1566,13 @@ public function skills_remove_notify(id){
     };
 
     // Some skills affect your max stats, so...
-    this.stats_get_login(out.stats);
-    this.metabolics_get_login(out.stats);
-    this.sendMsgOnline(out);
+    this.player.stats.stats_get_login(out.stats);
+    this.player.metabolics.metabolics_get_login(out.stats);
+    this.player.sendMsgOnline(out);
 
     var activity = 'You unlearned '+out.name+'.';
     if (out.unlearned) activity += ' ' + out.unlearned;
-    this.sendActivity(activity, null, true);
+    this.player.sendActivity(activity, null, true);
 
 
     // perform web callback for additional processing
@@ -1584,12 +1584,12 @@ public function skills_remove_notify(id){
 
     utils.http_get('callbacks/skill_unlearn.php', args);
 
-    this.activity_notify({
+    this.player.activity_notify({
         type    : 'skill_unlearned',
         skill   : id
     });
 
-    this.daily_history_push('skills_unlearned', id);
+    this.player.daily_history.daily_history_push('skills_unlearned', id);
 
     //
     // OMG HAKCSSS
@@ -1781,7 +1781,7 @@ public function skills_admin_check_states(args){
         var achievement = args.achievements[i];
 
         out.achievements[achievement] = {
-            'got' : this.achievements_has(achievement) ? 1 : 0
+            'got' : this.player.achievements.achievements_has(achievement) ? 1 : 0
         };
     }
 
@@ -1791,7 +1791,7 @@ public function skills_admin_check_states(args){
         var quest = args.quests[i];
 
         out.quests[quest] = {
-            'got' : this.getQuestStatus(quest) == 'done' ? 1 : 0
+            'got' : this.player.quests.getQuestStatus(quest) == 'done' ? 1 : 0
         };
     }
 
@@ -1801,7 +1801,7 @@ public function skills_admin_check_states(args){
         var upgrade = args.upgrades[i];
 
         out.upgrades[upgrade] = {
-            'got' : this.imagination_has_upgrade(upgrade) ? 1 : 0
+            'got' : this.player.imagination.imagination_has_upgrade(upgrade) ? 1 : 0
         };
     }
 
@@ -1944,7 +1944,7 @@ public function skills_increase_brain_capacity(amount){
                 total_time: this.skills_points_to_seconds(skill.point_cost, skill.category_id)
             };
 
-            this.sendMsgOnline(out);
+            this.player.sendMsgOnline(out);
         }
     }
 }
@@ -2021,7 +2021,7 @@ public function applyCategoryReduction(category_id, percent){
                 total_time: this.skills_points_to_seconds(skill.point_cost, skill.category_id)
             };
 
-            this.sendMsgOnline(out);
+            this.player.sendMsgOnline(out);
         }
     }
 }

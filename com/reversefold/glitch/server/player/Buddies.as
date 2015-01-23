@@ -301,7 +301,7 @@ public function removeBuddy(player_tsid, silent){
     this.player.achievements.achievements_set('player', 'buddies_count', this.buddies_count());
 
     // Remove from neighbor signpost
-    var exterior = this.houses_get_external_entrance();
+    var exterior = this.player.houses.houses_get_external_entrance();
     if (exterior) exterior.loc.removeNeighborTo(player_tsid);
 
     return 'ok';
@@ -368,7 +368,7 @@ public function buddies_get_online_login_info(){
         label: this.location.is_hidden() ? 'A secret place' : this.location.label
     };
 
-    var props = this.avatar_get_pc_msg_props();
+    var props = this.player.avatar.avatar_get_pc_msg_props();
 
     for (var i in props){
         if (i != 'sheet_url' && i != 'singles_url' && i != 'sheet_pending') continue;
@@ -389,11 +389,11 @@ public function buddies_get_login_info(){
         tsid: this.player.tsid,
         label: this.label,
         online: online,
-        level: this.stats_get_level(),
+        level: this.player.stats.stats_get_level(),
         is_admin: (this.is_god || this.is_help) ? true : false
     };
 
-    var props = this.avatar_get_pc_msg_props();
+    var props = this.player.avatar.avatar_get_pc_msg_props();
 
     for (var i in props){
         if (i != 'sheet_url' && i != 'singles_url' && i != 'sheet_pending') continue;
@@ -550,7 +550,7 @@ public function buddies_add_ignore(pc){
     // House keys in either direction? Drop 'em
     //
 
-    this.acl_keys_handle_ignore(pc);
+    this.player.acl_keys_handle_ignore(pc);
 
     //
     // Add them to our ignore list
@@ -573,7 +573,7 @@ public function buddies_add_ignore(pc){
     // Remove housing auth
     //
 
-    this.houses_remove_all_auth(pc);
+    this.player.houses.houses_remove_all_auth(pc);
 
     //
     // Remove from neighbor signpost
@@ -582,7 +582,7 @@ public function buddies_add_ignore(pc){
     var exterior = pc.houses_get_external_entrance();
     if (exterior) exterior.loc.removeNeighborTo(this.player.tsid);
 
-    this.sendActivity("You blocked "+pc.linkifyLabel()+".");
+    this.player.sendActivity("You blocked "+pc.linkifyLabel()+".");
 }
 
 public function buddies_remove_ignore(pc, hide_notify){
@@ -599,7 +599,7 @@ public function buddies_remove_ignore(pc, hide_notify){
     pc.buddies_remove_ignored_by(this);
 
     if (!hide_notify){
-        this.sendActivity("You un-blocked "+pc.linkifyLabel()+".");
+        this.player.sendActivity("You un-blocked "+pc.linkifyLabel()+".");
     }
 }
 
@@ -737,12 +737,12 @@ public function buddies_get_cache_data(){
     var out = {
         version: config.buddies_cache_version,
         name: this.label,
-        level: this.stats_get_level()
+        level: this.player.stats.stats_get_level()
     };
 
-    if (this.isDeleted()) out.is_deleted = true;
+    if (this.player.isDeleted()) out.is_deleted = true;
 
-    var props = this.avatar_get_pc_msg_props();
+    var props = this.player.avatar.avatar_get_pc_msg_props();
     for (var i in props){
         if (i != 'sheet_url' && i != 'singles_url' && i != 'sheet_pending') continue;
         if (i == 'sheet_pending'){

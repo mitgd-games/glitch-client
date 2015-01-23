@@ -189,7 +189,7 @@ public function auctions_start(stack, count, cost, fee_percent, fee_min){
         var fee = intval(cost/100 * fee_percent);
         fee = fee > fee_min ? fee : fee_min;
 
-        if (!this.stats_try_remove_currants(fee, {type: 'auction_fee', class_id: stack.class_tsid})){
+        if (!this.player.stats.stats_try_remove_currants(fee, {type: 'auction_fee', class_id: stack.class_tsid})){
             return {
                 ok: 0,
                 error: "You don't have enough currants for the listing fee."
@@ -288,7 +288,7 @@ public function auctions_cancel(uid, destroy_items){
     }
     else{
         // give the items back by mail
-        this.mail_add_auction_delivery(stack.tsid, config.auction_delivery_time, uid, this.tsid, 'cancelled');
+        this.player.mail.mail_add_auction_delivery(stack.tsid, config.auction_delivery_time, uid, this.tsid, 'cancelled');
     }
 
     return {
@@ -321,7 +321,7 @@ public function auctions_expire(uid){
     delete this.auctions.active[uid];
     var stack = details.stack;
 
-    this.activity_notify({
+    this.player.activity_notify({
         type    : 'auction_expire',
         item    : stack.class_tsid,
         qty : stack.count,
@@ -335,7 +335,7 @@ public function auctions_expire(uid){
 
     apiLogAction('AUCTION_EXPIRE', 'pc='+this.tsid, 'stack='+stack.tsid, 'count='+stack.count);
 
-    this.mail_add_auction_delivery(stack.tsid, config.auction_delivery_time, uid, this.tsid, 'expired');
+    this.player.mail.mail_add_auction_delivery(stack.tsid, config.auction_delivery_time, uid, this.tsid, 'expired');
 
     return {
         ok: 1
@@ -434,7 +434,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
     var stack = details.stack;
     this.auctions_flatten(details, "bought");
 
-    this.activity_notify({
+    this.player.activity_notify({
         type    : 'auction_buy',
         who : buyer.tsid,
         item    : stack.class_tsid,
@@ -493,14 +493,14 @@ public function auctions_purchase(uid, buyer, commission, preflight){
 
         prompt_items = full_items;
 
-        this.prompts_remove(this.auctions.prompts.uid);
+        this.player.prompts.prompts_remove(this.auctions.prompts.uid);
     } else {
         prompt_txt = "Someone bought your auction of "+purchase_txt;
         prompt_items = [ stack.count+"x "+stack.name_plural ];
         prompt_count = 1;
     }
 
-    var prompt_uid = this.prompts_add({
+    var prompt_uid = this.player.prompts.prompts_add({
         callback    : 'auctions_sold_callback',
         txt     : prompt_txt,
         timeout     : 0,
@@ -523,7 +523,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
 
     var proceeds = Math.round(details.cost * ((100-commission)/100));
 
-    var result = this.stats_add_currants(proceeds, {type:'auction_buy',class_id: stack.class_tsid, count: stack.count});
+    var result = this.player.stats.stats_add_currants(proceeds, {type:'auction_buy',class_id: stack.class_tsid, count: stack.count});
 
     apiLogAction('AUCTION_PURCHASE', 'pc='+this.tsid, 'buyer='+buyer.tsid, 'stack='+stack.tsid, 'count='+stack.count, 'currants='+proceeds);
 
@@ -543,7 +543,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
     // quests?
     //
 
-    this.quests_inc_counter('auctions_sold_'+details.class_tsid, details.count);
+    this.player.quests.quests_inc_counter('auctions_sold_'+details.class_tsid, details.count);
 
     //
     // spendy achievements
@@ -777,13 +777,13 @@ public function admin_auctions_private_bag_items(){
 }
 
 public function admin_auctions_return_expired_item(args){
-    this.mail_add_auction_delivery(args.tsid, 0, args.uid, this.tsid, 'expired');
+    this.player.mail.mail_add_auction_delivery(args.tsid, 0, args.uid, this.tsid, 'expired');
     return 1;
 }
 
 public function admin_auctions_start(args){
 
-    if (this.isInTimeout()){
+    if (this.player.isInTimeout()){
         return {
             ok: 0,
             error: 'account_suspended'
