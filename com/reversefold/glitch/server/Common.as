@@ -29,7 +29,7 @@ package com.reversefold.glitch.server {
 			timer.start();
 		}
 
-		public function apiDeleteTimer(callback_name : String) : Boolean {
+		public function apiCancelTimer(callback_name : String) : Boolean {
 			if (!timers.hasOwnProperty(callback_name)) {
 				return false;
 			}
@@ -45,9 +45,12 @@ package com.reversefold.glitch.server {
 			//delete timers?
 			timers = new Dictionary();
 		}
-		
-		public function apiSendMsgAsIs(msg) : void {
-			//RVRS: TODO: anything special here?
+
+		//RVRS: TODO: How should these differ?
+		public function apiSendMsgAsIs(msg) {
+			Server.instance.sendMessage(msg);
+		}
+		public function apiSendMsg(msg) {
 			Server.instance.sendMessage(msg);
 		}
 
@@ -794,7 +797,7 @@ public static function floatval(x){
     return y;
 }
 
-public static function str(x, undef){
+public static function str(x, undef=null){
     if (x===null) return '';
     if (x===undef) return '';
     return ""+x;

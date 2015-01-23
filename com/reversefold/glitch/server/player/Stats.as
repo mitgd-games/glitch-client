@@ -41,6 +41,7 @@ package com.reversefold.glitch.server.player {
 		public var last_rube_trade : int;
 		public var daily_count : Dictionary = null;
 		public var subscription_end;
+		public var charades;
 		
 		public var daily_favor : Dictionary;
 		

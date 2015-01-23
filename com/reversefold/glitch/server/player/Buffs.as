@@ -1,16 +1,26 @@
 package com.reversefold.glitch.server.player {
+    import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
-    public class Buffs {
+    public class Buffs extends Common {
         private static var log : Logger = Log.getLogger("server.player.Buffs");
 
         public var config : Config;
         public var player : Player;
         public var skills;
+		public var label;
+		public var buffs;
+		public var events;
+		public var durations;
+		public var no_no_powder_start : int;
+		public var feeling_called_love_last_time : int;
+		public var hairball_dash;
+		public var charades_word;
 
         public function Buffs(config : Config, player : Player) {
             this.config = config;
@@ -20,34 +30,38 @@ package com.reversefold.glitch.server.player {
 public function buffs_init(){
 
     if (!this.buffs){
-        this.buffs = apiNewOwnedDC(this);
-        this.buffs.label = 'Buffs';
-        this.buffs.buffs = {};
-        this.buffs.events = {};
-        this.buffs.durations = {};
+        //this = apiNewOwnedDC(this);
+        this.label = 'Buffs';
+        this.buffs = {};
+        this.events = {};
+        this.durations = {};
     }
-    if (!this.buffs.events){
-        this.buffs.events = {};
+    if (!this.events){
+        this.events = {};
     }
-    if (!this.buffs.durations) {
-        this.buffs.durations = {};
+    if (!this.durations) {
+        this.durations = {};
     }
 }
 
 public function buffs_delete(){
-
+	apiDeleteTimers();
+	
+	this.player.buffs = new Buffs(config, player);
+	/*
     if (this.buffs){
-        this.buffs.apiDelete();
+        this.apiDelete();
         delete this.buffs;
     }
+	*/
 }
 
 public function buffs_reset(){
 
     this.buffs_init();
-    this.buffs.buffs = {};
-    this.buffs.events = {};
-    this.buffs.durations = {};
+    this.buffs = {};
+    this.events = {};
+    this.durations = {};
 
     this.buffs_recalc_stats();
 }
@@ -58,39 +72,39 @@ public function buffs_recalc_stats(){
 
 public function buffs_login(){
 
-    if (this.buffs.events.frozen){
+    if (this.events.frozen){
         log.info(this+' unfreezing buffs');
 
-        var diff = time() - intval(this.buffs.events.frozen);
+        var diff = time() - intval(this.events.frozen);
 
         // shift every (online) event forward by this much
 
-        for (var class_tsid in this.buffs.events){
+        for (var class_tsid in this.events){
             var new_events = {};
-            for (var ts in this.buffs.events[class_tsid]){
-                if (this.buffs.events[class_tsid][ts] == 'on'){
-                    new_events[str(intval(ts) + diff)] = this.buffs.events[class_tsid][ts];
+            for (var ts in this.events[class_tsid]){
+                if (this.events[class_tsid][ts] == 'on'){
+                    new_events[str(intval(ts) + diff)] = this.events[class_tsid][ts];
                 }else{
-                    new_events[str(ts)] = this.buffs.events[class_tsid][ts];
+                    new_events[str(ts)] = this.events[class_tsid][ts];
                 }
             }
-            this.buffs.events[class_tsid] = new_events;
+            this.events[class_tsid] = new_events;
 
             // fix buff time in the client
-            if(this.buffs.buffs[class_tsid] && !this.buffs_get('timer_test').is_offline) {
-                this.buffs.buffs[class_tsid].start += diff;
+            if(this.buffs[class_tsid] && !this.buffs_get('timer_test').is_offline) {
+                this.buffs[class_tsid].start += diff;
 
                 var out = {
                     type: 'buff_update',
                     tsid: class_tsid,
-                    duration: this.buffs.buffs[class_tsid].duration,
-                    remaining_duration: this.buffs.buffs[class_tsid].duration - (time() - this.buffs.buffs[class_tsid].start)
+                    duration: this.buffs[class_tsid].duration,
+                    remaining_duration: this.buffs[class_tsid].duration - (time() - this.buffs[class_tsid].start)
                 };
                 this.apiSendMsg(out);
             }
         }
 
-        delete this.buffs.events.frozen;
+        delete this.events.frozen;
         this.buffs_fire_timer();
 
         //
@@ -102,7 +116,7 @@ public function buffs_login(){
     }
 
     // Fix time on buffs that have been extended.
-    var durations_list = this.buffs.durations;
+    var durations_list = this.durations;
     if (durations_list) {
         for (var tsid in durations_list) {
             if (this.buffs_has(tsid)) {
@@ -114,31 +128,31 @@ public function buffs_login(){
                     duration: durations_list[tsid],
                     remaining_duration: durations_list[tsid] - (time() - buff.args.start)
                 };
-                this.sendMsgOnline(out);
+                this.player.sendMsgOnline(out);
             }
             else {
-                delete this.buffs.durations[tsid];
+                delete this.durations[tsid];
             }
         }
     }
 }
 
 public function buffs_logout(){
-    if (this.buffs && this.buffs.events){
+    if (this.buffs && this.events){
         log.info(this+' freezing buffs');
-        this.buffs.events.frozen = time();
+        this.events.frozen = time();
     }
 }
 
 public function buffs_apply_delay(class_tsid, args, seconds){
-    this.events_add({callback: 'buffs_on_apply_delay', class_tsid: class_tsid, args: args}, seconds);
+    this.player.events.events_add({callback: 'buffs_on_apply_delay', class_tsid: class_tsid, args: args}, seconds);
 }
 
 public function buffs_on_apply_delay(details){
     this.buffs_apply(details.class_tsid, details.args);
 }
 
-public function buffs_apply(class_tsid, args){
+public function buffs_apply(class_tsid, args=null){
 
     //
     // get buff info
@@ -154,9 +168,9 @@ public function buffs_apply(class_tsid, args){
 
     if (this.buffs_has(class_tsid)){
         this.buffs_remove_client(class_tsid);
-        delete this.buffs.events[class_tsid];
-        delete this.buffs.buffs[class_tsid];
-        if (this.buffs.durations) delete this.buffs.durations[class_tsid];
+        delete this.events[class_tsid];
+        delete this.buffs[class_tsid];
+        if (this.durations) delete this.durations[class_tsid];
     }
 
 
@@ -206,17 +220,17 @@ public function buffs_apply(class_tsid, args){
     // store
     //
 
-    this.buffs.buffs[class_tsid] = args;
+    this.buffs[class_tsid] = args;
     this.buffs_add_events(events, class_tsid, buff.is_offline);
 
     this.buffs_fire_apply(class_tsid);
 
-    apiLogAction('BUFF_APPLIED', 'pc='+this.tsid, 'buff='+class_tsid);
+    Server.instance.apiLogAction('BUFF_APPLIED', 'pc='+this.player.tsid, 'buff='+class_tsid);
 
 
     // Achievement check:
-    if (this.location.pols_is_pol() && !this.location.is_public) {
-        this.location.checkEpicBlowout();
+    if (this.player.location.pols_is_pol() && !this.player.location.is_public) {
+        this.player.location.checkEpicBlowout();
     }
 }
 
@@ -229,12 +243,12 @@ public function buffs_remove(class_tsid){
     //log.info('buffs_remove for '+class_tsid);
     this.buffs_fire_remove(class_tsid);
 
-    delete this.buffs.events[class_tsid];
-    delete this.buffs.buffs[class_tsid];
-    if (this.buffs.durations) delete this.buffs.durations[class_tsid];
-    this.stats_fixup_buffs();
+    delete this.events[class_tsid];
+    delete this.buffs[class_tsid];
+    if (this.durations) delete this.durations[class_tsid];
+    this.player.stats.stats_fixup_buffs();
 
-    apiLogAction('BUFF_REMOVED', 'pc='+this.tsid, 'buff='+class_tsid);
+    Server.instance.apiLogAction('BUFF_REMOVED', 'pc='+this.player.tsid, 'buff='+class_tsid);
 }
 
 public function buffs_remove_all(){
@@ -247,7 +261,7 @@ public function buffs_remove_all(){
 
 public function buffs_get(class_tsid){
 
-    var prot = apiFindItemPrototype('catalog_buffs');
+    var prot = Server.instance.apiFindItemPrototype('catalog_buffs');
     return prot.buffs[class_tsid];
 }
 
@@ -262,10 +276,10 @@ public function buffs_get(class_tsid){
 public function buffs_add_events(events, class_tsid, is_offline){
     //log.info('buffs_add_events: '+class_tsid);
 
-    this.buffs.events[class_tsid] = {};
+    this.events[class_tsid] = {};
 
     for (var i=0; i<events.length; i++){
-        this.buffs.events[class_tsid][str(events[i])] = is_offline ? 'off' : 'on';
+        this.events[class_tsid][str(events[i])] = is_offline ? 'off' : 'on';
     }
 
     this.buffs_fire_timer();
@@ -282,10 +296,10 @@ public function buffs_fire_timer(){
 
     var now = time();
 
-    for (var class_tsid in this.buffs.events){
+    for (var class_tsid in this.events){
         //log.info(this+' [buffs] timer class '+class_tsid);
 
-        for (var ts in this.buffs.events[class_tsid]){
+        for (var ts in this.events[class_tsid]){
 
             //log.info(this+' [buffs] timer ts '+ts);
 
@@ -293,7 +307,7 @@ public function buffs_fire_timer(){
             // skip online timers if we're frozen
             //
 
-            if (this.buffs.events.frozen && this.buffs.events[class_tsid][ts] == 'on') continue;
+            if (this.events.frozen && this.events[class_tsid][ts] == 'on') continue;
 
             var tsi = intval(ts);
 
@@ -314,14 +328,14 @@ public function buffs_fire_timer(){
 
                     var next_tsi = tsi + buff.args.tick_duration;
                     if (next_tsi < now) next_tsi = now;
-                    this.buffs.events[class_tsid][str(next_tsi)] = this.buffs.events[class_tsid][ts];
+                    this.events[class_tsid][str(next_tsi)] = this.events[class_tsid][ts];
                 }
 
-                if (this.buffs.buffs[class_tsid].ticks){
+                if (this.buffs[class_tsid].ticks){
 
                     //log.info(this+' [buffs] ================== running event '+ts);
 
-                    this.buffs.buffs[class_tsid].ticks_elapsed++;
+                    this.buffs[class_tsid].ticks_elapsed++;
                     this.buffs_fire_tick(class_tsid);
                 }
 
@@ -329,13 +343,13 @@ public function buffs_fire_timer(){
                 // It's possible for the buff to have been removed during the tick
                 //
 
-                if (!this.buffs.events[class_tsid]) continue;
+                if (!this.events[class_tsid]) continue;
 
-                delete this.buffs.events[class_tsid][ts];
+                delete this.events[class_tsid][ts];
 
                 //log.info('removing event '+ts+' from the run list');
 
-                if ((buff.args.duration || buff.args.tick_duration) && !num_keys(this.buffs.events[class_tsid])){
+                if ((buff.args.duration || buff.args.tick_duration) && !num_keys(this.events[class_tsid])){
 
                     //log.info('Removing buff ' + class_tsid);
                     this.buffs_remove(class_tsid);
@@ -365,14 +379,14 @@ public function buffs_fire_timer(){
 public function buffs_get_next_event_tsi(){
     var next = 0;
 
-    for (var class_tsid in this.buffs.events){
-        for (var ts in this.buffs.events[class_tsid]){
+    for (var class_tsid in this.events){
+        for (var ts in this.events[class_tsid]){
 
             //
             // skip online timers if we're frozen
             //
 
-            if (this.buffs.events.frozen && this.buffs.events[class_tsid][ts] == 'on') continue;
+            if (this.events.frozen && this.events[class_tsid][ts] == 'on') continue;
 
             var tsi = intval(ts);
 
@@ -390,8 +404,8 @@ public function buffs_get_instance(class_tsid){
     return {
         'class_tsid'    : class_tsid,
         'def'       : this.buffs_get(class_tsid),
-        'args'      : this.buffs.buffs[class_tsid],
-        'duration'  : this.buffs.durations ? this.buffs.durations[class_tsid] : 0,
+        'args'      : this.buffs[class_tsid],
+        'duration'  : this.durations ? this.durations[class_tsid] : 0,
         'pc'        : this,
         'addStat'   : function (stat_id, value){ this.pc.stats_set_temp_buff(this.class_tsid, stat_id, value); }
     };
@@ -411,8 +425,8 @@ public function buffs_extend_time(class_tsid, amount) {
     if (tick_duration) {
 
         var stored_duration = buff.args.duration;
-        if (this.buffs.durations[class_tsid]) {
-            stored_duration = this.buffs.durations[class_tsid];
+        if (this.durations[class_tsid]) {
+            stored_duration = this.durations[class_tsid];
         }
 
         var ticks = Math.floor(stored_duration / tick_duration);
@@ -426,7 +440,7 @@ public function buffs_extend_time(class_tsid, amount) {
         var events = [];
 
         // Start with the old events:
-        var old_events = this.buffs.events[class_tsid];
+        var old_events = this.events[class_tsid];
         for (var e in old_events) {
             events.push(e);
         }
@@ -445,7 +459,7 @@ public function buffs_extend_time(class_tsid, amount) {
 
     var new_duration = duration + duration_to_add;
 
-    this.buffs.durations[class_tsid] = new_duration;
+    this.durations[class_tsid] = new_duration;
 
     var out = {
         type: 'buff_update',
@@ -453,7 +467,7 @@ public function buffs_extend_time(class_tsid, amount) {
         duration: new_duration,
         remaining_duration: new_duration - (time() - buff.args.start)
     };
-    this.sendMsgOnline(out);
+    this.player.sendMsgOnline(out);
 }
 
 public function buffs_alter_time(class_tsid, amount, duration) {
@@ -487,8 +501,8 @@ public function buffs_alter_time(class_tsid, amount, duration) {
     }
 
     // Now reschedule the buff ending
-    if(this.buffs.events[class_tsid]) {
-        delete this.buffs.events[class_tsid];
+    if(this.events[class_tsid]) {
+        delete this.events[class_tsid];
         var events = [buff.args.start + dur];
         this.buffs_add_events(events, class_tsid, buff.def.is_offline)
     }
@@ -500,7 +514,7 @@ public function buffs_alter_time(class_tsid, amount, duration) {
         duration: dur,
         remaining_duration: dur - (time() - buff.args.start)
     };
-    this.sendMsgOnline(out);
+    this.player.sendMsgOnline(out);
 
     return result_amount;
 }
@@ -529,10 +543,10 @@ public function buffs_fire_apply(class_tsid){
         };
 
         //log.info('APPLY', out);
-        this.sendMsgOnline(out);
-        this.events_add({out: out, callback: 'buffs_perform_postprocessing'}, 0.1);
+        this.player.sendMsgOnline(out);
+        this.player.events.events_add({out: out, callback: 'buffs_perform_postprocessing'}, 0.1);
 
-        buff.def.on_apply.call(buff, this, this.buffs.buffs[class_tsid]);
+        buff.def.on_apply.call(buff, this, this.buffs[class_tsid]);
     }
     catch (e){
         log.error(this+" Error applying buff "+class_tsid+": ", e);
@@ -558,10 +572,10 @@ public function buffs_fire_tick(class_tsid){
         };
 
         //log.info('TICK', out);
-        this.sendMsgOnline(out);
+        this.player.sendMsgOnline(out);
         this.events_add({out: out, callback: 'buffs_perform_postprocessing'}, 0.1);*/
 
-        buff.def.on_tick.call(buff, this, this.buffs.buffs[class_tsid]);
+        buff.def.on_tick.call(buff, this, this.buffs[class_tsid]);
     }
     catch (e){
         log.error("Error ticking buff", e);
@@ -576,10 +590,10 @@ public function buffs_fire_remove(class_tsid){
 
         this.buffs_remove_client(class_tsid);
 
-        buff.def.on_remove.call(buff, this, this.buffs.buffs[class_tsid]);
+        buff.def.on_remove.call(buff, this, this.buffs[class_tsid]);
 
-        if (this.buffs.durations && this.buffs.durations[class_tsid]) {
-            delete this.buffs.durations[class_tsid];
+        if (this.durations && this.durations[class_tsid]) {
+            delete this.durations[class_tsid];
         }
     }
     catch (e){
@@ -599,25 +613,25 @@ public function buffs_remove_client(class_tsid){
     };
 
     //log.info('REMOVE', out);
-    this.sendMsgOnline(out);
-    this.events_add({out: out, callback: 'buffs_perform_postprocessing'}, 0.1);
+    this.player.sendMsgOnline(out);
+    this.player.events.events_add({out: out, callback: 'buffs_perform_postprocessing'}, 0.1);
 }
 
 public function buffs_perform_postprocessing(details){
     if (!details.out) return;
 
-    this.performPostProcessing(details.out);
+    this.player.performPostProcessing(details.out);
 }
 
 public function buffs_has(class_tsid){
 
     if (!this.buffs) return 0;
-    return (this.buffs.buffs[class_tsid]) ? 1 : 0;
+    return (this.buffs[class_tsid]) ? 1 : 0;
 }
 
 public function buffs_get_active(){
     var buffs = {};
-    for (var class_tsid in this.buffs.events){
+    for (var class_tsid in this.events){
         var buff = this.buffs_get_instance(class_tsid);
 
         if (buff && buff.def){
@@ -643,13 +657,13 @@ public function buffs_get_remaining_duration(class_tsid){
 
     if (!buff.args.duration) return 0; // buff ticks forever
 
-    if (this.buffs.events[class_tsid]){
+    if (this.events[class_tsid]){
         //
         // Find the maximum event for this buff. That must be the end!
         //
 
         var max_tsi = 0;
-        for (var ts in this.buffs.events[class_tsid]){
+        for (var ts in this.events[class_tsid]){
             var tsi = intval(ts);
             if (tsi > max_tsi) max_tsi = tsi;
         }
@@ -679,7 +693,7 @@ public function buffs_transfer_love(pc){
 public function buffs_hairball_start() {
     this.hairball_dash = {
         distance: 0,
-        street_start: this.x
+        street_start: this.player.x
     };
 }
 
@@ -689,7 +703,7 @@ public function buffs_hairball_leave_street() {
         this.buffs_hairball_start();
         return;
     }
-    this.hairball_dash.distance += Math.abs(this.hairball_dash.street_start - this.x);
+    this.hairball_dash.distance += Math.abs(this.hairball_dash.street_start - this.player.x);
 }
 
 public function buffs_hairball_enter_street() {
@@ -699,18 +713,18 @@ public function buffs_hairball_enter_street() {
         return;
     }
 
-    this.hairball_dash.street_start = this.x;
+    this.hairball_dash.street_start = this.player.x;
 }
 
 public function buffs_hairball_end() {
     if (this.hairball_dash) {
-        this.hairball_dash.distance += Math.abs(this.hairball_dash.street_start - this.x);
+        this.hairball_dash.distance += Math.abs(this.hairball_dash.street_start - this.player.x);
 
         if (this.hairball_dash.distance > 14000) {
-            this.achievements_set('essence_of_hairball', 'distance_dashed', this.hairball_dash.distance);
+            this.player.achievements.achievements_set('essence_of_hairball', 'distance_dashed', this.hairball_dash.distance);
         }
 
-        delete this.hairball_dash;
+        this.hairball_dash = null;
     }
 }
 
@@ -726,15 +740,15 @@ public function buffs_charades_get_word() {
 
 public function buffs_charades_guess_correct_word() {
     this['!charades_correct_guess'] = true;
-    this.stats.charades = 'guessed';
+    this.player.stats.charades = 'guessed';
 
     this.buffs_remove('charades');
 
-    delete this.charades_word; // Just in case the debuff failed, this will stop message spamming.
+    this.charades_word = null; // Just in case the debuff failed, this will stop message spamming.
 }
 
 public function buffs_charades_ruin() {
-    this.stats.charades = 'ruined';
+    this.player.stats.charades = 'ruined';
     this.buffs_remove('charades');
 }
 

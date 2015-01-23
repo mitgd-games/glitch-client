@@ -182,7 +182,7 @@ public function createArtifact(artifact_type){
             click_to_advance: false,
             text: [
                 '<p align="center"><span class="nuxp_vog">You\'ve combined all the artifact pieces to make a '+prot.label+'!</span></p>'
-            ],
+            ]
         });
 
     var stack = null;
@@ -208,7 +208,7 @@ public function createArtifactNecklace(piece_type){
             click_to_advance: false,
             text: [
                 '<p align="center"><span class="nuxp_vog">You\'ve combined '+artifact_necklaces[piece_type].required+' beads to make a '+prot.label+'!</span></p>'
-            ],
+            ]
         });
 
     this.items_destroy(piece_type, artifact_necklaces[piece_type].required);
@@ -461,12 +461,12 @@ public function takeItemsFromBag(class_id, num){
 
                 // take part of the stack
                 var needed = num - found_num;
-                var use = it.apiSplit(needed);
+                var _use = it.apiSplit(needed);
 
-                if (use){
+                if (_use){
                     it.apiPutBack();
-                    stacks.push(use);
-                    found_num += use.count;
+                    stacks.push(_use);
+                    found_num += _use.count;
                 }else{
                     // this appears to be a bug!
                     log.info('unable to split off '+needed+" from a stack of "+it.count);
@@ -964,7 +964,7 @@ public function createGlitchGame() {
             click_to_advance: false,
             text: [
                 '<p align="center"><span class="nuxp_vog">You\'ve got multiple SWFs! That makes a Flash based MMO!</span></p>'
-            ],
+            ]
         });
 
     if (this.swf_one != null || this.swf_two != null || this.swf_three != null){

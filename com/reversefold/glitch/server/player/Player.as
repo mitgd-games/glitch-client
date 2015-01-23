@@ -31,6 +31,9 @@ package com.reversefold.glitch.server.player {
 		
 		public var location;
 		public var bag : Bag;
+		public var already_sorry : Boolean;
+		public var apply_buff = null;
+		public var x;
 
 		public function Player(config : Config) : void {
 			//init();
@@ -55,7 +58,9 @@ package com.reversefold.glitch.server.player {
 			
 			bag = new Bag();
 		}
-
+//RVRS: TODO: include items/include/events.js? Buffs needs it...
+		
+		
 //#include inc_admin.js,
 //inc_groups.js,
 //inc_organizations.js,
@@ -2038,7 +2043,7 @@ public function performPostProcessing(msg){
 		}
 		else if (this.apply_buff){
 			this.buffs.buffs_apply(this.apply_buff);
-			delete this.apply_buff;
+			this.apply_buff = null;
 		}
 	}
 }

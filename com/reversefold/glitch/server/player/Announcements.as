@@ -3,6 +3,8 @@ package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
     
+    import flash.utils.Dictionary;
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +13,8 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var announced_indicators : Dictionary;
 
         public function Announcements(config : Config, player : Player) {
             this.config = config;
@@ -641,7 +645,7 @@ public function announce_add_indicator(uid, overlay_key, is_item, state, args){
     }
 
     if (!this.announced_indicators){
-        this.announced_indicators = {};
+        this.announced_indicators = new Dictionary();
     }
 
     var offset = num_keys(this.announced_indicators) * -50;
@@ -679,7 +683,7 @@ public function announce_hide_indicators(pc) {
 public function announce_remove_all_indicators() {
     this.announce_hide_indicators();
 
-    delete this.announced_indicators;
+    this.announced_indicators = null;
 }
 
 public function announce_show_indicators(pc) {
