@@ -1,6 +1,7 @@
 package com.reversefold.glitch.server {
 	import com.reversefold.glitch.server.data.Config;
 	import com.reversefold.glitch.server.player.Player;
+	import com.reversefold.glitch.server.player.Quests;
 	import com.reversefold.glitch.server.player.Utils;
 	import com.tinyspeck.debug.Console;
 	import com.tinyspeck.engine.data.client.Announcement;
@@ -77,6 +78,18 @@ package com.reversefold.glitch.server {
 			//RVRS: TODO: this is supposed to get the object defined by the JS file
 			// it's the magic file-to-class/object method!
 			throw new Error("apiGetJSFileObject " + path);
+		}
+		
+		public function apiNewOwnedQuest(quest_class, quests : Quests) {
+			//RVRS: TODO
+			//quest_class may be a tsid
+			//quests is meant to be a player, but we can access that via quests.player if we need to
+			throw new Error("apiNewOwnedQuest " + quest_class);
+		}
+		
+		public function apiFindQuestPrototype(class_tsid) {
+			//RVRS: TODO
+			throw new Error("apiFindQuestPrototype " + class_tsid);
 		}
 		
 		// END api funcs

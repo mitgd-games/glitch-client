@@ -1,16 +1,33 @@
 package com.reversefold.glitch.server.player {
+    import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
-    public class Quests {
+    public class Quests extends Common {
         private static var log : Logger = Log.getLogger("server.Player");
 
+		private static const quest_containers : Vector.<String> = new Vector.<String>(
+			['todo', 'done', 'fail_repeat', 'misc']);
+		
         public var config : Config;
         public var player : Player;
-        public var skills;
+		
+		public var todo;
+		public var done;
+		public var fail_repeat;
+		public var misc;
+		
+		public var last_quest_offer;
+		public var queue;
+		public var hub_plant_beans;
+		public var betterlearning_favor;
+		public var end_esquibeth;
+		public var has_blown_conch;
 
         public function Quests(config : Config, player : Player) {
             this.config = config;
@@ -19,32 +36,32 @@ package com.reversefold.glitch.server.player {
 
 public function quests_init(){
 
-    if (this.quests === undefined || this.quests === null) this.quests = {};
-    if (this.quests.todo === undefined || this.quests.todo === null){
-        this.quests.todo = apiNewOwnedDC(this);
-        this.quests.todo.label = 'To Do';
-        this.quests.todo.quests = {};
+    //if (this === undefined || this === null) this = {};
+    if (this.todo === undefined || this.todo === null){
+        this.todo = {};//apiNewOwnedDC(this);
+        this.todo.label = 'To Do';
+        this.todo.quests = {};
     }
-    if (this.quests.done === undefined || this.quests.done == null){
-        this.quests.done = apiNewOwnedDC(this);
-        this.quests.done.label = 'Done';
-        this.quests.done.quests = {};
+    if (this.done === undefined || this.done == null){
+        this.done = {};//apiNewOwnedDC(this);
+        this.done.label = 'Done';
+        this.done.quests = {};
     }
-    if (this.quests.fail_repeat === undefined || this.quests.fail_repeat === null){
-        this.quests.fail_repeat = apiNewOwnedDC(this);
-        this.quests.fail_repeat.label = 'Repeatable Failed';
-        this.quests.fail_repeat.quests = {};
+    if (this.fail_repeat === undefined || this.fail_repeat === null){
+        this.fail_repeat = {};//apiNewOwnedDC(this);
+        this.fail_repeat.label = 'Repeatable Failed';
+        this.fail_repeat.quests = {};
     }
-    if (this.quests.misc === undefined || this.quests.fail_repeat === null){
-        this.quests.misc = apiNewOwnedDC(this);
-        this.quests.misc.label = 'Misc';
-        this.quests.misc.quests = {};
+    if (this.misc === undefined || this.fail_repeat === null){
+        this.misc = {};//apiNewOwnedDC(this);
+        this.misc.label = 'Misc';
+        this.misc.quests = {};
     }
 
     // Test quests for completeness
-    for (var i in this.quests.todo.quests){
+    for (var i in this.todo.quests){
         try{
-            this.quests.todo.quests[i].checkCompletion(this);
+            this.todo.quests[i].checkCompletion(this);
         }catch(e){
             log.error("Player "+this+" has missing in-progress quest "+i+".");
         }
@@ -52,54 +69,47 @@ public function quests_init(){
 }
 
 public function quests_delete(){
+    this.queue = null;
 
-    if (this.quests){
-        delete this.quests.queue;
-
-        for (var i in this.quests){
-            var dc = this.quests[i];
-            if (dc.quests){
-                for (var j in dc.quests){
-                    if (dc.quests[j].deleteMe){
-                        dc.quests[j].deleteMe();
-                    }else{
-                        dc.quests[j].apiDelete();
-                    }
+    for each (var i in quest_containers){
+        var dc = this[i];
+        if (dc.quests){
+            for (var j in dc.quests){
+                if (dc.quests[j].deleteMe){
+                    dc.quests[j].deleteMe();
+                }else{
+                    dc.quests[j].apiDelete();
                 }
             }
-            dc.apiDelete();
-
         }
-        delete this.quests;
+        dc.apiDelete();
     }
 
-    delete this.last_quest_offer;
+    this.last_quest_offer = null;
 }
 
 public function quests_reset(){
 
     //this.quests_delete();
 
-    if (this.quests){
-        delete this.quests.queue;
+    this.queue = null;
 
-        for (var i in this.quests){
-            var dc = this.quests[i];
-            if (dc.quests){
-                for (var j in dc.quests){
-                    if (dc.quests[j].deleteMe){
-                        dc.quests[j].deleteMe();
-                    }else{
-                        dc.quests[j].apiDelete();
-                    }
+    for each (var i in quest_containers){
+        var dc = this[i];
+        if (dc.quests){
+            for (var j in dc.quests){
+                if (dc.quests[j].deleteMe){
+                    dc.quests[j].deleteMe();
+                }else{
+                    dc.quests[j].apiDelete();
                 }
             }
-
-            this.quests[i].quests = {};
         }
+
+        this[i].quests = {};
     }
 
-    delete this.last_quest_offer;
+    this.last_quest_offer = null;
 
     this.quests_init();
 }
@@ -107,75 +117,75 @@ public function quests_reset(){
 public function quests_login(){
     this.quests_give_level();
 
-    var skills = this.skills_get_list();
+    var skills = this.player.skills.skills_get_list();
     for (var i in skills){
         var skill = skills[i];
         //this.quests_learnt_skill(skill['id']);
         this.quests_learnt_skill_do({skill_id: skill['id']});
     }
 
-    if (this.achievements_has('senior_ok_explorer')) this.quests_offer('explore_the_seams');
+    if (this.player.achievements.achievements_has('senior_ok_explorer')) this.quests_offer('explore_the_seams');
 
-    if (this.achievements_has('shimla_mirch_completist')) this.quests_offer('where_the_blue_grew');
-    if (this.achievements_has('chakra_phool_completist')) this.quests_offer('where_the_blue_grew');
-    if (this.achievements_has('jethimadh_completist')) this.quests_offer('where_the_blue_grew');
-    if (this.achievements_has('kalavana_completist')) this.quests_offer('where_the_blue_grew');
+    if (this.player.achievements.achievements_has('shimla_mirch_completist')) this.quests_offer('where_the_blue_grew');
+    if (this.player.achievements.achievements_has('chakra_phool_completist')) this.quests_offer('where_the_blue_grew');
+    if (this.player.achievements.achievements_has('jethimadh_completist')) this.quests_offer('where_the_blue_grew');
+    if (this.player.achievements.achievements_has('kalavana_completist')) this.quests_offer('where_the_blue_grew');
 }
 
 public function quests_changed_item(class_tsid){
-    if (!this.quests || !this.quests.todo) return;
+    if (!this || !this.todo) return;
     // called when we gain or lose one or more of an item.
     // we need to loop over pending quests and see if we need to update any requirements.
 
     //log.info('quests_changed_item: ' +class_tsid);
-    for (var i in this.quests.todo.quests){
-        this.quests.todo.quests[i].changed_item(this, class_tsid);
+    for (var i in this.todo.quests){
+        this.todo.quests[i].changed_item(this, class_tsid);
     }
 }
 
 public function quests_made_recipe(recipe_id, num){
-    if (!this.quests || !this.quests.todo) return;
+    if (!this || !this.todo) return;
     //log.info('recipe made: '+num+'x recipe #'+recipe_id);
-    for (var i in this.quests.todo.quests){
-        this.quests.todo.quests[i].made_recipe(this, recipe_id, num);
+    for (var i in this.todo.quests){
+        this.todo.quests[i].made_recipe(this, recipe_id, num);
     }
 }
 
 public function quests_inc_counter(counter, num){
     if (!num) num = 1;
-    if (!this.quests || !this.quests.todo) return;
+    if (!this || !this.todo) return;
     //log.info('incrementing quest counter: '+counter+' (by '+num+')');
-    for (var i in this.quests.todo.quests){
-        this.quests.todo.quests[i].inc_counter(this, counter, num);
+    for (var i in this.todo.quests){
+        this.todo.quests[i].inc_counter(this, counter, num);
     }
 }
 
 public function quests_set_counter(counter, num){
-    if (!this.quests || !this.quests.todo) return;
+    if (!this || !this.todo) return;
     //log.info('incrementing quest counter: '+counter+' (by '+num+')');
-    for (var i in this.quests.todo.quests){
-        this.quests.todo.quests[i].set_counter(this, counter, num);
+    for (var i in this.todo.quests){
+        this.todo.quests[i].set_counter(this, counter, num);
     }
 }
 
 public function quests_get_counter(quest_id, counter){
-    if (!this.quests || !this.quests.todo || !this.quests.todo.quests[quest_id]) return 0;
+    if (!this || !this.todo || !this.todo.quests[quest_id]) return 0;
 
-    return this.quests.todo.quests[quest_id].get_counter_value(this, counter);
+    return this.todo.quests[quest_id].get_counter_value(this, counter);
 }
 
 public function quests_set_flag(flag){
-    if (!this.quests || !this.quests.todo) return;
+    if (!this || !this.todo) return;
     //log.info('setting flag: '+flag);
-    for (var i in this.quests.todo.quests){
-        this.quests.todo.quests[i].set_flag(this, flag);
+    for (var i in this.todo.quests){
+        this.todo.quests[i].set_flag(this, flag);
     }
 }
 
 public function quests_get_flag(quest_id, flag){
-    if (!this.quests || !this.quests.todo || !this.quests.todo.quests[quest_id]) return 0;
+    if (!this || !this.todo || !this.todo.quests[quest_id]) return 0;
 
-    return this.quests.todo.quests[quest_id].get_flag(flag);
+    return this.todo.quests[quest_id].get_flag(flag);
 }
 
 public function quests_get_status(){
@@ -188,8 +198,8 @@ public function quests_get_status(){
     var ret = {};
 
     try {
-        for (var i in this.quests.todo.quests){
-            var q = this.quests.todo.quests[i];
+        for (var i in this.todo.quests){
+            var q = this.todo.quests[i];
             if (q.hide_questlog) continue;
 
             ret[q.class_id] = q.get_status(this, 'todo');
@@ -203,22 +213,22 @@ public function quests_get_status(){
 
 public function getQuestStatus(quest_class){
 
-    if (this.quests.todo.quests[quest_class]) return 'todo';
+    if (this.todo.quests[quest_class]) return 'todo';
 
-    if (this.quests.done.quests[quest_class]) return 'done';
+    if (this.done.quests[quest_class]) return 'done';
 
-    if (this.quests.fail_repeat && this.quests.fail_repeat.quests[quest_class]) return 'fail_repeat';
+    if (this.fail_repeat && this.fail_repeat.quests[quest_class]) return 'fail_repeat';
 
     return 'none';
 }
 
 public function getQuestInstance(quest_class){
 
-    if (this.quests.todo.quests[quest_class]) return this.quests.todo.quests[quest_class];
+    if (this.todo.quests[quest_class]) return this.todo.quests[quest_class];
 
-    if (this.quests.done.quests[quest_class]) return this.quests.done.quests[quest_class];
+    if (this.done.quests[quest_class]) return this.done.quests[quest_class];
 
-    if (this.quests.fail_repeat && this.quests.fail_repeat.quests[quest_class]) return this.quests.fail_repeat.quests[quest_class];
+    if (this.fail_repeat && this.fail_repeat.quests[quest_class]) return this.fail_repeat.quests[quest_class];
 
     return null;
 }
@@ -230,7 +240,7 @@ public function forceQuestInstance(quest_class){
     return qi;
 }
 
-public function startQuest(quest_class, is_npc, auto_accept){
+public function startQuest(quest_class, is_npc=false, auto_accept=false){
 
     var status = this.getQuestStatus(quest_class);
     if (status == 'done'){
@@ -251,25 +261,25 @@ public function startQuest(quest_class, is_npc, auto_accept){
         return null;
     }
 
-    apiLogAction('QUEST_START', 'pc='+this.tsid, 'quest='+quest_class);
+    Server.instance.apiLogAction('QUEST_START', 'pc='+this.player.tsid, 'quest='+quest_class);
 
-    var quest = apiNewOwnedQuest(quest_class, this);
+    var quest = Server.instance.apiNewOwnedQuest(quest_class, this);
 
     if (quest){
         if (quest.omg_is_missing){
             log.error(this+' tried to start a missing quest: '+quest_class);
             quest.apiDelete();
-            delete quest;
+            //delete quest;
         }
         else{
             // Only offer multiplayer quests on streets with other players on them!
-            if (quest.isMultiplayer() && num_keys(this.location.getActivePlayers()) < 2){
+            if (quest.isMultiplayer() && Common.num_keys(this.player.location.getActivePlayers()) < 2){
                 quest.apiDelete();
-                delete quest;
+                //delete quest;
             }
             else{
                 quest.onStart(this, is_npc, auto_accept);
-                this.quests.todo.quests[quest_class] = quest;
+                this.todo.quests[quest_class] = quest;
             }
         }
     }
@@ -290,15 +300,15 @@ public function startQuestRepeat(quest_class, is_npc, auto_accept){
     if (status == 'todo'){
         return quest;
     } else if (status == 'done') {
-        apiLogAction('QUEST_REPEAT', 'pc='+this.tsid, 'quest='+quest_class);
-        delete this.quests.done.quests[quest_class];
-        this.quests.todo.quests[quest_class] = quest;
+        Server.instance.apiLogAction('QUEST_REPEAT', 'pc='+this.player.tsid, 'quest='+quest_class);
+        delete this.done.quests[quest_class];
+        this.todo.quests[quest_class] = quest;
         quest.onStart(this, is_npc, auto_accept);
         return quest;
     } else if (status == 'fail_repeat') {
-        apiLogAction('QUEST_REPEAT', 'pc='+this.tsid, 'quest='+quest_class);
-        delete this.quests.fail_repeat.quests[quest_class];
-        this.quests.todo.quests[quest_class] = quest;
+        Server.instance.apiLogAction('QUEST_REPEAT', 'pc='+this.player.tsid, 'quest='+quest_class);
+        delete this.fail_repeat.quests[quest_class];
+        this.todo.quests[quest_class] = quest;
         quest.onStart(this, is_npc, auto_accept);
         return quest;
     }
@@ -310,14 +320,14 @@ public function restartQuest(quest_class){
     var status = this.getQuestStatus(quest_class);
     if (status != 'todo' && status != 'fail_repeat') return null;
 
-    apiLogAction('QUEST_RESTART', 'pc='+this.tsid, 'quest='+quest_class);
+    Server.instance.apiLogAction('QUEST_RESTART', 'pc='+this.player.tsid, 'quest='+quest_class);
 
     var quest = this.getQuestInstance(quest_class);
 
     if (quest){
         if (status == 'fail_repeat') {
-            delete this.quests.fail_repeat.quests[quest_class];
-            this.quests.todo.quests[quest_class] = quest;
+            delete this.fail_repeat.quests[quest_class];
+            this.todo.quests[quest_class] = quest;
         }
 
         return quest.onRestart(this);
@@ -330,7 +340,7 @@ public function acceptQuest(quest_class){
     var status = this.getQuestStatus(quest_class);
     if (status != 'todo') return null;
 
-    apiLogAction('QUEST_ACCEPT', 'pc='+this.tsid, 'quest='+quest_class);
+    Server.instance.apiLogAction('QUEST_ACCEPT', 'pc='+this.player.tsid, 'quest='+quest_class);
 
     var quest = this.getQuestInstance(quest_class);
 
@@ -347,7 +357,7 @@ public function quests_send_state(quest, state){
 
     var quest_info = quest.get_status(this, 'todo');
 
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         'type'      : 'quest_'+state,
         'quest_id'  : quest.class_id,
         'title'     : '* '+quest.get_full_title(this),
@@ -357,7 +367,7 @@ public function quests_send_state(quest, state){
 
 }
 
-public function completeQuest(quest_class, no_alert){
+public function completeQuest(quest_class, no_alert=false){
 
     var status = this.getQuestStatus(quest_class);
 
@@ -365,9 +375,9 @@ public function completeQuest(quest_class, no_alert){
 
     var qi;
     if (status == 'todo'){
-        qi = this.quests.todo.quests[quest_class];
+        qi = this.todo.quests[quest_class];
     }else{
-        qi = apiNewOwnedQuest(quest_class, this);
+        qi = Server.instance.apiNewOwnedQuest(quest_class, this);
     }
 
 
@@ -382,13 +392,13 @@ public function completeQuest(quest_class, no_alert){
         return false;
     }
 
-    apiLogAction('QUEST_COMPLETE', 'pc='+this.tsid, 'quest='+quest_class);
+    Server.instance.apiLogAction('QUEST_COMPLETE', 'pc='+this.player.tsid, 'quest='+quest_class);
 
     //
     // store it
     //
 
-    qi.ts_done = time();
+    qi.ts_done = Common.time();
 
     if (qi.is_repeatable){
         if (!qi.repeats){
@@ -397,23 +407,23 @@ public function completeQuest(quest_class, no_alert){
         qi.repeats.push({'ts_start': qi.ts_start, 'ts_done': qi.ts_done});
     }
 
-    this.quests.done.quests[quest_class] = qi;
+    this.done.quests[quest_class] = qi;
 
-    delete this.quests.todo.quests[quest_class];
+    delete this.todo.quests[quest_class];
 
     //
     // notify client
     //
 
     if (!qi.hide_questlog){
-        this.apiSendMsg({
+        this.player.apiSendMsg({
             'type'      : 'quest_finished',
             'quest_id'  : qi.class_id
         });
         log.info('sending log completion message for '+qi.getTitle(this));
 
         if (qi.show_alert && !no_alert){
-            this.apiSendMsg({
+            this.player.apiSendMsg({
                 'type'      : 'alert',
                 'msg'       : qi.getCompletion(this),
                 'btn_txt'   : qi.button_thanks
@@ -422,34 +432,34 @@ public function completeQuest(quest_class, no_alert){
         }
 
         if (qi.is_tracked){
-            this.sendActivity('Quest completed: '+qi.getTitle(this));
+            this.player.sendActivity('Quest completed: '+qi.getTitle(this));
         }
     }
 
-    this.daily_history_push('quests_completed', quest_class);
+    this.player.daily_history.daily_history_push('quests_completed', quest_class);
 
-    if (in_array(quest_class, ['high_jump', 'rook_egg_smash'])){
-        this.show_rainbow('rainbow_youdidit');
+    if (Utils.in_array(quest_class, ['high_jump', 'rook_egg_smash'])){
+        this.player.show_rainbow('rainbow_youdidit');
     }
 
     return true;
 }
 
-public function failQuest(quest_class, fail_completed){
+public function failQuest(quest_class, fail_completed=false){
 
     var status = this.getQuestStatus(quest_class);
 
     var qi;
     if (fail_completed){
         if (status != 'done') return false;
-        qi = this.quests.done.quests[quest_class];
+        qi = this.done.quests[quest_class];
     }
     else{
         if (status != 'todo') return false;
-        qi = this.quests.todo.quests[quest_class];
+        qi = this.todo.quests[quest_class];
     }
 
-    apiLogAction('QUEST_FAILED', 'pc='+this.tsid, 'quest='+quest_class);
+    Server.instance.apiLogAction('QUEST_FAILED', 'pc='+this.player.tsid, 'quest='+quest_class);
 
     // Remove any quest locations
     var quest_instance = this.getQuestInstance(quest_class);
@@ -458,7 +468,7 @@ public function failQuest(quest_class, fail_completed){
     // notify client
     //
 
-    this.sendMsgOnline({
+    this.player.sendMsgOnline({
         'type'      : 'quest_failed',
         'quest_id'  : qi.class_id
     });
@@ -467,8 +477,8 @@ public function failQuest(quest_class, fail_completed){
     qi.onFail(this);
 
     if (fail_completed){
-        this.quests.todo.quests[quest_class] = qi;
-        delete this.quests.done.quests[quest_class];
+        this.todo.quests[quest_class] = qi;
+        delete this.done.quests[quest_class];
     }
 
     // If it's repeatable, move it to the fail_repeat store
@@ -477,10 +487,10 @@ public function failQuest(quest_class, fail_completed){
         if (!qi.fails){
             qi.fails = [];
         }
-        qi.fails.push({'ts_start': qi.ts_start, 'ts_fail': time()});
+        qi.fails.push({'ts_start': qi.ts_start, 'ts_fail': Common.time()});
 
-        this.quests.fail_repeat.quests[quest_class] = qi;
-        delete this.quests.todo.quests[quest_class];
+        this.fail_repeat.quests[quest_class] = qi;
+        delete this.todo.quests[quest_class];
     } // If it's not restartable, just remove it
     else if (!qi.onStarted){
         this.quests_remove(quest_class);
@@ -491,13 +501,13 @@ public function failQuest(quest_class, fail_completed){
 
 public function quests_fail_and_remove(quest_class, fail_completed){
     if (this.failQuest(quest_class, fail_completed)){
-        if (this.quests.todo.quests[quest_class]){
-            this.quests.todo.quests[quest_class].apiDelete();
-            delete this.quests.todo.quests[quest_class];
+        if (this.todo.quests[quest_class]){
+            this.todo.quests[quest_class].apiDelete();
+            delete this.todo.quests[quest_class];
         }
-        else if (this.quests.done.quests[quest_class]){
-            this.quests.done.quests[quest_class].apiDelete();
-            delete this.quests.done.quests[quest_class];
+        else if (this.done.quests[quest_class]){
+            this.done.quests[quest_class].apiDelete();
+            delete this.done.quests[quest_class];
         }
     }
 }
@@ -509,12 +519,12 @@ public function quests_get_all(){
         'done' : {}
     };
 
-    for (var i in this.quests.todo.quests){
-        out.todo[i] = this.quests_get_single(this.quests.todo.quests[i]);
+    for (var i in this.todo.quests){
+        out.todo[i] = this.quests_get_single(this.todo.quests[i]);
     }
 
-    for (var i in this.quests.done.quests){
-        out.done[i] = this.quests_get_single(this.quests.done.quests[i]);
+    for (var i in this.done.quests){
+        out.done[i] = this.quests_get_single(this.done.quests[i]);
     }
 
     return out;
@@ -522,11 +532,11 @@ public function quests_get_all(){
 
 public function quests_on_logout(){
     // Fail all multiplayer quests
-    for (var i in this.quests.todo.quests){
-        var q = this.quests.todo.quests[i];
+    for (var i in this.todo.quests){
+        var q = this.todo.quests[i];
         if (q.is_multiplayer && q.isStarted() && !q.isFull()){
-            this.updateActionRequest('was looking for a challenger on the quest <b>'+q.getTitle(this)+'</b>.', 0);
-            this.cancelActionRequestBroadcast('quest_accept', q.class_tsid);
+            this.player.requests.updateActionRequest('was looking for a challenger on the quest <b>'+q.getTitle(this)+'</b>.', 0);
+            this.player.requests.cancelActionRequestBroadcast('quest_accept', q.class_tsid);
             this.failQuest(q.class_tsid);
         }
     }
@@ -562,33 +572,33 @@ public function quests_get_single(q){
 public function quests_remove(class_tsid){
 
     // remove done version
-    if (this.quests.done.quests[class_tsid]){
-        if (this.quests.done.quests[class_tsid].deleteMe){
-            this.quests.done.quests[class_tsid].deleteMe();
+    if (this.done.quests[class_tsid]){
+        if (this.done.quests[class_tsid].deleteMe){
+            this.done.quests[class_tsid].deleteMe();
         }else{
-            this.quests.done.quests[class_tsid].apiDelete();
+            this.done.quests[class_tsid].apiDelete();
         }
-        delete this.quests.done.quests[class_tsid];
+        delete this.done.quests[class_tsid];
     }
 
     // remove todo version
-    if (this.quests.todo.quests[class_tsid]){
+    if (this.todo.quests[class_tsid]){
         // Remove from the client
-        if (!this.quests.todo.quests[class_tsid].hide_questlog) this.apiSendMsg({type: 'quest_remove', tsid: class_tsid});
+        if (!this.todo.quests[class_tsid].hide_questlog) this.player.apiSendMsg({type: 'quest_remove', tsid: class_tsid});
 
-        if (this.quests.todo.quests[class_tsid].deleteMe){
-            this.quests.todo.quests[class_tsid].deleteMe();
+        if (this.todo.quests[class_tsid].deleteMe){
+            this.todo.quests[class_tsid].deleteMe();
         }else{
-            this.quests.todo.quests[class_tsid].apiDelete();
+            this.todo.quests[class_tsid].apiDelete();
         }
-        delete this.quests.todo.quests[class_tsid];
+        delete this.todo.quests[class_tsid];
     }
 
     // remove offers
-    var alerts = this.familiar_find_alerts('quests_familiar_offer');
+    var alerts = this.player.familiar.familiar_find_alerts('quests_familiar_offer');
     for (var i in alerts){
         if (alerts[i].class_tsid == class_tsid){
-            this.familiar_remove_alert(i);
+            this.player.familiar.familiar_remove_alert(i);
         }
     }
 }
@@ -598,9 +608,9 @@ public function quests_offer(class_tsid, force_now = false, delay = false){
     if (!class_tsid) return;
 
     // Are quests turned off? if so, lets delay this quest
-    if (this.buffs_has('turn_off_quests')){ delay = true; }
+    if (this.player.buffs.buffs_has('turn_off_quests')){ delay = true; }
 
-    var q_proto = apiFindQuestPrototype(class_tsid);
+    var q_proto = Server.instance.apiFindQuestPrototype(class_tsid);
     if (!force_now) {
         for (var i in q_proto.prereq_quests) {
             var pq = q_proto.prereq_quests[i];
@@ -638,42 +648,42 @@ public function quests_offer(class_tsid, force_now = false, delay = false){
     if (!delay) delay = (60 * 5);
 
     // check newxp status and force a delay
-    if ((!this.has_done_intro || this.location.is_newxp || this.location.is_skillquest || (this.location.class_tsid == 'newbie_island' && this.getQuestStatus('buy_two_bags') != 'done')) && !force_now){
+    if ((!this.player.has_done_intro || this.player.location.is_newxp || this.player.location.is_skillquest || (this.player.location.class_tsid == 'newbie_island' && this.getQuestStatus('buy_two_bags') != 'done')) && !force_now){
         force_delay = true;
     }
 
-    if (force_delay || (!force_now && this.last_quest_offer && (time() - this.last_quest_offer < delay))){
+    if (force_delay || (!force_now && this.last_quest_offer && (Common.time() - this.last_quest_offer < delay))){
         return this.quests_offer_queue(class_tsid, delay, force_delay);
     }
 
-    apiLogAction('QUEST_OFFERED', 'pc='+this.tsid, 'quest='+class_tsid);
+    Server.instance.apiLogAction('QUEST_OFFERED', 'pc='+this.player.tsid, 'quest='+class_tsid);
 
     var quest = this.startQuest(class_tsid);
 
     if (quest){
-        this.last_quest_offer = time();
+        this.last_quest_offer = Common.time();
     }
 
     return quest;
 }
 
 public function quests_offer_queue(class_tsid, delay, force_delay){
-    if (!this.quests.queue){
-        this.quests.queue = [];
+    if (!this.queue){
+        this.queue = [];
     }
 
-    if (in_array(class_tsid, this.quests.queue)) return;
+    if (Common.in_array(class_tsid, this.queue)) return;
 
-    apiLogAction('QUEST_QUEUED', 'pc='+this.tsid, 'quest='+class_tsid);
+    Server.instance.apiLogAction('QUEST_QUEUED', 'pc='+this.player.tsid, 'quest='+class_tsid);
 
-    var length = this.quests.queue.push(class_tsid);
+    var length = this.queue.push(class_tsid);
     if (length == 1){
         var duration;
         if (force_delay){
             duration = delay * 1000;
         }
         else{
-            duration = (delay - (time() - this.last_quest_offer)) * 1000;
+            duration = (delay - (Common.time() - this.last_quest_offer)) * 1000;
         }
 
         this.apiSetTimer('quests_run_queue', duration);
@@ -681,17 +691,17 @@ public function quests_offer_queue(class_tsid, delay, force_delay){
 }
 
 public function quests_run_queue(){
-    if (!this.quests.queue || !this.quests.queue.length) return false;
+    if (!this.queue || !this.queue.length) return false;
 
-    if (!this.isOnline()) return this.quests_pause_queue();
+    if (!this.player.isOnline()) return this.quests_pause_queue();
 
-    if (this.buffs_has('turn_off_quests')) return this.quests_pause_queue();
+    if (this.player.buffs.buffs_has('turn_off_quests')) return this.quests_pause_queue();
 
-    var class_tsid = this.quests.queue.shift();
+    var class_tsid = this.queue.shift();
     if (!class_tsid) return false;
 
     if (this.quests_offer(class_tsid, true)){
-        if (this.quests.queue.length) this.apiSetTimer('quests_run_queue', 60 * 5 * 1000);
+        if (this.queue.length) this.apiSetTimer('quests_run_queue', 60 * 5 * 1000);
         return true;
     }
     else{
@@ -701,13 +711,13 @@ public function quests_run_queue(){
 }
 
 public function quests_pause_queue(){
-    if (this.quests.queue && this.quests.queue.length) return this.apiCancelTimer('quests_run_queue');
+    if (this.queue && this.queue.length) return this.apiCancelTimer('quests_run_queue');
 
     return false;
 }
 
 public function quests_restart_queue(){
-    if (!this.quests.queue || !this.quests.queue.length) return false;
+    if (!this.queue || !this.queue.length) return false;
 
     return this.apiSetTimer('quests_run_queue', ((60 * 5) - (time() - this.last_quest_offer)) * 1000);
 }
@@ -725,7 +735,7 @@ public function quests_give_finished(class_tsid){
 
     if (status != 'none') return;
 
-    var quest = apiNewOwnedQuest(class_tsid, this);
+    var quest = Server.instance.apiNewOwnedQuest(class_tsid, this);
     if (quest){
         if (quest.omg_is_missing){
             log.error(this+' tried to start a missing quest: '+class_tsid);
@@ -736,7 +746,7 @@ public function quests_give_finished(class_tsid){
             quest.hide_questlog = true;
             quest.onStart(this, false, true);
             quest.makeComplete(this);
-            this.quests.done.quests[class_tsid] = quest;
+            this.done.quests[class_tsid] = quest;
 
             if (quest.onComplete_custom) quest.onComplete_custom(this);
         }
@@ -751,7 +761,7 @@ public function quests_familiar_turnin(class_tsid){
 
     // Only send an alert if the quest actually has text:
     if(quest && quest.getCompletion(this) && quest.getCompletion(this).length) {
-        this.familiar_send_alert({
+        this.player.familiar.familiar_send_alert({
                 'callback'      : 'quests_familiar_turnin_do',
                 'quest_id'    : class_tsid
         });
@@ -761,8 +771,8 @@ public function quests_familiar_turnin(class_tsid){
     }
 
 
-    if (this.location.isInstance()){
-        this.instances_cancel_exit_prompt(this.location.instance_id);
+    if (this.player.location.isInstance()){
+        this.player.instances.instances_cancel_exit_prompt(this.player.location.instance_id);
     }
 }
 
@@ -770,12 +780,12 @@ public function quests_familiar_turnin_cancel(class_tsid){
 
     // remove any turnin alert about this quest from the queue
 
-    var alerts = this.familiar_find_alerts('quests_familiar_turnin_do');
+    var alerts = this.player.familiar.familiar_find_alerts('quests_familiar_turnin_do');
 
     for (var i in alerts){
         if (alerts[i].class_tsid == class_tsid){
 
-            this.familiar_remove_alert(i);
+            this.player.familiar.familiar_remove_alert(i);
         }
     }
 }
@@ -830,7 +840,7 @@ public function quests_familiar_turnin_do(choice, details){
         };
     }
     else if (choice == 'quest-complete'){
-        this.events_add({quest_id: details.quest_id, callback: 'quests_familiar_turnin_do_complete'}, 0.1);
+        this.player.events.events_add({quest_id: details.quest_id, callback: 'quests_familiar_turnin_do_complete'}, 0.1);
 
         return {
             args: {
@@ -860,14 +870,14 @@ public function quests_familiar_turnin_do(choice, details){
         // If we are under the effects of the Silvertongue buff, we need to display updated rewards
         // to reflect the bonuses.
         var reward_multiplier = 0;
-        if (this.buffs_has('silvertongue')) reward_multiplier = 1.05;
-        if (this.buffs_has('gift_of_gab')) reward_multiplier = 1.2;
+        if (this.player.buffs.buffs_has('silvertongue')) reward_multiplier = 1.05;
+        if (this.player.buffs.buffs_has('gift_of_gab')) reward_multiplier = 1.2;
 
         if (reward_multiplier > 1) {
-            reward_multiplier += this.imagination_get_quest_modifier();
+            reward_multiplier += this.player.imagination.imagination_get_quest_modifier();
         }
         else {
-            reward_multiplier = 1.0 + this.imagination_get_quest_modifier();
+            reward_multiplier = 1.0 + this.player.imagination.imagination_get_quest_modifier();
         }
 
         if(reward_multiplier != 0) {
@@ -898,7 +908,7 @@ public function quests_familiar_turnin_do(choice, details){
 
         // Play the super fun sound, if we haven't already:
         if(!quest.played_quest_complete_sound) {
-            this.announce_sound('QUEST_COMPLETE', 0, false, true);
+            this.player.announcements.announce_sound('QUEST_COMPLETE', 0, false, true);
             quest.played_quest_complete_sound = true;
         }
 
@@ -977,8 +987,8 @@ public function quests_enter_location(tsid, locations_count) {
 
 public function quests_learnt_skill(skill_id){
 
-    if (!this.events_has(function(details){ return details.callback == 'quests_learnt_skill_do'; })){
-        this.events_add({ callback: 'quests_learnt_skill_do', skill_id: skill_id }, 30);
+    if (!this.player.events.events_has(function(details){ return details.callback == 'quests_learnt_skill_do'; })){
+        this.player.events.events_add({ callback: 'quests_learnt_skill_do', skill_id: skill_id }, 30);
     }
 }
 
@@ -990,16 +1000,16 @@ var first_tool_skills = {
     'meditativearts_1': 'focusing_orb'
 };
 public function quests_learnt_skill_do(details){
-    var map = config.skills_get_quest_map();
+    var map = config.base.skills.skills_get_quest_map();
 
-    if (map[details.skill_id] && (!this.location.is_newxp || this.location.class_tsid == 'newbie_island') && !this.location.is_skillquest){
+    if (map[details.skill_id] && (!this.player.location.is_newxp || this.player.location.class_tsid == 'newbie_island') && !this.player.location.is_skillquest){
 
         this.quests_offer(map[details.skill_id]);
     }
 }
 
 public function quests_get_quest_for_unlearnt_skill(skill_id) {
-    var map = config.skills_get_quest_map();
+    var map = config.base.skills.skills_get_quest_map();
     var quest_id = map[skill_id];
 
     var stat = this.getQuestStatus(quest_id);
@@ -1021,13 +1031,13 @@ public function quests_unlearnt_skill(skill_id){
     var quest = this.quests_get_quest_for_unlearnt_skill(skill_id);
     this.quests_remove(quest);
 
-    this.apiSendMsg({type: "quest_remove", tsid: quest});
+    this.player.apiSendMsg({type: "quest_remove", tsid: quest});
 }
 
 public function quests_give_level(){
 
-    if (!this.events_has(function(details){ return details.callback == 'quests_give_level_do'; })){
-        this.events_add({ callback: 'quests_give_level_do' }, 30);
+    if (!this.player.events.events_has(function(details){ return details.callback == 'quests_give_level_do'; })){
+        this.player.events.events_add({ callback: 'quests_give_level_do' }, 30);
     }
 }
 
@@ -1051,7 +1061,7 @@ public function quests_level_map(){
 
 public function quests_give_level_do(details){
     // No quests during newxp
-    if ((this.location.is_newxp && this.location.class_tsid != 'newbie_island') || this.location.is_skillquest) return;
+    if ((this.player.location.is_newxp && this.player.location.class_tsid != 'newbie_island') || this.player.location.is_skillquest) return;
 
     var map = this.quests_level_map();
 
@@ -1060,8 +1070,8 @@ public function quests_give_level_do(details){
     // so they'll get offered every time you get some XP
     //
 
-    var xp = this.stats_get_xp();
-    var cur = this.stats_calc_level_from_xp(xp);
+    var xp = this.player.stats.stats_get_xp();
+    var cur = this.player.stats.stats_calc_level_from_xp(xp);
 
     for (var i=2; i<=30; i++){
         if(!map[i]) {
@@ -1090,15 +1100,15 @@ public function quests_give_level_do(details){
 public function quests_get_complete_count(){
     this.quests_init();
 
-    return num_keys(this.quests.done.quests);
+    return num_keys(this.done.quests);
 }
 
 public function quests_multiplayer_invite(class_tsid){
     var q = this.getQuestInstance(class_tsid);
     if (q){
-        this.broadcastActionRequest('quest_accept', class_tsid, 'is looking for a challenger on the quest <b>'+q.getTitle(this)+'</b>.', q.getMaxOpponents());
+        this.player.requests.broadcastActionRequest('quest_accept', class_tsid, 'is looking for a challenger on the quest <b>'+q.getTitle(this)+'</b>.', q.getMaxOpponents());
 
-        this['!invite_uid_'+this.tsid] = this.prompts_add({
+        this['!invite_uid_'+this.player.tsid] = this.player.prompts.prompts_add({
             txt     : 'Waiting for other players...',
             timeout     : 60,
             choices     : [
@@ -1106,11 +1116,11 @@ public function quests_multiplayer_invite(class_tsid){
             ],
             callback    : 'quests_multiplayer_accept',
             quest_id    : class_tsid,
-            challenger  : this.tsid
+            challenger  : this.player.tsid
         });
 
         // Set a timer to fail the request
-        this.events_add({callback: 'quests_multiplayer_invite_timeout', class_tsid: class_tsid}, 60);
+        this.player.events.events_add({callback: 'quests_multiplayer_invite_timeout', class_tsid: class_tsid}, 60);
     }
 }
 
@@ -1120,18 +1130,18 @@ public function quests_multiplayer_invite_timeout(details){
         if (!q.isFull()){
 
             // Remove prompts
-            this.prompts_remove(this['!invite_uid_'+this.tsid]);
+            this.player.prompts.prompts_remove(this['!invite_uid_'+this.player.tsid]);
             for (var i in q.opponents){
                 var opp = getPlayer(i);
-                if (opp) opp.prompts_remove(opp['!invite_uid_'+this.tsid]);
+                if (opp) opp.prompts_remove(opp['!invite_uid_'+this.player.tsid]);
             }
 
 
-            this.updateActionRequest('was looking for a challenger on the quest <b>'+q.getTitle(this)+'</b>.', 0);
-            this.cancelActionRequestBroadcast('quest_accept', q.class_tsid);
+            this.player.requests.updateActionRequest('was looking for a challenger on the quest <b>'+q.getTitle(this)+'</b>.', 0);
+            this.player.requests.cancelActionRequestBroadcast('quest_accept', q.class_tsid);
             this.failQuest(q.class_tsid);
 
-            this.prompts_add({
+            this.player.prompts.prompts_add({
                 txt     : 'Not enough players accepted your challenge. Try again later?',
                 timeout     : 10,
                 choices     : [
@@ -1145,13 +1155,13 @@ public function quests_multiplayer_invite_timeout(details){
 public function quests_multiplayer_accept(value, details){
     if (value == 'yes'){
         var challenger = getPlayer(details.challenger);
-        if (!challenger || challenger.tsid == this.tsid) return;
+        if (!challenger || challenger.tsid == this.player.tsid) return;
 
         var q = challenger.getQuestInstance(details.quest_id);
         if (!q) return;
 
         if (q.isFull() || !q.isStarted()){
-            this.prompts_add({
+            this.player.prompts.prompts_add({
                 txt     : 'Sorry, you were not quite fast enough to join '+challenger.label+' on the '+q.getTitle(this)+' quest.',
                 timeout     : 10,
                 choices     : [
@@ -1166,8 +1176,8 @@ public function quests_multiplayer_accept(value, details){
 }
 
 public function quests_multiplayer_ready(){
-    if (this.location.is_race){
-        this.location.race_player_ready(this);
+    if (this.player.location.is_race){
+        this.player.location.race_player_ready(this);
     }
 }
 
@@ -1182,20 +1192,20 @@ public function quests_multiplayer_leave_prompt(delay){
     };
 
     if (delay){
-        this.prompts_add_delayed(details, delay);
+        this.player.prompts.prompts_add_delayed(details, delay);
     }
     else{
-        this.prompts_add(details);
+        this.player.prompts.prompts_add(details);
     }
 }
 
 public function quests_multiplayer_leave(value, details){
-    if (this.location.is_race && value == 'ok'){
-        this.overlay_dismiss('race_waiting');
-        this.overlay_dismiss('race_results');
-        this.instances_exit(this.location.instance_id);
+    if (this.player.location.is_race && value == 'ok'){
+        this.player.announcements.overlay_dismiss('race_waiting');
+        this.player.announcements.overlay_dismiss('race_results');
+        this.player.instances.instances_exit(this.player.location.instance_id);
     }
-    else if (this.location.is_race){
+    else if (this.player.location.is_race){
         this.quests_multiplayer_leave_prompt(30);
     }
 }
@@ -1205,8 +1215,8 @@ public function quests_get_from_location(location_tsid) {
     loc_quests.in_loc = [];
     loc_quests.not_in_loc = [];
 
-    for(var i in this.quests.todo.quests) {
-        var quest = this.quests.todo.quests[i];
+    for(var i in this.todo.quests) {
+        var quest = this.todo.quests[i];
         if(!quest.is_started || quest.is_failed) {
             continue;
         }
@@ -1225,14 +1235,14 @@ public function quests_get_from_location(location_tsid) {
 }
 
 public function quests_tower_part2_accepted(){
-    this.overlay_dismiss('its_cool');
-    this.events_add({ callback: 'instances_create_delayed', tsid: 'LCR8MQ9JJI12IIK', instance_id: 'tower_quest_headspace', x: -911, y: -410, exit_delay: 2*60, options: {no_auto_return: true}}, 0.1);
+    this.player.announcements.overlay_dismiss('its_cool');
+    this.player.events.events_add({ callback: 'instances_create_delayed', tsid: 'LCR8MQ9JJI12IIK', instance_id: 'tower_quest_headspace', x: -911, y: -410, exit_delay: 2*60, options: {no_auto_return: true}}, 0.1);
 }
 
 public function rainbow_run_ready() {
     log.info("Sending 321 overlay...");
     // Ready to go, do 321 overlay.
-    this.apiSendAnnouncement({
+    this.player.announcements.apiSendAnnouncement({
         type: 'vp_overlay',
         duration: 3500,
         swf_url: overlay_key_to_url('321_countdown'),
@@ -1252,10 +1262,10 @@ public function rainbow_run_start() {
     this['!race_quoins_collected'] = 0;
     this['!doing_rainbow_run'] = true;
     this['!rainbow_run_left'] = 30;
-//  this.buffs_apply('rainbow_run');
+//  this.player.buffs.buffs_apply('rainbow_run');
 
     this.rainbow_run_overlay();
-    this.announce_music('FUTURE_SWING_30');
+    this.player.announcements.announce_music('FUTURE_SWING_30');
 
     this.apiSetTimer('rainbow_run_over', 30*1000);
     this.apiSetTimer('rainbow_run_count', 1000);
@@ -1267,8 +1277,8 @@ public function rainbow_run_overlay() {
     }
 
     var count = (this['!rainbow_run_left'] > 9 ? "" : "0" ) + this['!rainbow_run_left'];
-    this.overlay_dismiss('rainbow_counter');
-    this.apiSendAnnouncement({
+    this.player.announcements.overlay_dismiss('rainbow_counter');
+    this.player.announcements.apiSendAnnouncement({
         uid: 'rainbow_counter',
         type: "vp_overlay",
         duration: 0,
@@ -1299,11 +1309,11 @@ public function rainbow_run_over() {
 
     if(this['!race_quoins_collected'] >= 30) {
         this.apiSetTimer('rainbow_run_victory', 2500)
-        this.show_rainbow('rainbow_youdidit');
-        this.playEmotionAnimation('happy');
+        this.player.show_rainbow('rainbow_youdidit');
+        this.player.playEmotionAnimation('happy');
     } else {
         var resultText = '<p align="center"><span class="nuxp_vog">Failure!</span><br><span class="nuxp_vog_smaller">How embarrassing.</span></p>'
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "rainbow_run_over",
             type: "vp_overlay",
             duration: 0,
@@ -1319,14 +1329,14 @@ public function rainbow_run_over() {
         });
     }
 
-    this.overlay_dismiss('rainbow_counter');
+    this.player.announcements.overlay_dismiss('rainbow_counter');
 
 }
 
 public function rainbow_run_victory() {
     var resultText = '<p align="center"><span class="nuxp_vog">Success!</span><br><span class="nuxp_vog_smaller">You got them coins but good.</span></p>'
 
-    this.apiSendAnnouncement({
+    this.player.announcements.apiSendAnnouncement({
         uid: "rainbow_run_over",
         type: "vp_overlay",
         duration: 0,
@@ -1343,8 +1353,8 @@ public function rainbow_run_victory() {
 }
 
 public function rainbow_run_exit(details) {
-    this.announce_music_stop('FUTURE_SWING_30');
-    this.instances_exit('rainbow_run');
+    this.player.announcements.announce_music_stop('FUTURE_SWING_30');
+    this.player.instances.instances_exit('rainbow_run');
 }
 
 public function hub_plant_beans_init() {
@@ -1365,7 +1375,7 @@ public function hub_plant_beans_add(hubid) {
 
 public function hub_plant_beans_end() {
     if(this.hub_plant_beans) {
-        delete this.hub_plant_beans;
+        this.hub_plant_beans = null;
     }
 }
 
@@ -1391,17 +1401,17 @@ public function betterlearning_favor_add(giant, amt) {
 
 public function betterlearning_favor_end() {
     if(this.betterlearning_favor) {
-        delete this.betterlearning_favor;
+        this.betterlearning_favor = null;
     }
 }
 
 // If a player gets a hideously broken quest somehow on their DC, this will kill it.
 public function quests_emergency_delete(status, quest) {
-    if(this.quests[status]) {
-        if (this.quests[status].quests[quest]) {
-            this.quests[status].quests[quest].apiDelete();
+    if(this[status]) {
+        if (this[status].quests[quest]) {
+            this[status].quests[quest].apiDelete();
         }
-        delete this.quests[status].quests[quest];
+        delete this[status].quests[quest];
         return {ok: 1};
     } else {
         return {ok: 0};
@@ -1418,11 +1428,11 @@ public function clean_race_quests() {
 
 // To fix people who get the rook_hall quest stuck.
 public function fix_rook_hall() {
-    if (this.quests.fail_repeat){
-        for (var i in this.quests.fail_repeat.quests){
-            if (this.quests.fail_repeat.quests[i].class_id == 'rook_hall'){
-                this.quests.done.quests['rook_hall'] = this.quests.fail_repeat.quests[i];
-                delete this.quests.fail_repeat.quests[i];
+    if (this.fail_repeat){
+        for (var i in this.fail_repeat.quests){
+            if (this.fail_repeat.quests[i].class_id == 'rook_hall'){
+                this.done.quests['rook_hall'] = this.fail_repeat.quests[i];
+                delete this.fail_repeat.quests[i];
                 return;
             }
         }
@@ -1433,8 +1443,8 @@ public function fix_letterblock_quests() {
     if (this.getQuestStatus('letter_block_2') != "done") {
         var stat = this.getQuestStatus('letter_block_3')
         if (stat != "none" && stat != "done") {
-            if (this.location.isInstance('kids_room')) {
-                this.instances_exit('kids_room');
+            if (this.player.location.isInstance('kids_room')) {
+                this.player.instances.instances_exit('kids_room');
             }
             this.quests_remove('letter_block_3');
             log.info("Found broken letter block quest on player "+this+". Fixing.");
@@ -1456,19 +1466,19 @@ public function fix_prereq_quests(){
 }
 
 public function esquibethEnd() {
-    delete this.end_esquibeth;
+    this.end_esquibeth = null;
 }
 
 public function conchReset() {
-    delete this.has_blown_conch;
+    this.has_blown_conch = null;
 }
 
 public function countAcceptedQuests(){
     this.quests_init();
 
     var count = 0;
-    for (var i in this.quests.todo.quests){
-        if (this.quests.todo.quests[i].accepted) count++;
+    for (var i in this.todo.quests){
+        if (this.todo.quests[i].accepted) count++;
     }
 
     return count;

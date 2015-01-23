@@ -9,7 +9,7 @@ package com.reversefold.glitch.server {
 
     public class Utils {
         private static var log : Logger = Log.getLogger("server.player.achievements");
-
+		
 // Tiny Speck would like to offer a shoutout to Kevin van Zonneveld
 // (http://kevin.vanzonneveld.net). We're using his number_format() function.
 // Kevin, there weren't any licensing terms on this, so please let us know
@@ -356,6 +356,7 @@ public static function substitute(str, vars){
 
 
 public static function in_array(needle, haystack){
+	//RVRS: return arr.indexOf(obj) != -1;   ??
     for (var i in haystack){
         if (haystack[i] == needle) return 1;
     }

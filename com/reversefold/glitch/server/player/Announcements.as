@@ -91,7 +91,7 @@ public function announce_sound_stop(name, fade_out){
     this.apiSendAnnouncement(rsp);
 }
 
-public function announce_music(name, loop_count, fade_in){
+public function announce_music(name, loop_count=0, fade_in=false){
     if (name == 'NO_MUSIC') return;
 
     var rsp = {
@@ -109,7 +109,7 @@ public function announce_music(name, loop_count, fade_in){
     this.apiSendAnnouncement(rsp);
 }
 
-public function announce_music_stop(name, fade_out){
+public function announce_music_stop(name, fade_out=false){
     if (name == 'NO_MUSIC') return;
 
     var rsp = {

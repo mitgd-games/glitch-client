@@ -7,7 +7,7 @@ package com.reversefold.glitch.server.player {
     import org.osmf.logging.Logger;
 
     public class Items extends Common {
-        private static var log : Logger = Log.getLogger("server.player.announcements");
+        private static var log : Logger = Log.getLogger("server.player.items");
 
         public var config : Config;
         public var player : Player;

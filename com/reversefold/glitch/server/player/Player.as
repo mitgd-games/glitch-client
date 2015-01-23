@@ -49,18 +49,21 @@ package com.reversefold.glitch.server.player {
 			buddies = new Buddies(config, this);
 			quests = new Quests(config, this);
 			achievements = new Achievements(config, this);
+			familiar = new Familiar(config, this);
+			instances = new Instances(config, this);
 			announcements = new Announcements(config, this);
 			prompts = new Prompts(config, this);
 			daily_history = new DailyHistory(config, this);
 			counters = new Counters(config, this);
 			imagination = new Imagination(config, this);
 			eleven_secrets = new ElevenSecrets(config, this);
+			requests = new Requests(config, this);
 			butler = new Butler(config, this);
 			
 			bag = new Bag();
 		}
 		
-//RVRS: TODO: include items/include/events.js? Buffs and Announcements need it...
+//RVRS: TODO: include items/include/events.js? Buffs, Announcements, Quests need it...
 		
 		
 //#include inc_admin.js,
@@ -89,9 +92,11 @@ package com.reversefold.glitch.server.player {
 		//inc_achievements.js
 		public var achievements : Achievements;
 //#include inc_familiar.js,
+		public var familiar : Familiar;
 		//inc_demo.js,
 		//inc_party.js,
 		//inc_instances.js
+		public var instances : Instances;
 //#include inc_auctions.js,
 		//inc_announcements.js,
 		public var announcements : Announcements;
@@ -130,6 +135,7 @@ public function activity_notify(args){
 		//inc_eleven_secrets.js
 		public var eleven_secrets : ElevenSecrets;
 //#include inc_requests.js,
+		public var requests : Requests;
 		//inc_counters.js,
 		public var counters : Counters;
 //inc_imagination.js,
