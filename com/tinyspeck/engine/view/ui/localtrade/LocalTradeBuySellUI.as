@@ -87,7 +87,7 @@ package com.tinyspeck.engine.view.ui.localtrade
 			image_holder.filters = StaticFilters.grey1pxOutter_GlowA;
 			result_holder.addChild(image_holder);
 			
-			cancel_holder.addChild(new AssetManager.instance.assets.close_x_making_slot());
+			cancel_holder.addChild(new (AssetManager.instance.assets.close_x_making_slot)());
 			cancel_holder.useHandCursor = cancel_holder.buttonMode = true;
 			cancel_holder.x = int(IMG_HOLDER_WH - cancel_holder.width/2 - 3);
 			cancel_holder.y = int(-cancel_holder.height/2 + 3);
@@ -98,8 +98,8 @@ package com.tinyspeck.engine.view.ui.localtrade
 				w: IMG_HOLDER_WH,
 				h: 20,
 				name: 'qp',
-				minus_graphic: new AssetManager.instance.assets.minus_red_small(),
-				plus_graphic: new AssetManager.instance.assets.plus_green_small(),
+				minus_graphic: new (AssetManager.instance.assets.minus_red_small)(),
+				plus_graphic: new (AssetManager.instance.assets.plus_green_small)(),
 				min_value: 1,
 				button_wh: 17,
 				button_padd: 1 //needs a smaller padd to fit 9999

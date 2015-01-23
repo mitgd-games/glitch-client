@@ -43,7 +43,7 @@ package com.tinyspeck.engine.port
 		private var confirm_title_tf:TextField = new TextField();
 		private var confirm_body_tf:TextField = new TextField();
 		
-		private var checkmark:MovieClip = new AssetManager.instance.assets.checkmark();
+		private var checkmark:MovieClip = new (AssetManager.instance.assets.checkmark)();
 		
 		private var timer:Timer = new Timer(1000);
 		
@@ -105,7 +105,7 @@ package com.tinyspeck.engine.port
 					all_holder.addChild(bt);
 					
 					//create the go button
-					const teleport_icon:DisplayObject = new AssetManager.instance.assets.teleport_icon();
+					const teleport_icon:DisplayObject = new (AssetManager.instance.assets.teleport_icon)();
 					bt = new Button({
 						name: 'go'+i,
 						label_size: 13,
@@ -290,7 +290,7 @@ package com.tinyspeck.engine.port
 					bt = all_holder.getChildByName('edit'+i) as Button;
 					if(bt){
 						if(!bt.graphic && !is_edit){
-							const teleport_icon:DisplayObject = new AssetManager.instance.assets.teleport_icon();
+							const teleport_icon:DisplayObject = new (AssetManager.instance.assets.teleport_icon)();
 							bt.setGraphic(teleport_icon);
 						}
 						else if(is_edit){

@@ -155,7 +155,7 @@ package com.tinyspeck.engine.view.gameoverlay
 					
 					try {
 						//try and get the asset
-						asset = new AssetManager.instance.assets['callout_'+section];
+						asset = new (AssetManager.instance.assets['callout_'+section]);
 						holder.addChild(asset);
 					}
 					catch(error:Error) {

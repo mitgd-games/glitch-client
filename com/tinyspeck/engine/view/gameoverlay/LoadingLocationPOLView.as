@@ -59,11 +59,11 @@ package com.tinyspeck.engine.view.gameoverlay
 		
 		private function buildBase():void {
 			//interior
-			door = new AssetManager.instance.assets.enter_home_door();
+			door = new (AssetManager.instance.assets.enter_home_door)();
 			addChild(interior_holder);
 			
 			//tower
-			tower_door = new AssetManager.instance.assets.enter_tower_door();
+			tower_door = new (AssetManager.instance.assets.enter_tower_door)();
 			tower_door.x = -105;
 			tower_door.y = -10;
 			
@@ -71,7 +71,7 @@ package com.tinyspeck.engine.view.gameoverlay
 			addChild(exterior_holder);
 			
 			//avatar spinner
-			spinner = new AssetManager.instance.assets.spinner();
+			spinner = new (AssetManager.instance.assets.spinner)();
 			spinner.x = 80;
 			spinner.y = 80;
 			

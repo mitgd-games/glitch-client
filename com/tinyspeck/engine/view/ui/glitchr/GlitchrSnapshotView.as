@@ -92,7 +92,7 @@ package com.tinyspeck.engine.view.ui.glitchr {
 			model = TSModelLocator.instance;
 
 			// spinner
-			spinner = new AssetManager.instance.assets.spinner();
+			spinner = new (AssetManager.instance.assets.spinner)();
 			spinner.mouseChildren = false;
 			var cm:ColorMatrix = new com.quasimondo.geom.ColorMatrix();
 			cm.adjustContrast(1);
@@ -114,13 +114,13 @@ package com.tinyspeck.engine.view.ui.glitchr {
 			const option_padd:int = 28;
 			
 			// download button
-			download_holder = createButtonHolder(new AssetManager.instance.assets.glitchr_download(), 'download snap');
+			download_holder = createButtonHolder(new (AssetManager.instance.assets.glitchr_download)(), 'download snap');
 			download_holder.addEventListener(MouseEvent.CLICK, onDownloadClick, false, 0, true);
 			download_holder.x = int(save_bt.x + save_bt.width + option_padd);
 			button_holder.addChild(download_holder);
 			
 			// discard button
-			discard_holder = createButtonHolder(new AssetManager.instance.assets.glitchr_discard(), 'discard');
+			discard_holder = createButtonHolder(new (AssetManager.instance.assets.glitchr_discard)(), 'discard');
 			discard_holder.addEventListener(MouseEvent.CLICK, onDiscardClick, false, 0, true);
 			discard_holder.x = int(download_holder.x + download_holder.width + option_padd);
 			discard_holder.y = 1;
@@ -128,8 +128,8 @@ package com.tinyspeck.engine.view.ui.glitchr {
 			
 			// publish button
 			publish_holder = createButtonHolder(null, 'publish snap');
-			publish_enabled = new AssetManager.instance.assets.glitchr_publish();
-			publish_disabled = new AssetManager.instance.assets.glitchr_publish_disabled();
+			publish_enabled = new (AssetManager.instance.assets.glitchr_publish)();
+			publish_disabled = new (AssetManager.instance.assets.glitchr_publish_disabled)();
 			publish_enabled.x = int(publish_holder.width + 7);
 			publish_enabled.y = int(-publish_enabled.height/2 + 1);
 			publish_disabled.x = publish_enabled.x;
@@ -147,7 +147,7 @@ package com.tinyspeck.engine.view.ui.glitchr {
 			
 			// close button
 			close_bt = new Sprite();
-			close_bt.addChild(new AssetManager.instance.assets.glitchroid_close());
+			close_bt.addChild(new (AssetManager.instance.assets.glitchroid_close)());
 			SpriteUtil.setRegistrationPoint(close_bt.getChildAt(0));
 			close_bt.buttonMode = true;
 			close_bt.useHandCursor = true;

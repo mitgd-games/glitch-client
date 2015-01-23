@@ -217,7 +217,7 @@ package com.tinyspeck.engine.port
 		
 		private function buildMulti():void {			
 			resizer = new Sprite();
-			resizer.addChild(new AssetManager.instance.assets.chat_divider());
+			resizer.addChild(new (AssetManager.instance.assets.chat_divider)());
 			resizer.addEventListener(MouseEvent.MOUSE_DOWN, onResizeStart, false, 0, true);
 			
 			all_holder.addChild(resizer);

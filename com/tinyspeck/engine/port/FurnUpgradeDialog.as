@@ -51,8 +51,8 @@ package com.tinyspeck.engine.port
 		private static const ICON_WH:uint = 120;
 		private static const ICON_PADD:uint = 20;
 		
-		private var lightbulb_off:DisplayObject = new AssetManager.instance.assets.lightbulb_off();
-		private var lightbulb_on:DisplayObject = new AssetManager.instance.assets.lightbulb_on();
+		private var lightbulb_off:DisplayObject = new (AssetManager.instance.assets.lightbulb_off)();
+		private var lightbulb_on:DisplayObject = new (AssetManager.instance.assets.lightbulb_on)();
 		
 		private var lightbox_back:Shape = new Shape();
 		private var in_loc_ui_holder:Sprite = new Sprite();
@@ -120,7 +120,7 @@ package com.tinyspeck.engine.port
 			preview_tf.filters = StaticFilters.white3px_GlowA;
 			
 			//zoom stuff
-			const mag_glass:DisplayObject = new AssetManager.instance.assets.furn_zoom();
+			const mag_glass:DisplayObject = new (AssetManager.instance.assets.furn_zoom)();
 			zoom_holder.addChild(mag_glass);
 			
 			TFUtil.prepTF(zoom_tf, false);
@@ -156,7 +156,7 @@ package com.tinyspeck.engine.port
 			you_have_tf.y = credits_offset_y;
 			credits_holder.addChild(you_have_tf);
 			
-			const credits_icon:DisplayObject = new AssetManager.instance.assets.furn_credits_large();
+			const credits_icon:DisplayObject = new (AssetManager.instance.assets.furn_credits_large)();
 			credits_icon.x = int(you_have_tf.width + 1);
 			credits_icon.y = -2+credits_offset_y;
 			credits_holder.addChild(credits_icon);

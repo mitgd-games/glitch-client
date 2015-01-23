@@ -57,8 +57,8 @@ package com.tinyspeck.engine.view.ui.chrome
 				
 				bug_bt = createButton(
 					onBugClick,
-					new AssetManager.instance.assets.bug_icon(),
-					new AssetManager.instance.assets.bug_icon_disabled(),
+					new (AssetManager.instance.assets.bug_icon)(),
+					new (AssetManager.instance.assets.bug_icon_disabled)(),
 					'bug',
 					tip_txt);
 				bug_bt.x = next_x;
@@ -72,8 +72,8 @@ package com.tinyspeck.engine.view.ui.chrome
 			tip_txt = 'Need help?';
 			help_bt = createButton(
 				onHelpClick,
-				new AssetManager.instance.assets.help_icon(),
-				new AssetManager.instance.assets.help_icon_disabled(),
+				new (AssetManager.instance.assets.help_icon)(),
+				new (AssetManager.instance.assets.help_icon_disabled)(),
 				'help',
 				tip_txt);
 			addChild(help_bt);

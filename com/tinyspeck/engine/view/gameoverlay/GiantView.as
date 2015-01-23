@@ -119,7 +119,7 @@ package com.tinyspeck.engine.view.gameoverlay
 			ok_bt = new Button({
 				name: 'ok',
 				label: 'Click anywhere...',
-				graphic: new AssetManager.instance.assets.advancer_triangle(),
+				graphic: new (AssetManager.instance.assets.advancer_triangle)(),
 				graphic_placement: 'left',
 				graphic_padd_t: 3,
 				graphic_padd_l: 10,

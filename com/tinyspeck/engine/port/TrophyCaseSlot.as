@@ -128,14 +128,14 @@ package com.tinyspeck.engine.port
 				while(_slot_icon.numChildren > 0) _slot_icon.removeChildAt(0);
 				
 				if(_type == 'display'){
-					slot_graphic = new AssetManager.instance.assets.trophy_display_slot_empty();
+					slot_graphic = new (AssetManager.instance.assets.trophy_display_slot_empty)();
 				}else{
-					slot_graphic = new AssetManager.instance.assets.cabinet_slot_empty();
+					slot_graphic = new (AssetManager.instance.assets.cabinet_slot_empty)();
 				}
 				addChildAt(slot_graphic, 0);
 			}else{
 				slot_graphic = null;
-				//slot_graphic = new AssetManager.instance.assets.cabinet_slot_full();
+				//slot_graphic = new (AssetManager.instance.assets.cabinet_slot_full)();
 			}
 			
 			

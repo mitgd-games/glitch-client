@@ -50,7 +50,7 @@ package com.tinyspeck.engine.view.ui.decorate
 			
 			//handle the custom close button
 			SpriteUtil.clean(close_holder);
-			close_holder.addChild(new AssetManager.instance.assets.close_decorate_toast());
+			close_holder.addChild(new (AssetManager.instance.assets.close_decorate_toast)());
 			close_holder.visible = false;
 			addChild(close_holder);
 			
@@ -74,7 +74,7 @@ package com.tinyspeck.engine.view.ui.decorate
 			you_have_tf.y = int(TEXT_PADD + msg_tf.height - 5);
 			holder.addChild(you_have_tf);
 			
-			credits_icon = new AssetManager.instance.assets.furn_credits_small();
+			credits_icon = new (AssetManager.instance.assets.furn_credits_small)();
 			credits_icon.x = int(you_have_tf.x + you_have_tf.width + 2);
 			credits_icon.y = you_have_tf.y + 3;
 			holder.addChild(credits_icon);

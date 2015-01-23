@@ -88,7 +88,7 @@ package com.tinyspeck.engine.view.gameoverlay.maps {
 			map_path_container.y = map_lines_container.y;
 			this.addChild(map_path_container);
 			
-			var marker:DisplayObject = new AssetManager.instance.assets.path_marker();
+			var marker:DisplayObject = new (AssetManager.instance.assets.path_marker)();
 			marker.x = -marker.width/2;
 			marker.y = -marker.height;
 			dest_marker.mouseEnabled = false;
@@ -678,7 +678,7 @@ package com.tinyspeck.engine.view.gameoverlay.maps {
 			var icon:Bitmap;
 			
 			if (street.store) {
-				icon = new AssetManager.instance.assets['map_icon_shop']();
+				icon = new (AssetManager.instance.assets['map_icon_shop'])();
 				icon.blendMode = BlendMode.MULTIPLY;
 				icon.smoothing = true;
 				icon.x = 2;
@@ -701,7 +701,7 @@ package com.tinyspeck.engine.view.gameoverlay.maps {
 			}
 
 			if (street.shrine) {
-				icon = new AssetManager.instance.assets['map_icon_shrine']();
+				icon = new (AssetManager.instance.assets['map_icon_shrine'])();
 				icon.blendMode = BlendMode.MULTIPLY;
 				icon.smoothing = true;
 				icon.x = -2 - icon.width;
@@ -724,7 +724,7 @@ package com.tinyspeck.engine.view.gameoverlay.maps {
 			}
 			
 			if (street.has_subway) {
-				icon = new AssetManager.instance.assets['map_icon_subway']();
+				icon = new (AssetManager.instance.assets['map_icon_subway'])();
 				//icon.blendMode = BlendMode.MULTIPLY;
 				icon.smoothing = true;
 				icon.x = int(-icon.width/2);

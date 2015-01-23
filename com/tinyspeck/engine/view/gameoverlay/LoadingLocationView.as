@@ -120,7 +120,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 			
 			model = TSModelLocator.instance;
 			
-			qurazy_quoin = new AssetManager.instance.assets.qurazy_quoin();
+			qurazy_quoin = new (AssetManager.instance.assets.qurazy_quoin)();
 		}
 		
 		private function buildBase():void {
@@ -251,7 +251,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 			addChild(progress_bar);
 			
 			//upgrade badge
-			var upgrade_badge:DisplayObject = new AssetManager.instance.assets.upgrade_badge();
+			var upgrade_badge:DisplayObject = new (AssetManager.instance.assets.upgrade_badge)();
 			if(upgrade_badge) upgrade_badge_holder.addChild(upgrade_badge);
 			all_holder.addChild(upgrade_badge_holder);
 			

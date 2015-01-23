@@ -82,7 +82,7 @@ package com.tinyspeck.engine.data.quest {
 				
 				// add a little context header
 				quest.offer_conversation.title = '<span class="choices_quest_title">New quest</span>';
-				quest.offer_conversation.graphic = new AssetManager.instance.assets.familiar_dialog_quests_small();
+				quest.offer_conversation.graphic = new (AssetManager.instance.assets.familiar_dialog_quests_small)();
 				quest.offer_conversation.txt = '<span class="choices_quest_start_finish">'+quest.title+'</span><br>'+
 											   StringUtil.injectClass(quest.offer_conversation.txt, 'a', 'familiar_conversation_link');
 					

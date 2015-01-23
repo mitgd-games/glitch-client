@@ -74,7 +74,7 @@ package com.tinyspeck.engine.view.ui.making
 				label_offset: 1,
 				value: recipe.outputs[0].item_class,
 				draw_alpha: 0,
-				graphic: new AssetManager.instance.assets.making_info(),
+				graphic: new (AssetManager.instance.assets.making_info)(),
 				graphic_placement: 'left',
 				graphic_padd_r: 0
 			});
@@ -99,8 +99,8 @@ package com.tinyspeck.engine.view.ui.making
 				name: 'qty',
 				w: 120,
 				h: 34,
-				minus_graphic: new AssetManager.instance.assets.minus_red(),
-				plus_graphic: new AssetManager.instance.assets.plus_green(),
+				minus_graphic: new (AssetManager.instance.assets.minus_red)(),
+				plus_graphic: new (AssetManager.instance.assets.plus_green)(),
 				max_value: 1,
 				min_value: 1,
 				button_wh: 20,

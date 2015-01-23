@@ -42,7 +42,7 @@ package com.tinyspeck.engine.view.ui
 		public function WordProgressBar(){
 			//load the asset straight away if it's not already loaded
 			if(!word_progress_mc){
-				const word_progress_loader:MovieClip = new AssetManager.instance.assets.word_progress_bar();
+				const word_progress_loader:MovieClip = new (AssetManager.instance.assets.word_progress_bar)();
 				word_progress_loader.addEventListener(Event.COMPLETE, onAssetLoaded, false, 0, true);
 			}
 			word_holder.scaleX = word_holder.scaleY = SCALE;
@@ -53,12 +53,12 @@ package com.tinyspeck.engine.view.ui
 			addChild(word_holder);
 			
 			//cancel
-			const cancel_DO:DisplayObject = new AssetManager.instance.assets.word_dismisser_cancel();
+			const cancel_DO:DisplayObject = new (AssetManager.instance.assets.word_dismisser_cancel)();
 			cancel_bt = new Button({
 				name: 'cancel',
 				draw_alpha: 0,
 				graphic: cancel_DO,
-				graphic_hover: new AssetManager.instance.assets.word_dismisser_cancel_hover(),
+				graphic_hover: new (AssetManager.instance.assets.word_dismisser_cancel_hover)(),
 				w: cancel_DO.width,
 				h: cancel_DO.height
 			});

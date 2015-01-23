@@ -50,7 +50,7 @@ package com.tinyspeck.engine.view.ui
 			addChild(masker);
 			
 			//spinner
-			const spinner:DisplayObject = new AssetManager.instance.assets.spinner();
+			const spinner:DisplayObject = new (AssetManager.instance.assets.spinner)();
 			spinner.scaleX = spinner.scaleY = .8;
 			spinner_holder.addChild(spinner);
 			spinner_holder.x = 4.5;

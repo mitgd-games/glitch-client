@@ -58,7 +58,7 @@ package com.tinyspeck.engine.view.ui.decorate
 			addEventListener(MouseEvent.ROLL_OVER, onRoll, false, 0, true);
 			addEventListener(MouseEvent.ROLL_OUT, onRoll, false, 0, true);
 			
-			icon = new AssetManager.instance.assets.furn_subscriber();
+			icon = new (AssetManager.instance.assets.furn_subscriber)();
 			icon.x = IMG_W - icon.width - 2;
 			icon.y = IMG_H - icon.height - 2;
 			addChild(icon);

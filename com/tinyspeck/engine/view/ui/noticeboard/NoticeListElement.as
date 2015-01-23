@@ -70,7 +70,7 @@ package com.tinyspeck.engine.view.ui.noticeboard
 			addChild(author_tf);
 			
 			if(!paper_bg){
-				paper_bg = new AssetManager.instance.assets.paper_texture();
+				paper_bg = new (AssetManager.instance.assets.paper_texture)();
 			}
 			
 			//pin holder
@@ -128,7 +128,7 @@ package com.tinyspeck.engine.view.ui.noticeboard
 			
 			if(pin_holder.name != color){
 				SpriteUtil.clean(pin_holder);
-				pin_holder.addChild(new AssetManager.instance.assets['pushpin_sm_'+color]());
+				pin_holder.addChild(new (AssetManager.instance.assets['pushpin_sm_'+color])());
 				pin_holder.name = color;
 			}
 		}

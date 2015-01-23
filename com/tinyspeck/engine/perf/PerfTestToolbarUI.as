@@ -69,7 +69,7 @@ package com.tinyspeck.engine.perf
 			const bt_h:uint = TSModelLocator.instance.layoutModel.header_h - 5;
 			
 			//close button
-			const close_DO:DisplayObject = new AssetManager.instance.assets.decorate_close();
+			const close_DO:DisplayObject = new (AssetManager.instance.assets.decorate_close)();
 			close_bt = new Button({
 				name: 'stop_testing',
 				label: 'Stop testing :(',

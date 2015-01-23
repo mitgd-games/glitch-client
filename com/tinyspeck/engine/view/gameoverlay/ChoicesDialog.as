@@ -333,7 +333,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 			if (choices.layout == FAM_CONVERSATION && !choices.no_escape) {
 				
 				_close_buttons_sprite.addChild(new Button({
-					graphic: new AssetManager.instance.assets['close_x_small_gray'](),
+					graphic: new (AssetManager.instance.assets['close_x_small_gray'])(),
 					name: '_close_bt',
 					c: 0x0a181d,
 					high_c: 0x0a181d,

@@ -813,7 +813,7 @@ package com.tinyspeck.engine.port
 			//create the lock overlays
 			var sp:Sprite = this[side+'_lock'];
 			var lock_icon_holder:Sprite = this[side+'_lock_icon'];
-			var lock_icon:DisplayObject = new AssetManager.instance.assets.trade_lock();
+			var lock_icon:DisplayObject = new (AssetManager.instance.assets.trade_lock)();
 			lock_icon_holder.x = 205;
 			lock_icon_holder.y = LOCK_ICON_Y;
 			lock_icon_holder.addChild(lock_icon);
@@ -1445,7 +1445,7 @@ package com.tinyspeck.engine.port
 			content_body.name = CONTENT_BODY_NAME;
 			
 			//waiting spinner
-			waiting_spinner = new AssetManager.instance.assets.spinner();
+			waiting_spinner = new (AssetManager.instance.assets.spinner)();
 			waiting_spinner.scaleX = waiting_spinner.scaleY = .6;
 			waiting_spinner.x = int(_w - waiting_spinner.width - 10);
 			waiting_spinner.gotoAndStop(1);
@@ -1466,10 +1466,10 @@ package com.tinyspeck.engine.port
 			addChild(complete_overlay);
 			
 			//trade icon
-			trade_icon = new AssetManager.instance.assets.trade_icon();
+			trade_icon = new (AssetManager.instance.assets.trade_icon)();
 			
 			//checkmark icon
-			checkmark_icon = new AssetManager.instance.assets.checkmark();
+			checkmark_icon = new (AssetManager.instance.assets.checkmark)();
 			checkmark_icon.visible = false;
 			addChild(checkmark_icon);
 		}

@@ -4601,7 +4601,7 @@ package com.tinyspeck.engine.control
 		private var checkmark_holder:Sprite = new Sprite();
 		public function showCheckmark(x:int, y:int):void {
 			if (!checkmark) {
-				checkmark = new AssetManager.instance.assets.checkmark();
+				checkmark = new (AssetManager.instance.assets.checkmark)();
 			}
 			checkmark_holder.addChild(checkmark);
 			checkmark.x = -checkmark.width/2;

@@ -102,7 +102,7 @@ package com.tinyspeck.engine.view.ui.chat
 			addEventListener(MouseEvent.ROLL_OUT, onRollOut, false, 0, true);
 			
 			//toggle button			
-			var arrow:DisplayObject = new AssetManager.instance.assets.chat_toggle_arrow();
+			var arrow:DisplayObject = new (AssetManager.instance.assets.chat_toggle_arrow)();
 			SpriteUtil.setRegistrationPoint(arrow);
 			arrow_holder.addChild(arrow);
 			arrow_holder.x = int(TOGGLE_BUTTON_W/2 + 1);
@@ -128,8 +128,8 @@ package com.tinyspeck.engine.view.ui.chat
 				label_size: 13,
 				label_offset: 1,
 				graphic_padd_r: 2,
-				//graphic: new AssetManager.instance.assets.contact_plus(),
-				graphic: new AssetManager.instance.assets.contact_add_friend(),
+				//graphic: new (AssetManager.instance.assets.contact_plus)(),
+				graphic: new (AssetManager.instance.assets.contact_add_friend)(),
 				graphic_placement: 'left',
 				use_hand_cursor_always: true,
 				tip: { txt: ADD_FRIENDS, pointer: WindowBorder.POINTER_BOTTOM_CENTER }
@@ -148,8 +148,8 @@ package com.tinyspeck.engine.view.ui.chat
 				label_hover_c: 0xd79035,
 				label_offset: 2,
 				graphic_padd_r: 0,
-				graphic: new AssetManager.instance.assets.contact_plus(),
-				graphic_disabled: new AssetManager.instance.assets.contact_add_group(),
+				graphic: new (AssetManager.instance.assets.contact_plus)(),
+				graphic_disabled: new (AssetManager.instance.assets.contact_add_group)(),
 				graphic_placement: 'left',
 				use_hand_cursor_always: true,
 				tip: { txt: FIND_GROUPS, pointer: WindowBorder.POINTER_BOTTOM_CENTER }
@@ -171,7 +171,7 @@ package com.tinyspeck.engine.view.ui.chat
 		
 		private function buildScrollButton(direction:String, scroll_target:String):Button {
 			var holder:Sprite = new Sprite();
-			var arrow:DisplayObject = new AssetManager.instance.assets.contact_arrow();
+			var arrow:DisplayObject = new (AssetManager.instance.assets.contact_arrow)();
 			SpriteUtil.setRegistrationPoint(arrow);
 			arrow.y = direction == 'up' ? 0 : -10;
 			holder.addChild(arrow);

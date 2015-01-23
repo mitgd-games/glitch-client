@@ -27,7 +27,7 @@ package com.tinyspeck.engine.view.ui.acl
 			mask = masker;
 			
 			//add on the icons
-			icons = new AssetManager.instance.assets[(show_stroke ? 'acl_icons' : 'acl_icons_no_stroke')];
+			icons = new (AssetManager.instance.assets[(show_stroke ? 'acl_icons' : 'acl_icons_no_stroke')])();
 			addChild(icons);
 			
 			//if there was a count set, go do it!

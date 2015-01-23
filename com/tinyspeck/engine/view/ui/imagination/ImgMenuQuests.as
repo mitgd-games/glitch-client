@@ -37,7 +37,7 @@ package com.tinyspeck.engine.view.ui.imagination
 			sound_id = 'CLOUD2';
 			
 			//the book
-			quest_book = new AssetManager.instance.assets.quest_book();
+			quest_book = new (AssetManager.instance.assets.quest_book)();
 			quest_book.x = int(cloud.width/2 - quest_book.width/2);
 			quest_book.y = int(cloud.y + (cloud.height/2 - quest_book.height/2) - 8);
 			holder.addChild(quest_book);

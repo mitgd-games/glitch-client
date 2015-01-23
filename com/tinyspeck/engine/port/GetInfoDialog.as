@@ -156,7 +156,7 @@ package com.tinyspeck.engine.port
 				label_hover_c: 0xd79035,
 				label_offset: 1,
 				text_align: 'left',
-				graphic: new AssetManager.instance.assets.encyclopedia_link(),
+				graphic: new (AssetManager.instance.assets.encyclopedia_link)(),
 				graphic_placement: 'left',
 				graphic_padd_l: 1,
 				draw_alpha: 0,
@@ -179,7 +179,7 @@ package com.tinyspeck.engine.port
 				label_hover_c: 0xd79035,
 				label_offset: 1,
 				text_align: 'left',
-				graphic: new AssetManager.instance.assets.encyclopedia_link(),
+				graphic: new (AssetManager.instance.assets.encyclopedia_link)(),
 				graphic_placement: 'left',
 				graphic_padd_l: 1,
 				draw_alpha: 0
@@ -189,7 +189,7 @@ package com.tinyspeck.engine.port
 			_body_sp.addChild(chat_bt);
 			
 			//auction button
-			const auction_DO:DisplayObject = new AssetManager.instance.assets.info_auction();
+			const auction_DO:DisplayObject = new (AssetManager.instance.assets.info_auction)();
 			auction_bt = new Button({
 				name: 'auction',
 				label: 'Find auctions',
@@ -215,10 +215,10 @@ package com.tinyspeck.engine.port
 			_body_sp.addChild(auction_bt);
 
 			//find nearest
-			find_icon = new AssetManager.instance.assets.find_nearest();
+			find_icon = new (AssetManager.instance.assets.find_nearest)();
 			find_icon.y = 3;
 			find_holder.addChild(find_icon);
-			find_icon_disabled = new AssetManager.instance.assets.find_nearest_disabled();
+			find_icon_disabled = new (AssetManager.instance.assets.find_nearest_disabled)();
 			find_icon_disabled.y = find_icon.y;
 			find_holder.addChild(find_icon_disabled);
 			
@@ -253,14 +253,14 @@ package com.tinyspeck.engine.port
 			find_holder.addChild(find_bt);
 			
 			//back button
-			var back_DO:DisplayObject = new AssetManager.instance.assets.back_circle();
+			var back_DO:DisplayObject = new (AssetManager.instance.assets.back_circle)();
 
 			back_bt = new Button({
 				label: '',
 				name: 'back',
 				graphic: back_DO,
-				graphic_hover: new AssetManager.instance.assets.back_circle_hover(),
-				graphic_disabled: new AssetManager.instance.assets.back_circle_disabled(),
+				graphic_hover: new (AssetManager.instance.assets.back_circle_hover)(),
+				graphic_disabled: new (AssetManager.instance.assets.back_circle_disabled)(),
 				w: back_DO.width,
 				h: back_DO.height,
 				draw_alpha: 0
@@ -303,7 +303,7 @@ package com.tinyspeck.engine.port
 			burst_holder.mouseChildren = false;
 			burst_holder.visible = false;
 			_head_sp.addChild(burst_holder);
-			var burst_loader:MovieClip = new AssetManager.instance.assets.item_info_burst();
+			var burst_loader:MovieClip = new (AssetManager.instance.assets.item_info_burst)();
 			burst_loader.addEventListener(Event.COMPLETE, placeBurst, false, 0, true);
 			
 			//the item info ui
@@ -383,7 +383,7 @@ package com.tinyspeck.engine.port
 		}
 		
 		private function buildArrow(is_hover:Boolean):Sprite {
-			const arrow_bm:Bitmap = new AssetManager.instance.assets['solid_arrow'+(is_hover ? '_hover' : '')]();
+			const arrow_bm:Bitmap = new (AssetManager.instance.assets['solid_arrow'+(is_hover ? '_hover' : '')])();
 			const arrow:Sprite = new Sprite();
 			arrow_bm.smoothing = true;
 			SpriteUtil.setRegistrationPoint(arrow_bm);

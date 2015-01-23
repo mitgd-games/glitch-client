@@ -73,7 +73,7 @@ package com.tinyspeck.engine.view.ui.imagination
 			time_tf.cacheAsBitmap = true; //stops the jiggles
 			left_holder.addChild(time_tf);
 			
-			const arrow_DO:DisplayObject = new AssetManager.instance.assets.white_arrow();
+			const arrow_DO:DisplayObject = new (AssetManager.instance.assets.white_arrow)();
 			const arrow_holder:Sprite = new Sprite();
 			SpriteUtil.setRegistrationPoint(arrow_DO);
 			arrow_holder.addChild(arrow_DO);

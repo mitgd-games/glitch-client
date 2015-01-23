@@ -221,7 +221,7 @@ package com.tinyspeck.engine.view.ui {
 		
 		private function buildScrollButton(direction:String):Button {
 			var holder:Sprite = new Sprite();
-			var arrow:DisplayObject = new AssetManager.instance.assets.scroll_arrow();
+			var arrow:DisplayObject = new (AssetManager.instance.assets.scroll_arrow)();
 			arrow.x = direction == 'up' ? 0 : -arrow.width;
 			arrow.y = direction == 'up' ? 0 : -arrow.height;
 			arrow.filters = StaticFilters.white1px90Degrees_DropShadowA;

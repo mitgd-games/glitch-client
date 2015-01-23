@@ -80,7 +80,7 @@ package com.tinyspeck.engine.view.ui.making
 				addChild(name_bt);
 				
 				//put the info graphic on there
-				info = new AssetManager.instance.assets.making_info_small();
+				info = new (AssetManager.instance.assets.making_info_small)();
 				info.x = int(name_bt.label_tf.x + name_bt.label_tf.width + 5);
 				info.y = 2;
 				onNameOut();
@@ -122,7 +122,7 @@ package com.tinyspeck.engine.view.ui.making
 		}
 		
 		private function buildWarningIcon():DisplayObject {
-			warning = new AssetManager.instance.assets.store_warning();
+			warning = new (AssetManager.instance.assets.store_warning)();
 			warning.x = 2;
 			warning.y = int(HEIGHT/2 - warning.height/2);
 			warning.alpha = .4;

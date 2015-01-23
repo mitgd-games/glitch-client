@@ -35,7 +35,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 			
 			addChild(container);
 			
-			const play_button:DisplayObject = new AssetManager.instance.assets.play_button();
+			const play_button:DisplayObject = new (AssetManager.instance.assets.play_button)();
 			container.addChild(play_button);
 			play_button.x = int(-play_button.width/2);
 			play_button.y = int(-play_button.height/2);

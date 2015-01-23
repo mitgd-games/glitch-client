@@ -1056,7 +1056,7 @@ package com.tinyspeck.engine.view.ui {
 				addChild(waiting_spinner);
 				//if we haven't loaded the spinner yet, do that, otherwise just place it
 				if (!waiting_spinner.numChildren){
-					const spinner_mc:MovieClip = new AssetManager.instance.assets.spinner() as MovieClip;
+					const spinner_mc:MovieClip = new (AssetManager.instance.assets.spinner)() as MovieClip;
 					spinner_mc.addEventListener(Event.COMPLETE, onSpinnerLoad, false, 0, true);
 					spinner_mc.scaleX = spinner_mc.scaleY = .4;
 					waiting_spinner.addChild(spinner_mc);

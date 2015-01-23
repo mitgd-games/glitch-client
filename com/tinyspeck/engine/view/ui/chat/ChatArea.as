@@ -133,7 +133,7 @@ package com.tinyspeck.engine.view.ui.chat
 			
 			//if it's not the local chat, add a close button
 			if(name != NAME_LOCAL){
-				var close:DisplayObject = new AssetManager.instance.assets.chat_close()
+				var close:DisplayObject = new (AssetManager.instance.assets.chat_close)()
 				close_bt = new Button({
 					name: 'close',
 					graphic: close,

@@ -68,9 +68,9 @@ package com.tinyspeck.engine.view.ui.decorate
 				name: 'prev',
 				type: Button.TYPE_MINOR,
 				size: Button.SIZE_TINY,
-				graphic: new AssetManager.instance.assets.solid_arrow(),
-				graphic_hover: new AssetManager.instance.assets.solid_arrow_hover(),
-				graphic_disabled: new AssetManager.instance.assets.solid_arrow_disabled(),
+				graphic: new (AssetManager.instance.assets.solid_arrow)(),
+				graphic_hover: new (AssetManager.instance.assets.solid_arrow_hover)(),
+				graphic_disabled: new (AssetManager.instance.assets.solid_arrow_disabled)(),
 				graphic_padd_w: 9,
 				w: BT_WH,
 				h: BT_WH
@@ -80,9 +80,9 @@ package com.tinyspeck.engine.view.ui.decorate
 			prev_bt.addEventListener(TSEvent.CHANGED, onButtonClick, false, 0, true);
 			addChild(prev_bt);
 			
-			const arrow:DisplayObject = new AssetManager.instance.assets.solid_arrow();
-			const arrow_hover:DisplayObject = new AssetManager.instance.assets.solid_arrow_hover();
-			const arrow_disabled:DisplayObject = new AssetManager.instance.assets.solid_arrow_disabled();
+			const arrow:DisplayObject = new (AssetManager.instance.assets.solid_arrow)();
+			const arrow_hover:DisplayObject = new (AssetManager.instance.assets.solid_arrow_hover)();
+			const arrow_disabled:DisplayObject = new (AssetManager.instance.assets.solid_arrow_disabled)();
 			arrow.scaleX = -1;
 			arrow_hover.scaleX = -1;
 			arrow_disabled.scaleX = -1;
@@ -106,8 +106,8 @@ package com.tinyspeck.engine.view.ui.decorate
 				name: 'flip',
 				label: 'Flip',
 				value: 'flip',
-				graphic: new AssetManager.instance.assets.chassis_flip(),
-				graphic_hover: new AssetManager.instance.assets.chassis_flip_hover(),
+				graphic: new (AssetManager.instance.assets.chassis_flip)(),
+				graphic_hover: new (AssetManager.instance.assets.chassis_flip_hover)(),
 				graphic_alpha: BT_ALPHA,
 				graphic_placement: 'left',
 				graphic_padd_l: 8,
@@ -121,8 +121,8 @@ package com.tinyspeck.engine.view.ui.decorate
 				name: 'randomize',
 				label: 'Randomize',
 				value: 'randomize',
-				graphic: new AssetManager.instance.assets.chassis_randomize(),
-				graphic_hover: new AssetManager.instance.assets.chassis_randomize_hover(),
+				graphic: new (AssetManager.instance.assets.chassis_randomize)(),
+				graphic_hover: new (AssetManager.instance.assets.chassis_randomize_hover)(),
 				graphic_alpha: BT_ALPHA,
 				graphic_placement: 'left',
 				graphic_padd_l: 8,

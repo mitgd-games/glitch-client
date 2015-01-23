@@ -297,7 +297,7 @@ package com.tinyspeck.engine.port {
 			var tf:TSLinkedTextField;
 						
 			if(holder){
-				icon = new AssetManager.instance.assets['item_info_'+type]();
+				icon = new (AssetManager.instance.assets['item_info_'+type])();
 				if(icon){
 					holder.addChild(icon);
 					
@@ -377,7 +377,7 @@ package com.tinyspeck.engine.port {
 			var info_txt:String;
 			
 			for(i; i < infos.length; i++){
-				icon = new AssetManager.instance.assets[icon_name]();
+				icon = new (AssetManager.instance.assets[icon_name])();
 				icon.x = icon_x;
 				icon.y = INFO_PADD + 1;
 				

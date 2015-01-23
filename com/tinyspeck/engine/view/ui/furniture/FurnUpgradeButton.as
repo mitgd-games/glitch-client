@@ -92,7 +92,7 @@ package com.tinyspeck.engine.view.ui.furniture
 			if(current_upgrade.subscriber_only){
 				txt = 'Free for subscribers';
 				if(!subscriber_icon) {
-					subscriber_icon = new AssetManager.instance.assets.furn_subscriber();
+					subscriber_icon = new (AssetManager.instance.assets.furn_subscriber)();
 					subscriber_icon.x = int(wh - subscriber_icon.width - padd/2);
 					subscriber_icon.y = int(wh - subscriber_icon.height - padd);
 					addChild(subscriber_icon);
@@ -105,7 +105,7 @@ package com.tinyspeck.engine.view.ui.furniture
 				txt = '<span class="furn_upgrade_button_credits">'+StringUtil.formatNumberWithCommas(current_upgrade.credits)+' '+
 					  (current_upgrade.credits != 1 ? 'credits' : 'credit')+'</span>';
 				if(!credits_icon) {
-					credits_icon = new AssetManager.instance.assets.furn_credits_small();
+					credits_icon = new (AssetManager.instance.assets.furn_credits_small)();
 					addChild(credits_icon);
 				}
 			}
@@ -113,7 +113,7 @@ package com.tinyspeck.engine.view.ui.furniture
 			
 			//is new?!
 			if(current_upgrade.is_new && !new_icon){
-				new_icon = new AssetManager.instance.assets.furniture_new_badge();
+				new_icon = new (AssetManager.instance.assets.furniture_new_badge)();
 				new_icon.x = 2;
 				new_icon.y = 1;
 				addChild(new_icon);

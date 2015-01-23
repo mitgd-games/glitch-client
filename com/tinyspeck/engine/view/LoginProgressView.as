@@ -38,7 +38,7 @@ package com.tinyspeck.engine.view {
 			blendMode = BlendMode.LAYER;
 			
 			visible = false;
-			login_spinner = new AssetManager.instance.assets.spinner();
+			login_spinner = new (AssetManager.instance.assets.spinner)();
 			login_spinner.addEventListener(Event.COMPLETE, function(e:Event):void {
 				login_spinner = (Loader(e.target.getChildAt(0)).content as MovieClip);
 				login_spinner.x = Math.round(width/2);

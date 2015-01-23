@@ -25,7 +25,7 @@ package com.tinyspeck.engine.view.ui.craftybot
 		
 		private function buildBase():void {
 			//load the crystals into the holder and mask the holder
-			holder.addChild(new AssetManager.instance.assets.crafty_crystal());
+			holder.addChild(new (AssetManager.instance.assets.crafty_crystal)());
 			holder.mask = holder_mask;
 			addChild(holder);
 			

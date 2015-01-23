@@ -56,7 +56,7 @@ package com.tinyspeck.engine.view.ui.chat
 			addChild(reply_holder);
 			
 			//load a spinner
-			const spinner_loader:MovieClip = new AssetManager.instance.assets.spinner();
+			const spinner_loader:MovieClip = new (AssetManager.instance.assets.spinner)();
 			spinner_loader.addEventListener(Event.COMPLETE, onSpinnerLoad, false, 0, true);
 			
 			//we need to enable the use_children flag on the scroller because of our masked heads
@@ -68,8 +68,8 @@ package com.tinyspeck.engine.view.ui.chat
 			//build the back button
 			const arrow_holder:Sprite = new Sprite();
 			const arrow_hover_holder:Sprite = new Sprite();
-			const arrow:DisplayObject = new AssetManager.instance.assets.back_arrow();
-			const arrow_hover:DisplayObject = new AssetManager.instance.assets.back_arrow_hover();
+			const arrow:DisplayObject = new (AssetManager.instance.assets.back_arrow)();
+			const arrow_hover:DisplayObject = new (AssetManager.instance.assets.back_arrow_hover)();
 			SpriteUtil.setRegistrationPoint(arrow);
 			SpriteUtil.setRegistrationPoint(arrow_hover);
 			arrow_holder.addChild(arrow);
@@ -91,7 +91,7 @@ package com.tinyspeck.engine.view.ui.chat
 			addChild(back_bt);
 			
 			//build the refresh button
-			const refresh_DO:DisplayObject = new AssetManager.instance.assets.chat_refresh();
+			const refresh_DO:DisplayObject = new (AssetManager.instance.assets.chat_refresh)();
 			refresh_bt = new Button({
 				name: 'refresh',
 				graphic: refresh_DO,

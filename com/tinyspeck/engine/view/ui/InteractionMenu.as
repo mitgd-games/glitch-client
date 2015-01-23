@@ -134,7 +134,7 @@ package com.tinyspeck.engine.view.ui
 		private var background_alpha:Number = .95;
 		private var animation_speed:Number = .2;
 		private var animation_type:String = 'easeInCubic';
-		private var waiting_spinner:MovieClip = new AssetManager.instance.assets.spinner();
+		private var waiting_spinner:MovieClip = new (AssetManager.instance.assets.spinner)();
 		
 		/* singleton boilerplate */
 		public static var _instance:InteractionMenu = null;
@@ -253,14 +253,14 @@ package com.tinyspeck.engine.view.ui
 			verb_pointer_highlight_inert_sh = new Sprite();
 			verb_pointer_highlight_inert_sh.x = 3; //x and y makes it so the image is 1 pixel overlaping the button
 			verb_pointer_highlight_inert_sh.y = -7; //to give the illusion that the line flows nice
-			verb_pointer_highlight_inert_sh.addChild(new AssetManager.instance.assets.int_menu_dis());
+			verb_pointer_highlight_inert_sh.addChild(new (AssetManager.instance.assets.int_menu_dis)());
 			verb_pointer_sp.addChild(verb_pointer_highlight_inert_sh);
 			verb_pointer_highlight_inert_sh.visible = false;
 			
 			verb_pointer_highlight_normal_sh = new Sprite();
 			verb_pointer_highlight_normal_sh.x = 3;
 			verb_pointer_highlight_normal_sh.y = -7;
-			verb_pointer_highlight_normal_sh.addChild(new AssetManager.instance.assets.int_menu_norm());
+			verb_pointer_highlight_normal_sh.addChild(new (AssetManager.instance.assets.int_menu_norm)());
 			verb_pointer_sp.addChild(verb_pointer_highlight_normal_sh);
 			verb_pointer_highlight_normal_sh.visible = false;
 			
@@ -651,8 +651,8 @@ package com.tinyspeck.engine.view.ui
 						value: value,
 						w: 50 + (char_num*9) + (choice.show_go_option?30:0),
 						h: 30,
-						minus_graphic: new AssetManager.instance.assets.minus_red(),
-						plus_graphic: new AssetManager.instance.assets.plus_green(),
+						minus_graphic: new (AssetManager.instance.assets.minus_red)(),
+						plus_graphic: new (AssetManager.instance.assets.plus_green)(),
 						max_value: choice.max_value,
 						min_value: 1,
 						button_wh: 20,

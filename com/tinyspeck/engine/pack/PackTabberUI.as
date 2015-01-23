@@ -117,7 +117,7 @@ package com.tinyspeck.engine.pack {
 			const matrix:Matrix = new Matrix();
 			matrix.createGradientBox(1, draw_h*2, Math.PI/2);
 			
-			mag_glass = new AssetManager.instance.assets.mag_glass_inventory();
+			mag_glass = new (AssetManager.instance.assets.mag_glass_inventory)();
 			mag_glass.x = int(SEARCH_RADIUS/2);
 			mag_glass.y = int(SEARCH_RADIUS/2);
 			mag_glass.filters = StaticFilters.white1px90Degrees_DropShadowA;

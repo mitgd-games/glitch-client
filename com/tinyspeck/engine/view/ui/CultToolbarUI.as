@@ -63,7 +63,7 @@ package com.tinyspeck.engine.view.ui
 			
 			
 			//close button
-			const close_DO:DisplayObject = new AssetManager.instance.assets.decorate_close();
+			const close_DO:DisplayObject = new (AssetManager.instance.assets.decorate_close)();
 			close_bt = new Button({
 				name: 'close',
 				graphic: close_DO,

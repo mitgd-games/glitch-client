@@ -80,7 +80,7 @@ package com.tinyspeck.engine.port
 			all_holder.addChild(sub_title_tf);
 			
 			//quoins
-			const quoin_icon:DisplayObject = new AssetManager.instance.assets.daily_coin_icon();
+			const quoin_icon:DisplayObject = new (AssetManager.instance.assets.daily_coin_icon)();
 			quoin_progress = new DailyProgress(354, 24, quoin_icon);
 			quoin_progress.x = 14;
 			quoin_progress.y = 14;
@@ -139,7 +139,7 @@ package com.tinyspeck.engine.port
 				name: 'calendar',
 				label: 'Calendar',
 				c: 0xffffff,
-				graphic: new AssetManager.instance.assets.daily_calendar_icon(),
+				graphic: new (AssetManager.instance.assets.daily_calendar_icon)(),
 				graphic_placement: 'top',
 				graphic_padd_l: 25,
 				graphic_padd_t: 6,

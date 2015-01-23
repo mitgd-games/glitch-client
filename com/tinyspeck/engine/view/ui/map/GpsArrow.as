@@ -34,7 +34,7 @@ package com.tinyspeck.engine.view.ui.map {
 			buttonMode = useHandCursor = true;
 			mouseChildren = false;
 			
-			gps_assets = new AssetManager.instance.assets.gps_assets();
+			gps_assets = new (AssetManager.instance.assets.gps_assets)();
 			gps_assets.addEventListener(Event.COMPLETE, onLoaded, false, 0, true);
 			
 			const bg_matrix:Matrix = new Matrix();

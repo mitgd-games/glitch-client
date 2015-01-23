@@ -64,8 +64,8 @@ package com.tinyspeck.engine.view.ui.jobs
 				w: ITEM_HOLDER_WH,
 				h: 34,
 				name: '_quantity_qp',
-				minus_graphic: new AssetManager.instance.assets.minus_red(),
-				plus_graphic: new AssetManager.instance.assets.plus_green(),
+				minus_graphic: new (AssetManager.instance.assets.minus_red)(),
+				plus_graphic: new (AssetManager.instance.assets.plus_green)(),
 				max_value: 1, // to be changed
 				min_value: 1,
 				button_wh: 20,

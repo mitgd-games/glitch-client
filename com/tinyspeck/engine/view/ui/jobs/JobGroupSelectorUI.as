@@ -75,8 +75,8 @@ package com.tinyspeck.engine.view.ui.jobs
 				}
 				else {
 					checkbox = new Checkbox({
-						graphic: new AssetManager.instance.assets.cb_unchecked(),
-						graphic_checked: new AssetManager.instance.assets.cb_checked(),
+						graphic: new (AssetManager.instance.assets.cb_unchecked)(),
+						graphic_checked: new (AssetManager.instance.assets.cb_checked)(),
 						w:18,
 						h:18,
 						name: 'checkbox_'+i

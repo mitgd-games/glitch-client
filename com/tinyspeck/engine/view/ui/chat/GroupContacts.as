@@ -20,7 +20,7 @@ package com.tinyspeck.engine.view.ui.chat
 			super(w, ContactElement.TYPE_GROUP, null, groups);
 			
 			const arrow_holder:Sprite = new Sprite();
-			const arrow:DisplayObject = new AssetManager.instance.assets.contact_arrow();
+			const arrow:DisplayObject = new (AssetManager.instance.assets.contact_arrow)();
 			//arrow.transform.colorTransform = ColorUtil.getColorTransform(0x548500);
 			SpriteUtil.setRegistrationPoint(arrow);
 			arrow_holder.addChild(arrow);

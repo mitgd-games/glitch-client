@@ -44,10 +44,10 @@ package com.tinyspeck.engine.view.ui
 		}
 		
 		private function buildBase():void {
-			asset = new AssetManager.instance.assets.hotkeys();
+			asset = new (AssetManager.instance.assets.hotkeys)();
 			addChild(asset);
 			
-			const close_DO:DisplayObject = new AssetManager.instance.assets.close_x_small_gray();
+			const close_DO:DisplayObject = new (AssetManager.instance.assets.close_x_small_gray)();
 			close_bt = new Button({
 				name: 'close',
 				graphic: close_DO,

@@ -110,8 +110,8 @@ package com.tinyspeck.engine.view.ui.craftybot
 				w: 83,
 				h: 33,
 				name: 'qp',
-				minus_graphic: new AssetManager.instance.assets.minus_red(),
-				plus_graphic: new AssetManager.instance.assets.plus_green(),
+				minus_graphic: new (AssetManager.instance.assets.minus_red)(),
+				plus_graphic: new (AssetManager.instance.assets.plus_green)(),
 				max_value: MAX_QUANTITY,
 				min_value: 1,
 				button_wh: 20,
@@ -165,17 +165,17 @@ package com.tinyspeck.engine.view.ui.craftybot
 			header_holder.addChild(pause_bt);
 			
 			//setup the icons for the pause button
-			play_icon = new AssetManager.instance.assets.play_icon();
-			play_icon_hover = new AssetManager.instance.assets.play_icon_hover();
-			pause_icon = new AssetManager.instance.assets.pause_icon();
-			pause_icon_hover = new AssetManager.instance.assets.pause_icon_hover();
+			play_icon = new (AssetManager.instance.assets.play_icon)();
+			play_icon_hover = new (AssetManager.instance.assets.play_icon_hover)();
+			pause_icon = new (AssetManager.instance.assets.pause_icon)();
+			pause_icon_hover = new (AssetManager.instance.assets.pause_icon_hover)();
 			pause_tip = {txt:'Pause', pointer:WindowBorder.POINTER_BOTTOM_CENTER};
 			
-			const remove_DO:DisplayObject = new AssetManager.instance.assets.mail_trash_red();
+			const remove_DO:DisplayObject = new (AssetManager.instance.assets.mail_trash_red)();
 			remove_bt = new Button({
 				name: 'remove',
 				graphic: remove_DO,
-				graphic_hover: new AssetManager.instance.assets.mail_trash_read_hover(),
+				graphic_hover: new (AssetManager.instance.assets.mail_trash_read_hover)(),
 				graphic_padd_w: 7,
 				size: Button.SIZE_TINY,
 				type: Button.TYPE_CANCEL,
@@ -187,11 +187,11 @@ package com.tinyspeck.engine.view.ui.craftybot
 			remove_bt.addEventListener(TSEvent.CHANGED, onRemoveClick, false, 0, true);
 			header_holder.addChild(remove_bt);
 			
-			const edit_DO:DisplayObject = new AssetManager.instance.assets.edit_icon();
+			const edit_DO:DisplayObject = new (AssetManager.instance.assets.edit_icon)();
 			edit_bt = new Button({
 				name: 'edit',
 				graphic: edit_DO,
-				graphic_hover: new AssetManager.instance.assets.edit_icon_hover(),
+				graphic_hover: new (AssetManager.instance.assets.edit_icon_hover)(),
 				draw_alpha: 0,
 				w: edit_DO.width,
 				h: edit_DO.height

@@ -125,7 +125,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 		protected function construct():void {			
 			//currants
-			currants_icon = new AssetManager.instance.assets.currants_icon();
+			currants_icon = new (AssetManager.instance.assets.currants_icon)();
 			currants_holder.addChild(currants_icon);
 			
 			TFUtil.prepTF(currants_tf);
@@ -186,7 +186,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 				label: 'Decorate',
 				size: Button.SIZE_TINY,
 				type: Button.TYPE_DECORATE,
-				graphic: new AssetManager.instance.assets.decorate_icon(),
+				graphic: new (AssetManager.instance.assets.decorate_icon)(),
 				graphic_placement: 'left',
 				graphic_padd_l: 10,
 				graphic_padd_r: 2,
@@ -209,7 +209,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 				label: 'Cultivate',
 				size: Button.SIZE_TINY,
 				type: Button.TYPE_DECORATE,
-				graphic: new AssetManager.instance.assets.street_cultivate(),
+				graphic: new (AssetManager.instance.assets.street_cultivate)(),
 				graphic_placement: 'left',
 				graphic_padd_l: 10,
 				graphic_padd_r: 2,

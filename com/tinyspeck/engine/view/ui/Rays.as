@@ -32,7 +32,7 @@ package com.tinyspeck.engine.view.ui
 			_scale = scale;
 			
 			//load the rays!
-			const rays_loader:MovieClip = new AssetManager.instance.assets.level_up_rays();
+			const rays_loader:MovieClip = new (AssetManager.instance.assets.level_up_rays)();
 			rays_loader.addEventListener(Event.COMPLETE, onLoaded, false, 0, true);
 		}
 		

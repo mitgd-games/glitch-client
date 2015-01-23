@@ -63,7 +63,7 @@ package com.tinyspeck.engine.view.gameoverlay
 			model = TSModelLocator.instance;
 			
 			//icon
-			audio_control_icon = new AssetManager.instance.assets.audio_control_icon();
+			audio_control_icon = new (AssetManager.instance.assets.audio_control_icon)();
 			addChild(audio_control_icon);
 			
 			//icon mask
@@ -102,7 +102,7 @@ package com.tinyspeck.engine.view.gameoverlay
 			constructSliders();
 			
 			//sfx icon
-			sfx_icon = new AssetManager.instance.assets.audio_sfx();
+			sfx_icon = new (AssetManager.instance.assets.audio_sfx)();
 			sfx_icon.x = int(sfx_slider.x + sfx_slider.width/2 - sfx_icon.width/2);
 			sfx_icon.y = sfx_slider.y + sfx_slider.height + 10;
 			audio_control_holder.addChild(sfx_icon);
@@ -116,7 +116,7 @@ package com.tinyspeck.engine.view.gameoverlay
 			audio_control_holder.addChild(sfx_icon_holder);
 			
 			//music icon
-			music_icon = new AssetManager.instance.assets.audio_music();
+			music_icon = new (AssetManager.instance.assets.audio_music)();
 			music_icon.x = int(music_slider.x + music_slider.width/2 - music_icon.width/2);
 			music_icon.y = music_slider.y + music_slider.height + 10;
 			audio_control_holder.addChild(music_icon);
@@ -134,8 +134,8 @@ package com.tinyspeck.engine.view.gameoverlay
 			mute_panel.y = HOLDER_HEIGHT-24;
 			
 			mute_cb = new Checkbox({
-				graphic: new AssetManager.instance.assets.cb_unchecked(),
-				graphic_checked: new AssetManager.instance.assets.cb_checked(),
+				graphic: new (AssetManager.instance.assets.cb_unchecked)(),
+				graphic_checked: new (AssetManager.instance.assets.cb_checked)(),
 				x: 0,
 				y: 0,
 				w:18,

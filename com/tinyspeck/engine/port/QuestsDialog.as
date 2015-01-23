@@ -89,7 +89,7 @@ package com.tinyspeck.engine.port
 			emergency_timer.addEventListener(TimerEvent.TIMER, onEmergencyTick, false, 0, true);
 			
 			//load up the spinner
-			spinner = new AssetManager.instance.assets.spinner();
+			spinner = new (AssetManager.instance.assets.spinner)();
 			spinner.scaleX = spinner.scaleY = .8;
 			spinner.mouseEnabled = spinner.mouseChildren = false;
 			spinner.y = int(_head_min_h/2 - spinner.height/2 + 7);

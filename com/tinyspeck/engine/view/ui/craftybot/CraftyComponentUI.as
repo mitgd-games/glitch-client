@@ -63,11 +63,11 @@ package com.tinyspeck.engine.view.ui.craftybot
 			addChild(task_tf);
 			
 			//checkmark icon
-			checkmark_icon = new AssetManager.instance.assets.checkmark_crafty();
+			checkmark_icon = new (AssetManager.instance.assets.checkmark_crafty)();
 			checkmark_icon.y = 3;
 			
 			//warning icon
-			warning_icon = new AssetManager.instance.assets.store_warning();
+			warning_icon = new (AssetManager.instance.assets.store_warning)();
 			warning_icon.y = 3;
 			warning_holder.addChild(warning_icon);
 			

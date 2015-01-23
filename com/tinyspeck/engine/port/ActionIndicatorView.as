@@ -74,7 +74,7 @@ package com.tinyspeck.engine.port
 			if (!alt_msg_tf_css_class) alt_msg_tf_css_class = 'ai_alt_msg';
 			
 			// this is a placeholder, need to have a better generic action indicator
-			if (!_icon) _icon = new AssetManager.instance.assets['quest_requirement']();
+			if (!_icon) _icon = new (AssetManager.instance.assets['quest_requirement'])();
 			
 			//useHandCursor = buttonMode = true;
 			//mouseChildren = false;

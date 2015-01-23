@@ -117,7 +117,7 @@ package com.tinyspeck.engine.port {
 		
 		override protected function makeCloseBt():Button {
 			return new Button({
-				graphic: new AssetManager.instance.assets['close_x_small_gray'](),
+				graphic: new (AssetManager.instance.assets['close_x_small_gray'])(),
 				name: '_close_bt',
 				c: bg_c,
 				high_c: bg_c,

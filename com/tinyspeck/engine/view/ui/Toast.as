@@ -87,13 +87,13 @@ package com.tinyspeck.engine.view.ui
 			
 			//handle the warning icon if we are in the warning type
 			if(type == TYPE_WARNING){
-				const warn_icon:DisplayObject = new AssetManager.instance.assets.warning();
+				const warn_icon:DisplayObject = new (AssetManager.instance.assets.warning)();
 				if(warn_icon) {
 					warn_icon.y = -1; //visual tweak
 					icon_holder.addChild(warn_icon);
 				}
 				
-				const close_icon:DisplayObject = new AssetManager.instance.assets.close_x_grey();
+				const close_icon:DisplayObject = new (AssetManager.instance.assets.close_x_grey)();
 				if(close_icon){
 					close_holder.addChild(close_icon);
 				}				

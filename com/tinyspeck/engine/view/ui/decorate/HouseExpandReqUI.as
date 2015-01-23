@@ -69,7 +69,7 @@ package com.tinyspeck.engine.view.ui.decorate
 			addEventListener(MouseEvent.CLICK, onClick, false, 0, true);
 			
 			//checkmark
-			checkmark = new AssetManager.instance.assets.expand_check();
+			checkmark = new (AssetManager.instance.assets.expand_check)();
 			status_holder.addChild(checkmark);
 			
 			//color

@@ -54,7 +54,7 @@ package com.tinyspeck.engine.pack
 			owned_styles_tf.filters = text_dropA;
 			owned_styles_holder.addChild(owned_styles_tf);
 			
-			const owned_arrow_DO:DisplayObject = new AssetManager.instance.assets.white_arrow();
+			const owned_arrow_DO:DisplayObject = new (AssetManager.instance.assets.white_arrow)();
 			SpriteUtil.setRegistrationPoint(owned_arrow_DO);
 			owned_arrow_DO.rotation = 180;
 			owned_arrow.y = STYLE_HEADER_H;
@@ -67,7 +67,7 @@ package com.tinyspeck.engine.pack
 			more_styles_tf.filters = text_dropA;
 			more_styles_holder.addChild(more_styles_tf);
 			
-			const more_arrow_DO:DisplayObject = new AssetManager.instance.assets.white_arrow();
+			const more_arrow_DO:DisplayObject = new (AssetManager.instance.assets.white_arrow)();
 			SpriteUtil.setRegistrationPoint(more_arrow_DO);
 			more_arrow.y = int(STYLE_HEADER_H/2);
 			more_arrow.filters = text_dropA;

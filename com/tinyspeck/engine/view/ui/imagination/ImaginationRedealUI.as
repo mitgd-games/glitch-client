@@ -48,12 +48,12 @@ package com.tinyspeck.engine.view.ui.imagination
 			bg.addEventListener(MouseEvent.CLICK, onClick, false, 0, true);
 			
 			//icons
-			redeal_icon = new AssetManager.instance.assets.redeal();
+			redeal_icon = new (AssetManager.instance.assets.redeal)();
 			redeal_icon.x = 9;
 			redeal_icon.y = int(BG_H/2 - redeal_icon.height/2);
 			bg.addChild(redeal_icon);
 			
-			no_redeal_icon = new AssetManager.instance.assets.redeal_no(); //naming is funky, but wanted them together in the assets directory
+			no_redeal_icon = new (AssetManager.instance.assets.redeal_no)(); //naming is funky, but wanted them together in the assets directory
 			no_redeal_icon.x = redeal_icon.x;
 			no_redeal_icon.y = redeal_icon.y + 1;
 			bg.addChild(no_redeal_icon);

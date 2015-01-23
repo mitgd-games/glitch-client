@@ -76,7 +76,7 @@ package com.tinyspeck.engine.view.ui.map
 			addChild(dest_holder);
 			
 			//close
-			const close_DO:DisplayObject = new AssetManager.instance.assets.close_gps();
+			const close_DO:DisplayObject = new (AssetManager.instance.assets.close_gps)();
 			close_holder.addChild(close_DO);
 			close_holder.y = PADD;
 			close_holder.alpha = .25;

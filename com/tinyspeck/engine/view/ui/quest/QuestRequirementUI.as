@@ -43,7 +43,7 @@ package com.tinyspeck.engine.view.ui.quest
 			addChild(icon_holder);
 			
 			//complete icon
-			complete_icon = new AssetManager.instance.assets.quest_requirement_complete();
+			complete_icon = new (AssetManager.instance.assets.quest_requirement_complete)();
 			complete_icon.y = ICON_SIZE + ICON_PADDING*2 - complete_icon.height + 2;
 			addChild(complete_icon);
 			
@@ -80,7 +80,7 @@ package com.tinyspeck.engine.view.ui.quest
 				icon_holder.addChild(req_icon);
 			}
 			else {
-				if(!default_icon) default_icon = new AssetManager.instance.assets.quest_requirement();
+				if(!default_icon) default_icon = new (AssetManager.instance.assets.quest_requirement)();
 				icon_holder.addChild(default_icon);
 			}
 			

@@ -62,7 +62,7 @@ package com.tinyspeck.engine.view.ui.supersearch
 			highlight_class = 'super_search_highlight';
 			
 			//close X
-			const close_x:DisplayObject = new AssetManager.instance.assets.close_x_grey();
+			const close_x:DisplayObject = new (AssetManager.instance.assets.close_x_grey)();
 			close_holder.useHandCursor = close_holder.buttonMode = true;
 			close_holder.addEventListener(MouseEvent.CLICK, onCancelClick, false, 0, true);
 			close_holder.addChild(close_x);

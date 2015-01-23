@@ -220,25 +220,25 @@ package com.tinyspeck.engine.view.ui.chat
 			else {
 				//help channel icon
 				if(name == ChatArea.NAME_HELP) {
-					DO = new AssetManager.instance.assets['contact_help'+(is_hover ? '_hover' : '')]();
+					DO = new (AssetManager.instance.assets['contact_help'+(is_hover ? '_hover' : '')])();
 				}
 				//global chat icon
 				else if(name == ChatArea.NAME_GLOBAL || name == ChatArea.NAME_UPDATE_FEED) {
-					DO = new AssetManager.instance.assets['contact_global'+(is_hover ? '_hover' : '')]();
+					DO = new (AssetManager.instance.assets['contact_global'+(is_hover ? '_hover' : '')])();
 				}
 				//party chat icon
 				else if(name == ChatArea.NAME_PARTY){
-					DO = new AssetManager.instance.assets['contact_'+(is_hover ? 'group_hover' : 'party')]();
+					DO = new (AssetManager.instance.assets['contact_'+(is_hover ? 'group_hover' : 'party')])();
 				}
 				//trade icon
 				else if(name == ChatArea.NAME_TRADE){
-					DO = new AssetManager.instance.assets['contact_trade'+(is_hover ? '_hover' : '')]();
+					DO = new (AssetManager.instance.assets['contact_trade'+(is_hover ? '_hover' : '')])();
 				}
 				//this is either an itemstack or a regular group
 				else {
 					const itemstack:Itemstack = model.worldModel.getItemstackByTsid(name);
 					if(!itemstack){
-						DO = new AssetManager.instance.assets['contact_group'+(is_hover ? '_hover' : '')]();
+						DO = new (AssetManager.instance.assets['contact_group'+(is_hover ? '_hover' : '')])();
 					}
 					else {
 						//draw a square

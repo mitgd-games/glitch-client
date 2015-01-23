@@ -73,7 +73,7 @@ package com.tinyspeck.engine.port
 		
 		private function buildBase():void {
 			//add note button stuff
-			var bt_bg:DisplayObject = new AssetManager.instance.assets.notice_add_note_bg();
+			var bt_bg:DisplayObject = new (AssetManager.instance.assets.notice_add_note_bg)();
 			bt_bg.x = int(_w - bt_bg.width - _base_padd);
 			bt_bg.y = int(_foot_min_h/2 - bt_bg.height/2) - 1;
 			_foot_sp.addChild(bt_bg);
@@ -90,8 +90,8 @@ package com.tinyspeck.engine.port
 			_foot_sp.addChild(add_bt);
 			
 			//get our textures
-			cork_bg = new AssetManager.instance.assets.notice_board_bg();
-			frame_bg = new AssetManager.instance.assets.notice_frame_bg();
+			cork_bg = new (AssetManager.instance.assets.notice_board_bg)();
+			frame_bg = new (AssetManager.instance.assets.notice_frame_bg)();
 			
 			//add the frame
 			var bevel:BevelFilter = new BevelFilter();
@@ -115,7 +115,7 @@ package com.tinyspeck.engine.port
 			addChildAt(frame_holder, getChildIndex(window_border)+1);
 			
 			//header
-			header_bg = new AssetManager.instance.assets.notice_board_header_bg();
+			header_bg = new (AssetManager.instance.assets.notice_board_header_bg)();
 			header_bg.x = 17;
 			header_bg.y = 13;
 			addChildAt(header_bg, getChildIndex(frame_holder));

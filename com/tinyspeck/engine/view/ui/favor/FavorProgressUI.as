@@ -117,8 +117,8 @@ package com.tinyspeck.engine.view.ui.favor
 			
 			if(giant_name != giant_favor.name){
 				//make sure the icon is good
-				icon = new AssetManager.instance.assets['giant_'+giant_favor.name]();
-				icon_hover = new AssetManager.instance.assets['giant_'+giant_favor.name+'_hover']();
+				icon = new (AssetManager.instance.assets['giant_'+giant_favor.name])();
+				icon_hover = new (AssetManager.instance.assets['giant_'+giant_favor.name+'_hover'])();
 				
 				//setup the giant button
 				giant_bt.label = giant_favor.label;

@@ -67,7 +67,7 @@ package com.tinyspeck.engine.view.ui.decorate
 			overlay.alpha = OVERLAY_ALPHA;
 			addChild(overlay);
 			
-			const arrowDO:DisplayObject = new AssetManager.instance.assets.expand_yard_arrow();
+			const arrowDO:DisplayObject = new (AssetManager.instance.assets.expand_yard_arrow)();
 			SpriteUtil.setRegistrationPoint(arrowDO);
 			arrow.scaleX = is_left ? 1 : -1;
 			arrow.y = int(_h/2);
@@ -80,7 +80,7 @@ package com.tinyspeck.engine.view.ui.decorate
 			checkmark.alpha = CHECKMARK_ALPHA;
 			addChild(checkmark);
 			
-			const checkmarkDO:DisplayObject = new AssetManager.instance.assets.expand_yard_check();
+			const checkmarkDO:DisplayObject = new (AssetManager.instance.assets.expand_yard_check)();
 			checkmark.addChild(checkmarkDO);
 			
 			const tf:TextField = new TextField();
@@ -126,7 +126,7 @@ package com.tinyspeck.engine.view.ui.decorate
 			addChildAt(buffer, 0);
 			
 			//toss the arrow in the buffer holder
-			const expand_arrow:DisplayObject = new AssetManager.instance.assets.expand_arrow();
+			const expand_arrow:DisplayObject = new (AssetManager.instance.assets.expand_arrow)();
 			const arrow_holder:Sprite = new Sprite();
 			arrow_holder.addChild(expand_arrow);
 			SpriteUtil.setRegistrationPoint(expand_arrow);

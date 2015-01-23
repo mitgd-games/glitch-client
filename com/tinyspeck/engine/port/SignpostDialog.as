@@ -89,7 +89,7 @@ package com.tinyspeck.engine.port
 		
 		private function buildBase():void {
 			_setTitle('Edit your signpost');
-			_setGraphicContents(new AssetManager.instance.assets.signpost_friends_icon());
+			_setGraphicContents(new (AssetManager.instance.assets.signpost_friends_icon)());
 			
 			//vertical grad
 			const fill_matrix:Matrix = new Matrix();
@@ -149,7 +149,7 @@ package com.tinyspeck.engine.port
 		}
 		
 		private function buildSignpost():void {
-			const signpost_friends_base:DisplayObject = new AssetManager.instance.assets.signpost_friends_base();
+			const signpost_friends_base:DisplayObject = new (AssetManager.instance.assets.signpost_friends_base)();
 			signpost_friends_base.x = int(_w/2 - signpost_friends_base.width/2);
 			signpost_friends_base.y = int(_body_min_h - signpost_friends_base.height - 1); //-1 is for the border
 			bg_holder.addChild(signpost_friends_base);
@@ -177,7 +177,7 @@ package com.tinyspeck.engine.port
 				sp.addEventListener(MouseEvent.ROLL_OVER, onSignOver, false, 0, true);
 				sp.addEventListener(MouseEvent.CLICK, onSignClick, false, 0, true);
 				
-				sign_DO = new AssetManager.instance.assets['signpost_friends_'+SIGN_NAME+i]();
+				sign_DO = new (AssetManager.instance.assets['signpost_friends_'+SIGN_NAME+i])();
 				sp.addChild(sign_DO);
 				
 				//handle the TF
@@ -236,7 +236,7 @@ package com.tinyspeck.engine.port
 		
 		private function buildEditHover():void {
 			//sprite sheet
-			hover_DO = new AssetManager.instance.assets.signpost_friends_hover();
+			hover_DO = new (AssetManager.instance.assets.signpost_friends_hover)();
 			hover_holder.addChild(hover_DO);
 			hover_holder.useHandCursor = hover_holder.buttonMode = true;
 			hover_holder.addEventListener(MouseEvent.CLICK, onEditClick, false, 0, true);
@@ -262,7 +262,7 @@ package com.tinyspeck.engine.port
 			edit_holder.x = int(signpost_holder.width/2 - edit_holder.width/2) - 8; //extra is to match up with the nails
 			
 			//cancel button
-			const cancel_DO:DisplayObject = new AssetManager.instance.assets.signpost_friends_cancel();
+			const cancel_DO:DisplayObject = new (AssetManager.instance.assets.signpost_friends_cancel)();
 			cancel_bt = new Button({
 				name: 'cancel',
 				graphic: cancel_DO,

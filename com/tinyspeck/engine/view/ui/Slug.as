@@ -222,7 +222,7 @@ package com.tinyspeck.engine.view.ui
 		
 		private function getIcon(type:String, pos_or_neg:String):DisplayObject {
 			if (AssetManager.instance.assets.hasOwnProperty('slug_'+type+'_'+pos_or_neg)) {
-				return new AssetManager.instance.assets['slug_'+type+'_'+pos_or_neg];
+				return new (AssetManager.instance.assets['slug_'+type+'_'+pos_or_neg]);
 			}
 			
 			if(type == ITEMS && _class_tsid){
@@ -234,11 +234,11 @@ package com.tinyspeck.engine.view.ui
 			}
 			
 			if (pos_or_neg == 'pos' && AssetManager.instance.assets.hasOwnProperty('slug_'+type+'_pos')) {
-				return new AssetManager.instance.assets['slug_'+type+'_pos'];
+				return new (AssetManager.instance.assets['slug_'+type+'_pos']);
 			}
 			
 			if (pos_or_neg == 'neg' && AssetManager.instance.assets.hasOwnProperty('slug_'+type+'_neg')) {
-				return new AssetManager.instance.assets['slug_'+type+'_neg'];
+				return new (AssetManager.instance.assets['slug_'+type+'_neg']);
 			}
 			
 			return null;

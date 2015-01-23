@@ -111,8 +111,8 @@ package com.tinyspeck.engine.port
 			//compose
 			compose_bt = new Button({
 				name: 'compose_bt',
-				graphic: new AssetManager.instance.assets.mail_compose(),
-				graphic_hover: new AssetManager.instance.assets.mail_compose_hover(),
+				graphic: new (AssetManager.instance.assets.mail_compose)(),
+				graphic_hover: new (AssetManager.instance.assets.mail_compose_hover)(),
 				size: Button.SIZE_TINY,
 				type: Button.TYPE_MINOR,
 				w: 36,

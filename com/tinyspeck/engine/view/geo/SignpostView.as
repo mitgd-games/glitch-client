@@ -178,11 +178,11 @@ package com.tinyspeck.engine.view.geo
 				}
 			}
 			
-			shadow = holder.addChild(new AssetManager.instance.assets.signpost_shadow());
+			shadow = holder.addChild(new (AssetManager.instance.assets.signpost_shadow)());
 			shadow.x = Math.round(-shadow.width/2);
 			shadow.y = -shadow.height+9;
 			
-			post = holder.addChild(new AssetManager.instance.assets.signpost_post());
+			post = holder.addChild(new (AssetManager.instance.assets.signpost_post)());
 			post.x = Math.round(-post.width/2);
 			post.y = -post.height;
 			
@@ -192,7 +192,7 @@ package com.tinyspeck.engine.view.geo
 				}
 				// here add the sign and the grid
 				if (info.style == 'normal') {
-					var sqa:Bitmap = new AssetManager.instance.assets.signpost_quarter_arm();
+					var sqa:Bitmap = new (AssetManager.instance.assets.signpost_quarter_arm)();
 					sqa.height = 85;
 					ssv = makeSign(
 						'QUARTER',
@@ -202,7 +202,7 @@ package com.tinyspeck.engine.view.geo
 						150
 					);
 					
-					var grid:Bitmap = new AssetManager.instance.assets.signpost_quarter_grid();
+					var grid:Bitmap = new (AssetManager.instance.assets.signpost_quarter_grid)();
 					ssv.addChild(grid);
 					grid.smoothing = true;
 					
@@ -241,7 +241,7 @@ package com.tinyspeck.engine.view.geo
 					String(i),// we give the connects index as the name, not the visible index
 					Boolean(visible_i%2),
 					label,
-					new AssetManager.instance.assets.signpost_arm()
+					new (AssetManager.instance.assets.signpost_arm)()
 				);
 				ssv.alpha = (connect.hidden) ? .4 : 1;
 				ssv.y = -post.height+(visible_i*25)+25;

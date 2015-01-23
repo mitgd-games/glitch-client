@@ -77,7 +77,7 @@ package com.tinyspeck.engine.view.ui.quest
 			addChild(rock_holder);
 			
 			//little quest book thing
-			const quest_book:DisplayObject = new AssetManager.instance.assets.familiar_dialog_quests_small();
+			const quest_book:DisplayObject = new (AssetManager.instance.assets.familiar_dialog_quests_small)();
 			quest_book.x = 12;
 			quest_book.y = 7;
 			bg_holder.addChild(quest_book);
@@ -120,7 +120,7 @@ package com.tinyspeck.engine.view.ui.quest
 			//close button
 			const bt_padd:uint = 7;
 			close_bt = new Button({
-				graphic: new AssetManager.instance.assets['close_x_small_gray'](),
+				graphic: new (AssetManager.instance.assets['close_x_small_gray'])(),
 				name: 'close',
 				c: bg_color,
 				high_c: bg_color,

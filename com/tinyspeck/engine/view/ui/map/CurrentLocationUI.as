@@ -34,9 +34,9 @@ package com.tinyspeck.engine.view.ui.map
 		
 		private function buildBase():void {
 			//icons
-			map_icon = new AssetManager.instance.assets.map_icon();
+			map_icon = new (AssetManager.instance.assets.map_icon)();
 			icon_holder.addChild(map_icon);
-			map_icon_hover = new AssetManager.instance.assets.map_icon_hover();
+			map_icon_hover = new (AssetManager.instance.assets.map_icon_hover)();
 			icon_holder.addChild(map_icon_hover);
 			map_icon_hover.visible = false;
 			icon_holder.y = 2;

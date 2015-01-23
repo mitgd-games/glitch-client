@@ -48,7 +48,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		private var level_num_tf:TextField = new TextField();
 		
 		private var ok_bt:Button;
-		private var shelf:DisplayObject = new AssetManager.instance.assets.shelf_level();
+		private var shelf:DisplayObject = new (AssetManager.instance.assets.shelf_level)();
 		private var badge_holder:Sprite = new Sprite();
 		private var scene_index:int;
 		private var word_scenes:Array;
@@ -105,14 +105,14 @@ package com.tinyspeck.engine.view.gameoverlay {
 			all_holder.addChild(slugs_holder);
 			
 			//load the badge
-			const badge_loader:MovieClip = new AssetManager.instance.assets.level_up_badge();
+			const badge_loader:MovieClip = new (AssetManager.instance.assets.level_up_badge)();
 			badge_loader.addEventListener(Event.COMPLETE, placeBadge, false, 0, true);
 			
 			//handle the words
 			var i:int;
 			var words_loader:MovieClip
 			for(i; i < MAX_WORDS_DISPLAYED; i++){
-				words_loader = new AssetManager.instance.assets.level_up_words();
+				words_loader = new (AssetManager.instance.assets.level_up_words)();
 				words_loader.addEventListener(Event.COMPLETE, placeWords, false, 0, true);
 			}
 			

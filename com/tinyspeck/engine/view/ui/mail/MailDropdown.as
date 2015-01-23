@@ -40,7 +40,7 @@ package com.tinyspeck.engine.view.ui.mail
 			super.buildBase();
 			
 			//down arrow
-			var arrow:DisplayObject = new AssetManager.instance.assets.carrat_large();
+			var arrow:DisplayObject = new (AssetManager.instance.assets.carrat_large)();
 			SpriteUtil.setRegistrationPoint(arrow);
 			arrow_holder.mouseChildren = arrow_holder.mouseEnabled = false;
 			arrow_holder.addChild(arrow);

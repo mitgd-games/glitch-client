@@ -41,9 +41,9 @@ package com.tinyspeck.engine.view.ui.chrome
 		private var has_loaded:Boolean;
 		
 		public function ImaginationButton(){
-			bt_DO = new AssetManager.instance.assets.imagination_button();
+			bt_DO = new (AssetManager.instance.assets.imagination_button)();
 			
-			clouds = new AssetManager.instance.assets.imagination_button_clouds();
+			clouds = new (AssetManager.instance.assets.imagination_button_clouds)();
 			clouds.y = bt_DO.height - clouds.height + 2;
 			addChild(clouds);
 			
@@ -51,8 +51,8 @@ package com.tinyspeck.engine.view.ui.chrome
 				name: 'bt',
 				draw_alpha: 0,
 				graphic: bt_DO,
-				graphic_hover: new AssetManager.instance.assets.imagination_button_hover(),
-				graphic_disabled: new AssetManager.instance.assets.imagination_button_down(),
+				graphic_hover: new (AssetManager.instance.assets.imagination_button_hover)(),
+				graphic_disabled: new (AssetManager.instance.assets.imagination_button_down)(),
 				use_hand_cursor_always: true,
 				w: bt_DO.width,
 				h: bt_DO.height

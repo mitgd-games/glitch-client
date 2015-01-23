@@ -49,9 +49,9 @@ package com.tinyspeck.engine.view.ui.mail
 		public function MailItemSlot(){
 			//the stuff for the empty view
 			const padd_x:uint = 3;
-			const arrow:DisplayObject = new AssetManager.instance.assets.mail_item_arrow();
+			const arrow:DisplayObject = new (AssetManager.instance.assets.mail_item_arrow)();
 			
-			outline = new AssetManager.instance.assets.mail_item_empty();
+			outline = new (AssetManager.instance.assets.mail_item_empty)();
 			empty_holder.addChild(outline);
 			
 			var g:Graphics = empty_bg.graphics;
@@ -103,8 +103,8 @@ package com.tinyspeck.engine.view.ui.mail
 				w: how_many_tf.width,
 				h: 20,
 				name: 'qty_picker',
-				minus_graphic: new AssetManager.instance.assets.minus_red_small(),
-				plus_graphic: new AssetManager.instance.assets.plus_green_small(),
+				minus_graphic: new (AssetManager.instance.assets.minus_red_small)(),
+				plus_graphic: new (AssetManager.instance.assets.plus_green_small)(),
 				min_value: 1,
 				button_wh: 17,
 				button_padd: 2
@@ -114,7 +114,7 @@ package com.tinyspeck.engine.view.ui.mail
 			qty_picker.addEventListener(TSEvent.QUANTITY_CHANGE, onQuantityChange, false, 0, true);
 			full_holder.addChild(qty_picker);
 			
-			const close:DisplayObject = new AssetManager.instance.assets.close_x_making_slot();
+			const close:DisplayObject = new (AssetManager.instance.assets.close_x_making_slot)();
 			close_holder.addChild(close);
 			close_holder.x = slot_wh - close.width/2;
 			close_holder.y = -close.height/2;

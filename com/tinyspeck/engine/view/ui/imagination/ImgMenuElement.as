@@ -61,7 +61,7 @@ package com.tinyspeck.engine.view.ui.imagination
 		public function ImgMenuElement(){}
 		
 		protected function buildBase():void {
-			spinner = new AssetManager.instance.assets.spinner();
+			spinner = new (AssetManager.instance.assets.spinner)();
 			spinner.scaleX = spinner.scaleY = 0.8;
 			spinner.mouseChildren = false;
 			spinner.alpha = 0.75;

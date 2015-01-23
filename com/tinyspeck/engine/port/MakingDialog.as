@@ -81,13 +81,13 @@ package com.tinyspeck.engine.port
 			content_w = _w - _base_padd - _border_w*2 - _scroller_bar_wh;
 			
 			//back button
-			const back_DO:DisplayObject = new AssetManager.instance.assets.back_circle();
+			const back_DO:DisplayObject = new (AssetManager.instance.assets.back_circle)();
 			back_bt = new Button({
 				label: '',
 				name: 'back',
 				graphic: back_DO,
-				graphic_hover: new AssetManager.instance.assets.back_circle_hover(),
-				graphic_disabled: new AssetManager.instance.assets.back_circle_disabled(),
+				graphic_hover: new (AssetManager.instance.assets.back_circle_hover)(),
+				graphic_disabled: new (AssetManager.instance.assets.back_circle_disabled)(),
 				w: back_DO.width,
 				h: back_DO.height,
 				draw_alpha: 0

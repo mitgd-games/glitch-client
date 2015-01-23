@@ -114,7 +114,7 @@ package com.tinyspeck.engine.view.ui.chrome
 		protected function setColors():void {
 			var i:int;
 			var pixelValue:uint;
-			var energy_gradient:DisplayObject = new AssetManager.instance.assets.energy_mood_gradient();
+			var energy_gradient:DisplayObject = new (AssetManager.instance.assets.energy_mood_gradient)();
 			var bitmapdata:BitmapData = new BitmapData(energy_gradient.width, 1);
 			bitmapdata.draw(energy_gradient);
 			

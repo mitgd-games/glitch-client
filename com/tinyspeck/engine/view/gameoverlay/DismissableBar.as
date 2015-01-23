@@ -87,7 +87,7 @@ package com.tinyspeck.engine.view.gameoverlay
 			dismisser_bg.filters = [bevel, shadow];
 			
 			//close button
-			dismiss_x = new AssetManager.instance.assets.close_x_making_slot();
+			dismiss_x = new (AssetManager.instance.assets.close_x_making_slot)();
 			close_button.addChild(dismiss_x);
 			close_button.y = Math.round((dismisser_h-dismiss_x.height)/2);
 			close_button.x = Math.round(dismisser_w - dismiss_x.width - dismisser_bar_pad) + 1; //icon asset is slightly off

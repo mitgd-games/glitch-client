@@ -75,7 +75,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 			icon_holder.y = 10;
 			TipDisplayManager.instance.registerTipTrigger(icon_holder);
 			
-			spinner = new AssetManager.instance.assets.spinner();
+			spinner = new (AssetManager.instance.assets.spinner)();
 			spinner.visible = false;
 			spinner.x = icon_holder.x-20;
 			spinner.y = icon_holder.y;
@@ -101,9 +101,9 @@ package com.tinyspeck.engine.view.gameoverlay {
 			
 			icon_bt = new Button({
 				name: 'recenter',
-				graphic: new AssetManager.instance.assets['camera_icon_with_text'](),
-				graphic_disabled: new AssetManager.instance.assets['camera_icon_with_text'](),
-				graphic_hover: new AssetManager.instance.assets['camera_icon_with_text'](),
+				graphic: new (AssetManager.instance.assets['camera_icon_with_text'])(),
+				graphic_disabled: new (AssetManager.instance.assets['camera_icon_with_text'])(),
+				graphic_hover: new (AssetManager.instance.assets['camera_icon_with_text'])(),
 				w: 74,
 				h: 53,
 				no_draw: true

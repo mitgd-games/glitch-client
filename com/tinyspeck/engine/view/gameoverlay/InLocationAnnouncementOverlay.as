@@ -154,7 +154,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		}
 		
 		override protected function init():void {
-			bubble_thought_do = new AssetManager.instance.assets.overlay_bubble();
+			bubble_thought_do = new (AssetManager.instance.assets.overlay_bubble)();
 			bubble_thought_do.addEventListener(Event.COMPLETE, afterBubbleLoad);
 			
 			chat_bubble = new ChatBubble(0);

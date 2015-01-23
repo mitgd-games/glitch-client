@@ -179,9 +179,9 @@ package com.tinyspeck.engine.port
 			}
 			
 			if(image_name){
-				graphic = new AssetManager.instance.assets['street_'+image_name];
-				graphic_hover = new AssetManager.instance.assets['street_'+image_name+'_hover'];
-				graphic_disabled = new AssetManager.instance.assets['street_'+image_name+'_disabled'];
+				graphic = new (AssetManager.instance.assets['street_'+image_name]);
+				graphic_hover = new (AssetManager.instance.assets['street_'+image_name+'_hover']);
+				graphic_disabled = new (AssetManager.instance.assets['street_'+image_name+'_disabled']);
 			}
 			
 			const bt:Button = new Button({

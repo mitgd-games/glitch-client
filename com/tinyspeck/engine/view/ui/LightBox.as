@@ -74,7 +74,7 @@ package com.tinyspeck.engine.view.ui
 			addChild(all_holder);
 			
 			//bt
-			const close_DO:DisplayObject = new AssetManager.instance.assets.close_x_making_slot();
+			const close_DO:DisplayObject = new (AssetManager.instance.assets.close_x_making_slot)();
 			close_bt = new Button({
 				name: 'close',
 				graphic: close_DO,
@@ -87,7 +87,7 @@ package com.tinyspeck.engine.view.ui
 			all_holder.addChild(close_bt);
 			
 			//spinner
-			const spinner:DisplayObject = new AssetManager.instance.assets.spinner();
+			const spinner:DisplayObject = new (AssetManager.instance.assets.spinner)();
 			spinner_holder.addChild(spinner);
 			
 			is_built = true;

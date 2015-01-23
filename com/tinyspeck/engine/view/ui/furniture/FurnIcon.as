@@ -42,7 +42,7 @@ package com.tinyspeck.engine.view.ui.furniture
 			iiv.y = int(wh/2); //gives a little padding to the text at the bottom
 			
 			if (upgrade.subscriber_only) {
-				subscriber_icon = new AssetManager.instance.assets.furn_subscriber();
+				subscriber_icon = new (AssetManager.instance.assets.furn_subscriber)();
 				subscriber_icon.scaleX = subscriber_icon.scaleY = .5;
 				addChild(subscriber_icon);
 				subscriber_icon.x = wh-(subscriber_icon.width+5);

@@ -131,7 +131,7 @@ package com.tinyspeck.engine.port
 			currants_total_tf.y = int(_foot_min_h/2 - currants_total_tf.height/2);
 			_foot_sp.addChild(currants_total_tf);
 			
-			currants_icon = new AssetManager.instance.assets.store_currants();
+			currants_icon = new (AssetManager.instance.assets.store_currants)();
 			currants_icon.y = int(_foot_min_h/2 - currants_icon.height/2);
 			_foot_sp.addChild(currants_icon);
 			
@@ -141,7 +141,7 @@ package com.tinyspeck.engine.port
 			//item info
 			info_holder.x = _w;
 			var arrow_holder:Sprite = new Sprite();
-			var arrowDO:DisplayObject = new AssetManager.instance.assets.back_arrow();
+			var arrowDO:DisplayObject = new (AssetManager.instance.assets.back_arrow)();
 			SpriteUtil.setRegistrationPoint(arrowDO);
 			arrow_holder.rotation = -90;
 			arrow_holder.addChild(arrowDO);
@@ -429,7 +429,7 @@ package com.tinyspeck.engine.port
 				
 				//put a shelf on if we need it
 				if(current_row != row){
-					shelf = new AssetManager.instance.assets.store_shelf_new();
+					shelf = new (AssetManager.instance.assets.store_shelf_new)();
 					shelf.y = shelf_top_padd+(row*shelf_distance)-bt_h+item_bott_padd + shelf_offset;
 					buy_holder.addChildAt(shelf, 0);
 					current_row = row;
@@ -568,7 +568,7 @@ package com.tinyspeck.engine.port
 					if(item && item.details && item.details.warnings.length > 0){
 						rect = bt.label_tf.getCharBoundaries(0);
 						if(rect){
-							warn = new AssetManager.instance.assets.store_warning();
+							warn = new (AssetManager.instance.assets.store_warning)();
 							warn.name = 'warn';
 							warn.x = int(bt.label_tf.x + rect.x - warn.width) - 1;
 							warn.y = int(bt.label_tf.y + (bt.label_tf.height/2 - warn.height/2));

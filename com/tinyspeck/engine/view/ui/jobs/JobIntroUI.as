@@ -76,7 +76,7 @@ package com.tinyspeck.engine.view.ui.jobs
 		private function buildBase():void {
 			addChild(bg);
 			
-			choice_arrows = new AssetManager.instance.assets.job_either_arrows();
+			choice_arrows = new (AssetManager.instance.assets.job_either_arrows)();
 			choice_arrows.visible = false;
 			addChild(choice_arrows);
 			
@@ -163,9 +163,9 @@ package com.tinyspeck.engine.view.ui.jobs
 				w: 37,
 				x: custom_name_holder.width - 2,
 				y: -1,
-				graphic: new AssetManager.instance.assets.input_check(),
-				graphic_hover: new AssetManager.instance.assets.input_check_hover(),
-				graphic_disabled: new AssetManager.instance.assets.input_check_disabled()
+				graphic: new (AssetManager.instance.assets.input_check)(),
+				graphic_hover: new (AssetManager.instance.assets.input_check_hover)(),
+				graphic_disabled: new (AssetManager.instance.assets.input_check_disabled)()
 			});
 			accept_bt.addEventListener(TSEvent.CHANGED, onAcceptClick, false, 0, true);
 			accept_bt.h = 35;
@@ -212,7 +212,7 @@ package com.tinyspeck.engine.view.ui.jobs
 				map_bg.parent.removeChild(map_bg);
 				map_bg = null;
 			}
-			map_bg = new AssetManager.instance.assets['job_'+(job_info.type == JobInfo.TYPE_REGULAR ? 'map' : job_info.type)+'_bg']();
+			map_bg = new (AssetManager.instance.assets['job_'+(job_info.type == JobInfo.TYPE_REGULAR ? 'map' : job_info.type)+'_bg'])();
 			map_bg.visible = (job_info.options.length <= 1 && phase_count == 1);
 			addChildAt(map_bg, getChildIndex(choice_arrows));
 			

@@ -63,7 +63,7 @@ package com.tinyspeck.engine.port
 		private var head_holder:Sprite = new Sprite();
 		private var body_holder:Sprite = new Sprite();
 		
-		private var favor_icon:DisplayObject = new AssetManager.instance.assets.slug_favor_pos();
+		private var favor_icon:DisplayObject = new (AssetManager.instance.assets.slug_favor_pos)();
 		
 		private var intro_tf:TSLinkedTextField = new TSLinkedTextField();
 		private var emblem_progress_tf:TextField = new TextField();
@@ -186,13 +186,13 @@ package com.tinyspeck.engine.port
 			_scroller.body.addChild(body_holder);
 			
 			//back button
-			const back_DO:DisplayObject = new AssetManager.instance.assets.back_circle();
+			const back_DO:DisplayObject = new (AssetManager.instance.assets.back_circle)();
 			back_bt = new Button({
 				label: '',
 				name: 'back',
 				graphic: back_DO,
-				graphic_hover: new AssetManager.instance.assets.back_circle_hover(),
-				graphic_disabled: new AssetManager.instance.assets.back_circle_disabled(),
+				graphic_hover: new (AssetManager.instance.assets.back_circle_hover)(),
+				graphic_disabled: new (AssetManager.instance.assets.back_circle_disabled)(),
 				w: back_DO.width,
 				h: back_DO.height,
 				draw_alpha: 0

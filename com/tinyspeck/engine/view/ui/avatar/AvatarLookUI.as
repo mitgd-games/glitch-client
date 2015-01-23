@@ -67,13 +67,13 @@ package com.tinyspeck.engine.view.ui.avatar
 			g.drawRect(0, 0, WIDTH, HEIGHT);
 			
 			//spinner
-			const spinner:DisplayObject = new AssetManager.instance.assets.spinner();
+			const spinner:DisplayObject = new (AssetManager.instance.assets.spinner)();
 			spinner.transform.colorTransform = ColorUtil.getColorTransform(0xffffff);
 			spinner_holder.addChild(spinner);
 			spinner_holder.mouseEnabled = spinner_holder.mouseChildren = false;
 			
 			//remove
-			const remove_DO:DisplayObject =  new AssetManager.instance.assets.remove();
+			const remove_DO:DisplayObject =  new (AssetManager.instance.assets.remove)();
 			remove_DO.filters = StaticFilters.black1px90Degrees_DropShadowA;
 			remove_bt = new Button({
 				name: 'remove',

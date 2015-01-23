@@ -239,7 +239,7 @@ package com.tinyspeck.engine.port
 		
 		private function addPlayButton(item_icon:ItemIconView, sound_location:String):void {			
 			var play_button:Sprite = new Sprite();
-			play_button.addChild(new AssetManager.instance.assets.item_play_button());
+			play_button.addChild(new (AssetManager.instance.assets.item_play_button)());
 			play_button.x = int(ITEM_WH - play_button.width);
 			play_button.y = int(ITEM_WH - play_button.height);
 			play_button.name = sound_location; // keep a reference of the sound location

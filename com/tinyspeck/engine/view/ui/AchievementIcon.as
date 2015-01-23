@@ -87,7 +87,7 @@ package com.tinyspeck.engine.view.ui
 			//load the default
 			else {
 				url = null;
-				var badge_default:MovieClip = new AssetManager.instance.assets.achievement_badge();
+				var badge_default:MovieClip = new (AssetManager.instance.assets.achievement_badge)();
 				badge_default.addEventListener(Event.COMPLETE, onAssetComplete, false, 0, true);
 			}
 			

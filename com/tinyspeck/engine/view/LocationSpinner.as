@@ -21,7 +21,7 @@ package com.tinyspeck.engine.view
 		private var holder:Sprite = new Sprite();
 		private var drop_holder:Sprite = new Sprite();
 		private var current_label:String;
-		private const spinner_mc:MovieClip = new AssetManager.instance.assets.spinner() as MovieClip;
+		private const spinner_mc:MovieClip = new (AssetManager.instance.assets.spinner)() as MovieClip;
 		
 		public function LocationSpinner():void {
 			build();

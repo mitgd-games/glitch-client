@@ -43,7 +43,7 @@ package com.tinyspeck.engine.view.ui.chat
 			super.buildBase();
 			
 			//down arrow
-			var arrow:DisplayObject = new AssetManager.instance.assets.back_arrow();
+			var arrow:DisplayObject = new (AssetManager.instance.assets.back_arrow)();
 			SpriteUtil.setRegistrationPoint(arrow);
 			arrow_holder.mouseChildren = arrow_holder.mouseEnabled = false;
 			arrow_holder.addChild(arrow);

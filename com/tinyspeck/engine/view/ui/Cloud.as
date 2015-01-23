@@ -28,7 +28,7 @@ package com.tinyspeck.engine.view.ui
 		
 		public function Cloud(type:String = Cloud.TYPE_SKILLS, apply_glow:Boolean = true){
 			if(!clouds_mc && !loading_clouds){
-				const cloud_loader:MovieClip = new AssetManager.instance.assets.imagination_clouds();
+				const cloud_loader:MovieClip = new (AssetManager.instance.assets.imagination_clouds)();
 				cloud_loader.addEventListener(Event.COMPLETE, onAssetLoaded, false, 0, true);
 				loading_clouds = true;
 			}

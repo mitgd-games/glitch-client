@@ -40,7 +40,7 @@ package com.tinyspeck.engine.view.gameoverlay
 			//instructions
 			const instructions_holder:Sprite = new Sprite();
 			instructions_holder.buttonMode = instructions_holder.buttonMode = true;
-			const instructions_DO:DisplayObject = new AssetManager.instance.assets.r3_message_overlay();
+			const instructions_DO:DisplayObject = new (AssetManager.instance.assets.r3_message_overlay)();
 			all_holder.addChild(instructions_holder);
 			instructions_holder.addChild(instructions_DO);
 			

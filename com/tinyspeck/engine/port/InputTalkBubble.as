@@ -132,9 +132,9 @@ package com.tinyspeck.engine.port
 				w: 37,
 				x: input_holder.width - 2,
 				y: -1,
-				graphic: new AssetManager.instance.assets.input_check(),
-				graphic_disabled: new AssetManager.instance.assets.input_check_disabled(),
-				graphic_hover: new AssetManager.instance.assets.input_check_hover()
+				graphic: new (AssetManager.instance.assets.input_check)(),
+				graphic_disabled: new (AssetManager.instance.assets.input_check_disabled)(),
+				graphic_hover: new (AssetManager.instance.assets.input_check_hover)()
 			});
 			submit_bt.addEventListener(TSEvent.CHANGED, onSubmitClick, false, 0, true);
 			submit_bt.h = 35;
@@ -143,7 +143,7 @@ package com.tinyspeck.engine.port
 			//cancel bt
 			cancel_bt = new Button({
 				name: 'close',
-				graphic: new AssetManager.instance.assets.close_x_small(),
+				graphic: new (AssetManager.instance.assets.close_x_small)(),
 				graphic_placement: 'center',
 				draw_alpha: 0,
 				x: submit_bt.x + submit_bt.width + 6,

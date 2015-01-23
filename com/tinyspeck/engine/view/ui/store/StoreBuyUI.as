@@ -56,7 +56,7 @@ package com.tinyspeck.engine.view.ui.store
 		private var you_have_tf:TextField = new TextField();
 		private var title_tf:TextField = new TextField();
 		private var price_tf:TextField = new TextField();
-		private var subscriber_icon:DisplayObject = new AssetManager.instance.assets.furn_subscriber();
+		private var subscriber_icon:DisplayObject = new (AssetManager.instance.assets.furn_subscriber)();
 		
 		private var current_cost:int;
 		private var current_count:int;
@@ -103,8 +103,8 @@ package com.tinyspeck.engine.view.ui.store
 				w: 130,
 				h: 36,
 				name: 'qp',
-				minus_graphic: new AssetManager.instance.assets.minus_red(),
-				plus_graphic: new AssetManager.instance.assets.plus_green(),
+				minus_graphic: new (AssetManager.instance.assets.minus_red)(),
+				plus_graphic: new (AssetManager.instance.assets.plus_green)(),
 				max_value: 1, // to be changed
 				min_value: 1,
 				button_wh: 20,
@@ -151,7 +151,7 @@ package com.tinyspeck.engine.view.ui.store
 				label_hover_c: 0xd79035,
 				label_offset: 1,
 				text_align: 'left',
-				graphic: new AssetManager.instance.assets.encyclopedia_link(),
+				graphic: new (AssetManager.instance.assets.encyclopedia_link)(),
 				graphic_placement: 'left',
 				graphic_padd_l: 1,
 				draw_alpha: 0,
@@ -174,7 +174,7 @@ package com.tinyspeck.engine.view.ui.store
 				label_hover_c: 0xd79035,
 				label_offset: 1,
 				text_align: 'left',
-				graphic: new AssetManager.instance.assets.info_auction(),
+				graphic: new (AssetManager.instance.assets.info_auction)(),
 				graphic_placement: 'left',
 				graphic_padd_l: 3,
 				draw_alpha: 0,

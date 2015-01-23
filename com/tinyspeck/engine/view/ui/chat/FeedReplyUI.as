@@ -26,7 +26,7 @@ package com.tinyspeck.engine.view.ui.chat
 		public function FeedReplyUI(w:int){
 			_w = w;
 			
-			close_holder.addChild(new AssetManager.instance.assets.feed_reply_close());
+			close_holder.addChild(new (AssetManager.instance.assets.feed_reply_close)());
 			close_holder.x = RightSideView.CHAT_PADD;
 			close_holder.y = 6;
 			close_holder.useHandCursor = close_holder.buttonMode = true;

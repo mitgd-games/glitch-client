@@ -153,7 +153,7 @@ package com.tinyspeck.engine.port {
 									  StringUtil.injectClass(payload.txt, 'a', 'familiar_conversation_link');
 						// if the msg specifies rewards, use that, otherwise use the default rewards for the quest
 						if (!payload.rewards) payload.rewards = quest.rewards;
-						payload.graphic = new AssetManager.instance.assets.familiar_dialog_quests_small();
+						payload.graphic = new (AssetManager.instance.assets.familiar_dialog_quests_small)();
 					}
 				} 
 			}
@@ -163,10 +163,10 @@ package com.tinyspeck.engine.port {
 				payload.title = '<span class="choices_quest_title">'+payload.title+'</span>';
 				if('feat_id' in payload){
 					//show the little feat image
-					payload.graphic = new AssetManager.instance.assets.feat_badge_small();
+					payload.graphic = new (AssetManager.instance.assets.feat_badge_small)();
 				}
 				else {
-					payload.graphic = new AssetManager.instance.assets.familiar_dialog_quests_small();
+					payload.graphic = new (AssetManager.instance.assets.familiar_dialog_quests_small)();
 				}
 			}
 			

@@ -277,7 +277,7 @@ package com.tinyspeck.engine.view.ui.glitchr
 		private function createShareButton(type:String, label:String = 'Share'):Button {
 			const bt_w:uint = 72;
 			const bt_h:uint = 26;
-			const logo_DO:DisplayObject = new AssetManager.instance.assets['share_'+type]();
+			const logo_DO:DisplayObject = new (AssetManager.instance.assets['share_'+type])();
 			const bt_obj:Object = {
 				name: type,
 				label: label,

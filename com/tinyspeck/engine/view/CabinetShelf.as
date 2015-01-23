@@ -22,9 +22,9 @@ package com.tinyspeck.engine.view
 		}
 		
 		private function build():void {
-			end_left = new AssetManager.instance.assets['cabinet_shelf_wood_end_left']();
-			center = new AssetManager.instance.assets['cabinet_shelf_wood_center']();
-			end_right = new AssetManager.instance.assets['cabinet_shelf_wood_end_right']();
+			end_left = new (AssetManager.instance.assets['cabinet_shelf_wood_end_left'])();
+			center = new (AssetManager.instance.assets['cabinet_shelf_wood_center'])();
+			end_right = new (AssetManager.instance.assets['cabinet_shelf_wood_end_right'])();
 			
 			addChild(end_left);
 			addChild(center);

@@ -30,7 +30,7 @@ package com.tinyspeck.engine.view.ui.chrome
 		public function GodMenu(){}
 		
 		override protected function buildBase():void {
-			_icon = new AssetManager.instance.assets.god_menu();
+			_icon = new (AssetManager.instance.assets.god_menu)();
 			addChild(_icon);
 			
 			_h = model.layoutModel.header_h - icon.height/2;

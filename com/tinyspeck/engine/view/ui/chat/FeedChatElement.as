@@ -59,7 +59,7 @@ package com.tinyspeck.engine.view.ui.chat
 			this.is_details = is_details;
 			
 			//build out the reply button
-			var reply_icon:DisplayObject = new AssetManager.instance.assets.feed_reply();
+			var reply_icon:DisplayObject = new (AssetManager.instance.assets.feed_reply)();
 			reply_bt = new Button({
 				name: 'reply',
 				graphic: reply_icon,
@@ -123,7 +123,7 @@ package com.tinyspeck.engine.view.ui.chat
 			photo_tf.htmlText = '<p class="feed_chat"><a class="feed_chat_photo" href="#">Uploaded a snapshot</a></p>';
 			photo_link_holder.addChild(photo_tf);
 			
-			const camera_icon:DisplayObject = new AssetManager.instance.assets.camera_icon_small();
+			const camera_icon:DisplayObject = new (AssetManager.instance.assets.camera_icon_small)();
 			camera_icon.x = int(photo_tf.width + 3);
 			camera_icon.y = 3;
 			photo_link_holder.addChild(camera_icon);

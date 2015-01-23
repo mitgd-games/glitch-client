@@ -124,7 +124,7 @@ package com.tinyspeck.engine.view.ui.imagination
 			
 			//previous
 			var arrow_holder:Sprite = new Sprite();
-			var arrow_DO:DisplayObject = new AssetManager.instance.assets.white_arrow_large();
+			var arrow_DO:DisplayObject = new (AssetManager.instance.assets.white_arrow_large)();
 			arrow_DO.scaleX = -1;
 			arrow_DO.x = arrow_DO.width;
 			arrow_holder.addChild(arrow_DO);
@@ -141,7 +141,7 @@ package com.tinyspeck.engine.view.ui.imagination
 			left_scroll.addEventListener(TSEvent.CHANGED, onScrollClick, false, 0, true);
 			previous_holder.addChild(left_scroll);
 			
-			arrow_DO = new AssetManager.instance.assets.white_arrow_large();
+			arrow_DO = new (AssetManager.instance.assets.white_arrow_large)();
 			right_scroll = new Button({
 				name: 'right',
 				graphic: arrow_DO,

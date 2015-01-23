@@ -25,7 +25,7 @@ package com.tinyspeck.engine.view.ui.craftybot
 		override protected function buildBase():void {
 			super.buildBase();
 			
-			const mag_glass:DisplayObject = new AssetManager.instance.assets.search_mag_glass();
+			const mag_glass:DisplayObject = new (AssetManager.instance.assets.search_mag_glass)();
 			mag_glass.x = 5;
 			mag_glass.y = int(INPUT_HEIGHT/2 - mag_glass.height/2 + 1);
 			input_content.addChild(mag_glass);

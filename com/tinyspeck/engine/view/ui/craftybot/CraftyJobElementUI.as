@@ -68,7 +68,7 @@ package com.tinyspeck.engine.view.ui.craftybot
 			addChild(icon_holder);
 			
 			//warning icon
-			warning_icon = new AssetManager.instance.assets.store_warning();
+			warning_icon = new (AssetManager.instance.assets.store_warning)();
 			warning_icon.x = warning_icon.y = 6;
 			addChild(warning_icon);
 			
@@ -85,7 +85,7 @@ package com.tinyspeck.engine.view.ui.craftybot
 			addChild(text_holder);
 			
 			//buttons
-			const remove_DO:DisplayObject = new AssetManager.instance.assets.mail_trash();
+			const remove_DO:DisplayObject = new (AssetManager.instance.assets.mail_trash)();
 			remove_DO.filters = [ColorUtil.getGreyScaleFilter()];
 			remove_bt = new Button({
 				name: 'remove',

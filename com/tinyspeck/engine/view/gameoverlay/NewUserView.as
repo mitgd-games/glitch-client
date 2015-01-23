@@ -35,7 +35,7 @@ package com.tinyspeck.engine.view.gameoverlay
 			bg_alpha = .7;
 			
 			//instructions
-			const instructions_DO:DisplayObject = new AssetManager.instance.assets.newuser_img_menu();
+			const instructions_DO:DisplayObject = new (AssetManager.instance.assets.newuser_img_menu)();
 			all_holder.addChild(instructions_DO);
 			
 			//button

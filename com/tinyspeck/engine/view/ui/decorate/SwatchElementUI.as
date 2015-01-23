@@ -73,7 +73,7 @@ package com.tinyspeck.engine.view.ui.decorate
 			all_holder.addChild(swatch_holder);
 			
 			//cost bar
-			credits_icon = new AssetManager.instance.assets.furn_credits_small();
+			credits_icon = new (AssetManager.instance.assets.furn_credits_small)();
 			credits_icon.filters = StaticFilters.white1px_GlowA;
 			credits_icon.x = 2;
 			credits_icon.y = 3;
@@ -98,13 +98,13 @@ package com.tinyspeck.engine.view.ui.decorate
 			all_holder.addChild(cost_holder);
 			
 			//subscriber icon
-			subscriber_icon = new AssetManager.instance.assets.furn_subscriber();
+			subscriber_icon = new (AssetManager.instance.assets.furn_subscriber)();
 			subscriber_icon.x = WH - subscriber_icon.width + 4;
 			subscriber_icon.y = -4;
 			addChild(subscriber_icon);
 			
 			//new icon
-			new_icon = new AssetManager.instance.assets.furniture_new_badge_small();
+			new_icon = new (AssetManager.instance.assets.furniture_new_badge_small)();
 			new_icon.x = -2;
 			new_icon.y = -3;
 			addChild(new_icon);
@@ -124,7 +124,7 @@ package com.tinyspeck.engine.view.ui.decorate
 				has_swatch = DecoAssetManager.loadIndividualDeco(swatch.swatch, onDecoLoaded);
 				
 				if (!has_swatch) {
-					swatch_holder.addChild(new AssetManager.instance.assets.close_swatch());
+					swatch_holder.addChild(new (AssetManager.instance.assets.close_swatch)());
 					CONFIG::debugging {
 						Console.warn(swatch.swatch+' for '+swatch.tsid+' not found in location swf');
 					}

@@ -33,7 +33,7 @@ package com.tinyspeck.engine.view.ui.quest
 		
 		private function buildBase():void {
 			//if they have no quests show them a message
-			const no_quests:DisplayObject = new AssetManager.instance.assets.no_sign();
+			const no_quests:DisplayObject = new (AssetManager.instance.assets.no_sign)();
 			const no_quests_tf:TextField = new TextField();
 			
 			TFUtil.prepTF(no_quests_tf, false);

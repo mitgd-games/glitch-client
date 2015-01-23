@@ -77,7 +77,7 @@ package com.tinyspeck.engine.view
 			you_have_tf.htmlText = '<p class="furn_upgrade_credits">You have</p>';
 			imagination_holder.addChild(you_have_tf);
 			
-			const img_icon:DisplayObject = new AssetManager.instance.assets.img_icon();
+			const img_icon:DisplayObject = new (AssetManager.instance.assets.img_icon)();
 			img_icon.x = int(you_have_tf.width + 4);
 			img_icon.filters = StaticFilters.white3px_GlowA;
 			imagination_holder.addChild(img_icon);

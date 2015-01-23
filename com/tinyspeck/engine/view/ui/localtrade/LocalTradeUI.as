@@ -83,7 +83,7 @@ package com.tinyspeck.engine.view.ui.localtrade
 			holder.filters = [holder_glow, holder_drop];
 			addChild(holder);
 			
-			const icon:DisplayObject = new AssetManager.instance.assets.trade_icon_small();
+			const icon:DisplayObject = new (AssetManager.instance.assets.trade_icon_small)();
 			icon.x = 5;
 			icon.y = int(HEADER_H/2 - icon.height/2 + border_width);
 			holder.addChild(icon);
@@ -99,14 +99,14 @@ package com.tinyspeck.engine.view.ui.localtrade
 			holder.addChild(body_holder);
 			
 			//close
-			close_holder.addChild(new AssetManager.instance.assets.chat_close());
+			close_holder.addChild(new (AssetManager.instance.assets.chat_close)());
 			close_holder.y = int(HEADER_H/2 - close_holder.height/2 + border_width);
 			close_holder.useHandCursor = close_holder.buttonMode = true;
 			close_holder.addEventListener(MouseEvent.CLICK, onCloseClick, false, 0, true);
 			holder.addChild(close_holder);
 			
 			//toggle
-			const arrow:DisplayObject = new AssetManager.instance.assets.back_arrow();
+			const arrow:DisplayObject = new (AssetManager.instance.assets.back_arrow)();
 			SpriteUtil.setRegistrationPoint(arrow);
 			toggle_holder.addChild(arrow);
 			toggle_holder.useHandCursor = toggle_holder.buttonMode = true;

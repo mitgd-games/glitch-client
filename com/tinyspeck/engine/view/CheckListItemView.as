@@ -29,7 +29,7 @@ package com.tinyspeck.engine.view {
 			tf.htmlText = '<p class="hub_map_hub_button_go">'+txt+'</p>';
 			addChild(tf);
 			
-			checkmark_mc = new AssetManager.instance.assets['greencheck'];
+			checkmark_mc = new (AssetManager.instance.assets['greencheck']);
 			addChild(checkmark_mc);
 			tf.x = checkmark_mc.width+5;
 			tf.y = Math.round((checkmark_mc.height-tf.height)/2);

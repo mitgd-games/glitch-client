@@ -152,7 +152,7 @@ package com.tinyspeck.engine.view.ui.furniture
 			if (choice.min_level) {
 				//level lock icon
 				if(!lock_icon) {
-					lock_icon = new AssetManager.instance.assets.lock_small();
+					lock_icon = new (AssetManager.instance.assets.lock_small)();
 					lock_icon.x = int(width/2 - lock_icon.width/2);
 					lock_icon.y = int(h - lock_icon.height);
 					addChildAt(lock_icon, getChildIndex(level_tf));
@@ -181,7 +181,7 @@ package com.tinyspeck.engine.view.ui.furniture
 					
 					//imagination icon
 					if(!imagination_icon) {
-						imagination_icon = new AssetManager.instance.assets.slug_imagination_pos();
+						imagination_icon = new (AssetManager.instance.assets.slug_imagination_pos)();
 						imagination_icon.filters = glowA;
 						addChild(imagination_icon);
 					}

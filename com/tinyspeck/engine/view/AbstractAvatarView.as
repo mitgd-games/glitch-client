@@ -491,7 +491,7 @@ package com.tinyspeck.engine.view
 			if (rooked) return;
 			rooked = true;
 			if (!rooked_overlay) {
-				rooked_overlay = new AssetManager.instance.assets.rooked();
+				rooked_overlay = new (AssetManager.instance.assets.rooked)();
 				rooked_overlay.addEventListener(Event.COMPLETE, function():void {
 					rooked_overlay.removeEventListener(Event.COMPLETE, arguments.callee);
 					rooked_overlay_rect = rooked_overlay.getRect(rooked_overlay)

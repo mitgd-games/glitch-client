@@ -83,7 +83,7 @@ package com.tinyspeck.engine.view.ui.decorate
 			expand_wall_bt = new Button({
 				name: 'expand_wall',
 				label: 'Expand',
-				graphic: new AssetManager.instance.assets.expand_wall(),
+				graphic: new (AssetManager.instance.assets.expand_wall)(),
 				graphic_placement: 'top',
 				graphic_padd_t: 6,
 				graphic_padd_b: -4,
@@ -104,7 +104,7 @@ package com.tinyspeck.engine.view.ui.decorate
 			unexpand_wall_bt = new Button({
 				name: 'unexpand_wall',
 				label: 'Un-expand',
-				graphic: new AssetManager.instance.assets.unexpand_wall(),
+				graphic: new (AssetManager.instance.assets.unexpand_wall)(),
 				graphic_placement: 'top',
 				graphic_padd_t: 6,
 				graphic_padd_b: -4,
@@ -125,7 +125,7 @@ package com.tinyspeck.engine.view.ui.decorate
 			expand_floor_bt = new Button({
 				name: 'expand_floor',
 				label: 'Add floor',
-				graphic: new AssetManager.instance.assets.expand_floor(),
+				graphic: new (AssetManager.instance.assets.expand_floor)(),
 				graphic_placement: 'top',
 				graphic_padd_t: 6,
 				graphic_padd_b: -4,
@@ -144,7 +144,7 @@ package com.tinyspeck.engine.view.ui.decorate
 			all_holder.addChild(expand_floor_bt);
 			
 			//close button
-			const close_DO:DisplayObject = new AssetManager.instance.assets.decorate_close();
+			const close_DO:DisplayObject = new (AssetManager.instance.assets.decorate_close)();
 			close_bt = new Button({
 				name: 'close',
 				graphic: close_DO,

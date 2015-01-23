@@ -93,7 +93,7 @@ package com.tinyspeck.engine.view.ui.mail
 			addChild(read_holder);
 			
 			//reply indicator
-			var replied:DisplayObject = new AssetManager.instance.assets.mail_replied();
+			var replied:DisplayObject = new (AssetManager.instance.assets.mail_replied)();
 			if(replied){
 				replied_icon.addChild(replied);
 				replied_icon.x = MailInboxHeaderUI.READ_X - READ_RADIUS;
@@ -102,7 +102,7 @@ package com.tinyspeck.engine.view.ui.mail
 			
 			read_holder.addChild(replied_icon);
 			
-			var trash:DisplayObject = new AssetManager.instance.assets.mail_trash();
+			var trash:DisplayObject = new (AssetManager.instance.assets.mail_trash)();
 			if(trash){
 				trash_icon.addChild(trash);
 				trash_icon.x = MailInboxHeaderUI.READ_X - trash.width - READ_RADIUS*2;
@@ -233,7 +233,7 @@ package com.tinyspeck.engine.view.ui.mail
 		private function buildCurrants():void {
 			if(!currants_attached){
 				currants_attached = new Sprite();
-				var currants_icon:DisplayObject = new AssetManager.instance.assets.mail_currants();
+				var currants_icon:DisplayObject = new (AssetManager.instance.assets.mail_currants)();
 				if(currants_icon){
 					currants_attached.addChild(currants_icon);
 					currants_attached.y = int((HEIGHT-currants_icon.height)/2);

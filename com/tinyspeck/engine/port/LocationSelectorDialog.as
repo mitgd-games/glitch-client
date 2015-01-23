@@ -109,7 +109,7 @@ package com.tinyspeck.engine.port
 		
 		private function buildQuaterPanel():void {
 			//background image stuff
-			var quarter_bg:DisplayObject = new AssetManager.instance.assets.quarter_bg();
+			var quarter_bg:DisplayObject = new (AssetManager.instance.assets.quarter_bg)();
 			
 			bg_pattern = new BitmapData(quarter_bg.width, quarter_bg.height);
 			bg_pattern.draw(quarter_bg);
@@ -173,7 +173,7 @@ package com.tinyspeck.engine.port
 		
 		override protected function makeCloseBt():Button {
 			return new Button({
-				graphic: new AssetManager.instance.assets['close_x_small_gray'](),
+				graphic: new (AssetManager.instance.assets['close_x_small_gray'])(),
 				name: '_close_bt',
 				h: 20,
 				w: 20,
@@ -326,9 +326,9 @@ package com.tinyspeck.engine.port
 					y: next_y,
 					type: bt_type,
 					size: bt_size,
-					graphic: new AssetManager.instance.assets.elevator_normal(),
-					graphic_disabled: new AssetManager.instance.assets.elevator_disabled(),
-					graphic_hover: new AssetManager.instance.assets.elevator_hover(),
+					graphic: new (AssetManager.instance.assets.elevator_normal)(),
+					graphic_disabled: new (AssetManager.instance.assets.elevator_disabled)(),
+					graphic_hover: new (AssetManager.instance.assets.elevator_hover)(),
 					tip: (false) ? {txt: connect.label, pointer: WindowBorder.POINTER_BOTTOM_CENTER} : null,
 					disabled: bt_disabled
 				}

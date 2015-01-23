@@ -68,7 +68,7 @@ package com.tinyspeck.engine.view.ui
 			ok_bt.y = -1;
 			edit_holder.addChild(ok_bt);
 			
-			const close_DO:DisplayObject = new AssetManager.instance.assets.chat_close();
+			const close_DO:DisplayObject = new (AssetManager.instance.assets.chat_close)();
 			close_DO.transform.colorTransform = ColorUtil.getColorTransform(0xffffff);
 			close_DO.alpha = .7;
 			close_bt = new Button({

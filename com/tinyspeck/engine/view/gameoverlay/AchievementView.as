@@ -137,7 +137,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 			facebook_bt = new Button({
 				name: 'facebook',
 				label: 'Share this',
-				graphic: new AssetManager.instance.assets.facebook(),
+				graphic: new (AssetManager.instance.assets.facebook)(),
 				graphic_padd_l: 19,
 				graphic_padd_t: 7,
 				graphic_padd_r: 7,
@@ -152,7 +152,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 			twitter_bt = new Button({
 				name: 'twitter',
 				label: 'Tweet this',
-				graphic: new AssetManager.instance.assets.twitter(),
+				graphic: new (AssetManager.instance.assets.twitter)(),
 				graphic_padd_l: 15,
 				graphic_padd_r: 5,
 				graphic_placement: 'left',
@@ -206,7 +206,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 				sl.error_sig.add(onBadgeLoadFromNetFail);
 				StageBeacon.setTimeout(sl.load, delay_ms, new URLRequest(badge_url));
 			} else {
-				var badge_default:MovieClip = new AssetManager.instance.assets.achievement_badge();
+				var badge_default:MovieClip = new (AssetManager.instance.assets.achievement_badge)();
 				badge_default.addEventListener(Event.COMPLETE, onBadgeLoadedFromAssets, false, 0, true);
 			}
 		}

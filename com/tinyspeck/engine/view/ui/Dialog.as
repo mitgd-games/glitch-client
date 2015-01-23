@@ -197,7 +197,7 @@ package com.tinyspeck.engine.view.ui {
 			if (_close_bt) _close_bt.addEventListener(MouseEvent.CLICK, closeFromUserInput, false, 0, true);
 			
 			//setup the gripper
-			gripper = new AssetManager.instance.assets.dialog_gripper();
+			gripper = new (AssetManager.instance.assets.dialog_gripper)();
 			
 			gripper.y = gripper_padding;
 			gripper.visible = _draggable;
@@ -243,13 +243,13 @@ package com.tinyspeck.engine.view.ui {
 		}
 		
 		protected function makeBackBt():Button {
-			var back_DO:DisplayObject = new AssetManager.instance.assets.back_circle();
+			var back_DO:DisplayObject = new (AssetManager.instance.assets.back_circle)();
 			var back_bt:Button = new Button({
 				label: '',
 				name: 'back',
 				graphic: back_DO,
-				graphic_hover: new AssetManager.instance.assets.back_circle_hover(),
-				graphic_disabled: new AssetManager.instance.assets.back_circle_disabled(),
+				graphic_hover: new (AssetManager.instance.assets.back_circle_hover)(),
+				graphic_disabled: new (AssetManager.instance.assets.back_circle_disabled)(),
 				w: back_DO.width,
 				h: back_DO.height,
 				draw_alpha: 0

@@ -54,7 +54,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		private var desc_tf:TextField = new TextField();
 		
 		private var ok_bt:Button;
-		private var shelf:DisplayObject = new AssetManager.instance.assets.shelf_trophy();
+		private var shelf:DisplayObject = new (AssetManager.instance.assets.shelf_trophy)();
 		
 		private var rewards:Vector.<Reward>;
 		private var trophy:ItemIconView;
@@ -337,7 +337,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 				//TipDisplayManager.instance.registerTipTrigger(item_icon);
 				
 				//add the checkmark
-				checkmark = new AssetManager.instance.assets.collection_check();
+				checkmark = new (AssetManager.instance.assets.collection_check)();
 				checkmark.x = int(ITEM_WH - checkmark.width) + 2;
 				checkmark.y = int(ITEM_WH - checkmark.height/2);
 				item_icon.addChild(checkmark);
@@ -366,7 +366,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 		
 		private function addPlayButton(item_icon:ItemIconView, sound_location:String):void {			
 			var play_button:Sprite = new Sprite();
-			play_button.addChild(new AssetManager.instance.assets.item_play_button());
+			play_button.addChild(new (AssetManager.instance.assets.item_play_button)());
 			play_button.x = int(ITEM_WH - play_button.width);
 			play_button.y = int(ITEM_WH - play_button.height);
 			play_button.name = sound_location; // keep a reference of the sound location

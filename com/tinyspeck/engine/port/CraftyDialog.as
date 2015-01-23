@@ -91,13 +91,13 @@ package com.tinyspeck.engine.port
 			addChild(active_ui);
 			
 			//back button
-			const back_DO:DisplayObject = new AssetManager.instance.assets.back_circle();
+			const back_DO:DisplayObject = new (AssetManager.instance.assets.back_circle)();
 			back_bt = new Button({
 				label: '',
 				name: 'back',
 				graphic: back_DO,
-				graphic_hover: new AssetManager.instance.assets.back_circle_hover(),
-				graphic_disabled: new AssetManager.instance.assets.back_circle_disabled(),
+				graphic_hover: new (AssetManager.instance.assets.back_circle_hover)(),
+				graphic_disabled: new (AssetManager.instance.assets.back_circle_disabled)(),
 				w: back_DO.width,
 				h: back_DO.height,
 				draw_alpha: 0

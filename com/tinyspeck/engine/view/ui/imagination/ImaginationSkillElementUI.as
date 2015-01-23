@@ -125,7 +125,7 @@ package com.tinyspeck.engine.view.ui.imagination
 			if(!current_details.can_learn){
 				time_txt = 'Can\'t learn';
 				if(!lock_icon){
-					lock_icon = new AssetManager.instance.assets.lock_small();
+					lock_icon = new (AssetManager.instance.assets.lock_small)();
 					lock_icon.x = icon_holder.x + SkillIcon.SIZE_DEFAULT - lock_icon.width + 4;
 					lock_icon.y = icon_holder.y + SkillIcon.SIZE_DEFAULT - lock_icon.height + 7;
 				}

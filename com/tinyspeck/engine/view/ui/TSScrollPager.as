@@ -46,8 +46,8 @@ package com.tinyspeck.engine.view.ui
 				name: 'scroll_left',
 				size: Button.SIZE_DEFAULT,
 				type: Button.TYPE_PACK_SCROLL,
-				graphic: new AssetManager.instance.assets.furn_scroll(),
-				graphic_disabled: new AssetManager.instance.assets.furn_scroll_disabled(),
+				graphic: new (AssetManager.instance.assets.furn_scroll)(),
+				graphic_disabled: new (AssetManager.instance.assets.furn_scroll_disabled)(),
 				graphic_placement: 'left',
 				graphic_padd_l: 8,
 				w: SCROLL_BT_W + SCROLL_BT_PADD,
@@ -58,8 +58,8 @@ package com.tinyspeck.engine.view.ui
 			addChild(left_scroll);
 			
 			//flip em
-			const furn_scroll:DisplayObject = new AssetManager.instance.assets.furn_scroll();
-			const furn_scroll_disabled:DisplayObject = new AssetManager.instance.assets.furn_scroll_disabled();
+			const furn_scroll:DisplayObject = new (AssetManager.instance.assets.furn_scroll)();
+			const furn_scroll_disabled:DisplayObject = new (AssetManager.instance.assets.furn_scroll_disabled)();
 			furn_scroll.scaleX = -1;
 			furn_scroll_disabled.scaleX = -1;
 			

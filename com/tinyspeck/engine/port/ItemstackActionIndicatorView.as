@@ -150,7 +150,7 @@ package com.tinyspeck.engine.port
 		
 		public function getIcon():DisplayObject {
 			if(IMG_ICONS.indexOf(type) >= 0){
-				return new AssetManager.instance.assets['action_'+type]();
+				return new (AssetManager.instance.assets['action_'+type])();
 			}
 			else if (TSModelLocator.instance.worldModel.getItemByTsid(type)) {
 				return new ItemIconView(type, ICON_WH*2);
@@ -158,7 +158,7 @@ package com.tinyspeck.engine.port
 				CONFIG::debugging {
 					Console.error('unrecognized icon type:'+type+' for item '+TSModelLocator.instance.worldModel.getItemByItemstackId(itemstack_tsid).tsid);
 				}
-				return new AssetManager.instance.assets['close_x_making_slot']();
+				return new (AssetManager.instance.assets['close_x_making_slot'])();
 			}
 		}
 		

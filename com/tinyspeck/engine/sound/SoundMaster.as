@@ -153,7 +153,7 @@ package com.tinyspeck.engine.sound
 			model = TSModelLocator.instance;
 			var A:Array = AssetManager.instance.assets.soundsA;
 			for (var i:int=0;i<A.length;i++) {
-				map[A[int(i)]] = new AssetManager.instance.assets[A[int(i)]]()
+				map[A[int(i)]] = new (AssetManager.instance.assets[A[int(i)]])()
 				SoundManager.instance.addSound(map[A[int(i)]] as Sound, A[int(i)], false);
 			}
 			/*

@@ -26,7 +26,7 @@ package com.tinyspeck.engine.view.ui.imagination
 			sound_id = 'CLOUD3';
 			
 			//temp solution with a static icon
-			const icon_DO:DisplayObject = new AssetManager.instance.assets.upgrade_icon();
+			const icon_DO:DisplayObject = new (AssetManager.instance.assets.upgrade_icon)();
 			card_holder.addChild(icon_DO);
 			card_holder.x = int(cloud.width/2 - card_holder.width/2);
 			card_holder.y = int(title_tf.y + title_tf.height);

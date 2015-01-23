@@ -81,7 +81,7 @@ package com.tinyspeck.engine.view.ui.making {
 			
 			// close button
 			_close_bt = new Button({
-				graphic: new AssetManager.instance.assets.close_x_making_slot(),
+				graphic: new (AssetManager.instance.assets.close_x_making_slot)(),
 				name: '_close_bt',
 				h: 20,
 				w: 20,
@@ -97,8 +97,8 @@ package com.tinyspeck.engine.view.ui.making {
 				w: _w,
 				h: 20,
 				name: '_quantity_qp',
-				minus_graphic: new AssetManager.instance.assets.minus_red_small(),
-				plus_graphic: new AssetManager.instance.assets.plus_green_small(),
+				minus_graphic: new (AssetManager.instance.assets.minus_red_small)(),
+				plus_graphic: new (AssetManager.instance.assets.plus_green_small)(),
 				max_value: 1,
 				min_value: 1,
 				button_wh: 17,

@@ -82,7 +82,7 @@ package com.tinyspeck.engine.view.ui.acl
 								  'Your friend will have access to everything in your house, including your crops and cabinet.</p>';
 			roomate_holder.addChild(roomate_tf);
 			
-			const tip_DO:DisplayObject = new AssetManager.instance.assets.info_tip();
+			const tip_DO:DisplayObject = new (AssetManager.instance.assets.info_tip)();
 			tip_DO.x = txt_padd - 1;
 			tip_DO.y = txt_padd - 2;
 			roomate_holder.addChild(tip_DO);

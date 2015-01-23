@@ -268,7 +268,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 							txt: ''+choice.label+'',
 							pointer: WindowBorder.POINTER_BOTTOM_CENTER	
 						},
-						graphic: (i==0) ? new AssetManager.instance.assets.prompt_check() : new AssetManager.instance.assets.prompt_x(),
+						graphic: (i==0) ? new (AssetManager.instance.assets.prompt_check)() : new (AssetManager.instance.assets.prompt_x)(),
 						name: i,
 						value: choice.value,
 						w: icon_button_w,

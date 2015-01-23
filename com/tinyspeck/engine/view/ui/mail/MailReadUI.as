@@ -156,7 +156,7 @@ package com.tinyspeck.engine.view.ui.mail
 			
 			//currants holder
 			currants_slot = new MakingSlot(slot_wh, slot_wh);
-			var icon:DisplayObject = new AssetManager.instance.assets.item_info_currants();
+			var icon:DisplayObject = new (AssetManager.instance.assets.item_info_currants)();
 			
 			if(icon){
 				icon.x = -2;
@@ -174,8 +174,8 @@ package com.tinyspeck.engine.view.ui.mail
 				label: 'Inbox',
 				size: Button.SIZE_DEFAULT,
 				type: Button.TYPE_MINOR,
-				graphic: new AssetManager.instance.assets.mail_inbox_back(),
-				graphic_hover: new AssetManager.instance.assets.mail_inbox_back_hover(),
+				graphic: new (AssetManager.instance.assets.mail_inbox_back)(),
+				graphic_hover: new (AssetManager.instance.assets.mail_inbox_back_hover)(),
 				graphic_placement: 'left',
 				graphic_padd_l: 10,
 				graphic_padd_r: 2,
@@ -198,9 +198,9 @@ package com.tinyspeck.engine.view.ui.mail
 			attachment_holder.addChild(receive_bt);
 			
 			//prev/next buttons
-			var arrow:DisplayObject = new AssetManager.instance.assets.back_arrow();
-			var arrow_hover:DisplayObject = new AssetManager.instance.assets.back_arrow_hover();
-			var arrow_disabled:DisplayObject = new AssetManager.instance.assets.back_arrow_disabled();
+			var arrow:DisplayObject = new (AssetManager.instance.assets.back_arrow)();
+			var arrow_hover:DisplayObject = new (AssetManager.instance.assets.back_arrow_hover)();
+			var arrow_disabled:DisplayObject = new (AssetManager.instance.assets.back_arrow_disabled)();
 			arrow.rotation = arrow_hover.rotation = arrow_disabled.rotation = -90;
 			
 			prev_bt = new Button({
@@ -222,9 +222,9 @@ package com.tinyspeck.engine.view.ui.mail
 			next_x += prev_bt.width;
 			addChild(prev_bt);
 			
-			arrow = new AssetManager.instance.assets.back_arrow();
-			arrow_hover = new AssetManager.instance.assets.back_arrow_hover();
-			arrow_disabled = new AssetManager.instance.assets.back_arrow_disabled();
+			arrow = new (AssetManager.instance.assets.back_arrow)();
+			arrow_hover = new (AssetManager.instance.assets.back_arrow_hover)();
+			arrow_disabled = new (AssetManager.instance.assets.back_arrow_disabled)();
 			arrow.rotation = arrow_hover.rotation = arrow_disabled.rotation = 90;
 			
 			next_bt = new Button({
@@ -249,9 +249,9 @@ package com.tinyspeck.engine.view.ui.mail
 			//delete button
 			delete_bt = new Button({
 				name: 'delete',
-				graphic: new AssetManager.instance.assets.mail_trash_read(),
-				graphic_hover: new AssetManager.instance.assets.mail_trash_read_hover(),
-				graphic_disabled: new AssetManager.instance.assets.mail_trash(),
+				graphic: new (AssetManager.instance.assets.mail_trash_read)(),
+				graphic_hover: new (AssetManager.instance.assets.mail_trash_read_hover)(),
+				graphic_disabled: new (AssetManager.instance.assets.mail_trash)(),
 				graphic_padd_w: 13,
 				size: Button.SIZE_DEFAULT,
 				type: Button.TYPE_MINOR,

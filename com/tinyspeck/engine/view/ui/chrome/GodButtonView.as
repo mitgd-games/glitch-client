@@ -102,8 +102,8 @@ package com.tinyspeck.engine.view.ui.chrome {
 			}
 			
 			pin_cb = new Checkbox({
-				graphic: new AssetManager.instance.assets.god_unpinned(),
-				graphic_checked: new AssetManager.instance.assets.god_pinned(),
+				graphic: new (AssetManager.instance.assets.god_unpinned)(),
+				graphic_checked: new (AssetManager.instance.assets.god_pinned)(),
 				checked: LocalStorage.instance.getUserData(LocalStorage.GOD_BUTTONS_PINNED),
 				label: '',
 				name: 'pin_cb'
@@ -143,7 +143,7 @@ package com.tinyspeck.engine.view.ui.chrome {
 			});
 			
 			// allow dragging the map view around
-			drag_holder.addChild(new AssetManager.instance.assets.god_thumb());
+			drag_holder.addChild(new (AssetManager.instance.assets.god_thumb)());
 			addChild(drag_holder);
 			drag_holder.addEventListener(MouseEvent.MOUSE_DOWN, onDragMouseDown, false, 0, true);
 			drag_holder.addEventListener(MouseEvent.MOUSE_OVER, function():void {
@@ -156,8 +156,8 @@ package com.tinyspeck.engine.view.ui.chrome {
 			//vector renderer icon
 			renderer_vector_bt = createButton(
 				switchRenderer,
-				new AssetManager.instance.assets.renderer_vector_normal(),
-				new AssetManager.instance.assets.renderer_vector_disabled(),
+				new (AssetManager.instance.assets.renderer_vector_normal)(),
+				new (AssetManager.instance.assets.renderer_vector_disabled)(),
 				'vector_normal',
 				'Using vector renderer');
 			renderer_vector_icon_holder.addChild(renderer_vector_bt);
@@ -167,8 +167,8 @@ package com.tinyspeck.engine.view.ui.chrome {
 			//bitmap renderer icon
 			renderer_bitmap_bt = createButton(
 				switchRenderer,
-				new AssetManager.instance.assets.renderer_bitmap_normal(),
-				new AssetManager.instance.assets.renderer_bitmap_disabled(),
+				new (AssetManager.instance.assets.renderer_bitmap_normal)(),
+				new (AssetManager.instance.assets.renderer_bitmap_disabled)(),
 				'bitmap_normal',
 				'Using bitmap renderer');
 			renderer_bitmap_icon_holder.addChild(renderer_bitmap_bt);
@@ -178,8 +178,8 @@ package com.tinyspeck.engine.view.ui.chrome {
 			//geo icon
 			geo_bt = createButton(
 				TSFrontController.instance.openGeoForLocation,
-				new AssetManager.instance.assets.geo_normal(),
-				new AssetManager.instance.assets.geo_disabled(),
+				new (AssetManager.instance.assets.geo_normal)(),
+				new (AssetManager.instance.assets.geo_disabled)(),
 				'geo',
 				'Open the geo page for this location');
 			geo_icon_holder.addChild(geo_bt);
@@ -188,8 +188,8 @@ package com.tinyspeck.engine.view.ui.chrome {
 			//show platlines icon
 			show_platlines_bt = createButton(
 				onShowPlatlinesClick,
-				new AssetManager.instance.assets.plat_lines_off(),
-				new AssetManager.instance.assets.plat_lines_disabled(),
+				new (AssetManager.instance.assets.plat_lines_off)(),
+				new (AssetManager.instance.assets.plat_lines_disabled)(),
 				'platlines on',
 				'Show geometry');
 			show_platlines_icon_holder.addChild(show_platlines_bt);
@@ -198,8 +198,8 @@ package com.tinyspeck.engine.view.ui.chrome {
 			//hide platlines icon
 			hide_platlines_bt = createButton(
 				onHidePlatlinesClick,
-				new AssetManager.instance.assets.plat_lines_on(),
-				new AssetManager.instance.assets.plat_lines_disabled(),
+				new (AssetManager.instance.assets.plat_lines_on)(),
+				new (AssetManager.instance.assets.plat_lines_disabled)(),
 				'platlines off',
 				'Hide geometry');
 			hide_platlines_icon_holder.addChild(hide_platlines_bt);
@@ -208,8 +208,8 @@ package com.tinyspeck.engine.view.ui.chrome {
 			//start hand of god icon
 			start_hand_of_god_bt = createButton(
 				onStartHandOfGodClick,
-				new AssetManager.instance.assets.hand_of_god_off(),
-				new AssetManager.instance.assets.hand_of_god_disabled(),
+				new (AssetManager.instance.assets.hand_of_god_off)(),
+				new (AssetManager.instance.assets.hand_of_god_disabled)(),
 				'start hand of god',
 				'Start editing itemstacks');
 			start_hand_of_god_icon_holder.addChild(start_hand_of_god_bt);
@@ -218,8 +218,8 @@ package com.tinyspeck.engine.view.ui.chrome {
 			//stop hand of god icon
 			stop_hand_of_god_bt = createButton(
 				onStopHandOfGodClick,
-				new AssetManager.instance.assets.hand_of_god_on(),
-				new AssetManager.instance.assets.hand_of_god_disabled(),
+				new (AssetManager.instance.assets.hand_of_god_on)(),
+				new (AssetManager.instance.assets.hand_of_god_disabled)(),
 				'stop hand of god',
 				'Stop editing itemstacks');
 			stop_hand_of_god_icon_holder.addChild(stop_hand_of_god_bt);
@@ -229,7 +229,7 @@ package com.tinyspeck.engine.view.ui.chrome {
 				//help icon
 				var help_locodeco_bt:Button = createButton(
 					onHelpLocodecoClick,
-					new AssetManager.instance.assets.help_locodeco(),
+					new (AssetManager.instance.assets.help_locodeco)(),
 					null,
 					'locodeco help',
 					'LocoDeco Tips/Help');
@@ -240,8 +240,8 @@ package com.tinyspeck.engine.view.ui.chrome {
 			//start editing icon
 			start_edit_bt = createButton(
 				onStartEditClick,
-				new AssetManager.instance.assets.edit_off(),
-				new AssetManager.instance.assets.edit_disabled(),
+				new (AssetManager.instance.assets.edit_off)(),
+				new (AssetManager.instance.assets.edit_disabled)(),
 				'start editing',
 				'Start editing location');
 			start_edit_icon_holder.addChild(start_edit_bt);
@@ -251,8 +251,8 @@ package com.tinyspeck.engine.view.ui.chrome {
 				//stop editing icon
 				stop_edit_bt = createButton(
 					onStopEditClick,
-					new AssetManager.instance.assets.edit_on(),
-					new AssetManager.instance.assets.edit_disabled(),
+					new (AssetManager.instance.assets.edit_on)(),
+					new (AssetManager.instance.assets.edit_disabled)(),
 					'stop editing',
 					'Stop editing location');
 				stop_edit_icon_holder.addChild(stop_edit_bt);
@@ -261,8 +261,8 @@ package com.tinyspeck.engine.view.ui.chrome {
 				//revert icon
 				revert_bt = createButton(
 					onRevertClick,
-					new AssetManager.instance.assets.revert_normal(),
-					new AssetManager.instance.assets.revert_disabled(),
+					new (AssetManager.instance.assets.revert_normal)(),
+					new (AssetManager.instance.assets.revert_disabled)(),
 					'revert',
 					'Revert location changes to last saved');
 				revert_icon_holder.addChild(revert_bt);
@@ -271,8 +271,8 @@ package com.tinyspeck.engine.view.ui.chrome {
 				//save icon
 				save_bt = createButton(
 					onSaveClick,
-					new AssetManager.instance.assets.save_normal(),
-					new AssetManager.instance.assets.save_disabled(),
+					new (AssetManager.instance.assets.save_normal)(),
+					new (AssetManager.instance.assets.save_disabled)(),
 					'save',
 					'Save location');
 				save_icon_holder.addChild(save_bt);

@@ -65,7 +65,7 @@ package com.tinyspeck.engine.view.ui.making
 						label_bold: true,
 						size: Button.SIZE_MAKING_RECIPE,
 						type: Button.TYPE_MAKING_RECIPE,
-						graphic: new AssetManager.instance.assets.empty_making_slot_small(),
+						graphic: new (AssetManager.instance.assets.empty_making_slot_small)(),
 						graphic_placement: 'left',
 						graphic_padd_l: TEXT_PADD,
 						use_hand_cursor_always: true
@@ -160,7 +160,7 @@ package com.tinyspeck.engine.view.ui.making
 		}
 		
 		private function buildWarningIcon():DisplayObject {
-			var warning:DisplayObject = new AssetManager.instance.assets.store_warning();
+			var warning:DisplayObject = new (AssetManager.instance.assets.store_warning)();
 			warning.x = warning.y = 5;
 			warning.alpha = .4;
 			warning.name = 'warning';

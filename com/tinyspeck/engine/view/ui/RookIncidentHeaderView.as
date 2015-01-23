@@ -91,7 +91,7 @@ package com.tinyspeck.engine.view.ui
 		
 		private function buildBase():void {			
 			//setup the stars
-			stars_bg = new AssetManager.instance.assets.rook_star_bg();
+			stars_bg = new (AssetManager.instance.assets.rook_star_bg)();
 			var g:Graphics = stars_mask.graphics;
 			if(stars_bg){
 				stars_bg.x = int(-stars_bg.width/2);
@@ -103,7 +103,7 @@ package com.tinyspeck.engine.view.ui
 				stars_mask.x = stars_bg.x;
 				addChild(stars_mask);
 				
-				var stars:DisplayObject = new AssetManager.instance.assets.rook_star_stars();
+				var stars:DisplayObject = new (AssetManager.instance.assets.rook_star_stars)();
 				if(stars){
 					stars_holder.mouseEnabled = stars_holder.mouseChildren = false;
 					stars_holder.addChild(stars);

@@ -35,7 +35,7 @@ package com.tinyspeck.engine.view.ui.chrome
 		
 		private function buildBase():void {
 			//setup the asset/progress
-			book = new AssetManager.instance.assets.skill_book_small();
+			book = new (AssetManager.instance.assets.skill_book_small)();
 			
 			//mouse stuff
 			useHandCursor = buttonMode = true;

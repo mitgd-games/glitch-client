@@ -18,7 +18,7 @@ package com.tinyspeck.engine.view.ui.chat
 			super(w, ContactElement.TYPE_OFFLINE, offline_contacts);
 			
 			var arrow_holder:Sprite = new Sprite();
-			var arrow:DisplayObject = new AssetManager.instance.assets.contact_arrow();
+			var arrow:DisplayObject = new (AssetManager.instance.assets.contact_arrow)();
 			SpriteUtil.setRegistrationPoint(arrow);
 			arrow_holder.addChild(arrow);
 			

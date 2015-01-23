@@ -60,7 +60,7 @@ package com.tinyspeck.engine.view.ui.supersearch
 			
 			//place the no results image in there
 			if(value && !no_results){
-				no_results = new AssetManager.instance.assets.super_search_no_results();
+				no_results = new (AssetManager.instance.assets.super_search_no_results)();
 				image_holder.addChild(no_results);
 				IMG_WH = no_results.width + IMG_PADD;
 			}

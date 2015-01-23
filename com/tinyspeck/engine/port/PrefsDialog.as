@@ -124,8 +124,8 @@ package com.tinyspeck.engine.port
 				var padd:int = 12;
 				
 				cb = new Checkbox({
-					graphic: new AssetManager.instance.assets.cb_unchecked(),
-					graphic_checked: new AssetManager.instance.assets.cb_checked(),
+					graphic: new (AssetManager.instance.assets.cb_unchecked)(),
+					graphic_checked: new (AssetManager.instance.assets.cb_checked)(),
 					x: padd,
 					y: (cb) ? cb.y+cb.height+padd : 0,
 					w:18,

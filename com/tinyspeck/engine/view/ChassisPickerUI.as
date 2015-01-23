@@ -132,7 +132,7 @@ package com.tinyspeck.engine.view
 			save_bt.y = 45;
 			save_bt.addEventListener(TSEvent.CHANGED, onSaveClick, false, 0, true);
 			
-			save_bt_credits = new AssetManager.instance.assets.furn_credits_small();
+			save_bt_credits = new (AssetManager.instance.assets.furn_credits_small)();
 			save_bt_credits.y = int(save_bt.height/2 - save_bt_credits.height/2 + 1);
 			save_bt.addChild(save_bt_credits);
 			
@@ -147,7 +147,7 @@ package com.tinyspeck.engine.view
 			you_have_tf.htmlText = '<p class="furn_upgrade_credits">You have</p>';
 			credits_holder.addChild(you_have_tf);
 			
-			const credits_icon:DisplayObject = new AssetManager.instance.assets.furn_credits_large();
+			const credits_icon:DisplayObject = new (AssetManager.instance.assets.furn_credits_large)();
 			credits_icon.x = int(you_have_tf.width + 1);
 			credits_icon.y = -2;
 			credits_holder.addChild(credits_icon);

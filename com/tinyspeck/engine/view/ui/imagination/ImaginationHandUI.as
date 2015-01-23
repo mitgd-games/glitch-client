@@ -107,7 +107,7 @@ package com.tinyspeck.engine.view.ui.imagination
 			//ImaginationPurchaseUpgradeUI.instance.addEventListener(TSEvent.CHANGED, onPurchaseClick, false, 0, true);
 			
 			//cartoon hand to redeal stuff
-			hand_redeal = new AssetManager.instance.assets.hand_redeal();
+			hand_redeal = new (AssetManager.instance.assets.hand_redeal)();
 			
 			all_holder.mask = all_masker;
 			addChild(all_masker);
@@ -373,7 +373,7 @@ package com.tinyspeck.engine.view.ui.imagination
 		
 		private function showCards():void {
 			if (!cards_mc){
-				const cards_loader:MovieClip = new AssetManager.instance.assets.imagination_cards();
+				const cards_loader:MovieClip = new (AssetManager.instance.assets.imagination_cards)();
 				cards_loader.addEventListener(Event.COMPLETE, onAssetLoaded, false, 0, true);
 				CONFIG::debugging {
 					Console.info('loading imagination_cards')

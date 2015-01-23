@@ -153,9 +153,9 @@ package com.tinyspeck.engine.port
 			if(value){
 				count_tf.htmlText = '';
 				while(_icon.numChildren > 0) _icon.removeChildAt(0);
-				slot_graphic = new AssetManager.instance.assets.cabinet_slot_empty();
+				slot_graphic = new (AssetManager.instance.assets.cabinet_slot_empty)();
 			}else{
-				slot_graphic = new AssetManager.instance.assets.cabinet_slot_full();
+				slot_graphic = new (AssetManager.instance.assets.cabinet_slot_full)();
 			}
 			
 			useHandCursor = buttonMode = !value;

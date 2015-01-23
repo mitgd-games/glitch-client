@@ -157,7 +157,7 @@ package com.tinyspeck.engine.view.ui.chrome
 			all_holder.addChild(iMG_amount_holder);
 			
 			//bolt
-			energy_bolt = new AssetManager.instance.assets.energy_bolt();
+			energy_bolt = new (AssetManager.instance.assets.energy_bolt)();
 			energy_bolt.x = -1;
 			energy_bolt.y = start_y - energy_bolt.height - SCOOP_H - 5;
 			all_holder.addChild(energy_bolt);
@@ -486,7 +486,7 @@ package com.tinyspeck.engine.view.ui.chrome
 							onComplete:function():void {
 								//bring in the amount and callout
 								if(!watch_energy){
-									watch_energy = new AssetManager.instance.assets.callout_energy();
+									watch_energy = new (AssetManager.instance.assets.callout_energy)();
 									watch_energy.x = CURVE_W - 40;
 									watch_energy.y = int(CURVE_H - watch_energy.height/2 + lm.header_h);
 								}
@@ -593,7 +593,7 @@ package com.tinyspeck.engine.view.ui.chrome
 		
 		private function showImaginationNoMenu():void {
 			if(!imagination_no_menu){
-				imagination_no_menu = new AssetManager.instance.assets.imagination_no_menu();
+				imagination_no_menu = new (AssetManager.instance.assets.imagination_no_menu)();
 				addChild(imagination_no_menu);
 			}
 			

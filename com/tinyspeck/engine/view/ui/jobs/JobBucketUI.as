@@ -76,7 +76,7 @@ package com.tinyspeck.engine.view.ui.jobs
 						divider.visible = true;
 					}
 					else {
-						divider = new AssetManager.instance.assets.job_group_divider();
+						divider = new (AssetManager.instance.assets.job_group_divider)();
 						divider.name = DIVIDER_NAME;
 						divider.y = int(JobRequirementsUI.Y_OFFSET + (JobRequirementsUI.BUTTON_HEIGHT/2 - divider.height/2));
 						dividers.push(divider);

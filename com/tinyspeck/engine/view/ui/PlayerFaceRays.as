@@ -46,7 +46,7 @@ package com.tinyspeck.engine.view.ui
 		
 		public function PlayerFaceRays() {
 			super(new BitmapData(CELL_W, CELL_H, true, 0));
-			spritesheet = (new AssetManager.instance.assets.player_face_rays() as Bitmap).bitmapData;
+			spritesheet = (new (AssetManager.instance.assets.player_face_rays)() as Bitmap).bitmapData;
 		}
 		
 		override public function set visible(value:Boolean):void {

@@ -160,7 +160,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 			addChildAt(sun_grad, 0);
 			
 			//put on the mountain
-			const mountains:DisplayObject = new AssetManager.instance.assets.new_day_mountains();
+			const mountains:DisplayObject = new (AssetManager.instance.assets.new_day_mountains)();
 			mountains_holder.addChild(mountains);
 			addChildAt(mountains_holder, getChildIndex(all_holder));
 			
@@ -436,7 +436,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 				if(i > 0) {
 					//add quest icon and count
 					graphic_holder = new Sprite();
-					graphic_holder.addChild(new AssetManager.instance.assets.familiar_dialog_quests());
+					graphic_holder.addChild(new (AssetManager.instance.assets.familiar_dialog_quests)());
 					
 					var quest_count:Sprite = new Sprite();
 					var g:Graphics = quest_count.graphics;

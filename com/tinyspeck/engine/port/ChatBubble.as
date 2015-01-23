@@ -217,7 +217,7 @@ package com.tinyspeck.engine.port {
 			
 			// because this gets created in god_item_viewer (sigh) were AssetManager.instance[X] does not exist, try and catch
 			try {
-				_talk_bubble_pointer = new AssetManager.instance.assets.talk_bubble_point();
+				_talk_bubble_pointer = new (AssetManager.instance.assets.talk_bubble_point)();
 				_talk_bubble_pointer.addEventListener(Event.COMPLETE, function(e:Event):void {
 					_talk_bubble_pointer = (Loader(e.target.getChildAt(0)).content as MovieClip);
 					_talk_bubble_pointer.removeEventListener(Event.COMPLETE, arguments.callee);
@@ -225,7 +225,7 @@ package com.tinyspeck.engine.port {
 					if (afterAssetLoad != null) afterAssetLoad();
 				});
 				
-				talk_bubble_body = new AssetManager.instance.assets.talk_bubble_body();
+				talk_bubble_body = new (AssetManager.instance.assets.talk_bubble_body)();
 				talk_bubble_body.addEventListener(Event.COMPLETE, function(e:Event):void {
 					talk_bubble_body.removeEventListener(Event.COMPLETE, arguments.callee);
 					talk_bubble_body = (Loader(e.target.getChildAt(0)).content as MovieClip);

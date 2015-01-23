@@ -79,7 +79,7 @@ package com.tinyspeck.engine.view.ui.inventory
 			g.beginGradientFill(GradientType.LINEAR, [bg_color_top, bg_color_bottom], [1,1], [0, 255], bg_matrix);
 			g.drawRoundRect(0, 0, _w, HEIGHT, _corner_rad*2);
 			
-			const pointy:DisplayObject = new AssetManager.instance.assets.inventory_search_pointy();
+			const pointy:DisplayObject = new (AssetManager.instance.assets.inventory_search_pointy)();
 			pointy.x = 4;
 			pointy.y = HEIGHT;
 			addChild(pointy);

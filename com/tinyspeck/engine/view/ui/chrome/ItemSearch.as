@@ -64,7 +64,7 @@ package com.tinyspeck.engine.view.ui.chrome
 			g.endFill();
 			
 			//handle the mag glass
-			const mag_glass:DisplayObject = new AssetManager.instance.assets.mag_glass_item_search();
+			const mag_glass:DisplayObject = new (AssetManager.instance.assets.mag_glass_item_search)();
 			mag_glass.x = MAG_OFFSET;
 			mag_glass.y = int(HEIGHT/2 - mag_glass.height/2 + 1);
 			input_content.addChild(mag_glass);

@@ -20,7 +20,9 @@ package com.tinyspeck.engine.view.renderer
 	import flash.display.Sprite;
 	import flash.text.TextField;
 	
-	CONFIG::god import com.tinyspeck.debug.Console;
+	CONFIG::god {
+		import com.tinyspeck.debug.Console;
+	}
 	
 	final public class DecoRenderer extends Sprite implements IPoolableObject, IAbstractDecoRenderer, IDisposable {
 		public var decoAsset:MovieClip;

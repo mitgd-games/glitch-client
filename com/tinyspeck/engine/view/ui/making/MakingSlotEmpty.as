@@ -31,7 +31,7 @@ package com.tinyspeck.engine.view.ui.making {
 			slot_lit.visible = false;
 			addChild(slot_lit);
 			
-			slot = new AssetManager.instance.assets['empty_making_slot'+(is_wide ? '_wide' : '')]();
+			slot = new (AssetManager.instance.assets['empty_making_slot'+(is_wide ? '_wide' : '')])();
 			addChild(slot);
 			
 			_w = slot.width;
@@ -42,7 +42,7 @@ package com.tinyspeck.engine.view.ui.making {
 			g.lineStyle(1, 0xc8cecf, 1, true, LineScaleMode.NORMAL, CapsStyle.SQUARE);
 			g.drawRoundRect(0, 0, _w, _h, 10);
 			
-			arrow = new AssetManager.instance.assets.making_drag_arrow();
+			arrow = new (AssetManager.instance.assets.making_drag_arrow)();
 			addChild(arrow);
 			
 			arrow.x = slot.width - 14;

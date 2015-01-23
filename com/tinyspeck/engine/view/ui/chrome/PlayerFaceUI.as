@@ -125,7 +125,7 @@ package com.tinyspeck.engine.view.ui.chrome
 			holder.addChildAt(rays, 0);
 			
 			//add the rain to the holder
-			const rain:MovieClip = new AssetManager.instance.assets.avatar_rain();
+			const rain:MovieClip = new (AssetManager.instance.assets.avatar_rain)();
 			rain_holder.addChild(rain);
 			rain_holder.x = -20;
 			rain_holder.y = -10;
@@ -390,7 +390,7 @@ package com.tinyspeck.engine.view.ui.chrome
 			
 			if(value && !hashed_outline){
 				//load up the outline
-				hashed_outline = new AssetManager.instance.assets.player_face_empty();
+				hashed_outline = new (AssetManager.instance.assets.player_face_empty)();
 				hashed_outline.x = 1;
 				hashed_outline.y = 1;
 			}

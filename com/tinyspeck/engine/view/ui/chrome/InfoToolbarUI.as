@@ -57,7 +57,7 @@ package com.tinyspeck.engine.view.ui.chrome
 			
 			//close button
 			const bt_h:uint = model.layoutModel.header_h - 5;
-			const close_DO:DisplayObject = new AssetManager.instance.assets.decorate_close();
+			const close_DO:DisplayObject = new (AssetManager.instance.assets.decorate_close)();
 			close_bt = new Button({
 				name: 'close',
 				graphic: close_DO,

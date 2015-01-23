@@ -100,7 +100,7 @@ package com.tinyspeck.engine.view.gameoverlay
 			all_holder.y = TOP_PADD;
 			
 			//close
-			const close_DO:DisplayObject = new AssetManager.instance.assets.iMG_close();
+			const close_DO:DisplayObject = new (AssetManager.instance.assets.iMG_close)();
 			close_bt = new Button({
 				name: 'close',
 				graphic: close_DO,
@@ -113,7 +113,7 @@ package com.tinyspeck.engine.view.gameoverlay
 			addChild(close_bt);
 			
 			//back
-			const back_DO:DisplayObject = new AssetManager.instance.assets.iMG_back();
+			const back_DO:DisplayObject = new (AssetManager.instance.assets.iMG_back)();
 			back_bt = new Button({
 				name: 'back',
 				label: 'Back',

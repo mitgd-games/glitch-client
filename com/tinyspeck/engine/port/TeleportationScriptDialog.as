@@ -206,11 +206,11 @@ package com.tinyspeck.engine.port
 			all_holder.addChild(created_tf);
 			
 			//imbued icon
-			icon_unimbued = new AssetManager.instance.assets.teleportation_token_unimbued();
-			icon_imbued = new AssetManager.instance.assets.teleportation_token_imbued();
-			icon_unimbued_buymore = new AssetManager.instance.assets.teleportation_token_unimbued_buymore();
-			icon_unimbued_coststoken = new AssetManager.instance.assets.teleportation_token_unimbued_coststoken();
-			icon_unimbued_noskill = new AssetManager.instance.assets.teleportation_token_unimbued_noskill();
+			icon_unimbued = new (AssetManager.instance.assets.teleportation_token_unimbued)();
+			icon_imbued = new (AssetManager.instance.assets.teleportation_token_imbued)();
+			icon_unimbued_buymore = new (AssetManager.instance.assets.teleportation_token_unimbued_buymore)();
+			icon_unimbued_coststoken = new (AssetManager.instance.assets.teleportation_token_unimbued_coststoken)();
+			icon_unimbued_noskill = new (AssetManager.instance.assets.teleportation_token_unimbued_noskill)();
 			
 			if(icon_unimbued){
 				icon_holder.x = int(add_note_bt.x + (add_note_bt.width-icon_unimbued.width)/2);

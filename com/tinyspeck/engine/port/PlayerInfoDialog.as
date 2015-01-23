@@ -98,8 +98,8 @@ package com.tinyspeck.engine.port
 			profile_bt = new Button({
 				name: 'profile',
 				label: 'Profile page',
-				graphic: new AssetManager.instance.assets.encyclopedia_link(),
-				graphic_hover: new AssetManager.instance.assets.encyclopedia_link_hover(),
+				graphic: new (AssetManager.instance.assets.encyclopedia_link)(),
+				graphic_hover: new (AssetManager.instance.assets.encyclopedia_link_hover)(),
 				graphic_placement: 'left',
 				graphic_padd_l: 19,
 				graphic_padd_r: 3,
@@ -163,9 +163,9 @@ package com.tinyspeck.engine.port
 				label: 'Visit their home street',
 				size: Button.SIZE_TINY,
 				type: Button.TYPE_MINOR,
-				graphic: new AssetManager.instance.assets.visit_home(),
-				graphic_hover: new AssetManager.instance.assets.visit_home_hover(),
-				graphic_disabled: new AssetManager.instance.assets.visit_home_disabled(),
+				graphic: new (AssetManager.instance.assets.visit_home)(),
+				graphic_hover: new (AssetManager.instance.assets.visit_home_hover)(),
+				graphic_disabled: new (AssetManager.instance.assets.visit_home_disabled)(),
 				graphic_placement: 'left',
 				graphic_padd_l: 10,
 				graphic_padd_r: 2

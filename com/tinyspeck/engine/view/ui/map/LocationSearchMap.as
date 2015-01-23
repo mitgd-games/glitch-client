@@ -29,7 +29,7 @@ package com.tinyspeck.engine.view.ui.map
 			//width isn't dynamic for this bad boy
 			_w = RESULTS_WIDTH;
 			
-			const mag_glass:DisplayObject = new AssetManager.instance.assets.search_mag_glass();
+			const mag_glass:DisplayObject = new (AssetManager.instance.assets.search_mag_glass)();
 			mag_glass.x = MAG_OFFSET;
 			mag_glass.y = int(INPUT_HEIGHT/2 - mag_glass.height/2);
 			input_content.addChild(mag_glass);

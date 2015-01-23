@@ -181,7 +181,7 @@ package com.tinyspeck.engine.port
 			all_holder.addChild(req_holder);
 			
 			//leaderboard button
-			var bt_gfx:DisplayObject = new AssetManager.instance.assets.job_leaderboard();
+			var bt_gfx:DisplayObject = new (AssetManager.instance.assets.job_leaderboard)();
 			leaderboard_bt = new Button({
 				graphic: bt_gfx,
 				name: 'leaderboard',
@@ -224,14 +224,14 @@ package com.tinyspeck.engine.port
 			addChild(body_mask);
 			
 			//back button
-			var back_DO:DisplayObject = new AssetManager.instance.assets.back_circle();
+			var back_DO:DisplayObject = new (AssetManager.instance.assets.back_circle)();
 			
 			back_bt = new Button({
 				label: '',
 				name: 'back',
 				graphic: back_DO,
-				graphic_hover: new AssetManager.instance.assets.back_circle_hover(),
-				graphic_disabled: new AssetManager.instance.assets.back_circle_disabled(),
+				graphic_hover: new (AssetManager.instance.assets.back_circle_hover)(),
+				graphic_disabled: new (AssetManager.instance.assets.back_circle_disabled)(),
 				w: back_DO.width,
 				h: back_DO.height,
 				draw_alpha: 0

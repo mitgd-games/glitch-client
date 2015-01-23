@@ -11,7 +11,7 @@ package com.tinyspeck.engine.port
 		private var bar_bg_color:uint = 0xbbdadf;
 		private var bar_fill_color:uint = 0x277d8d;
 		private var bar_low_color:uint = 0xdd4a2e;
-		private var broken_icon:DisplayObject = new AssetManager.instance.assets.pack_tool_broken();
+		private var broken_icon:DisplayObject = new (AssetManager.instance.assets.pack_tool_broken)();
 		
 		private var is_low:Boolean;
 		

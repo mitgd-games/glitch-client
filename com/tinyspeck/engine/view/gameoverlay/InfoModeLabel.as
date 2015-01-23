@@ -56,11 +56,11 @@ package com.tinyspeck.engine.view.gameoverlay {
 			holder.addChild(tf);
 			
 			//icons
-			icon = new AssetManager.instance.assets.get_info();
+			icon = new (AssetManager.instance.assets.get_info)();
 			icon.x = -icon.width/2;
 			holder.addChild(icon);
 			
-			icon_hover = new AssetManager.instance.assets.get_info_hover();
+			icon_hover = new (AssetManager.instance.assets.get_info_hover)();
 			icon_hover.x = icon.x;
 			holder.addChild(icon_hover);
 			

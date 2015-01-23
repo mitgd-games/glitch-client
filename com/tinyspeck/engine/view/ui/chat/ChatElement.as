@@ -141,9 +141,9 @@ package com.tinyspeck.engine.view.ui.chat
 			//if(pc && (pc.is_admin || _text.indexOf('<p class="chat_element_chat">'+RightSideManager.SPECIAL_SLUG_GAP) == 0)){
 			if (getsSlug()) {
 				if (pc.is_guide) {
-					special_slug = new AssetManager.instance.assets.guide_slug();
+					special_slug = new (AssetManager.instance.assets.guide_slug)();
 				} else {
-					special_slug = new AssetManager.instance.assets.staff_slug();
+					special_slug = new (AssetManager.instance.assets.staff_slug)();
 				}
 				
 				//if we have the staff slug, move the text over

@@ -29,7 +29,7 @@ package com.tinyspeck.engine.port
 			alt_msg_tf_css_class = 'quest_bubble_alt_msg';
 			
 			//setup the icon
-			_icon = new AssetManager.instance.assets[getIconNameFromType()]();
+			_icon = new (AssetManager.instance.assets[getIconNameFromType()])();
 			
 			//progress color/alpha
 			progress_color = CSSManager.instance.getUintColorValueFromStyle('quest_bubble_progress', 'color', progress_color);
@@ -59,7 +59,7 @@ package com.tinyspeck.engine.port
 			
 			if(_type != str){
 				//we need a new icon
-				_icon = new AssetManager.instance.assets[getIconNameFromType()]();
+				_icon = new (AssetManager.instance.assets[getIconNameFromType()])();
 			}
 
 			super.type = str;

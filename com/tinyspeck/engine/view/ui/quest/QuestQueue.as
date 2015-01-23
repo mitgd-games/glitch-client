@@ -47,7 +47,7 @@ package com.tinyspeck.engine.view.ui.quest
 			addChild(all_holder);
 			
 			//book
-			book_icon = new AssetManager.instance.assets.quest_book();
+			book_icon = new (AssetManager.instance.assets.quest_book)();
 			book_icon.smoothing = true;
 			book_icon.scaleX = book_icon.scaleY = .5;
 			book_icon.y = 6;

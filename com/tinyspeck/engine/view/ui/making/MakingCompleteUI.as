@@ -68,7 +68,7 @@ package com.tinyspeck.engine.view.ui.making
 				label_c: 0x2c7487,
 				label_offset: 1,
 				draw_alpha: 0,
-				graphic: new AssetManager.instance.assets.making_info(),
+				graphic: new (AssetManager.instance.assets.making_info)(),
 				graphic_placement: 'left',
 				graphic_padd_r: 0
 			});

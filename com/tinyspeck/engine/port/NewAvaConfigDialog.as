@@ -70,7 +70,7 @@ package com.tinyspeck.engine.port
 		private var tf:TextField = new TextField();
 		private var ava_bg:Sprite = new Sprite();
 		private var ava_bg_mask:Shape = new Shape();
-		private var ava_bg_bmp:Bitmap = new AssetManager.instance.assets['wardrobe_background']();
+		private var ava_bg_bmp:Bitmap = new (AssetManager.instance.assets['wardrobe_background'])();
 		
 		private var anim_btnsA:Array = ['surprise_bt', 'angry_bt', 'happy_bt', 'idle_bt'];
 		private var anim_btns_anim_map:Object = {
@@ -385,7 +385,7 @@ package com.tinyspeck.engine.port
 				return;
 			}
 			
-			_setGraphicContents(null/*new AssetManager.instance.assets.help_icon_large()*/);
+			_setGraphicContents(null/*new (AssetManager.instance.assets.help_icon_large)()*/);
 			_setTitle('Customize your look');
 			_setSubtitle('');
 			_setBodyContents(body_sp);

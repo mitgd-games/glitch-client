@@ -120,7 +120,7 @@ package com.tinyspeck.engine.port
 				g.drawRect(0,0,10,(save_bt.y*2)+2+save_bt.h);
 			}
 			
-			_setGraphicContents(null/*new AssetManager.instance.assets.help_icon_large()*/);
+			_setGraphicContents(null/*new (AssetManager.instance.assets.help_icon_large)()*/);
 			_setTitle(/*itemstack.label+' */'Customizer');
 			_setSubtitle('');
 			_setBodyContents(body_sp);

@@ -55,7 +55,7 @@ package com.tinyspeck.engine.view.ui.avatar
 			addChild(button_holder);
 			
 			//setup the waiting spinner
-			const waiting_spinner:MovieClip = new AssetManager.instance.assets.spinner();
+			const waiting_spinner:MovieClip = new (AssetManager.instance.assets.spinner)();
 			waiting_spinner.addEventListener(Event.COMPLETE, onSpinnerComplete, false, 0, true);
 			
 			is_built = true;

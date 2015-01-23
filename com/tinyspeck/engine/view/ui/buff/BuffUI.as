@@ -163,7 +163,7 @@ package com.tinyspeck.engine.view.ui.buff
 			else if(current_buff.is_debuff){
 				//toss the debuff icon in there if we need to
 				if(!debuff_icon) {
-					debuff_icon = new AssetManager.instance.assets.buff_bang_white();
+					debuff_icon = new (AssetManager.instance.assets.buff_bang_white)();
 					debuff_icon.y = -1; //visual tweak
 				}
 				icon_holder.addChild(debuff_icon);

@@ -56,7 +56,7 @@ package com.tinyspeck.engine.view.ui.craftybot
 			addChild(bar_holder);
 			
 			//bubbles
-			bubbles = new AssetManager.instance.assets.crafty_bubbles();
+			bubbles = new (AssetManager.instance.assets.crafty_bubbles)();
 			bubbles.mask = bubbles_mask;
 			bubbles.x = 5;
 			addChild(bubbles);

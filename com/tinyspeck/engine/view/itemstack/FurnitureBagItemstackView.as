@@ -49,7 +49,7 @@ package com.tinyspeck.engine.view.itemstack {
 			graphics.beginFill(0xffffff, 1);
 			graphics.drawRoundRect(0, 0, wh, wh, 8);
 			
-			spinner = new AssetManager.instance.assets.spinner();
+			spinner = new (AssetManager.instance.assets.spinner)();
 			spinner.x = int(wh/2 - spinner.width/2);
 			spinner.y = int(wh/2 - spinner.height/2);
 			addChild(spinner);

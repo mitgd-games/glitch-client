@@ -31,7 +31,7 @@ package com.tinyspeck.engine.view.ui.imagination
 			sound_id = 'CLOUD5';
 			
 			//icon
-			teleport_icon = new AssetManager.instance.assets.familiar_dialog_teleport();
+			teleport_icon = new (AssetManager.instance.assets.familiar_dialog_teleport)();
 			teleport_icon.x = int(cloud.width/2 - teleport_icon.width/2);
 			teleport_icon.y = int(title_tf.y + title_tf.height + 8);
 			holder.addChild(teleport_icon);

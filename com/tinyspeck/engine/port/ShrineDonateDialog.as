@@ -101,8 +101,8 @@ package com.tinyspeck.engine.port
 				w: 130,
 				h: 36,
 				name: 'qp',
-				minus_graphic: new AssetManager.instance.assets.minus_red(),
-				plus_graphic: new AssetManager.instance.assets.plus_green(),
+				minus_graphic: new (AssetManager.instance.assets.minus_red)(),
+				plus_graphic: new (AssetManager.instance.assets.plus_green)(),
 				max_value: 1, // to be changed
 				min_value: 1,
 				button_wh: 20,
@@ -129,7 +129,7 @@ package com.tinyspeck.engine.port
 			_scroller.body.addChild(right_holder);
 			
 			//overflow/donated too much
-			const warning_DO:DisplayObject = new AssetManager.instance.assets.buff_bang_white();
+			const warning_DO:DisplayObject = new (AssetManager.instance.assets.buff_bang_white)();
 			warning_DO.filters = [ColorUtil.getInvertColors()];
 			warning_DO.alpha = .5;
 			warning_DO.x = 8;

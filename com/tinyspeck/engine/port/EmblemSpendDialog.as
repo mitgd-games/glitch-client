@@ -102,7 +102,7 @@ package com.tinyspeck.engine.port
 			icon_holder.y = _base_padd;
 			addChild(icon_holder);
 			
-			arrow = new AssetManager.instance.assets.emblem_arrow();
+			arrow = new (AssetManager.instance.assets.emblem_arrow)();
 			arrow.x = _base_padd + _border_w;
 			arrow.y = 60 + _border_w;
 			addChild(arrow);

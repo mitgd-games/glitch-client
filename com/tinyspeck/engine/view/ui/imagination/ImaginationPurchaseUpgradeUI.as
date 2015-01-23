@@ -156,12 +156,12 @@ package com.tinyspeck.engine.view.ui.imagination
 		private function buildBase():void {
 			//load the asset straight away if it's not already loaded
 			if(!cards_mc){
-				const cards_loader:MovieClip = new AssetManager.instance.assets.imagination_cards();
+				const cards_loader:MovieClip = new (AssetManager.instance.assets.imagination_cards)();
 				cards_loader.addEventListener(Event.COMPLETE, onAssetLoaded, false, 0, true);
 			}
 			
 			//reapeating clouds
-			const clouds_DO:DisplayObject = new AssetManager.instance.assets.repeating_clouds();
+			const clouds_DO:DisplayObject = new (AssetManager.instance.assets.repeating_clouds)();
 			if (cloud_data) cloud_data.dispose();
 			cloud_data = new BitmapData(clouds_DO.width, clouds_DO.height);
 			cloud_data.draw(clouds_DO);

@@ -79,17 +79,17 @@ package com.tinyspeck.engine.view.ui.store {
 			
 			if (which == 'dark') {
 				store_sell_style = 'store_sell_dark_NEW';
-				slot = new AssetManager.instance.assets.empty_making_slot_white();
+				slot = new (AssetManager.instance.assets.empty_making_slot_white)();
 			} else {
 				store_sell_style = 'store_sell_light_NEW';
-				slot = new AssetManager.instance.assets.empty_making_slot();
+				slot = new (AssetManager.instance.assets.empty_making_slot)();
 			}			
 			addChild(slot);
 			
-			slot_lit = new AssetManager.instance.assets.filled_making_slot();
+			slot_lit = new (AssetManager.instance.assets.filled_making_slot)();
 			addChild(slot_lit);
 			
-			arrow = new AssetManager.instance.assets.making_drag_arrow();
+			arrow = new (AssetManager.instance.assets.making_drag_arrow)();
 			addChild(arrow);
 			
 			//title tf
@@ -112,7 +112,7 @@ package com.tinyspeck.engine.view.ui.store {
 			all_holder.addChild(sell_bt);
 			
 			var arrow_holder:Sprite = new Sprite();
-			var arrowDO:DisplayObject = new AssetManager.instance.assets.back_arrow();
+			var arrowDO:DisplayObject = new (AssetManager.instance.assets.back_arrow)();
 			SpriteUtil.setRegistrationPoint(arrowDO);
 			arrow_holder.rotation = -90;
 			arrow_holder.addChild(arrowDO);
@@ -134,8 +134,8 @@ package com.tinyspeck.engine.view.ui.store {
 				w: 135,
 				h: 36,
 				name: '_quantity_qp',
-				minus_graphic: new AssetManager.instance.assets.minus_red(),
-				plus_graphic: new AssetManager.instance.assets.plus_green(),
+				minus_graphic: new (AssetManager.instance.assets.minus_red)(),
+				plus_graphic: new (AssetManager.instance.assets.plus_green)(),
 				max_value: 1, // to be changed
 				min_value: 1,
 				button_wh: 20,

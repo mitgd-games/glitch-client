@@ -155,7 +155,7 @@ package com.tinyspeck.engine.view.ui.map
 			title_holder.doubleClickEnabled = true;
 			title_holder.addEventListener(MouseEvent.DOUBLE_CLICK, onTitleDoubleClick, false, 0, true);
 			
-			const divider:DisplayObject = new AssetManager.instance.assets.chat_divider();
+			const divider:DisplayObject = new (AssetManager.instance.assets.chat_divider)();
 			divider.x = int(draw_w/2 - divider.width/2);
 			divider.y = 4;
 			divider.alpha = .7;
@@ -189,7 +189,7 @@ package com.tinyspeck.engine.view.ui.map
 			tab_bg.addChild(tab_mask);
 			addChild(tab_bg);
 			
-			const close_DO:DisplayObject = new AssetManager.instance.assets.chat_close();
+			const close_DO:DisplayObject = new (AssetManager.instance.assets.chat_close)();
 			close_bt = new Button({
 				name: 'toggle',
 				graphic: close_DO,
@@ -203,7 +203,7 @@ package com.tinyspeck.engine.view.ui.map
 			main_holder.addChild(close_bt);
 			
 			//load the spinner
-			spinner = new AssetManager.instance.assets.spinner();
+			spinner = new (AssetManager.instance.assets.spinner)();
 			spinner.x = int(draw_w/2 - spinner.width/2);
 			
 			//build the thing that shows where you are
@@ -273,10 +273,10 @@ package com.tinyspeck.engine.view.ui.map
 				label = label.toLowerCase();
 				
 				//build the icons
-				element.setIcon(new AssetManager.instance.assets['contact_'+label](), false, false);
-				element.setIcon(new AssetManager.instance.assets['contact_'+label](), false, true);
-				element.setIcon(new AssetManager.instance.assets['contact_'+label+'_hover'](), true, false);
-				element.setIcon(new AssetManager.instance.assets['contact_'+label+'_hover'](), true, true);
+				element.setIcon(new (AssetManager.instance.assets['contact_'+label])(), false, false);
+				element.setIcon(new (AssetManager.instance.assets['contact_'+label])(), false, true);
+				element.setIcon(new (AssetManager.instance.assets['contact_'+label+'_hover'])(), true, false);
+				element.setIcon(new (AssetManager.instance.assets['contact_'+label+'_hover'])(), true, true);
 				
 				element.enabled = i == 0;
 				next_y += element.height + gap;

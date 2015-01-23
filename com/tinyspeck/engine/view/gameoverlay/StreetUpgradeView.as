@@ -89,7 +89,7 @@ package com.tinyspeck.engine.view.gameoverlay {
 			all_holder.addChild(ok_bt);
 			
 			//upgrade badge
-			var badge:DisplayObject = new AssetManager.instance.assets.upgrade_badge();
+			var badge:DisplayObject = new (AssetManager.instance.assets.upgrade_badge)();
 			if(badge) {
 				SpriteUtil.setRegistrationPoint(badge);
 				badge_holder.addChild(badge);

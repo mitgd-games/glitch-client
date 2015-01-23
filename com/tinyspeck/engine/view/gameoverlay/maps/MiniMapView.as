@@ -276,7 +276,7 @@ package com.tinyspeck.engine.view.gameoverlay.maps {
 			map_container_sp.addEventListener(MouseEvent.ROLL_OUT, onRollOut, false, 0, true);
 			
 			// expand button
-			const arrow:DisplayObject = new AssetManager.instance.assets.map_expand_arrow();
+			const arrow:DisplayObject = new (AssetManager.instance.assets.map_expand_arrow)();
 			SpriteUtil.setRegistrationPoint(arrow);
 			map_expand_holder.addChild(arrow);
 			map_expand_holder.x = MAP_EXPAND_BUTTON_W/2;
@@ -413,7 +413,7 @@ package com.tinyspeck.engine.view.gameoverlay.maps {
 			}
 			
 			const sp_sp:Sprite = new Sprite();
-			sp_sp.addChild(new AssetManager.instance.assets.teensy_signpost());
+			sp_sp.addChild(new (AssetManager.instance.assets.teensy_signpost)());
 			sp_sp.name = signpost.tsid;
 			sp_sp.useHandCursor = sp_sp.buttonMode = true;
 			sp_sp.filters = StaticFilters.youDisplayManager_GlowA;

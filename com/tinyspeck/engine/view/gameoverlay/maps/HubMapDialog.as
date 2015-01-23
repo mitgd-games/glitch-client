@@ -180,9 +180,9 @@ package com.tinyspeck.engine.view.gameoverlay.maps
 				name: 'recenter',
 				size: Button.SIZE_TINY,
 				type: Button.TYPE_MINOR,
-				graphic: new AssetManager.instance.assets.recenter_link(),
-				graphic_disabled: new AssetManager.instance.assets.recenter_disabled(),
-				graphic_hover: new AssetManager.instance.assets.recenter_hover(),
+				graphic: new (AssetManager.instance.assets.recenter_link)(),
+				graphic_disabled: new (AssetManager.instance.assets.recenter_disabled)(),
+				graphic_hover: new (AssetManager.instance.assets.recenter_hover)(),
 				graphic_padd_w: 11,
 				x: _base_padd+9,
 				y: _base_padd+10,
@@ -249,7 +249,7 @@ package com.tinyspeck.engine.view.gameoverlay.maps
 			g = load_blocker.graphics;
 			g.beginFill(0xffffff);
 			g.drawRect(0, 0, MAP_W, MAP_H);
-			const spinner:DisplayObject = new AssetManager.instance.assets.spinner();
+			const spinner:DisplayObject = new (AssetManager.instance.assets.spinner)();
 			spinner.x = int(MAP_W/2 - spinner.width/2);
 			spinner.y = int(MAP_H/2 - spinner.height/2);
 			load_blocker.addChild(spinner);
@@ -261,7 +261,7 @@ package com.tinyspeck.engine.view.gameoverlay.maps
 			buildYouView(you_view_holder);
 			
 			//transit you are here image
-			var transit_star:DisplayObject = new AssetManager.instance.assets.subway_map_star();
+			var transit_star:DisplayObject = new (AssetManager.instance.assets.subway_map_star)();
 			if(transit_star){
 				SpriteUtil.setRegistrationPoint(transit_star);
 				transit_you_view_holder.addChild(transit_star);
@@ -400,7 +400,7 @@ package com.tinyspeck.engine.view.gameoverlay.maps
 			buildYouView(you_view_holder);
 			
 			//transit you are here image
-			var transit_star:DisplayObject = new AssetManager.instance.assets.subway_map_star();
+			var transit_star:DisplayObject = new (AssetManager.instance.assets.subway_map_star)();
 			if(transit_star){
 				SpriteUtil.setRegistrationPoint(transit_star);
 				transit_you_view_holder.addChild(transit_star);
@@ -1036,9 +1036,9 @@ package com.tinyspeck.engine.view.gameoverlay.maps
 				name: 'world_map_in',
 				size: Button.SIZE_TINY,
 				type: Button.TYPE_MINOR,
-				graphic: new AssetManager.instance.assets.world_map_zoomin_link(),
-				graphic_disabled: new AssetManager.instance.assets.world_map_zoomin_disabled(),
-				graphic_hover: new AssetManager.instance.assets.world_map_zoomin_hover(),
+				graphic: new (AssetManager.instance.assets.world_map_zoomin_link)(),
+				graphic_disabled: new (AssetManager.instance.assets.world_map_zoomin_disabled)(),
+				graphic_hover: new (AssetManager.instance.assets.world_map_zoomin_hover)(),
 				graphic_padd_w: 7,
 				graphic_padd_t: 5,
 				x: recenter_bt.x + recenter_bt.width + TRANSIT_PADD,
@@ -1059,9 +1059,9 @@ package com.tinyspeck.engine.view.gameoverlay.maps
 				name: 'world_map_out',
 				size: Button.SIZE_TINY,
 				type: Button.TYPE_MINOR,
-				graphic: new AssetManager.instance.assets.world_map_link(),
-				graphic_disabled: new AssetManager.instance.assets.world_map_disabled(),
-				graphic_hover: new AssetManager.instance.assets.world_map_hover(),
+				graphic: new (AssetManager.instance.assets.world_map_link)(),
+				graphic_disabled: new (AssetManager.instance.assets.world_map_disabled)(),
+				graphic_hover: new (AssetManager.instance.assets.world_map_hover)(),
 				graphic_padd_w: 7,
 				graphic_padd_t: 5,
 				x: recenter_bt.x + recenter_bt.width + TRANSIT_PADD,
@@ -1095,8 +1095,8 @@ package com.tinyspeck.engine.view.gameoverlay.maps
 						value: transit.tsid,
 						size: Button.SIZE_TINY,
 						type: Button.TYPE_MINOR,
-						graphic: new AssetManager.instance.assets['transit_'+transit.tsid](),
-						graphic_hover: new AssetManager.instance.assets['transit_'+transit.tsid+'_hover'](),
+						graphic: new (AssetManager.instance.assets['transit_'+transit.tsid])(),
+						graphic_hover: new (AssetManager.instance.assets['transit_'+transit.tsid+'_hover'])(),
 						graphic_padd_w: 11,
 						x: next_transit_bt_x,
 						y: recenter_bt.y,
