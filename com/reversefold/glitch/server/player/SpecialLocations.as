@@ -474,7 +474,7 @@ public function mountaineering_start(expedition_id, duration, difficulty){
     return {ok: 1};
 }
 
-public function displayFreeze(y_pos, height, rung){
+/*public function displayFreeze(y_pos, height, rung){
     var width = Math.abs(this.location.geometry.l);
 
     var y = y_pos;
@@ -491,11 +491,11 @@ public function displayFreeze(y_pos, height, rung){
         height: height,
         uid: 'freeze_tile_'+rung
     });
-}
+}*/
 
-public function removeFreeze(rung) {
+/*public function removeFreeze(rung) {
     this.location.apiSendMsg({type: 'overlay_cancel', uid: 'freeze_tile_'+rung});
-}
+}*/
 
     }
 }
