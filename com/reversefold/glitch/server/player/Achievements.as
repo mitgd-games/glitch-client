@@ -293,7 +293,7 @@ public function achievements_run_callback_queue(){
                 }
 
                 //log.info(args);
-                //utils.http_post('callbacks/achievement_counter.php', args, this.player.tsid);
+                //Utils.http_post('callbacks/achievement_counter.php', args, this.player.tsid);
 
                 idx++;
             }

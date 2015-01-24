@@ -1,7 +1,9 @@
 package com.reversefold.glitch.server.player {
+    import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -10,7 +12,10 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
-        public var skills;
+		
+		public var label : String;
+		public var days;
+		public var utime : int;
 
         public function DailyHistory(config : Config, player : Player) {
             this.config = config;
@@ -19,20 +24,20 @@ package com.reversefold.glitch.server.player {
 
 
 public function daily_history_init(){
-    if (this.daily_history === undefined || this.daily_history === null){
-        this.daily_history = Server.instance.apiNewOwnedDC(this);
-        this.daily_history.label = 'Daily History';
-        this.daily_history.days = {};
+    if (this.days === undefined || this.days === null){
+        //this.daily_history = Server.instance.apiNewOwnedDC(this);
+        this.label = 'Daily History';
+        this.days = {};
     }
 }
 
 public function daily_history_reset(){
-    if (this.daily_history){
-        //delete this.daily_history.days;
+    if (this.days){
+        //delete this.days;
         //this.daily_history.apiDelete();
         //delete this.daily_history;
 
-        this.daily_history.days = {};
+        this.days = {};
     }
 
     this.daily_history_init();
@@ -40,66 +45,66 @@ public function daily_history_reset(){
 
 public function daily_history_get_day(day_key){
     this.daily_history_init();
-    if (!this.daily_history.days[day_key]) return null;
+    if (!this.days[day_key]) return null;
 
-    return this.daily_history.days[day_key];
+    return this.days[day_key];
 }
 
 public function daily_history_get(day_key, label){
     this.daily_history_init();
-    if (!this.daily_history.days[day_key]) return null;
-    if (!this.daily_history.days[day_key][label]) return null;
+    if (!this.days[day_key]) return null;
+    if (!this.days[day_key][label]) return null;
 
-    return this.daily_history.days[day_key][label];
+    return this.days[day_key][label];
 }
 
 public function daily_history_increment(label, value){
     this.daily_history_init();
-    var today = current_day_key();
-    if (!this.daily_history.days[today]) this.daily_history.days[today] = {};
+    var today = Common.current_day_key();
+    if (!this.days[today]) this.days[today] = {};
 
-    if (!this.daily_history.days[today][label]) this.daily_history.days[today][label] = 0;
+    if (!this.days[today][label]) this.days[today][label] = 0;
 
-    this.daily_history.days[today][label] += value;
+    this.days[today][label] += value;
 }
 
 public function daily_history_push(label, value){
     this.daily_history_init();
-    var today = current_day_key();
-    if (!this.daily_history.days[today]) this.daily_history.days[today] = {};
+    var today = Common.current_day_key();
+    if (!this.days[today]) this.days[today] = {};
 
-    if (!this.daily_history.days[today][label]) this.daily_history.days[today][label] = [];
+    if (!this.days[today][label]) this.days[today][label] = [];
 
-    this.daily_history.days[today][label].push(value);
-    this.daily_history.utime = time();
+    this.days[today][label].push(value);
+    this.utime = Common.time();
 }
 
 public function daily_history_flag(label){
     this.daily_history_init();
-    var today = current_day_key();
-    if (!this.daily_history.days[today]) this.daily_history.days[today] = {};
+    var today = Common.current_day_key();
+    if (!this.days[today]) this.days[today] = {};
 
-    this.daily_history.days[today][label] = true;
+    this.days[today][label] = true;
 }
 
 public function daily_history_archive(day_key){
     this.daily_history_init();
 
-    if (!this.daily_history.days[day_key]) return;
+    if (!this.days[day_key]) return;
 
     var args = {
         player_tsid: this.player.tsid,
         day_key: day_key,
-        data: utils.JSON_stringify(this.daily_history.days[day_key])
+        data: Utils.JSON_stringify(this.days[day_key])
     };
 
-    utils.http_post('callbacks/daily_history_archive.php', args, this.player.tsid);
+    Utils.http_post('callbacks/daily_history_archive.php', args, this.player.tsid);
 }
 
 public function daily_history_archive_all(){
     this.daily_history_init();
 
-    for (var day_key in this.daily_history.days){
+    for (var day_key in this.days){
         this.daily_history_archive(day_key);
     }
 }

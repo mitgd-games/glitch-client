@@ -558,7 +558,7 @@ public function newxpReturnToGentleIsland(){
 
 public function doNewxpCompleteCallback(){
 	this.checkNeighborSignpost();
-	//utils.http_post('callbacks/finished_newxp.php', {tsid: this.player.tsid}, this.player.tsid);
+	//Utils.http_post('callbacks/finished_newxp.php', {tsid: this.player.tsid}, this.player.tsid);
 }
 
 public function newxpGiveGreeterTwig(){

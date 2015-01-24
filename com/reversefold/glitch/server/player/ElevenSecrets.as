@@ -1,16 +1,23 @@
 package com.reversefold.glitch.server.player {
+    import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
-    public class ElevenSecrets {
+    public class ElevenSecrets extends Common {
         private static var log : Logger = Log.getLogger("server.Player");
 
         public var config : Config;
         public var player : Player;
-        public var skills;
+		
+		public var secret_locations;
+		public var secret_giants;
+		public var showAllSecrets;
+		public var secret_message_index;
+		public var secret_id;
 
         public function ElevenSecrets(config : Config, player : Player) {
             this.config = config;
@@ -92,8 +99,8 @@ public function resetSecretLocationsQuest() {
     }
 
     // remove all locations data
-    delete this.secret_locations;
-    delete this.secret_giants;
+    this.secret_locations = null;
+    this.secret_giants = null;
     this.player.achievements.achievements_reset_group('eleven_secret_locations');
     this.player.counters.counters_reset_group('eleven_secret_locations');
 }
@@ -124,7 +131,7 @@ public function showAllSecretOverlays() {
         if (config.secret_spots[i].tsid == this.player.location.tsid) {
             this.player.announcements.apiSendAnnouncement({
                 type: 'location_overlay',
-                swf_url: overlay_key_to_url('secret_location_marker'),
+                swf_url: Common.overlay_key_to_url('secret_location_marker'),
                 state: 'active',
                 x: config.secret_spots[i].x,
                 y: config.secret_spots[i].y,
@@ -225,7 +232,7 @@ public function showSecretLocationMarker(loc) {
             if (this.secret_locations[i] && this.secret_locations[i].tsid == loc.tsid) {
                 this.player.announcements.apiSendAnnouncement({
                     type: 'location_overlay',
-                    swf_url: overlay_key_to_url('secret_location_marker'),
+                    swf_url: Common.overlay_key_to_url('secret_location_marker'),
                     state: 'active',
                     x: this.secret_locations[i].x,
                     y: this.secret_locations[i].y,
@@ -503,7 +510,7 @@ public function doGrowl() {
     var effects_msg = '';
 
     if (favorval) {
-        effects_msg += 'You gain '+favorval+' favor with '+capitalize(giant)+'. ';
+        effects_msg += 'You gain '+favorval+' favor with '+Common.capitalize(giant)+'. ';
     }
 
     if (xpval){

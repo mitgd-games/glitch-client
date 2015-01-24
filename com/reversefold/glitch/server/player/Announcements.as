@@ -74,7 +74,7 @@ public function announce_sound_delayed_callback(details){
     this.announce_sound(details.name, details.loop_count, details.fade_in);
 }
 
-public function announce_sound_stop(name, fade_out){
+public function announce_sound_stop(name, fade_out=false){
     if (name == 'NO_MUSIC') return;
 
     if (config.sounds.music_map[name]) name = config.sounds.music_map[name];

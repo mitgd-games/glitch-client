@@ -77,7 +77,7 @@ public function visiting_opt_in(){
     var ret = this.visiting_can_opt_in();
     if (!ret.ok) return ret;
 
-    utils.http_post('callbacks/player_random_visits.php', {
+    Utils.http_post('callbacks/player_random_visits.php', {
         'player' : this.player.tsid,
         'opt_in' : 1
     });
@@ -96,7 +96,7 @@ public function visiting_opt_out(){
         };
     }
 
-    utils.http_post('callbacks/player_random_visits.php', {
+    Utils.http_post('callbacks/player_random_visits.php', {
         'player' : this.player.tsid
     });
 
@@ -108,7 +108,7 @@ public function visiting_opt_out(){
 
 public function visiting_visit_random(){
 
-    utils.http_post('callbacks/player_random_go.php', {
+    Utils.http_post('callbacks/player_random_go.php', {
         'player' : this.player.tsid
     });
 }

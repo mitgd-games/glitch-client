@@ -766,7 +766,7 @@ public function furniture_upgrade_purchase(item, upgrade_id, msg_id, user_config
 
     if (!config.home_limits.UPGRADES_ARE_FREE && !upgrade.is_owned && upgrade.imagination_cost && !this.player.stats.stats_try_remove_imagination(upgrade.imagination_cost, {'furniture_class': item.class_tsid, 'upgrade_id': upgrade_id})) return {ok: 0, error: 'You don\'t have enough imagination.'};
 
-    if (upgrade.is_owned) Server.instance.apiLogAction('FURNITURE_CHANGE', 'pc='+this.player.tsid, 'item='+item.class_tsid, 'upgrade='+upgrade_id, 'config='+utils.JSON_stringify(user_config)+'');
+    if (upgrade.is_owned) Server.instance.apiLogAction('FURNITURE_CHANGE', 'pc='+this.player.tsid, 'item='+item.class_tsid, 'upgrade='+upgrade_id, 'config='+Utils.JSON_stringify(user_config)+'');
 
     // Can we do this now?
     if (!upgrade.credits_cost || upgrade.is_owned || config.home_limits.UPGRADES_ARE_FREE){
@@ -774,7 +774,7 @@ public function furniture_upgrade_purchase(item, upgrade_id, msg_id, user_config
             tsid: item.tsid,
             upgrade_id: upgrade_id,
             facing_right: facing_right ? 1 : 0,
-            user_config: utils.JSON_stringify(user_config),
+            user_config: Utils.JSON_stringify(user_config),
             is_owned: upgrade.is_owned ? 1 : 0,
             ok: 1
         });
@@ -790,7 +790,7 @@ public function furniture_upgrade_purchase(item, upgrade_id, msg_id, user_config
             facing_right: facing_right ? 1 : 0,
             is_owned: 0,
             msg_id: msg_id,
-            user_config: utils.JSON_stringify(user_config)
+            user_config: Utils.JSON_stringify(user_config)
         };
         log.info(this+' furniture_upgrade_purchase '+args);
 

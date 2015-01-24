@@ -12,7 +12,6 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
-        public var skills;
 		public var label;
 		public var buffs;
 		public var events;

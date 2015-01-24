@@ -50,9 +50,10 @@ public function counters_reset(){
     this.counters = {};
 }
 
-public function counters_increment(group, label, count){
+public function counters_increment(group, label, count=1){
     this.counters_init();
 
+	//RVRS: TODO: should not be needed
     if (count === undefined){
         count = 1;
     }

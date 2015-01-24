@@ -523,13 +523,13 @@ public function make_and_store_evasion_record(msg, location, today_key, alltime)
             location_tsid: location.tsid,
             secs: secs,
             when: time(),
-            data: msg.log_data ? utils.JSON_stringify(msg.log_data) : '',
+            data: msg.log_data ? Utils.JSON_stringify(msg.log_data) : '',
             version: msg.version
         };
 
         log.info('store_evasion_record_args '+args);
 
-        utils.http_post('callbacks/store_evasion_record.php', args, this.player.tsid);
+        Utils.http_post('callbacks/store_evasion_record.php', args, this.player.tsid);
     }
 }
 
