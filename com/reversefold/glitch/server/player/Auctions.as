@@ -1,8 +1,10 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +13,14 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+        public var label : String;
+		public var active;
+		public var done;
+		public var cancelled;
+		public var expired;
+		public var prompts;
+		public var hiddenItems = {};
 
         public function Auctions(config : Config, player : Player) {
             this.config = config;
@@ -23,16 +33,16 @@ package com.reversefold.glitch.server.player {
 
 public function auctions_init(){
 
-    if (this.auctions === undefined || this.auctions === null){
-        this.auctions = Server.instance.apiNewOwnedDC(this);
-        this.auctions.label = 'Auctions';
+    if (this.label  === undefined || label  === null){
+        //this.auctions = Server.instance.apiNewOwnedDC(this);
+        this.label  = 'Auctions';
     }
 
-    if (!this.auctions.active)  this.auctions.active = {};
-    if (!this.auctions.done)    this.auctions.done = {};
-    if (!this.auctions.cancelled)   this.auctions.cancelled = {};
-    if (!this.auctions.expired) this.auctions.expired = {};
-    if (!this.auctions.prompts) this.auctions.prompts = {};
+    if (!this.active)  this.active = {};
+    if (!this.done)    this.done = {};
+    if (!this.cancelled)   this.cancelled = {};
+    if (!this.expired) this.expired = {};
+    if (!this.prompts) this.prompts = {};
 
     this.auctions_check_expired();
 }
@@ -56,21 +66,25 @@ public function auctions_find_container(){
 }
 
 public function auctions_delete(destroy_items){
-    if (this.auctions){
+    if (this.active){
 
-        for (var i in this.auctions.active){
+        for (var i in this.active){
             this.auctions_cancel(i, destroy_items);
         }
 
-        this.auctions.apiDelete();
-        delete this.auctions;
+        apiDeleteTimers();
+        this.active = null;
+		this.cancelled = null;
+		this.done = null;
+		this.prompts = null;
+		this.expired = null;
     }
 }
 
 public function auctions_get_uid_for_item(item_tsid){
-    if (this.auctions){
-        for (var i in this.auctions.active){
-            var details = this.auctions.active[i];
+    if (this.active){
+        for (var i in this.active){
+            var details = this.active[i];
             if (details.stack.tsid == item_tsid) return i;
         }
     }
@@ -78,16 +92,16 @@ public function auctions_get_uid_for_item(item_tsid){
 }
 
 public function auctions_reset(destroy_items){
-    if (this.auctions){
+    if (this.active){
 
-        for (var i in this.auctions.active){
+        for (var i in this.active){
             this.auctions_cancel(i, destroy_items);
         }
 
-        this.auctions.active = {};
-        this.auctions.done = {};
-        this.auctions.cancelled = {};
-        this.auctions.expired = {};
+        this.active = {};
+        this.done = {};
+        this.cancelled = {};
+        this.expired = {};
     }
 }
 
@@ -101,7 +115,7 @@ public function auctions_start(stack, count, cost, fee_percent, fee_min){
     //
     // too many auctions already?
     //
-    if (num_keys(this.auctions.active)>=100){
+    if (num_keys(this.active)>=100){
         return {
             ok: 0,
             error: 'max_auctions'
@@ -201,7 +215,7 @@ public function auctions_start(stack, count, cost, fee_percent, fee_min){
     // do we need to split the stack off?
     //
 
-    var _use = this.removeItemStack(stack.path);
+    var _use = this.player.bag.removeItemStack(stack.path);
 
     if (count < stack.count){
 
@@ -230,7 +244,7 @@ public function auctions_start(stack, count, cost, fee_percent, fee_min){
 
     var key = this.auctions_get_uid();
 
-    this.auctions.active[key] = {
+    this.active[key] = {
         stack   : _use,
         created : time(),
         expires : config.is_dev ? time() + (60 * 60 * 24) : time() + (60 * 60 * 72), // only 72h auctions for now
@@ -246,7 +260,7 @@ public function auctions_start(stack, count, cost, fee_percent, fee_min){
     };
 }
 
-public function auctions_cancel(uid, destroy_items){
+public function auctions_cancel(uid, destroy_items=false){
 
     uid = str(uid);
 
@@ -256,7 +270,7 @@ public function auctions_cancel(uid, destroy_items){
     // does it exist?
     //
 
-    if (!this.auctions.active[uid]){
+    if (!this.active[uid]){
         return {
             ok: 0,
             error: 'not_found'
@@ -268,19 +282,19 @@ public function auctions_cancel(uid, destroy_items){
     // got enough space?
     //
 
-    var details = this.auctions.active[uid];
+    var details = this.active[uid];
 
     //
     // cancel it
     //
 
-    delete this.auctions.active[uid];
+    delete this.active[uid];
     var stack = details.stack;
 
     Server.instance.apiLogAction('AUCTION_CANCEL', 'pc='+this.player.tsid, 'stack='+stack.tsid, 'count='+stack.count);
     this.auctions_flatten(details, "cancelled");
     details.cancelled = time();
-    this.auctions.cancelled[uid] = details;
+    this.cancelled[uid] = details;
     this.auctions_sync(uid);
 
     if (destroy_items){
@@ -304,7 +318,7 @@ public function auctions_expire(uid){
     // does it exist?
     //
 
-    if (!this.auctions.active[uid]){
+    if (!this.active[uid]){
         return {
             ok: 0,
             error: 'not_found'
@@ -312,13 +326,13 @@ public function auctions_expire(uid){
     }
 
 
-    var details = this.auctions.active[uid];
+    var details = this.active[uid];
 
     //
     // cancel it
     //
 
-    delete this.auctions.active[uid];
+    delete this.active[uid];
     var stack = details.stack;
 
     this.player.activity_notify({
@@ -330,7 +344,7 @@ public function auctions_expire(uid){
 
     this.auctions_flatten(details, "expired");
     details.expired = time();
-    this.auctions.expired[uid] = details;
+    this.expired[uid] = details;
     this.auctions_sync(uid);
 
     Server.instance.apiLogAction('AUCTION_EXPIRE', 'pc='+this.player.tsid, 'stack='+stack.tsid, 'count='+stack.count);
@@ -352,7 +366,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
 
     uid = str(uid);
 
-    var details = this.auctions.active[uid];
+    var details = this.active[uid];
 
     if (!details){
         return {
@@ -429,7 +443,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
     // we'll try some other action on the auction while we're
     // running the code below. later on we'll re-anchor the
     // details into the 'done' list.
-    delete this.auctions.active[uid];
+    delete this.active[uid];
 
     var stack = details.stack;
     this.auctions_flatten(details, "bought");
@@ -467,9 +481,9 @@ public function auctions_purchase(uid, buyer, commission, preflight){
     var purchase_txt = stack.count+'x '+(stack.count>1 ? stack.name_plural : stack.name_single);
 
 
-    if (num_keys(this.auctions.prompts)){
-        prompt_count = this.auctions.prompts.count+1;
-        prompt_items = this.auctions.prompts.items;
+    if (num_keys(this.prompts)){
+        prompt_count = this.prompts.count+1;
+        prompt_items = this.prompts.items;
         prompt_items.push(purchase_txt);
         full_items = prompt_items;
         var extra = 0;
@@ -493,7 +507,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
 
         prompt_items = full_items;
 
-        this.player.prompts.prompts_remove(this.auctions.prompts.uid);
+        this.player.prompts.prompts_remove(this.prompts.uid);
     } else {
         prompt_txt = "Someone bought your auction of "+purchase_txt;
         prompt_items = [ stack.count+"x "+stack.name_plural ];
@@ -509,7 +523,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
         ]
     });
 
-    this.auctions.prompts = {uid: prompt_uid, count: prompt_count, items: prompt_items};
+    this.prompts = {uid: prompt_uid, count: prompt_count, items: prompt_items};
 
     //
     // resolve
@@ -535,7 +549,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
     details.sold = time();
     details.buyer = buyer;
 
-    this.auctions.done[uid] = details;
+    this.done[uid] = details;
 
     this.auctions_sync(uid);
 
@@ -569,7 +583,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
 public function auctions_expired_callback(details, choice){
 }
 public function auctions_sold_callback(details, choice){
-    this.auctions.prompts = {};
+    this.prompts = {};
 }
 
 
@@ -597,9 +611,9 @@ public function auctions_get_uid(){
     var uid = time();
 
     while (
-        this.auctions.active[str(uid)] ||
-        this.auctions.done[str(uid)] ||
-        this.auctions.cancelled[str(uid)]
+        this.active[str(uid)] ||
+        this.done[str(uid)] ||
+        this.cancelled[str(uid)]
     ){
         uid++;
     }
@@ -624,10 +638,10 @@ public function auctions_sync_all(){
 
 public function auctions_sync_everything(){
 
-    for (var i in this.auctions.active  ) this.auctions_sync(i);
-    for (var i in this.auctions.done    ) this.auctions_sync(i);
-    for (var i in this.auctions.cancelled   ) this.auctions_sync(i);
-    for (var i in this.auctions.expired ) this.auctions_sync(i);
+    for (var i in this.active  ) this.auctions_sync(i);
+    for (var i in this.done    ) this.auctions_sync(i);
+    for (var i in this.cancelled   ) this.auctions_sync(i);
+    for (var i in this.expired ) this.auctions_sync(i);
 }
 
 public function admin_auctions_get(args){
@@ -637,9 +651,9 @@ public function admin_auctions_get(args){
     var data = null;
     var status = 'not_found';
 
-    if (this.auctions.active[args.uid]){
+    if (this.active[args.uid]){
 
-        data = Utils.copy_hash(this.auctions.active[args.uid]);
+        data = Utils.copy_hash(this.active[args.uid]);
         data.label = data.stack.getLabel ? data.stack.getLabel() : data.stack.label;
         data.count = data.stack.count;
         data.class_tsid = data.stack.class_tsid;
@@ -666,24 +680,24 @@ public function admin_auctions_get(args){
         status = 'active';
     }
 
-    if (this.auctions.cancelled[args.uid]){
+    if (this.cancelled[args.uid]){
 
-        data = Utils.copy_hash(this.auctions.cancelled[args.uid]);
+        data = Utils.copy_hash(this.cancelled[args.uid]);
         status = 'cancelled';
     }
 
-    if (this.auctions.done[args.uid]){
+    if (this.done[args.uid]){
 
-        data = Utils.copy_hash(this.auctions.done[args.uid]);
+        data = Utils.copy_hash(this.done[args.uid]);
         data.buyer_tsid = data.buyer.tsid;
         delete data.buyer;
 
         status = 'done';
     }
 
-    if (this.auctions.expired[args.uid]){
+    if (this.expired[args.uid]){
 
-        data = Utils.copy_hash(this.auctions.expired[args.uid]);
+        data = Utils.copy_hash(this.expired[args.uid]);
         status = 'expired';
     }
 
@@ -707,10 +721,10 @@ public function admin_auctions_get(args){
 public function admin_auctions_get_all(){
 
     return { ok : 1,
-         active   : this.auctions.active,
-         done     : this.auctions.done,
-         cancelled: this.auctions.cancelled,
-         expired  : this.auctions.expired
+         active   : this.active,
+         done     : this.done,
+         cancelled: this.cancelled,
+         expired  : this.expired
         };
 }
 
@@ -735,8 +749,8 @@ public function admin_auctions_relist_broken(args){
         };
     }
 
-    for (var i in this.auctions.active){
-        if (this.auctions.active[i].stack.tsid == args.stack_tsid){
+    for (var i in this.active){
+        if (this.active[i].stack.tsid == args.stack_tsid){
             return {
                 ok: 0,
                 error: 'already_listed'
@@ -757,7 +771,7 @@ public function admin_auctions_relist_broken(args){
     // temporarily pop the stack back into existence
     //
 
-    if (this.isBagFull(stack) && !stack.has_parent('furniture_base')){
+    if (this.player.bag.isBagFull(stack) && !stack.has_parent('furniture_base')){
 
         return {
             ok: 0,
@@ -765,7 +779,7 @@ public function admin_auctions_relist_broken(args){
         };
     }
 
-    this.addItemStack(stack);
+    this.player.bag.addItemStack(stack);
 
     this.auctions_start(stack, args.count, args.cost, 0, 0);
 }
@@ -859,22 +873,22 @@ public function admin_auctions_cancel(args){
 }
 
 public function admin_auctions_clear_from_history(args){
-    if (this.auctions.cancelled[args.uid]){
-        delete this.auctions.cancelled[args.uid];
+    if (this.cancelled[args.uid]){
+        delete this.cancelled[args.uid];
     }
-    if (this.auctions.expired[args.uid]){
-        delete this.auctions.expired[args.uid];
+    if (this.expired[args.uid]){
+        delete this.expired[args.uid];
     }
-    if (this.auctions.done[args.uid]){
-        delete this.auctions.done[args.uid];
+    if (this.done[args.uid]){
+        delete this.done[args.uid];
     }
 }
 
 public function auctions_check_expired(){
 
-    for (var i in this.auctions.active){
+    for (var i in this.active){
 
-        if (this.auctions.active[i].expires < time()){
+        if (this.active[i].expires < time()){
             this.auctions_expire(i);
         }
     }

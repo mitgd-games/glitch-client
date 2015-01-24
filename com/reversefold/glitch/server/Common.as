@@ -76,6 +76,11 @@ package com.reversefold.glitch.server {
 			Server.instance.sendMessage(msg);
 		}
 		
+		public function apiAddHiddenStack(it) {
+			//RVRS: TODO
+			throw new Error('apiAddHiddenStack ' + it);
+		}
+		
 		
 		public function randInt(min : int, max : int) : int {
 			return Math.floor(min + Math.random() * (1 + max - min));

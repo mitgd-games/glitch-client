@@ -91,7 +91,7 @@ public function countContents(){
 // stack is stored in the first available slot, with preference given to item-specific bag types and existing item stacks.
 //
 // Returns a count of the items it could not store
-public function addItemStack(stack, slot, pc){
+public function addItemStack(stack, slot=null, pc=null){
 	if (!stack) return 0;
 
 	var pack = this.findPack();
@@ -294,7 +294,7 @@ public function removeItemStackSlot(slot, count){
 
 // Remove an item stack: The bag is told the item path and an optional count. The current item stack is removed from its slot, or just
 // the number of items from the stack if specified.
-public function removeItemStack(path, count){
+public function removeItemStack(path, count=null){
 	var pack = this.findPack();
 	var contents = this.getContents();
 

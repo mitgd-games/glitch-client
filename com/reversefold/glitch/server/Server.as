@@ -127,6 +127,11 @@ package com.reversefold.glitch.server {
 			throw new Error('apiNewGroup ' + a);
 		}
 		
+		public function apiNewItemStack(bag_name : String, size : int) {
+			//RVRS: TODO
+			throw new Error('apiNewItemStack ' + bag_name + ' ' + size);
+		}
+		
 		// END api funcs
 
 		
