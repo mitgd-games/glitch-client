@@ -97,7 +97,7 @@ public function showRung(rung) {
     this.player.sendActivity("MT Intro moving camera to "+height);
     log.info("MT intro moving camera to "+height);
 
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type: 'camera_center',
         pt:{x:0, y:height},
         duration_ms: 1500

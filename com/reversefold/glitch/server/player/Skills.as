@@ -10,7 +10,8 @@ package com.reversefold.glitch.server.player {
 
 		public var config : Config;
 		public var player : Player;
-		public var skills;
+		public var capacity;
+		
 
 		public function Skills(config : Config, player : Player) {
 			this.config = config;
@@ -308,9 +309,9 @@ public function skills_get_all(is_admin){
         if (out[i].level){
             out[i].reqs.push({
                 'type'  : 'level',
-                'ok'    : this.stats.level >= out[i].level ? 1 : 0,
+                'ok'    : this.player.stats.level >= out[i].level ? 1 : 0,
                 'need'  : out[i].level,
-                'got'   : this.stats.level
+                'got'   : this.player.stats.level
             });
         }
 
@@ -429,7 +430,7 @@ public function skills_get_all(is_admin){
         // If we haven't finished the intro, we can't learn anything
         //
 
-        if (config.force_intro && !this.has_done_intro) ok = 0;
+        if (config.force_intro && !this.player.has_done_intro) ok = 0;
 
         out[i].can_learn = ok;
 
@@ -775,7 +776,7 @@ public function skills_train(id){
         return api_error("Doesn't meet requirements");
     }
 
-    if (config.force_intro && !this.has_done_intro) return api_error('You cannot learn anything yet.');
+    if (config.force_intro && !this.player.has_done_intro) return api_error('You cannot learn anything yet.');
 
 
     //
@@ -1459,7 +1460,7 @@ public function skills_give(id){
     this.player.stats.stats_get_login(out.stats);
     this.player.metabolics.metabolics_get_login(out.stats);
 
-    if (this.has_done_intro) this.player.sendMsgOnline(out);
+    if (this.player.has_done_intro) this.player.sendMsgOnline(out);
     var activity = 'You finished learning '+out.name+'.';
     if (out.learned) activity += ' ' + out.learned;
     this.player.sendActivity(activity, null, true);
@@ -1732,7 +1733,7 @@ public function skills_admin_check_states(args){
 
     var out = {
         'ok'        : 1,
-        'level'     : this.stats.level,
+        'level'     : this.player.stats.level,
         'skills'    : {},
         'achievements'  : {},
         'quests'    : {},
@@ -1912,7 +1913,7 @@ public function get_brain_capacity(){
 public function skills_increase_brain_capacity(amount){
     var old_modifier = this.skills_get_learning_time_modifier();
     this.skills.capacity += amount;
-    if (this.skills.capacity > config.brain_capacity_limit) this.skills.capacity = config.brain_capacity_limit;
+    if (this.skills.capacity > config.base.brain_capacity_limit) this.skills.capacity = config.base.brain_capacity_limit;
 
     var new_modifier = this.skills_get_learning_time_modifier();
 

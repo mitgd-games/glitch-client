@@ -326,7 +326,7 @@ public function run_overlay_script(name){
             this['!current_overlay_script'] = name;
             this.overlay_scripts_map[name].start(this);
 
-            this.apiSendMsg({ type: 'annc_flush' }); // HACKS!
+            this.player.apiSendMsg({ type: 'annc_flush' }); // HACKS!
             return true;
         }
     }
@@ -569,7 +569,7 @@ public function announce_itemstack_bubble(stack, text, duration, follow, width, 
 }
 
 public function overlay_dismiss(uid){
-    this.apiSendMsg({type: 'overlay_cancel', uid: uid});
+    this.player.apiSendMsg({type: 'overlay_cancel', uid: uid});
 }
 
 public function announce_counter(value, args){
@@ -607,7 +607,7 @@ public function announce_checkmark(txt, annc_uid, deco_name){
     if (annc_uid) msg.annc_uid = annc_uid;
     if (deco_name) msg.deco_name = deco_name;
 
-    this.apiSendMsg(msg);
+    this.player.apiSendMsg(msg);
 }
 
 // Persistent indicators with stacking behaviour.
@@ -788,12 +788,12 @@ public function announce_remote_item_state_change(args){
         }
     }
 
-    this.apiSendMsg(state_msg);
+    this.player.apiSendMsg(state_msg);
 }
 
 /**************** Toggle decos *********************/
 public function geo_deco_toggle_visibility(name, is_visible, fade){
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type: 'deco_visibility',
         visible: is_visible,
         deco_name: name, // this is the name property on the deco in the location geo, it can be set via locodeco

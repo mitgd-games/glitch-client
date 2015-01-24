@@ -58,7 +58,7 @@ public function setHiEmoteVariant(variant, tracker_str) {
         this.player.location.apiSendMsg(msg);
     }
 
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type: 'hi_emote_variant_set',
         variant: variant
     });
@@ -101,10 +101,10 @@ public function setHiEmoteVariantFromInfector(infector) {
 
 public function doEmote(msg){
     if (msg.emote != 'hi') {
-        return this.apiSendMsg(make_fail_rsp(msg, 0, 'Unrecognized emote: '+msg.emote));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, 'Unrecognized emote: '+msg.emote));
     }
 
-    this.apiSendMsg(make_ok_rsp(msg));
+    this.player.apiSendMsg(make_ok_rsp(msg));
 
     var activity_str;
     var target_activity_str;
@@ -534,7 +534,7 @@ public function make_and_store_evasion_record(msg, location, today_key, alltime)
 }
 
 public function doHiEmoteMissileHit(msg){
-    this.apiSendMsg(make_ok_rsp(msg));
+    this.player.apiSendMsg(make_ok_rsp(msg));
 
     if (!config.feature_hi_records) return;
 
@@ -656,7 +656,7 @@ public function resetTheShitOutOfHiOverlays() {
         this.player.butler.getButler().hi_emote_variant='';
         this.player.butler.getButler().hi_emote_daily_targets.pcs = {};
     }
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type: 'hi_emote_variant_set',
         variant: ''
 

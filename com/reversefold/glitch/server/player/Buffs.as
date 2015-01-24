@@ -100,7 +100,7 @@ public function buffs_login(){
                     duration: this.buffs[class_tsid].duration,
                     remaining_duration: this.buffs[class_tsid].duration - (time() - this.buffs[class_tsid].start)
                 };
-                this.apiSendMsg(out);
+                this.player.apiSendMsg(out);
             }
         }
 

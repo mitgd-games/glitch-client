@@ -66,7 +66,7 @@ public function broadcastActionRequest(type, tsid, txt, need=false, got=false){
         uid: this.player.tsid+'_'+type+'_'+tsid
     }, this);
 
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type: "action_request",
         txt: txt,
         pc: this.player.make_hash(),
@@ -235,7 +235,7 @@ public function cancelActionRequest(from, type, tsid){
     if (!details) return;
     if (details.type != type) return;
 
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type: "action_request_cancel",
         player_tsid: from.tsid,
         event_type: details.type,

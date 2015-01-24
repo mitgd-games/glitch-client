@@ -159,7 +159,7 @@ public function prompts_loneliness_callback(value, details) {
             path_info: ret.path
         };
 
-        this.apiSendMsg(rsp);
+        this.player.apiSendMsg(rsp);
     }
 }
 

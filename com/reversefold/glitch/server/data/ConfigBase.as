@@ -11,7 +11,8 @@ package com.reversefold.glitch.server.data {
         public var skills : Skills = new Skills();
 //#include achievements/inc_data_counters.js
 //#include inc_data_imagination.js
-		public var imagination : Imagination = new Imagination();
+		//Imagination is static
+		
 //#include inc_data_homes.js
 //#include inc_data_default_avatars.js
 		//DefaultAvatars is static

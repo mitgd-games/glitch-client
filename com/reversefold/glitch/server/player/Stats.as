@@ -530,7 +530,7 @@ public function stats_get_imagination(){
     return this.stats.imagination.value;
 }
 
-public function stats_set_imagination(num, quiet){
+public function stats_set_imagination(num, quiet=false){
     this.stats_init();
 
     var change = num - this.stats.imagination.value;
@@ -779,7 +779,7 @@ public function stats_set_quoins_max_today(num){
     }
 }
 
-public function stats_set_meditation_max_today(no_client){
+public function stats_set_meditation_max_today(no_client=null){
     this.meditation_today = new Prop(0, 0, (this.player.get_meditation_bonus() * this.player.metabolics.metabolics_get_max_energy()));
 
     var rsp = {

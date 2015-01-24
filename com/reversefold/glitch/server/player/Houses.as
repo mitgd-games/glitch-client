@@ -11,6 +11,8 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var home;
 
         public function Houses(config : Config, player : Player) {
             this.config = config;
@@ -1044,7 +1046,7 @@ public function houses_visit(player_tsid){
     }
 
     // newxp us
-    if (!house.pols_is_owner(this) && (!this.has_done_intro || this.player.quests.getQuestStatus('leave_gentle_island') == 'todo')){
+    if (!house.pols_is_owner(this) && (!this.player.has_done_intro || this.player.quests.getQuestStatus('leave_gentle_island') == 'todo')){
         return {
             ok: 0,
             error: 'newxp_us'
@@ -1312,7 +1314,7 @@ public function houses_leave(){
 
     var target = this.houses_get_previous_location();
     if (!target.tsid){
-        if (!this.has_done_intro || this.player.quests.getQuestStatus('leave_gentle_island') == 'todo') return this.player.sendActivity("You can't do that yet");
+        if (!this.player.has_done_intro || this.player.quests.getQuestStatus('leave_gentle_island') == 'todo') return this.player.sendActivity("You can't do that yet");
         return config.is_dev ? this.player.teleportHome() : this.player.teleportSomewhere();
     }
 

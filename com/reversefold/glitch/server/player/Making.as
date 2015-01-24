@@ -277,7 +277,7 @@ public function making_make_known(msg, item){
         if (!item.canUse(this)) {
             log.info("make failed - machine already in use");
             this.player.sendActivity("This item is already in use!");
-            return this.apiSendMsg(make_fail_rsp(msg, 0, "machine already in use"));
+            return this.player.apiSendMsg(make_fail_rsp(msg, 0, "machine already in use"));
         }
     }
 
@@ -288,7 +288,7 @@ public function making_make_known(msg, item){
     if (!this.recipes.recipes[recipe_id] && item.getClassProp('making_type') != 'transmogrification' && !(recipe_id == 288 && isPiDay())){
 
         log.info("make failed - recipe not known "+recipe_id);
-        return this.apiSendMsg(make_fail_rsp(msg, 0, "unknown recipe "+recipe_id));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, "unknown recipe "+recipe_id));
     }
 
 
@@ -305,7 +305,7 @@ public function making_make_known(msg, item){
     }
     if (!found){
         log.info("make failed - recipe not supported by item");
-        return this.apiSendMsg(make_fail_rsp(msg, 0, "recipe not supported by item"));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, "recipe not supported by item"));
     }
 
 
@@ -313,7 +313,7 @@ public function making_make_known(msg, item){
     var verb_state = this.making_check_allowed(item, "use");
 
     if (verb_state.state != "enabled") {
-        return this.apiSendMsg(make_fail_rsp(msg, 0, verb_state.reason));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, verb_state.reason));
     }
 
     //
@@ -324,13 +324,13 @@ public function making_make_known(msg, item){
         // If it's a machine, take the ingredients now instead of when we finish.
         if (!this.checkIngredients(recipe_info.inputs, count, true, item)){
             log.info("make failed - no ingredients");
-            return this.apiSendMsg(make_fail_rsp(msg, 0, "Not enough ingredients?"));
+            return this.player.apiSendMsg(make_fail_rsp(msg, 0, "Not enough ingredients?"));
         }
     }
     else {
         if (!this.checkIngredients(recipe_info.inputs, count, false, item)){
             log.info("make failed - no ingredients");
-            return this.apiSendMsg(make_fail_rsp(msg, 0, "Not enough ingredients?"));
+            return this.player.apiSendMsg(make_fail_rsp(msg, 0, "Not enough ingredients?"));
         }
     }
 
@@ -341,7 +341,7 @@ public function making_make_known(msg, item){
 
     if (this.making_is_making()){
         log.info("make failed - make in progress");
-        return this.apiSendMsg(make_fail_rsp(msg, 0, "You are already making something"));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, "You are already making something"));
     }
 
 
@@ -351,7 +351,7 @@ public function making_make_known(msg, item){
 
     if (this['!in_house_deco_mode']){
         log.info("make failed - in deco mode");
-        return this.apiSendMsg(make_fail_rsp(msg, 0, "No making while decorating!"));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, "No making while decorating!"));
     }
 
 
@@ -365,7 +365,7 @@ public function making_make_known(msg, item){
 
     if (energy_cost && energy_cost >= this.player.metabolics.metabolics_get_energy()){
         log.info("make failed - not enough energy");
-        return this.apiSendMsg(make_fail_rsp(msg, 0, "You don't have enough energy."));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, "You don't have enough energy."));
     }
 
 
@@ -395,10 +395,10 @@ public function making_make_known(msg, item){
     if (item.isWorking && !item.isWorking(tool_uses)){
         log.info("make failed - not enough tool usage");
         if (item.getClassProp('making_type') == 'machine'){
-            return this.apiSendMsg(make_fail_rsp(msg, 0, "That machine doesn't have enough fuel left."));
+            return this.player.apiSendMsg(make_fail_rsp(msg, 0, "That machine doesn't have enough fuel left."));
         }
         else{
-            return this.apiSendMsg(make_fail_rsp(msg, 0, "That tool doesn't have enough wear left."));
+            return this.player.apiSendMsg(make_fail_rsp(msg, 0, "That tool doesn't have enough wear left."));
         }
     }
 
@@ -521,7 +521,7 @@ public function making_make_known(msg, item){
     rsp.no_modal = item.getClassProp('making_type') == 'machine';
 
     //log.info("async make started - waiting "+this.making.wait+" ms");
-    return this.apiSendMsg(rsp);
+    return this.player.apiSendMsg(rsp);
 }
 
 
@@ -586,7 +586,7 @@ public function tryToMake(msg, item){
     var verb_state = this.making_check_allowed(item, "use");
 
     if (verb_state.state != "enabled") {
-        return this.apiSendMsg(make_fail_rsp(msg, 0, verb_state.reason));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, verb_state.reason));
     }
 
 
@@ -598,13 +598,13 @@ public function tryToMake(msg, item){
         // If it's a machine (which it shouldn't be, here) then remove the ingredients up front.
         if (!this.checkIngredients(inputs, 1, true, item)){
             log.info("make failed - no ingredients");
-            return this.apiSendMsg(make_fail_rsp(msg, 0, "Not enough ingredients?"));
+            return this.player.apiSendMsg(make_fail_rsp(msg, 0, "Not enough ingredients?"));
         }
     }
     else {
         if (!this.checkIngredients(inputs, 1, false, item)){
             log.info("make failed - no ingredients");
-            return this.apiSendMsg(make_fail_rsp(msg, 0, "Not enough ingredients?"));
+            return this.player.apiSendMsg(make_fail_rsp(msg, 0, "Not enough ingredients?"));
         }
     }
 
@@ -615,7 +615,7 @@ public function tryToMake(msg, item){
 
     if (this.making_is_making()){
         log.info("make failed - make in progress");
-        return this.apiSendMsg(make_fail_rsp(msg, 0, "You are already making something"));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, "You are already making something"));
     }
 
 
@@ -625,7 +625,7 @@ public function tryToMake(msg, item){
 
     if (this['!in_house_deco_mode']){
         log.info("make failed - in deco mode");
-        return this.apiSendMsg(make_fail_rsp(msg, 0, "No making while decorating!"));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, "No making while decorating!"));
     }
 
 
@@ -722,7 +722,7 @@ public function tryToMake(msg, item){
     rsp.no_modal = item.getClassProp('making_type') == 'machine';
 
     //log.info("async make unknown started - waiting "+this.making.wait+" ms");
-    return this.apiSendMsg(rsp);
+    return this.player.apiSendMsg(rsp);
 }
 
 
@@ -815,7 +815,7 @@ public function finishMakingKnown(inf){
 
             this.scheduleNextTimer(info);
 
-            return this.apiSendMsg(make_fail_msg("make_failed", 0, msg));
+            return this.player.apiSendMsg(make_fail_msg("make_failed", 0, msg));
         }
     }
 
@@ -838,7 +838,7 @@ public function finishMakingKnown(inf){
         this.scheduleNextTimer(info);
 
         log.info("async make failed - no ingredients: "+this+' for recipe '+recipe_info.name);
-        return this.apiSendMsg(make_fail_msg("make_failed", 0, "<span class=\"making_error\">Hrmmm, that didn't work. Seems like you don't have all the necessary ingredients.</span>"));
+        return this.player.apiSendMsg(make_fail_msg("make_failed", 0, "<span class=\"making_error\">Hrmmm, that didn't work. Seems like you don't have all the necessary ingredients.</span>"));
     }
 
     if (info.item.getClassProp('making_type') == 'machine'){
@@ -962,7 +962,7 @@ public function finishMakingKnown(inf){
     }
 
     if (info.item.getClassProp('making_type') != 'machine') {
-        this.apiSendMsg({
+        this.player.apiSendMsg({
             type: 'make_known_complete',
             knowns: knowns,
             effects: effects,
@@ -1209,7 +1209,7 @@ public function finishMakingUnknown(inf){
         this.player.announcements.announce_sound('CRAFTING_RESULT_NOTHING');
         log.info('async make failed - no matching recipe');
         this.scheduleNextTimer(info);
-        return this.apiSendMsg(make_fail_msg('make_failed', 0, msg));
+        return this.player.apiSendMsg(make_fail_msg('make_failed', 0, msg));
     }
 
 
@@ -1222,7 +1222,7 @@ public function finishMakingUnknown(inf){
     if (recipe_info.energy_cost && recipe_info.energy_cost >= this.player.metabolics.metabolics_get_energy()){
         log.info("make failed - not enough energy");
         this.scheduleNextTimer(info);
-        return this.apiSendMsg(make_fail_msg("make_failed", 0, "You don't have enough energy."));
+        return this.player.apiSendMsg(make_fail_msg("make_failed", 0, "You don't have enough energy."));
     }
 
 
@@ -1250,7 +1250,7 @@ public function finishMakingUnknown(inf){
         this.player.announcements.announce_sound('CRAFTING_RESULT_NOTHING');
         log.info("async make failed - need more "+pretty_list(missing, ' and '));
         this.scheduleNextTimer(info);
-        return this.apiSendMsg({
+        return this.player.apiSendMsg({
             type: 'make_unknown_missing',
             msg: rsp,
             effects: []
@@ -1350,7 +1350,7 @@ public function finishMakingUnknown(inf){
     // Schedule next timer if necessary
     this.scheduleNextTimer(info);
 
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type: 'make_unknown_complete',
         knowns: knowns,
         destroyed: extras,
@@ -1570,7 +1570,7 @@ public function making_execute_recipe(recipe_id, count, energy_cost, item){
 
 public function making_get_xp_ceiling(){
     // http://bugs.tinyspeck.com/6098
-    var my_level = this.stats.level;
+    var my_level = this.player.stats.level;
     if (my_level <= 5){
         return 250;
     }
@@ -1578,14 +1578,14 @@ public function making_get_xp_ceiling(){
         return 500;
     }
     else if (my_level <= 30){
-        var ret = this.player.stats.stats_calc_level_from_xp(this.stats.xp.value);
+        var ret = this.player.stats.stats_calc_level_from_xp(this.player.stats.xp.value);
         return (0.10-(0.0025*(my_level-11))) * (ret.xp_for_next-ret.xp_for_this);
     }
     else if (my_level == 60){
         return 85447.4; // hard-coded value for what you get at level 59: http://bugs.tinyspeck.com/8535
     }
     else{
-        var ret = this.player.stats.stats_calc_level_from_xp(this.stats.xp.value);
+        var ret = this.player.stats.stats_calc_level_from_xp(this.player.stats.xp.value);
         return 0.05 * (ret.xp_for_next-ret.xp_for_this);
     }
 }

@@ -641,7 +641,7 @@ public function mail_archive_message(msg_id){
 }
 
 public function mail_dispatch_start(station_tsid) {
-    this.apiSendMsg({'type': 'mail_start', 'station_tsid': station_tsid, 'regular_cost': 20, 'expedited_cost': 100});
+    this.player.apiSendMsg({'type': 'mail_start', 'station_tsid': station_tsid, 'regular_cost': 20, 'expedited_cost': 100});
 }
 
 // Returns the number of items remaining on the message
@@ -1177,7 +1177,7 @@ public function mail_do_delayed_player_deliveries() {
     this.schedule_delayed_player_deliveries();
 }
 
-public function mail_add_player_delivery(itemstack_tsid, sender_tsid, currants, text, delay, to_mailbox, in_reply_to) {
+public function mail_add_player_delivery(itemstack_tsid, sender_tsid, currants, text, delay, to_mailbox, in_reply_to=null) {
     if (!this.mail) {
         this.mail_init();
     }
@@ -1477,7 +1477,7 @@ public function build_mail_check_msg(from_item, to_msg, fetch_all) {
 }
 
 public function mail_check(from_item) {
-    this.apiSendMsg(this.build_mail_check_msg(from_item));
+    this.player.apiSendMsg(this.build_mail_check_msg(from_item));
 }
 
 public function mail_login() {
@@ -1526,7 +1526,7 @@ public function admin_mail_spy(pc_tsid) {
 
     var pc = getPlayer(pc_tsid);
     if(pc) {
-        this.apiSendMsg(pc.build_mail_check_msg(null));
+        this.player.apiSendMsg(pc.build_mail_check_msg(null));
     }
 }
 

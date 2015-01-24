@@ -98,7 +98,7 @@ public function giveButlerBox() {
         return;
     }
 
-    if (!this.has_done_intro || this.return_to_gentle_island || this.player.quests.getQuestStatus('leave_gentle_island') == 'todo'){
+    if (!this.player.has_done_intro || this.return_to_gentle_island || this.player.quests.getQuestStatus('leave_gentle_island') == 'todo'){
         return;
     }
 

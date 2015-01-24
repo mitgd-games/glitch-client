@@ -559,7 +559,7 @@ public function buddies_add_ignore(pc){
 
     this.ignoring.pcs[pc.tsid] = pc;
 
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type: 'buddy_ignore',
         pc: pc.make_hash()
     });
@@ -586,13 +586,13 @@ public function buddies_add_ignore(pc){
     this.player.sendActivity("You blocked "+pc.linkifyLabel()+".");
 }
 
-public function buddies_remove_ignore(pc, hide_notify){
+public function buddies_remove_ignore(pc, hide_notify=false){
     this.buddies_init();
     if (config.is_dev) log.info(this+' buddies_remove_ignore '+pc);
 
     delete this.ignoring.pcs[pc.tsid];
 
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type: 'buddy_unignore',
         pc: pc.make_hash()
     });

@@ -853,7 +853,7 @@ public function trading_update_currants(target_tsid, amount){
     var amount_diff = amount - this.trading.currants;
 
     //log.info('Currants diff of '+amount+' - '+this.trading.currants+' is '+amount_diff);
-    //log.info('Player currently has: '+this.stats.currants.value);
+    //log.info('Player currently has: '+this.player.stats.currants.value);
     if (amount_diff != 0){
         if (amount_diff < 0){
             //log.info('Restoring '+Math.abs(amount_diff));

@@ -324,7 +324,7 @@ public function games_get_color_group() {
 //
 
 public function games_it_game_splash(instance_id) {
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type:'game_splash_screen',
         tsid:'it_game',
         graphic: {
@@ -717,9 +717,9 @@ public function games_end_it_game(){
             this.player.announcements.announce_sound('YOU_LOSE');
         }
 
-        this.apiSendMsg(splash);
+        this.player.apiSendMsg(splash);
     } else {
-        this.apiSendMsg({
+        this.player.apiSendMsg({
             type:'game_splash_screen',
             tsid:'it_game',
             graphic: {
@@ -1298,7 +1298,7 @@ public function games_math_mayhem_is_locked(){
 //
 
 public function games_race_splash(instance_id) {
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type:'game_splash_screen',
         tsid:'race',
         graphic: {
@@ -1409,9 +1409,9 @@ public function games_end_race(){
             this.player.achievements.achievements_increment('race', 'lost');
         }
 
-        this.apiSendMsg(splash);
+        this.player.apiSendMsg(splash);
     } else {
-        this.apiSendMsg({
+        this.player.apiSendMsg({
             type:'game_splash_screen',
             tsid:'race',
             graphic: {
@@ -1448,7 +1448,7 @@ public function games_end_race(){
 //
 
 public function games_quoin_grab_splash(instance_id) {
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type:'game_splash_screen',
         tsid:'quoin_grab',
         graphic: {
@@ -1526,7 +1526,7 @@ public function quoin_grab_dismiss_overlays() {
 
     log.info("Dismissing quoin grab overlays");
 
-    this.apiSendMsg({type: 'overlay_cancel', uid: 'game_scores'});
+    this.player.apiSendMsg({type: 'overlay_cancel', uid: 'game_scores'});
 }
 
 public function quoin_grab_update_overlays() {
@@ -1608,9 +1608,9 @@ public function games_end_quoin_grab(){
             this.player.achievements.achievements_increment('quoin_grab', 'lost');
         }
 
-        this.apiSendMsg(splash);
+        this.player.apiSendMsg(splash);
     } else {
-        this.apiSendMsg({
+        this.player.apiSendMsg({
             type:'game_splash_screen',
             tsid:'quoin_grab',
             graphic: {
@@ -1648,7 +1648,7 @@ public function games_end_quoin_grab(){
 //
 
 public function games_cloudhopolis_splash(instance_id) {
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type:'game_splash_screen',
         tsid:'cloudhopolis',
         graphic: {
@@ -1726,7 +1726,7 @@ public function cloudhopolis_dismiss_overlays() {
 
     log.info("[GAMES] Dismissing cloudhopolis overlays");
 
-    this.apiSendMsg({type: 'overlay_cancel', uid: 'game_scores'});
+    this.player.apiSendMsg({type: 'overlay_cancel', uid: 'game_scores'});
 }
 
 public function cloudhopolis_update_overlays() {
@@ -1808,9 +1808,9 @@ public function games_end_cloudhopolis(){
             this.player.achievements.achievements_increment('cloudhopolis', 'lost');
         }
 
-        this.apiSendMsg(splash);
+        this.player.apiSendMsg(splash);
     } else {
-        this.apiSendMsg({
+        this.player.apiSendMsg({
             type:'game_splash_screen',
             tsid:'cloudhopolis',
             graphic: {
@@ -1847,7 +1847,7 @@ public function games_end_cloudhopolis(){
 //
 
 public function games_hogtie_piggy_splash(instance_id) {
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type:'game_splash_screen',
         tsid:'hogtie_piggy',
         graphic: {
@@ -1920,7 +1920,7 @@ public function hogtie_piggy_dismiss_overlays() {
         return;
     }
 
-    this.apiSendMsg({type: 'overlay_cancel', uid: 'game_scores'});
+    this.player.apiSendMsg({type: 'overlay_cancel', uid: 'game_scores'});
 }
 
 public function hogtie_piggy_update_overlays() {
@@ -2169,9 +2169,9 @@ public function games_end_hogtie_piggy(){
             this.player.achievements.achievements_increment('hogtie_piggy', 'lost');
         }
 
-        this.apiSendMsg(splash);
+        this.player.apiSendMsg(splash);
     } else {
-        this.apiSendMsg({
+        this.player.apiSendMsg({
             type:'game_splash_screen',
             tsid:'race',
             graphic: {

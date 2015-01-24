@@ -12,7 +12,7 @@ package com.reversefold.glitch.server.player {
     public class Counters extends Common {
         private static var log : Logger = Log.getLogger("server.player.achievements");
 
-		public var counters : Dictionary;
+		public var counters;
 		public var label : String;
         public var config : Config;
         public var player : Player;
@@ -33,14 +33,14 @@ public function counters_init(){
     if (this.counters === undefined || this.counters === null){
         //this.counters = Server.instance.apiNewOwnedDC(this);
         this.label = 'Counters';
-        this.counters = new Dictionary();
+        this.counters = {};
     }
 }
 
 public function counters_delete_all(){
     if (this.counters){
         //this.counters.apiDelete();
-        delete this.counters;
+        this.counters = {};
     }
 }
 

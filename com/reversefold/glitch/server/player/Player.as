@@ -43,6 +43,10 @@ package com.reversefold.glitch.server.player {
 		public var quickstart_needs_account : Boolean = false;
 		public var deaths_today : int;
 		public var resurrect_location;
+		public var friends;
+		public var date_last_logout;
+		public var date_last_loggedin;
+		public var trade_chat_group;
 		
 		public var is_god : Boolean = false;
 		public var is_help : Boolean = false;
@@ -104,6 +108,10 @@ package com.reversefold.glitch.server.player {
 			emotes = new Emotes(config, this);
 
 			bag = new Bag();
+		}
+		
+		public function apiLogout() {
+			throw new Error('apiLogout');
 		}
 
 //#include inc_admin.js,
@@ -604,7 +612,7 @@ public function init(){
 	// various bits
 	//
 
-	this.stats.stats_init();
+	this.player.stats.stats_init();
 	this.skills.skills_init();
 	this.making.making_init();
 	this.buffs.buffs_init();
@@ -1555,7 +1563,7 @@ public function doNewDay(){
 	}
 
 	// Quoins
-	if (this.stats.quoins_today.value >= 100){
+	if (this.player.stats.quoins_today.value >= 100){
 		this.player.achievements.achievements_increment('coin_count', 'days_maxed');
 	}
 	else{
@@ -1600,7 +1608,7 @@ public function doNewDay(){
 
 	// reset daily donation xp limits
 	this.init_prop('stats', 'donation_xp_today', 0, 0, maxDonationXP);
-	this.stats['donation_xp_today'].apiSet(0);
+	this.player.stats['donation_xp_today'].apiSet(0);
 
 	// Reset count for having seen the prompt for exceeding max donations
 	this.seenMaxDonationsPrompt = 0;
@@ -1617,7 +1625,7 @@ public function doNewDay(){
 		this.player.skill_packages.addSkillPackageOverride('mining_fancypick', {energy_cost: 0});
 	}
 
-	delete this.stats.recipe_xp_today;
+	delete this.player.stats.recipe_xp_today;
 
 	// Reset daily counters
 	this.player.stats.stats_reset_daily_counter();
@@ -2280,7 +2288,7 @@ public function resetForTesting(skip){
 	this.player.stats.stats_reset_xp();
 	this.player.stats.stats_reset_favor();
 	this.player.stats.stats_reset_street_history();
-	this.stats.currants.apiSet(0);
+	this.player.stats.currants.apiSet(0);
 	this.player.metabolics.metabolics_recalc_limits();
 	this.player.metabolics.metabolics_set_energy(100);
 	this.player.metabolics.metabolics_set_mood(100);
@@ -3494,7 +3502,7 @@ public function removeFromConeOfSilence(args){
 	}
 }
 
-public function isInConeOfSilence(type){
+public function isInConeOfSilence(type=null){
 	if (type == 'help'){
 		return this.is_in_help_coneofsilence ? true : false;
 	}

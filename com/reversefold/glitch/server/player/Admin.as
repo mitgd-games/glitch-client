@@ -69,16 +69,16 @@ public function adminLocationTeleport(arg){
 }
 
 public function adminLogout(arg){
-    return this.apiLogout();
+    return this.player.apiLogout();
 }
 
 public function adminGetBuddyTsids(arg){
 
     var out = [];
 
-    for (var i in this.friends){
+    for (var i in this.player.friends){
         if (i != 'reverse'){
-            for (var j in this.friends[i].pcs){
+            for (var j in this.player.friends[i].pcs){
                 out.push(j);
             }
         }
@@ -135,9 +135,10 @@ public function adminHasBagSpace(args){
     if (args && args.stack_tsid){
         stack = Server.instance.apiFindObject(args.stack_tsid);
     }
-    return this.isBagFull(stack) ? 0 : 1;
+    return this.player.bag.isBagFull(stack) ? 0 : 1;
 }
 
+/*
 public function adminExec(args){
     try {
         return eval(args.code);
@@ -146,14 +147,14 @@ public function adminExec(args){
         log.error('Exception during ADMIN_CALL eval', args, e);
     }
 }
-
+*/
 
 //
 // this is a function for executing code and returning
 // something afterwards. an array of statements to execute
 // is sent and we return the value of the last one.
 //
-
+/*
 public function adminExecMulti(args){
     try {
         //log.info('adminExecMulti()');
@@ -179,6 +180,7 @@ public function adminDebugSkills(){
     this.adminGetSkills();
     return Server.instance.apiGetIOOps();
 }
+*/
 
 public function adminGetProfile(args){
 
@@ -285,8 +287,8 @@ public function adminGetProfile(args){
     out.location = {
         'name' : this.player.location.label,
         'tsid' : this.player.location.tsid,
-        'x' : this.x,
-        'y' : this.y,
+        'x' : this.player.x,
+        'y' : this.player.y,
         'is_hidden' : this.player.location.is_hidden()
     };
 
@@ -295,8 +297,8 @@ public function adminGetProfile(args){
     out.houses = this.player.profile.profile_get_houses();
     out.home_street = this.player.profile.profile_get_home_street();
 
-    out.has_done_intro = this.has_done_intro ? 1 : 0;
-    out.new_player_goodbye_familiar = this.has_done_intro ? 1 : 0;
+    out.has_done_intro = this.player.has_done_intro ? 1 : 0;
+    out.new_player_goodbye_familiar = this.player.has_done_intro ? 1 : 0;
 
     //
     // Moderation flgs
@@ -332,7 +334,7 @@ public function adminGetFullInfo(args){
     if (out.is_online){
         out.last_online = 0;
     } else {
-        out.last_online = this.date_last_logout;
+        out.last_online = this.player.date_last_logout;
     }
 
     //
@@ -429,8 +431,8 @@ public function adminGetFullInfo(args){
     out.location = {
         'name' : this.player.location.label,
         'tsid' : this.player.location.tsid,
-        'x' : this.x,
-        'y' : this.y,
+        'x' : this.player.x,
+        'y' : this.player.y,
         'is_hidden' : this.player.location.is_hidden(),
         'is_pol' : this.player.location.pols_is_pol()
     };
@@ -445,13 +447,13 @@ public function adminGetLocationInfo(){
     var out = {
         is_online: is_online,
 
-        last_online: is_online ? 0 : this.date_last_logout,
+        last_online: is_online ? 0 : this.player.date_last_logout,
 
         location: {
             'name' : this.player.location.label,
             'tsid' : this.player.location.tsid,
-            'x' : this.x,
-            'y' : this.y,
+            'x' : this.player.x,
+            'y' : this.player.y,
             'is_hidden' : this.player.location.is_hidden(),
             'is_pol' : this.player.location.pols_is_pol()
         },
@@ -492,7 +494,7 @@ public function adminSkillsCancelUnlearn(args){
 
 public function adminGetCurrants(args){
     return {
-        'currants': this.stats.currants.value
+        'currants': this.player.stats.currants.value
     };
 }
 
@@ -507,7 +509,7 @@ public function adminGetGodProfile(args){
     //
 
     out.is_online = Server.instance.apiIsPlayerOnline(this.player.tsid);
-    out.date_last_login = this.date_last_login;
+    out.date_last_login = this.player.date_last_login;
 
 
     //
@@ -531,13 +533,13 @@ public function adminGetGodProfile(args){
     out.metabolics = {};
 
     out.metabolics.energy = {
-        'value' : this.metabolics.energy.value,
-        'max'   : this.metabolics.energy.top
+        'value' : this.player.metabolics.energy.value,
+        'max'   : this.player.metabolics.energy.top
     };
 
     out.metabolics.mood = {
-        'value' : this.metabolics.mood.value,
-        'max'   : this.metabolics.mood.top
+        'value' : this.player.metabolics.mood.value,
+        'max'   : this.player.metabolics.mood.top
     };
 
 
@@ -548,8 +550,8 @@ public function adminGetGodProfile(args){
     out.location = {
         'name' : this.player.location.label,
         'tsid' : this.player.location.tsid,
-        'x' : this.x,
-        'y' : this.y
+        'x' : this.player.x,
+        'y' : this.player.y
     };
 
     //
@@ -622,7 +624,7 @@ public function adminGetGodProfile(args){
     //
 
     out.img_migrated = 0;
-    if (this.imagination && this.imagination.converted_at) out.img_migrated = this.imagination.converted_at;
+    if (this.player.imagination && this.player.imagination.converted_at) out.img_migrated = this.player.imagination.converted_at;
 
     return out;
 }
@@ -676,8 +678,8 @@ public function adminAddQuoinMultiplier(args){
 }
 
 public function admin_get_visited_streets(){
-    if (this.achievements) {
-        return this.counters.counters.locations_visited;
+    if (this.player.achievements) {
+        return this.player.counters.counters.locations_visited;
     } else {
         return {};
     }
@@ -696,7 +698,7 @@ public function admin_get_player_progress() {
 
     var out = {};
 
-    out.level = this.stats.level;
+    out.level = this.player.stats.level;
     out.skills = this.player.skills.skills_get_list().length;
     out.time_played = this.player.getTimePlayed();
     out.got_walk_speed1 = this.player.imagination.imagination_has_upgrade("walk_speed_1");
@@ -706,11 +708,11 @@ public function admin_get_player_progress() {
     out.got_mappery = this.player.imagination.imagination_has_upgrade("mappery");
     out.completed_buy_bag = (this.player.quests.getQuestStatus("buy_two_bags") == 'done');
     out.completed_leave_gentle_island = (this.player.quests.getQuestStatus("leave_gentle_island") == 'done');
-    out.max_energy = this.metabolics.energy.top;
+    out.max_energy = this.player.metabolics.energy.top;
     out.quoin_multiplier = this.player.stats.stats_get_quoin_multiplier();
     out.enter_clouds = (this.player.stats.stats_get_last_street_visit('LIFBFC7TDJ535UL') > 0);
     out.enter_training1 = (this.player.stats.stats_get_last_street_visit('LIFBLMAVDJ53NP1') > 0);
-    out.date_last_login = this.date_last_loggedin;
+    out.date_last_login = this.player.date_last_loggedin;
     out.num_friends = this.player.buddies.buddies_count();
 
     return out;
@@ -720,28 +722,28 @@ public function admin_test_data(){
 
     var out = {};
 
-    out.level = this.stats.level;
-    out.max_energy = this.metabolics.energy.top;
-    out.xp = this.stats.xp.value;
-    out.currants = this.stats.currants.value;
-    out.favor_points = this.favor_points;
-    out.houses = array_keys(this.houses);
+    out.level = this.player.stats.level;
+    out.max_energy = this.player.metabolics.energy.top;
+    out.xp = this.player.stats.xp.value;
+    out.currants = this.player.stats.currants.value;
+    out.favor_points = this.player.stats.favor_points;
+    out.houses = array_keys(this.player.houses);
     out.quests_todo = {};
     out.quests_complete = {};
-    if (this.quests) {
-        for (var i in this.quests.done.quests) {
+    if (this.player.quests) {
+        for (var i in this.player.quests.done.quests) {
             out.quests_complete[i] = {
-                'ts_start' : this.quests.done.quests[i].ts_start,
-                'ts_done' : this.quests.done.quests[i].ts_done
+                'ts_start' : this.player.quests.done.quests[i].ts_start,
+                'ts_done' : this.player.quests.done.quests[i].ts_done
             }
         }
-        for (var i in this.quests.todo.quests) {
-            out.quests_todo[i] = this.quests.todo.quests[i].ts_start;
+        for (var i in this.player.quests.todo.quests) {
+            out.quests_todo[i] = this.player.quests.todo.quests[i].ts_start;
         }
     }
-    out.achievements = this.achievements.achievements;
+    out.achievements = this.player.achievements.achievements;
     out.inventory = {};
-    var inventory = this.getAllContents();
+    var inventory = this.player.bag.getAllContents();
     for (var i in inventory){
         var it = inventory[i];
         if (!it) continue;
@@ -749,14 +751,14 @@ public function admin_test_data(){
         if (!out.inventory[it.class_id]) out.inventory[it.class_id] = 0;
         out.inventory[it.class_id] += it.count;
     }
-    out.skills = this.skills ? this.skills.skills : {};
+    out.skills = this.player.skills ? this.player.skills.skills : {};
     out.visited_streets = this.player.counters.counters_get_group_count('locations_visited');
     out.buddies = this.player.buddies.buddies_count();
     out.buddies_rev = this.player.buddies.buddies_reverse_count();
-    out.recipes = this.recipes ? array_keys(this.recipes.recipes) : 0;
-    out.completed_tutorial = this.has_done_intro ? 1 : 0;
-    out.date_last_login = this.date_last_login;
-    out.time_played = this.counters.counters.time_played;
+    out.recipes = this.player.making.recipes ? array_keys(this.player.making.recipes.recipes) : 0;
+    out.completed_tutorial = this.player.has_done_intro ? 1 : 0;
+    out.date_last_login = this.player.date_last_login;
+    out.time_played = this.player.counters.counters.time_played;
     out.count_ignoring = this.player.buddies.buddies_get_ignoring_count();
     out.count_ignored_by = this.player.buddies.buddies_get_ignored_by_count();
 
@@ -1043,13 +1045,13 @@ public function admin_get_stats(){
     this.player.stats.stats_get_login(out);
 
     out.energy = {
-        value: this.metabolics.energy.value,
-        max: this.metabolics.energy.top
+        value: this.player.metabolics.energy.value,
+        max: this.player.metabolics.energy.top
     };
 
     out.mood = {
-        value: this.metabolics.mood.value,
-        max: this.metabolics.mood.top
+        value: this.player.metabolics.mood.value,
+        max: this.player.metabolics.mood.top
     };
     out.mail_unread = this.player.mail.mail_count_unread();
 
@@ -1062,13 +1064,13 @@ public function adminDebug(args){
 }
 
 public function adminCheckDoneIntro(args){
-    if (!this.has_done_intro && (config.force_intro || this.quickstart_needs_player) && (!this.intro_steps || this.intro_steps['new_player_part1']) && this.player.stats.stats_get_level() < 2 && !this.player.location.is_newxp && !this.player.location.is_skillquest){
+    if (!this.player.has_done_intro && (config.force_intro || this.quickstart_needs_player) && (!this.intro_steps || this.intro_steps['new_player_part1']) && this.player.stats.stats_get_level() < 2 && !this.player.location.is_newxp && !this.player.location.is_skillquest){
         this.no_reset_teleport = true;
         this.player.resetForTesting();
         this.player.goToNewNewStartingLevel();
         log.info(this+' adminCheckDoneIntro reset because not has_done_intro original');
     }
-    else if (!this.has_done_intro && (config.force_intro || this.quickstart_needs_player) && !this.player.location.is_newxp && !this.player.location.is_skillquest && this.player.stats.stats_get_level() < 4){
+    else if (!this.player.has_done_intro && (config.force_intro || this.quickstart_needs_player) && !this.player.location.is_newxp && !this.player.location.is_skillquest && this.player.stats.stats_get_level() < 4){
         this.no_reset_teleport = true;
         this.player.resetForTesting();
         this.player.goToNewNewStartingLevel();
@@ -1083,10 +1085,10 @@ public function adminCheckDoneIntro(args){
 
     var leave_gentle_island_status = this.player.quests.getQuestStatus('leave_gentle_island');
     return {
-        has_done_intro : this.has_done_intro,
+        has_done_intro : this.player.has_done_intro,
         // the following makes the assumption that they cannot have done the leave_gentle_island_status quest if !has_done_intro
         // (but they might not have been given the quest yet, so it might not have a 'todo' status)
-        needs_todo_leave_gentle_island: (!this.has_done_intro) ? true : (leave_gentle_island_status == 'todo')
+        needs_todo_leave_gentle_island: (!this.player.has_done_intro) ? true : (leave_gentle_island_status == 'todo')
     };
 }
 
@@ -1142,7 +1144,7 @@ public function admin_renamed(args){
     }
 
     if (apiIsPlayerOnline(this.player.tsid)) {
-        this.apiSendMsg({
+        this.player.apiSendMsg({
             type: 'pc_rename',
             pc: this.player.make_hash()
         });
@@ -1182,7 +1184,7 @@ public function adminBuildPath(args){
         path_info: ret.path
     };
 
-    this.apiSendMsg(rsp);
+    this.player.apiSendMsg(rsp);
 
     return {ok: 1};
 }
@@ -1237,9 +1239,9 @@ public function admin_get_named_animals(){
 
 public function admin_fix_quest_containers(){
     var fixed = 0;
-    for (var i in this.quests.todo.quests){
+    for (var i in this.player.quests.todo.quests){
         //log.info(this+' admin_fix_quest_containers checking '+i);
-        var q = this.quests.todo.quests[i];
+        var q = this.player.quests.todo.quests[i];
         if (q.isDone(this)){
             //log.info(this+' admin_fix_quest_containers '+i+' is done. Unflagging.');
             // Flag it as incomplete so it can get turned in on next login
@@ -1333,8 +1335,8 @@ public function adminGetHomepage(args){
     out.friends = this.player.buddies.buddies_get_simple_online();
 
     // flags
-    out.has_done_intro = !!this.has_done_intro;
-    out.new_player_goodbye_familiar = !!this.has_done_intro;
+    out.has_done_intro = !!this.player.has_done_intro;
+    out.new_player_goodbye_familiar = !!this.player.has_done_intro;
     out.is_in_timeout = this.player.isInTimeout();
     out.is_in_coneofsilence = this.player.isInConeOfSilence();
     out.is_in_help_coneofsilence = this.player.isInConeOfSilence('help');
@@ -1770,7 +1772,7 @@ public function adminBackfillSnapUpgrades(){
     this.player.imagination.imagination_get_next_upgrades();
 
     // And reload the hand in the client
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type: 'imagination_hand',
         hand: this.player.imagination.imagination_get_login(),
         is_redeal: true

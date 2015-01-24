@@ -538,7 +538,7 @@ public function furniture_buy_wall_do(args){
 
 public function furniture_buy_wall_done(success, wp_type, error){
 
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         'type'      : 'houses_wall_purchased',
         'wp_type'   : wp_type,
         'error'     : error
@@ -640,7 +640,7 @@ public function furniture_buy_floor_do(args){
 
 public function furniture_buy_floor_done(success, floor_type, error){
 
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         'type'      : 'houses_floor_purchased',
         'floor_type'    : floor_type,
         'error'     : error
@@ -739,7 +739,7 @@ public function furniture_buy_ceiling_do(args){
 
 public function furniture_buy_ceiling_done(success, ceiling_type, error){
 
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         'type'      : 'houses_ceiling_purchased',
         'ceiling_type'  : ceiling_type,
         'error'     : error
@@ -823,7 +823,7 @@ public function furniture_upgrade_purchase_do(args){
         }
 
         if (args.msg_id){
-            this.apiSendMsg({
+            this.player.apiSendMsg({
                 msg_id  : args.msg_id,
                 type    : 'furniture_upgrade_purchase',
                 success : true
@@ -852,7 +852,7 @@ public function furniture_upgrade_purchase_do(args){
         delete item['!upgrade_in_progress'];
         log.info(this+' failing upgrade '+args.upgrade_id+' to '+item);
         if (args.msg_id){
-            this.apiSendMsg({
+            this.player.apiSendMsg({
                 msg_id  : args.msg_id,
                 type    : 'furniture_upgrade_purchase',
                 success : false,
@@ -936,21 +936,21 @@ public function furniture_admin_remove_texture(args){
     // Tell the client and remove from house
     if (args.type == 'walls'){
         this.home.interior.homes_delete_wallpaper(args.id);
-        this.apiSendMsg({
+        this.player.apiSendMsg({
             'type'      : 'houses_wall_removed',
             'wp_type'   : args.id
         });
     }
     else if (args.type == 'floors'){
         this.home.interior.homes_delete_flooring(args.id);
-        this.apiSendMsg({
+        this.player.apiSendMsg({
             'type'      : 'houses_floor_removed',
             'floor_type'    : args.id
         });
     }
     else if (args.type == 'ceilings'){
         this.home.interior.homes_delete_ceiling(args.id);
-        this.apiSendMsg({
+        this.player.apiSendMsg({
             'type'      : 'houses_ceiling_removed',
             'ceiling_type'  : args.id
         });

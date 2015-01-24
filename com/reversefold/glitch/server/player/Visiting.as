@@ -20,7 +20,7 @@ package com.reversefold.glitch.server.player {
 
 public function visiting_can_opt_in(){
 
-    if (this.stats.level < 4){
+    if (this.player.stats.level < 4){
         return {
             ok: 0,
             error: 'low_level'

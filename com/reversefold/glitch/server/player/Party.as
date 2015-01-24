@@ -212,21 +212,21 @@ public function party_left(reason){
 
     switch (reason){
         case 'disband':
-            this.apiSendMsg({ type :'party_leave' });
+            this.player.apiSendMsg({ type :'party_leave' });
             this.party_activity("Your party has been disbanded");
             break;
         case 'invites-done':
             // the party was only emphemeral, being used for invites
             break;
         case 'left':
-            this.apiSendMsg({ type :'party_leave' });
+            this.player.apiSendMsg({ type :'party_leave' });
             this.party_activity("You have left the party");
             break;
         case 'offline':
             // everyone went offline
             break;
         default:
-            this.apiSendMsg({ type :'party_leave' });
+            this.player.apiSendMsg({ type :'party_leave' });
             this.party_activity("Left party for unknown reason: "+reason);
     }
 
@@ -257,7 +257,7 @@ public function party_joined(party, reason, pc){
     var m = party.get_members();
 
     //this.player.sendActivity('MSG:party_join');
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type    : 'party_join',
         members : m
     });
@@ -307,7 +307,7 @@ public function party_member_joined(pc, invited){
     }
 
     //this.player.sendActivity('MSG:party_add');
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type    : 'party_add',
         pc  : pc.make_hash_online()
     });
@@ -318,7 +318,7 @@ public function party_member_left(pc, reason){
     this.party_activity(Utils.escape(pc.label)+" has left the party");
 
     //this.player.sendActivity('MSG:party_remove');
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type    : 'party_remove',
         pc_tsid : pc.tsid
     });
@@ -334,7 +334,7 @@ public function party_member_online(pc){
     this.party_activity("Party member "+Utils.escape(pc.label)+" has come online");
 
     //this.player.sendActivity('MSG:party_online');
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type    : 'party_online',
         pc_tsid : pc.tsid
     });
@@ -345,7 +345,7 @@ public function party_member_offline(pc){
     this.party_activity("Party member "+Utils.escape(pc.label)+" has gone offline");
 
     //this.player.sendActivity('MSG:party_offline');
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type    : 'party_offline',
         pc_tsid : pc.tsid
     });
@@ -486,7 +486,7 @@ public function party_space_prompt(){
 
     var energy_cost = this.player.teleportation.teleportation_get_energy_cost();
     if (!energy_cost) energy_cost = Math.round(this.player.metabolics.metabolics_get_max_energy() * 0.40);
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type: 'party_space_start',
         location_name: ret.label,
         img_url: ret.img_url,

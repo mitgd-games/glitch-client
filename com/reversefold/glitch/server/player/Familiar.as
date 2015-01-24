@@ -310,11 +310,11 @@ public function familiar_on_verb(msg){
 
     if (msg.verb == 'talk_to'){
         this.familiar_on_conversation({});
-        this.apiSendMsg(make_ok_rsp(msg));
+        this.player.apiSendMsg(make_ok_rsp(msg));
         return;
     }
 
-    this.apiSendMsg(make_fail_rsp(msg, 0, "Unknown familiar verb"));
+    this.player.apiSendMsg(make_fail_rsp(msg, 0, "Unknown familiar verb"));
 }
 
 
@@ -329,7 +329,7 @@ public function familiar_on_verb(msg){
 public function familiar_on_conversation_cancel(msg){
 
     if (!msg.uid){
-        this.apiSendMsg(make_fail_rsp(msg, 0, 'conversation_cancel without a uid'));
+        this.player.apiSendMsg(make_fail_rsp(msg, 0, 'conversation_cancel without a uid'));
         return;
     }
 

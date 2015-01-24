@@ -57,7 +57,7 @@ public function metabolics_dont_get_pooped() {
     this.dontGetPooped  = true;
 }
 
-public function metabolics_add_energy(x, quiet, force){
+public function metabolics_add_energy(x, quiet=false, force=false){
 
     if (this.player.is_dead){
         if (!quiet){
@@ -308,7 +308,7 @@ public function metabolics_recalc_limits(set_to_max){
         }
     }
 
-    //log.info('metabolic limit at level '+this.stats.level+' is '+max);
+    //log.info('metabolic limit at level '+this.player.stats.level+' is '+max);
 }
 
 // This will currently be reset any time metabolics_recalc_limits is called

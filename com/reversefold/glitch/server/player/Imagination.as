@@ -1,5 +1,8 @@
 package com.reversefold.glitch.server.player {
+	import com.reversefold.glitch.server.Common;
+	import com.reversefold.glitch.server.Utils;
 	import com.reversefold.glitch.server.data.Config;
+	import com.reversefold.glitch.server.data.Imagination;
 	
 	import org.osmf.logging.Log;
 	import org.osmf.logging.Logger;
@@ -14,6 +17,20 @@ package com.reversefold.glitch.server.player {
 		public var hand = {};
 		public var history = [];
 		public var deck;
+		public var imagination_purchase_time_ms;
+		public var reshuffle_time_ms;
+		
+		public var converted_at;
+		public var xp_at_conversion;
+		public var level_at_conversion;
+		public var img_after_conversion;
+		public var img_at_conversion;
+		public var currants_converted_at;
+		public var currants_at_conversion;
+		public var currants_after_conversion;
+		public var currants_tax;
+		public var brain_capacity_refunded;
+
 		
 		public function Imagination(config : Config, player : Player) : void {
 			this.config = config;
@@ -55,7 +72,7 @@ public function imagination_delete_upgrade(id){
     delete this.upgrades[id];
 
     if (id == 'trade_channel'){
-        this.apiSendMsg({
+        this.player.apiSendMsg({
             type: 'trade_channel_enable',
             tsid: ''
         });
@@ -91,7 +108,7 @@ public function imagination_purchase_upgrade(hand_id){
     }
 
     // Get details
-    var upgrade = config.base.imagination.data_imagination_upgrades[card.class_tsid];
+    var upgrade = com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades[card.class_tsid];
     if (!upgrade){
         log.error(this+' imagination upgrade purchase failed: invalid upgrade: '+card.class_tsid);
         return false;
@@ -111,7 +128,7 @@ public function imagination_purchase_upgrade(hand_id){
 
     this.imagination_grant(card.class_tsid, card.amount, hand_id);
 
-    this.imagination_purchase_time_ms = getTime();
+    this.imagination_purchase_time_ms = new Date().getTime();
 
     if (this.player.location.upgradeGranted){
         this.player.location.upgradeGranted(this, card.class_tsid);
@@ -126,17 +143,17 @@ public function imagination_purchase_upgrade_confirmed(id){
     }
 }
 
-public function imagination_grant(class_tsid, amount, hand_id, no_growl, no_history){
+public function imagination_grant(class_tsid, amount, hand_id=null, no_growl=false, no_history=false){
     this.imagination_init();
 
-    var upgrade = config.data_imagination_upgrades[class_tsid];
+    var upgrade = com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades[class_tsid];
     if (!upgrade) return false;
 
     if (upgrade.max_uses && this.imagination_has_upgrade(class_tsid)) return false;
 
     log.info(this+' granted imagination upgrade '+class_tsid+' ('+amount+')');
-    if (!this.imagination.upgrades[class_tsid]) this.imagination.upgrades[class_tsid] = [];
-    this.imagination.upgrades[class_tsid].push(time());
+    if (!this.upgrades[class_tsid]) this.upgrades[class_tsid] = [];
+    this.upgrades[class_tsid].push(Common.time());
 
     this.player.daily_history.daily_history_push('upgrades_purchased', class_tsid);
 
@@ -153,7 +170,7 @@ public function imagination_grant(class_tsid, amount, hand_id, no_growl, no_hist
 
     // Special effects
     if (class_tsid == 'energy_tank'){
-        this.player.metabolics.metabolics_set_tank(this.player.metabolics.metabolics_get_tank()+intval(amount));
+        this.player.metabolics.metabolics_set_tank(this.player.metabolics.metabolics_get_tank()+int(amount));
         this.player.metabolics.metabolics_recalc_limits(this.player.is_dead ? false : true); // Refill our tank, unless we're dead
 
         if (this.player.buffs.buffs_has('zen')) this.player.buffs.buffs_remove('zen');
@@ -167,13 +184,13 @@ public function imagination_grant(class_tsid, amount, hand_id, no_growl, no_hist
         this.player.stats.stats_get_login(rsp.stats);
         this.player.metabolics.metabolics_get_login(rsp.stats);
 
-        this.apiSendMsg(rsp);
+        this.player.apiSendMsg(rsp);
     }
     else if (class_tsid == 'brain_capacity'){
-        this.player.skills.skills_increase_brain_capacity(intval(amount));
+        this.player.skills.skills_increase_brain_capacity(int(amount));
     }
     else if (class_tsid == 'quoin_multiplier'){
-        this.player.stats.stats_increase_quoin_multiplier(floatval(amount));
+        this.player.stats.stats_increase_quoin_multiplier(Number(amount));
     }
     else if (/quoin_limit/.exec(class_tsid)) {
         this.player.stats.stats_set_quoins_max_today(this.imagination_get_quoin_limit());
@@ -194,10 +211,10 @@ public function imagination_grant(class_tsid, amount, hand_id, no_growl, no_hist
         this.player.stats.stats_set_meditation_max_today();
     }
     else if (class_tsid == 'trade_channel'){
-        this.trade_chat_group = choose_one(config.trade_chat_groups);
-        this.apiSendMsg({
+        this.player.trade_chat_group = Common.choose_one(config.trade_chat_groups);
+        this.player.apiSendMsg({
             type: 'trade_channel_enable',
-            tsid: this.trade_chat_group
+            tsid: this.player.trade_chat_group
         });
     }
     /*else if (class_tsid == "meditative_arts_daily_limit_2") {
@@ -244,26 +261,26 @@ public function imagination_grant(class_tsid, amount, hand_id, no_growl, no_hist
     if (!no_history){
         var hand = this.imagination_get_hand();
         var card = hand_id === undefined ? null : hand[hand_id];
-        this.imagination.history.push({
+        this.history.push({
             class_tsid: class_tsid,
             cost: card ? card.cost : 0,
             amount: amount,
-            when: time()
+            when: Common.time()
         });
     }
 
     // If brain capacity and we're now at the limit, remove all brain capacity cards
-    if (class_tsid == 'brain_capacity' && this.player.skills.get_brain_capacity() == config.brain_capacity_limit){
+    if (class_tsid == 'brain_capacity' && this.player.skills.get_brain_capacity() == config.base.brain_capacity_limit){
         hand_id = undefined;
     }
-    else if (class_tsid == 'quoin_multiplier' && this.player.stats.stats_get_quoin_multiplier() == config.quoin_capacity_limit){
+    else if (class_tsid == 'quoin_multiplier' && this.player.stats.stats_get_quoin_multiplier() == config.base.quoin_capacity_limit){
         hand_id = undefined;
     }
 
     // Remove all copies of this card from our hand
-    for (var i in this.imagination.hand){
-        if (hand_id == i || (hand_id === undefined && this.imagination.hand[i].class_tsid == class_tsid)){
-            delete this.imagination.hand[i];
+    for (var i in this.hand){
+        if (hand_id == i || (hand_id === undefined && this.hand[i].class_tsid == class_tsid)){
+            delete this.hand[i];
             break;
         }
     }
@@ -272,7 +289,7 @@ public function imagination_grant(class_tsid, amount, hand_id, no_growl, no_hist
     this.imagination_get_next_upgrades();
 
     // Tell the client about our new hand contents
-    this.apiSendMsg({
+    this.player.apiSendMsg({
         type: 'imagination_hand',
         hand: this.imagination_get_login()
     });
@@ -290,7 +307,7 @@ public function imagination_get_deck(){
 
     for (var i in all){
         if (all[i].can_learn){
-            var u = config.data_imagination_upgrades[i];
+            var u = com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades[i];
             if (!u) continue;
 
             // If we have options, then we are special and need special handling
@@ -405,7 +422,7 @@ public function imagination_get_deck(){
                     }
                 }
                 else if (i == 'quoin_multiplier'){
-                    if (this.player.stats.stats_get_quoin_multiplier() >= config.quoin_capacity_limit) continue;
+                    if (this.player.stats.stats_get_quoin_multiplier() >= config.base.quoin_capacity_limit) continue;
 
                     var best_level = 0;
                     for (var min_level in u.options){
@@ -484,20 +501,20 @@ public function imagination_get_deck(){
 public function imagination_get_next_upgrades(){
 
     var out = {};
-    for (var i in this.imagination.hand){
-        var card = this.imagination.hand[i];
-        if (card && card.class_tsid && config.data_imagination_upgrades[card.class_tsid]){
-            if (card.class_tsid == 'brain_capacity' && this.player.skills.get_brain_capacity() >= config.brain_capacity_limit) continue;
-            if (card.class_tsid == 'quoin_multiplier' && this.player.stats.stats_get_quoin_multiplier() >= config.quoin_capacity_limit) continue;
+    for (var i in this.hand){
+        var card = this.hand[i];
+        if (card && card.class_tsid && com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades[card.class_tsid]){
+            if (card.class_tsid == 'brain_capacity' && this.player.skills.get_brain_capacity() >= config.base.brain_capacity_limit) continue;
+            if (card.class_tsid == 'quoin_multiplier' && this.player.stats.stats_get_quoin_multiplier() >= config.base.quoin_capacity_limit) continue;
             out[i] = card;
         }
     }
 
     //log.info(this+' imagination_get_next_upgrades hand 1: '+out);
 
-    if (num_keys(out) == 3) return out;
+    if (Common.num_keys(out) == 3) return out;
 
-    var deck = utils.shuffle(this.imagination_get_deck());
+    var deck = Utils.shuffle(this.imagination_get_deck());
 
     for (var i in deck){
         var card = deck[i];
@@ -512,12 +529,12 @@ public function imagination_get_next_upgrades(){
         for (var index=0; index<3; index++){
             if (out[index]) continue;
 
-            this.imagination.hand[index] = simple_card;
+            this.hand[index] = simple_card;
             out[index] = simple_card;
             break;
         }
 
-        if (num_keys(out) == 3) break;
+        if (Common.num_keys(out) == 3) break;
     }
 
     //log.info(this+' imagination_get_next_upgrades hand 2: '+out);
@@ -534,9 +551,9 @@ public function imagination_get_list(){
 
     var out = [];
 
-    for (var i in this.imagination.upgrades){
+    for (var i in this.upgrades){
 
-        var upgrades = this.imagination.upgrades[i];
+        var upgrades = this.upgrades[i];
 
         out.push({
             'id'    : i,
@@ -561,9 +578,9 @@ public function imagination_get_all(){
     // loop over each upgrade
     //
 
-    for (var i in config.data_imagination_upgrades){
+    for (var i in com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades){
 
-        var u = config.data_imagination_upgrades[i];
+        var u = com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades[i];
         if (u.is_secret) continue;
 
         out[i] = {
@@ -576,17 +593,17 @@ public function imagination_get_all(){
         // Do we have it?
         //
 
-        if (this.imagination.upgrades[i]){
+        if (this.upgrades[i]){
 
             out[i].got = 1;
-            out[i].count = this.imagination.upgrades[i].length;
+            out[i].count = this.upgrades[i].length;
         }
 
         //
         // Is it in our hand?
         //
 
-        if (in_array(this.imagination.hand, i)){
+        if (Common.in_array(this.hand, i)){
 
             out[i].in_hand = 1;
         }
@@ -598,7 +615,7 @@ public function imagination_get_all(){
 
     for (var i in out){
 
-        var u = config.data_imagination_upgrades[i];
+        var u = com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades[i];
 
 
         //
@@ -621,9 +638,9 @@ public function imagination_get_all(){
                 case 2:
                     out[i].reqs.push({
                         'type'  : c.type,
-                        'ok'    : this.stats.level >= c.data.level ? 1 : 0,
+                        'ok'    : this.player.stats.level >= c.data.level ? 1 : 0,
                         'need'  : c.data.level,
-                        'got'   : this.stats.level
+                        'got'   : this.player.stats.level
                     });
                     break;
                 // Imagination
@@ -714,11 +731,11 @@ public function imagination_get_all(){
 //
 public function imagination_get_hand(){
     this.imagination_init();
-    return this.imagination.hand;
+    return this.hand;
 }
 
 public function imagination_is_in_hand(class_tsid){
-    var hand = this.imagination.hand;
+    var hand = this.hand;
     for (var i in hand){
         if (hand[i].class_tsid == class_tsid) return true;
     }
@@ -728,7 +745,7 @@ public function imagination_is_in_hand(class_tsid){
 
 public function imagination_remove_from_hand(class_tsid){
     var found = false;
-    var hand = this.imagination.hand;
+    var hand = this.hand;
     for (var i in hand){
         if (hand[i].class_tsid == class_tsid){
             delete hand[i];
@@ -746,15 +763,15 @@ public function imagination_remove_from_hand(class_tsid){
 //
 public function imagination_reshuffle_hand(silent){
     this.imagination_init();
-    this.imagination.hand = {};
+    this.hand = {};
 
-    this.reshuffle_time_ms = getTime();
+    this.reshuffle_time_ms = new Date().getTime();
     this.imagination_get_next_upgrades();
 
 
     // Tell the client about our new hand contents
     if (!silent){
-        this.apiSendMsg({
+        this.player.apiSendMsg({
             type: 'imagination_hand',
             hand: this.imagination_get_login(),
             and_open: true,
@@ -762,7 +779,7 @@ public function imagination_reshuffle_hand(silent){
         });
     }
     else{
-        this.apiSendMsg({
+        this.player.apiSendMsg({
             type: 'imagination_hand',
             hand: this.imagination_get_login(),
             is_redeal: true
@@ -782,7 +799,7 @@ public function imagination_get_login(){
 
     for (var i in hand){
         var card = hand[i];
-        var upgrade = config.data_imagination_upgrades[card.class_tsid];
+        var upgrade = com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades[card.class_tsid];
         if (!upgrade) continue;
 
         var current = null;
@@ -802,7 +819,7 @@ public function imagination_get_login(){
                 break;
             }
             case 'quoin_multiplier':{
-                current = this.stats.quoin_multiplier;
+                current = this.player.stats.quoin_multiplier;
                 upgraded = current+card.amount;
                 current = current.toFixed(2);
                 upgraded = upgraded.toFixed(2);
@@ -949,9 +966,9 @@ public function imagination_get_radiation_distance() {
 }
 
 public function imagination_update_collectors() {
-    if (this.home) {
-        var inside = this.home.interior;
-        var outside = this.home.exterior;
+    if (this.player.houses.home) {
+        var inside = this.player.houses.home.interior;
+        var outside = this.player.houses.home.exterior;
 
         var milkers = [];
         var collectors = [];
@@ -1177,7 +1194,7 @@ public var imagination_conversion_quoin = [
 
 public function imagination_convert(){
     // Only once
-    if (this.imagination && this.imagination.converted_at) return;
+    if (this.converted_at) return;
 
     //log.info(this+' imagination_convert start');
     this.player.stats.stats_reset_imagination();
@@ -1185,7 +1202,7 @@ public function imagination_convert(){
 
     var level = this.player.stats.stats_get_level();
     if (level == 1){
-        this.imagination.converted_at = time();
+        this.converted_at = Common.time();
     }
 
     // Set their iMG amount
@@ -1232,162 +1249,162 @@ public function imagination_convert(){
 
     var next_iMG = iMG;
 
-    next_iMG = iMG - config.data_imagination_upgrades['snapshotting'].cost;
+    next_iMG = iMG - com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['snapshotting'].cost;
     if (this.player.skills.skills_has('snapshotting_1') && (next_iMG / original_iMG) > 0.25){
         if (give_upgrades) this.imagination_grant('snapshotting', 1);
-        iMG -= config.data_imagination_upgrades['snapshotting'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['snapshotting'].cost;
         //log.info(this+' imagination_convert snapshotting iMG: '+iMG);
     }
 
-    next_iMG = iMG - config.data_imagination_upgrades['brain_capacity'].options[20].cost_per * 1;
+    next_iMG = iMG - com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['brain_capacity'].options[20].cost_per * 1;
     if (this.player.skills.skills_has('betterlearning_1') && (next_iMG / original_iMG) > 0.25){
         if (give_upgrades) this.imagination_grant('brain_capacity', 1);
-        iMG -= config.data_imagination_upgrades['brain_capacity'].options[20].cost_per * 1;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['brain_capacity'].options[20].cost_per * 1;
         //log.info(this+' imagination_convert betterlearning_1 iMG: '+iMG);
     }
 
     // Brain capacity is now 21
-    next_iMG = iMG - config.data_imagination_upgrades['brain_capacity'].options[20].cost_per * 2;
-    next_iMG -= config.data_imagination_upgrades['brain_capacity'].options[23].cost_per * 1;
-    next_iMG -= config.data_imagination_upgrades['learntime_alchemy_1'].cost;
-    next_iMG -= config.data_imagination_upgrades['learntime_animal_1'].cost;
-    next_iMG -= config.data_imagination_upgrades['learntime_cooking_1'].cost;
-    next_iMG -= config.data_imagination_upgrades['learntime_gardening_1'].cost;
-    next_iMG -= config.data_imagination_upgrades['learntime_harvesting_1'].cost;
-    next_iMG -= config.data_imagination_upgrades['learntime_industrial_1'].cost;
-    next_iMG -= config.data_imagination_upgrades['learntime_wellness_1'].cost;
+    next_iMG = iMG - com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['brain_capacity'].options[20].cost_per * 2;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['brain_capacity'].options[23].cost_per * 1;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_alchemy_1'].cost;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_animal_1'].cost;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_cooking_1'].cost;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_gardening_1'].cost;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_harvesting_1'].cost;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_industrial_1'].cost;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_wellness_1'].cost;
     if (this.player.skills.skills_has('betterlearning_2') && (next_iMG / original_iMG) > 0.25 && this.player.skills.get_brain_capacity() == 21){
         if (give_upgrades) this.imagination_grant('brain_capacity', 3);
-        iMG -= config.data_imagination_upgrades['brain_capacity'].options[20].cost_per * 2;
-        iMG -= config.data_imagination_upgrades['brain_capacity'].options[23].cost_per * 1;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['brain_capacity'].options[20].cost_per * 2;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['brain_capacity'].options[23].cost_per * 1;
 
         if (give_upgrades) this.imagination_grant('learntime_alchemy_1', 1);
-        iMG -= config.data_imagination_upgrades['learntime_alchemy_1'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_alchemy_1'].cost;
 
         if (give_upgrades) this.imagination_grant('learntime_animal_1', 1);
-        iMG -= config.data_imagination_upgrades['learntime_animal_1'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_animal_1'].cost;
 
         if (give_upgrades) this.imagination_grant('learntime_cooking_1', 1);
-        iMG -= config.data_imagination_upgrades['learntime_cooking_1'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_cooking_1'].cost;
 
         if (give_upgrades) this.imagination_grant('learntime_gardening_1', 1);
-        iMG -= config.data_imagination_upgrades['learntime_gardening_1'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_gardening_1'].cost;
 
         if (give_upgrades) this.imagination_grant('learntime_harvesting_1', 1);
-        iMG -= config.data_imagination_upgrades['learntime_harvesting_1'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_harvesting_1'].cost;
 
         if (give_upgrades) this.imagination_grant('learntime_industrial_1', 1);
-        iMG -= config.data_imagination_upgrades['learntime_industrial_1'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_industrial_1'].cost;
 
         if (give_upgrades) this.imagination_grant('learntime_wellness_1', 1);
-        iMG -= config.data_imagination_upgrades['learntime_wellness_1'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_wellness_1'].cost;
         //log.info(this+' imagination_convert betterlearning_2 iMG: '+iMG);
     }
 
     // Brain capacity is now 24
-    next_iMG = iMG - config.data_imagination_upgrades['brain_capacity'].options[23].cost_per * 3;
-    next_iMG -= config.data_imagination_upgrades['brain_capacity'].options[27].cost_per * 1;
-    next_iMG -= config.data_imagination_upgrades['learntime_alchemy_2'].cost;
-    next_iMG -= config.data_imagination_upgrades['learntime_animal_2'].cost;
-    next_iMG -= config.data_imagination_upgrades['learntime_cooking_2'].cost;
-    next_iMG -= config.data_imagination_upgrades['learntime_gardening_2'].cost;
-    next_iMG -= config.data_imagination_upgrades['learntime_harvesting_2'].cost;
-    next_iMG -= config.data_imagination_upgrades['learntime_industrial_2'].cost;
-    next_iMG -= config.data_imagination_upgrades['learntime_wellness_2'].cost;
+    next_iMG = iMG - com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['brain_capacity'].options[23].cost_per * 3;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['brain_capacity'].options[27].cost_per * 1;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_alchemy_2'].cost;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_animal_2'].cost;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_cooking_2'].cost;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_gardening_2'].cost;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_harvesting_2'].cost;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_industrial_2'].cost;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_wellness_2'].cost;
     if (this.player.skills.skills_has('betterlearning_3') && (next_iMG / original_iMG) > 0.25 && this.imagination_has_upgrade('learntime_wellness_1')){
         if (give_upgrades) this.imagination_grant('brain_capacity', 4);
-        iMG -= config.data_imagination_upgrades['brain_capacity'].options[23].cost_per * 3;
-        iMG -= config.data_imagination_upgrades['brain_capacity'].options[27].cost_per * 1;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['brain_capacity'].options[23].cost_per * 3;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['brain_capacity'].options[27].cost_per * 1;
 
         if (give_upgrades) this.imagination_grant('learntime_alchemy_2', 1);
-        iMG -= config.data_imagination_upgrades['learntime_alchemy_2'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_alchemy_2'].cost;
 
         if (give_upgrades) this.imagination_grant('learntime_animal_2', 1);
-        iMG -= config.data_imagination_upgrades['learntime_animal_2'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_animal_2'].cost;
 
         if (give_upgrades) this.imagination_grant('learntime_cooking_2', 1);
-        iMG -= config.data_imagination_upgrades['learntime_cooking_2'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_cooking_2'].cost;
 
         if (give_upgrades) this.imagination_grant('learntime_gardening_2', 1);
-        iMG -= config.data_imagination_upgrades['learntime_gardening_2'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_gardening_2'].cost;
 
         if (give_upgrades) this.imagination_grant('learntime_harvesting_2', 1);
-        iMG -= config.data_imagination_upgrades['learntime_harvesting_2'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_harvesting_2'].cost;
 
         if (give_upgrades) this.imagination_grant('learntime_industrial_2', 1);
-        iMG -= config.data_imagination_upgrades['learntime_industrial_2'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_industrial_2'].cost;
 
         if (give_upgrades) this.imagination_grant('learntime_wellness_2', 1);
-        iMG -= config.data_imagination_upgrades['learntime_wellness_2'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_wellness_2'].cost;
         //log.info(this+' imagination_convert betterlearning_3 iMG: '+iMG);
     }
 
     // Brain capacity is now 28
-    next_iMG = iMG - config.data_imagination_upgrades['brain_capacity'].options[27].cost_per * 3;
-    next_iMG -= config.data_imagination_upgrades['brain_capacity'].options[31].cost_per * 1;
+    next_iMG = iMG - com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['brain_capacity'].options[27].cost_per * 3;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['brain_capacity'].options[31].cost_per * 1;
     if (this.player.skills.skills_has('betterlearning_4') && (next_iMG / original_iMG) > 0.25 && this.imagination_has_upgrade('learntime_wellness_2')){
         if (give_upgrades) this.imagination_grant('brain_capacity', 4);
-        iMG -= config.data_imagination_upgrades['brain_capacity'].options[27].cost_per * 3;
-        iMG -= config.data_imagination_upgrades['brain_capacity'].options[31].cost_per * 1;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['brain_capacity'].options[27].cost_per * 3;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['brain_capacity'].options[31].cost_per * 1;
         //log.info(this+' imagination_convert betterlearning_4 iMG: '+iMG);
     }
 
     // Brain capacity is now 32
-    next_iMG = iMG - config.data_imagination_upgrades['brain_capacity'].options[31].cost_per * 3;
-    next_iMG -= config.data_imagination_upgrades['brain_capacity'].options[35].cost_per * 2;
-    next_iMG -= config.data_imagination_upgrades['learntime_alchemy_3'].cost;
-    next_iMG -= config.data_imagination_upgrades['learntime_animal_3'].cost;
-    next_iMG -= config.data_imagination_upgrades['learntime_cooking_3'].cost;
-    next_iMG -= config.data_imagination_upgrades['learntime_gardening_3'].cost;
-    next_iMG -= config.data_imagination_upgrades['learntime_harvesting_3'].cost;
-    next_iMG -= config.data_imagination_upgrades['learntime_industrial_3'].cost;
-    next_iMG -= config.data_imagination_upgrades['learntime_wellness_3'].cost;
+    next_iMG = iMG - com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['brain_capacity'].options[31].cost_per * 3;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['brain_capacity'].options[35].cost_per * 2;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_alchemy_3'].cost;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_animal_3'].cost;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_cooking_3'].cost;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_gardening_3'].cost;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_harvesting_3'].cost;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_industrial_3'].cost;
+    next_iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_wellness_3'].cost;
     if (this.player.skills.skills_has('betterlearning_5') && (next_iMG / original_iMG) > 0.25 && this.imagination_has_upgrade('learntime_wellness_2')){
         if (give_upgrades) this.imagination_grant('brain_capacity', 5);
-        iMG -= config.data_imagination_upgrades['brain_capacity'].options[31].cost_per * 3;
-        iMG -= config.data_imagination_upgrades['brain_capacity'].options[35].cost_per * 2;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['brain_capacity'].options[31].cost_per * 3;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['brain_capacity'].options[35].cost_per * 2;
 
         if (give_upgrades) this.imagination_grant('learntime_alchemy_3', 1);
-        iMG -= config.data_imagination_upgrades['learntime_alchemy_3'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_alchemy_3'].cost;
 
         if (give_upgrades) this.imagination_grant('learntime_animal_3', 1);
-        iMG -= config.data_imagination_upgrades['learntime_animal_3'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_animal_3'].cost;
 
         if (give_upgrades) this.imagination_grant('learntime_cooking_3', 1);
-        iMG -= config.data_imagination_upgrades['learntime_cooking_3'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_cooking_3'].cost;
 
         if (give_upgrades) this.imagination_grant('learntime_gardening_3', 1);
-        iMG -= config.data_imagination_upgrades['learntime_gardening_3'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_gardening_3'].cost;
 
         if (give_upgrades) this.imagination_grant('learntime_harvesting_3', 1);
-        iMG -= config.data_imagination_upgrades['learntime_harvesting_3'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_harvesting_3'].cost;
 
         if (give_upgrades) this.imagination_grant('learntime_industrial_3', 1);
-        iMG -= config.data_imagination_upgrades['learntime_industrial_3'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_industrial_3'].cost;
 
         if (give_upgrades) this.imagination_grant('learntime_wellness_3', 1);
-        iMG -= config.data_imagination_upgrades['learntime_wellness_3'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['learntime_wellness_3'].cost;
         //log.info(this+' imagination_convert betterlearning_5 iMG: '+iMG);
     }
 
-    next_iMG = iMG - config.data_imagination_upgrades['unlearning_ability'].cost;
+    next_iMG = iMG - com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['unlearning_ability'].cost;
     if (this.player.skills.skills_has('unlearning_1') && (next_iMG / original_iMG) > 0.25){
         if (give_upgrades) this.imagination_grant('unlearning_ability', 1);
-        iMG -= config.data_imagination_upgrades['unlearning_ability'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['unlearning_ability'].cost;
         //log.info(this+' imagination_convert unlearning_1 iMG: '+iMG);
     }
 
-    next_iMG = iMG - config.data_imagination_upgrades['unlearning_time_1'].cost;
+    next_iMG = iMG - com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['unlearning_time_1'].cost;
     if (this.player.skills.skills_has('unlearning_2') && (next_iMG / original_iMG) > 0.25 && this.imagination_has_upgrade('unlearning_ability')){
         if (give_upgrades) this.imagination_grant('unlearning_time_1', 1);
-        iMG -= config.data_imagination_upgrades['unlearning_time_1'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['unlearning_time_1'].cost;
         //log.info(this+' imagination_convert unlearning_2 iMG: '+iMG);
     }
 
-    next_iMG = iMG - config.data_imagination_upgrades['unlearning_time_2'].cost;
+    next_iMG = iMG - com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['unlearning_time_2'].cost;
     if (this.player.skills.skills_has('unlearning_3') && (next_iMG / original_iMG) > 0.25 && this.imagination_has_upgrade('unlearning_time_1')){
         if (give_upgrades) this.imagination_grant('unlearning_time_2', 1);
-        iMG -= config.data_imagination_upgrades['unlearning_time_2'].cost;
+        iMG -= com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades['unlearning_time_2'].cost;
         //log.info(this+' imagination_convert unlearning_3 iMG: '+iMG);
     }
 
@@ -1395,11 +1412,11 @@ public function imagination_convert(){
     this.player.stats.stats_set_imagination(iMG);
 
     // Record some data
-    this.imagination.xp_at_conversion = xp;
-    this.imagination.level_at_conversion = level;
-    this.imagination.img_after_conversion = iMG;
-    this.imagination.img_at_conversion = original_iMG;
-    this.imagination.converted_at = time();
+    this.xp_at_conversion = xp;
+    this.level_at_conversion = level;
+    this.img_after_conversion = iMG;
+    this.img_at_conversion = original_iMG;
+    this.converted_at = Common.time();
 
     // Reset hand
     this.imagination_reshuffle_hand(true);
@@ -1408,7 +1425,7 @@ public function imagination_convert(){
 
 public function imagination_convert_currants(){
     // Only once
-    if (this.imagination && this.imagination.currants_converted_at) return;
+    if (this.currants_converted_at) return;
 
     var currants = this.player.stats.stats_get_currants();
 
@@ -1445,18 +1462,18 @@ public function imagination_convert_currants(){
     }
 
     // Record some data
-    this.imagination.currants_at_conversion = currants;
-    this.imagination.currants_after_conversion = (currants-tax);
-    this.imagination.currants_tax = tax;
-    this.imagination.currants_converted_at = time();
+    this.currants_at_conversion = currants;
+    this.currants_after_conversion = (currants-tax);
+    this.currants_tax = tax;
+    this.currants_converted_at = Common.time();
 
     this.player.stats.stats_set_currants(currants-tax);
     return true;
 }
 
 public function imagination_convert_currants_reset(){
-    if (this.imagination && this.imagination.currants_at_conversion){
-        this.player.stats.stats_set_currants(this.imagination.currants_at_conversion);
+    if (this && this.currants_at_conversion){
+        this.player.stats.stats_set_currants(this.currants_at_conversion);
         return true;
     }
 
@@ -1467,12 +1484,11 @@ public function imagination_convert_currants_reset(){
 public function admin_imagination_just_upgrades(args){
 
     var upgrades = [];
-    if (!this.imagination) return upgrades;
-    if (!this.imagination.history) return upgrades;
+    if (!this.history) return upgrades;
 
-    for (var i=0; i<this.imagination.history.length; i++){
+    for (var i=0; i<this.history.length; i++){
 
-        var up = this.imagination.history[i];
+        var up = this.history[i];
 
         if (args.exclude_series && up.class_tsid == 'brain_capacity') continue;
         if (args.exclude_series && up.class_tsid == 'quoin_multiplier') continue;
@@ -1501,13 +1517,13 @@ public function admin_imagination_get_upgrades(args){
     var out = {};
 
     out.upgrades = this.admin_imagination_just_upgrades(args);
-    out.coin_multiplier = this.stats.quoin_multiplier;
-    out.brain_capacity = this.skills ? this.skills.capacity : 0;
-    out.energy_tank = this.metabolics.energy.top;
+    out.coin_multiplier = this.player.stats.quoin_multiplier;
+    out.brain_capacity = this.player.skills.capacity;
+    out.energy_tank = this.player.metabolics.energy.top;
 
     // find upgrades that aren't in our history
     out.pre_history = [];
-    if (this.imagination && this.imagination.upgrades){
+    if (this && this.upgrades){
 
         // make map of things we already have
         var got_map = {};
@@ -1516,15 +1532,15 @@ public function admin_imagination_get_upgrades(args){
         }
 
         // loop over skills
-        for (var i in this.imagination.upgrades){
-            for (var j=0; j<this.imagination.upgrades[i].length; j++){
-                var key = this.imagination.upgrades[i][j]+"-"+i;
-                var key2 = (this.imagination.upgrades[i][j]-1)+"-"+i; // 1 sec previous
-                var key3 = (this.imagination.upgrades[i][j]+1)+"-"+i; // 1 sec after
+        for (var i in this.upgrades){
+            for (var j=0; j<this.upgrades[i].length; j++){
+                var key = this.upgrades[i][j]+"-"+i;
+                var key2 = (this.upgrades[i][j]-1)+"-"+i; // 1 sec previous
+                var key3 = (this.upgrades[i][j]+1)+"-"+i; // 1 sec after
                 if (!got_map[key] && !got_map[key2] && !got_map[key3]){
                     out.pre_history.push({
                         upgrade: i,
-                        when: this.imagination.upgrades[i][j],
+                        when: this.upgrades[i][j],
                         cost: 0,
                         amount: 0
                     });
@@ -1554,13 +1570,12 @@ public function admin_imagination_count_upgrades(){
     // this count is not correct, since it really just counts unique card class_tsids
     // and you can have multiple of many cards
 
-    if (!this.imagination) return 0;
-    if (!this.imagination.upgrades) return 0;
-    return utils.array_keys(this.imagination.upgrades).length;
+    if (!this.upgrades) return 0;
+    return Utils.array_keys(this.upgrades).length;
 }
 
 public function imagination_rollback_brain_capacity(args){
-    if (!this.imagination || this.imagination.brain_capacity_refunded) return;
+    if (!this || this.brain_capacity_refunded) return;
 
     var upgrades = this.admin_imagination_just_upgrades(args);
 
@@ -1582,21 +1597,19 @@ public function imagination_rollback_brain_capacity(args){
 
         var message = "All those Brain Capacity upgrades you purchased? Refunded! Why? Because we had some pricing bugs and didn't explain things very well. Sorry about that!\n\n";
         message += "But in (almost) all cases, the upgrades are now significantly cheaper and you have all your imagination back so you can make the right decisions. The decisions you always wanted to make.\n\n";
-        message += "In your case, "+pluralize(upgrades_removed, "upgrade", "upgrades")+" were refunded and you got "+img_refunded+" iMG back in total. Your current brain capacity is "+this.player.skills.get_brain_capacity()+".\n\n";
+        message += "In your case, "+Common.pluralize(upgrades_removed, "upgrade", "upgrades")+" were refunded and you got "+img_refunded+" iMG back in total. Your current brain capacity is "+this.player.skills.get_brain_capacity()+".\n\n";
         message += "Also, enjoy this 5-pack of Awesome Stew on the house.\n\n";
         message += "Love,\n";
         message += "Team Tiny Speck";
         this.player.mail.mail_send_special_item("awesome_stew", 5, message, 1);
     }
 
-    this.imagination.brain_capacity_refunded = true;
+    this.brain_capacity_refunded = true;
 }
 
 public function imagination_rollback_quoin_multiplier(args){
-    if (!this.imagination) return;
-
     var multiplier = this.player.stats.stats_get_quoin_multiplier();
-    if (multiplier <= config.quoin_capacity_limit) return;
+    if (multiplier <= config.base.quoin_capacity_limit) return;
 
     var upgrades = this.admin_imagination_just_upgrades(args);
 
@@ -1608,7 +1621,7 @@ public function imagination_rollback_quoin_multiplier(args){
         var up = upgrades[i];
         if (up && up.upgrade == 'quoin_multiplier' && up.cost){
             running_total += up.amount;
-            if (running_total > config.quoin_capacity_limit){
+            if (running_total > config.base.quoin_capacity_limit){
                 img_refunded += up.cost;
                 this.player.stats.stats_add_imagination(up.cost, {type: 'quoin_multiplier_refund'});
                 capacity_refunded += up.amount;
@@ -1636,8 +1649,6 @@ public function imagination_rollback_quoin_multiplier(args){
 }
 
 public function imagination_check_quoin_multiplier(args){
-    if (!this.imagination) return;
-
     var upgrades = this.admin_imagination_just_upgrades(args);
 
     var capacity_refunded = 0;
@@ -1652,7 +1663,7 @@ public function imagination_check_quoin_multiplier(args){
 
             if (up.cost){
                 running_total += up.amount;
-                if (running_total > config.quoin_capacity_limit){
+                if (running_total > config.base.quoin_capacity_limit){
                     img_refunded += up.cost;
                     capacity_refunded += up.amount;
                     upgrades_removed++;

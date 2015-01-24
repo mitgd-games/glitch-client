@@ -2,7 +2,7 @@ package com.reversefold.glitch.server.data {
     public class Imagination {
 
 
-public var data_imagination_upgrades = {
+public static var data_imagination_upgrades = {
 	achievement_reward_bonus_1: {
 		name: "Overachiever I",
 		desc: "Get 2% more rewards from each Achievement you earn. One less thing for the bucket list!",

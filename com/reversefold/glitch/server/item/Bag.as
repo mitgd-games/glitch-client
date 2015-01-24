@@ -14,7 +14,7 @@ public function getContents(){
 }
 
 // Gets the full contents of the bag and subbags, with tsids as keys
-public function getAllContents(evaluator){
+public function getAllContents(evaluator=null){
 	var itemstacks = {};
 	var contents = this.getContents();
 

@@ -124,7 +124,7 @@ public function broadcastPCRSChange(){
         }
     };
 
-    this.apiSendMsg(rsp);
+    this.player.apiSendMsg(rsp);
     this.player.buddies.reverseBuddiesSendMsg(rsp);
 }
 

@@ -135,7 +135,7 @@ public function storeBuy(msg, item){
 
     if (count<=0){
         log.info("positive counts only");
-        return this.apiSendMsg(make_fail_rsp(msg, 0, "You can't buy a negative/zero amount of things!"));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, "You can't buy a negative/zero amount of things!"));
     }
 
 
@@ -149,7 +149,7 @@ public function storeBuy(msg, item){
 
     if (!num_keys(store_items)){
         log.info("store doesn't sell that item");
-        return this.apiSendMsg(make_fail_rsp(msg, 0, "This store no longer sells that item."));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, "This store no longer sells that item."));
     }
 
 
@@ -171,14 +171,14 @@ public function storeBuy(msg, item){
         var expected_price = intval(msg.price) * count;
         if (expected_price != total_cost){
             log.info("price mismatch: "+expected_price+" vs "+total_cost);
-            return this.apiSendMsg(make_fail_rsp(msg, 0, "Oops, the price appears to have changed underneath you. Please try your purchase again."));
+            return this.player.apiSendMsg(make_fail_rsp(msg, 0, "Oops, the price appears to have changed underneath you. Please try your purchase again."));
         }
     }
 
     if (!this.player.stats.stats_has_currants(total_cost)){
         log.info("you don't have enough money");
         this.player.sendActivity("Sorry, you can't afford that.");
-        return this.apiSendMsg(make_fail_rsp(msg, 0, "Sorry, you can't afford that."));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, "Sorry, you can't afford that."));
     }
 
 
@@ -190,7 +190,7 @@ public function storeBuy(msg, item){
     if (remainder == count){
         log.info("your bag is full");
         this.player.sendActivity("You can't buy that -- there's no more room in your inventory!");
-        return this.apiSendMsg(make_fail_rsp(msg, 0, "You can't buy that -- there's no more room in your inventory!"));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, "You can't buy that -- there's no more room in your inventory!"));
     }
 
     var got = count-remainder;
@@ -259,7 +259,7 @@ public function storeBuy(msg, item){
 
     if (item.onPurchase) item.onPurchase(this, msg);
 
-    return this.apiSendMsg(make_ok_rsp(msg));
+    return this.player.apiSendMsg(make_ok_rsp(msg));
 }
 
 
@@ -292,12 +292,12 @@ public function storeSell(msg, item){
 
     if (!stack){
         log.info("no stack");
-        return this.apiSendMsg(make_fail_rsp(msg, 0, "I can't find the thing you wanted to sell."));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, "I can't find the thing you wanted to sell."));
     }
 
     if (stack.class_tsid != msg.sellstack_class){
         log.info("class mismatch");
-        return this.apiSendMsg(make_fail_rsp(msg, 0, "I found the thing you wanted to sell, but it's not the type of thing I was expecting."));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, "I found the thing you wanted to sell, but it's not the type of thing I was expecting."));
     }
 
     //log.info("have: "+have_count);
@@ -305,12 +305,12 @@ public function storeSell(msg, item){
 
     if (msg.count <= 0){
         log.info("can only sell a positive count");
-        return this.apiSendMsg(make_fail_rsp(msg, 0, "You can't sell negative/zero amount of things."));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, "You can't sell negative/zero amount of things."));
     }
 
     if (msg.count > have_count){
         log.info("don't have enough to sell");
-        return this.apiSendMsg(make_fail_rsp(msg, 0, "Sorry, you don't have as much as you tried to sell."));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, "Sorry, you don't have as much as you tried to sell."));
     }
 
 
@@ -324,7 +324,7 @@ public function storeSell(msg, item){
     //log.info("PRICE: store sell rounded and multiplied cost is "+cost);
     if (cost <= 0){
         log.info("can't be sold - has no value");
-        return this.apiSendMsg(make_fail_rsp(msg, 0, "You can't sell that item."));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, "You can't sell that item."));
     }
 
     var cost_no_upgrade = cost;
@@ -412,7 +412,7 @@ public function storeSell(msg, item){
     }
 
     this.player.sendActivity(text);
-    return this.apiSendMsg(make_ok_rsp(msg));
+    return this.player.apiSendMsg(make_ok_rsp(msg));
 }
 
 // Handle Wheeler Dealer imagination upgrades
@@ -455,19 +455,19 @@ public function storeGetUpgradeMultiplier(){
 // Handle Wheeler Dealer imagination upgrades
 public function storeGetUpgradeName(){
     if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_4")){
-        var upgrade = config.data_imagination_upgrades["vendors_higher_buy_price_4"];
+        var upgrade = Imagination.data_imagination_upgrades["vendors_higher_buy_price_4"];
         return upgrade.name;
     }
     else if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_3")){
-        var upgrade = config.data_imagination_upgrades["vendors_higher_buy_price_3"];
+        var upgrade = Imagination.data_imagination_upgrades["vendors_higher_buy_price_3"];
         return upgrade.name;
     }
     else if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_2")){
-        var upgrade = config.data_imagination_upgrades["vendors_higher_buy_price_2"];
+        var upgrade = Imagination.data_imagination_upgrades["vendors_higher_buy_price_2"];
         return upgrade.name;
     }
     else if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_1")){
-        var upgrade = config.data_imagination_upgrades["vendors_higher_buy_price_1"];
+        var upgrade = Imagination.data_imagination_upgrades["vendors_higher_buy_price_1"];
         return upgrade.name;
     }
 
@@ -494,7 +494,7 @@ public function storeSellCheck(msg, item){
 
     if (!stack){
         log.info("invalid item class to check: "+msg.sellstack_class+' - '+msg.sellstack_tsid);
-        return this.apiSendMsg(make_fail_rsp(msg, 0, "Oops, I can't find that item in your inventory."));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, "Oops, I can't find that item in your inventory."));
     }
 
     //
@@ -507,7 +507,7 @@ public function storeSellCheck(msg, item){
     //log.info("PRICE is (rounded) "+cost);
     if (cost <= 0){
         log.info("can't be sold - has no value");
-        return this.apiSendMsg(make_fail_rsp(msg, 0, "You can't sell that kind of thing."));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, "You can't sell that kind of thing."));
     }
 
     //
@@ -515,7 +515,7 @@ public function storeSellCheck(msg, item){
     //
 
     if (stack.hasTag('no_vendor')){
-        return this.apiSendMsg(make_fail_rsp(msg, 0, "You can't sell that kind of thing."));
+        return this.player.apiSendMsg(make_fail_rsp(msg, 0, "You can't sell that kind of thing."));
     }
 
     var rsp = make_ok_rsp(msg);
@@ -531,7 +531,7 @@ public function storeSellCheck(msg, item){
 
     stack.apiPutBack();
 
-    return this.apiSendMsg(rsp);
+    return this.player.apiSendMsg(rsp);
 }
 
 // Finds the item in either the store's inventory of player-sold items or its own reserve

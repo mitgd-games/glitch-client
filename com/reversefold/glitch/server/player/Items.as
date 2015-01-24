@@ -570,7 +570,7 @@ public function createItemFromXY(class_id, num, x, y, destroy_remainder, props){
     return remaining + remaining_two;
 }
 
-public function createItemFromFamiliar(class_id, num, props){
+public function createItemFromFamiliar(class_id, num, props=null){
     var s = Server.instance.apiNewItemStackFromFamiliar(class_id, num);
     if (!s) return num;
 
@@ -823,9 +823,9 @@ public function items_added(stack){
     this.player.counters.counters_increment('items_collected', stack.class_tsid);
     var seen_count = this.player.counters.counters_get_label_count('items_collected', stack.class_tsid);
     var discovery_dialog_shown = false;
-    if (seen_count == 1 && this.player.isOnline() && (this.has_done_intro || this.player.location.class_tsid == 'newbie_island')){
+    if (seen_count == 1 && this.player.isOnline() && (this.player.has_done_intro || this.player.location.class_tsid == 'newbie_island')){
         var context = {'verb':'new_item','stack':stack.class_tsid};
-        var xp = this.player.stats.stats_add_xp(config.qurazy_rewards[this.stats.level-1], false, context);
+        var xp = this.player.stats.stats_add_xp(config.qurazy_rewards[this.player.stats.level-1], false, context);
         if (stack.suppress_discovery) {
             // This stack has been set to supress the discovery dialogue when added. Remove that property.
             delete stack.suppress_discovery;
@@ -841,13 +841,13 @@ public function items_added(stack){
                     'callback_msg_when_closed': 'item_discovery_dialog_closed'
                 };
 
-                this.apiSendMsg(rsp);
+                this.player.apiSendMsg(rsp);
                 this.player.announcements.announce_sound('DISCOVER_USEFUL_NEW_ITEM');
                 discovery_dialog_shown = true;
             }
         }
     }
-    else if (seen_count == 1 && (!this.has_done_intro)){
+    else if (seen_count == 1 && (!this.player.has_done_intro)){
         this.player.announcements.overlay_dismiss('pack_instructions');
         this.player.showPack();
     }

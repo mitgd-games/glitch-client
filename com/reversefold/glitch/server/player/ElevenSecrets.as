@@ -87,7 +87,7 @@ public function resetSecretLocationsQuest() {
     for (var i = 0; i < num; i ++) {
         if (this.secret_locations[i]) {
             //this.player.sendActivity('Canceling overlay for '+ this.secret_locations[i].id);
-            this.apiSendMsg({type: 'overlay_cancel', uid: 'secret_location_marker '+ this.secret_locations[i].id});
+            this.player.apiSendMsg({type: 'overlay_cancel', uid: 'secret_location_marker '+ this.secret_locations[i].id});
         }
     }
 
@@ -141,7 +141,7 @@ public function clearAllSecretOverlays() {
 
     var max = config.secret_spots.length;
     for (var i = 0; i < max; i ++) {
-        this.apiSendMsg({type: 'overlay_cancel', uid: 'secret_location_marker '+ config.secret_spots[i].id});
+        this.player.apiSendMsg({type: 'overlay_cancel', uid: 'secret_location_marker '+ config.secret_spots[i].id});
     }
 }
 
@@ -153,7 +153,7 @@ public function clearRemainingSecretOverlays() {
         for (var i = 0; i < num; i ++) {
             if (    this.secret_locations[i]
                 ) {
-                this.apiSendMsg({type: 'overlay_cancel', uid: 'secret_location_marker '+ this.secret_locations[i].id});
+                this.player.apiSendMsg({type: 'overlay_cancel', uid: 'secret_location_marker '+ this.secret_locations[i].id});
                 this.secret_locations[i] = null;
             }
         }
