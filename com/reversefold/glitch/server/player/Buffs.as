@@ -30,7 +30,7 @@ package com.reversefold.glitch.server.player {
 public function buffs_init(){
 
     if (!this.buffs){
-        //this = apiNewOwnedDC(this);
+        //this = Server.instance.apiNewOwnedDC(this);
         this.label = 'Buffs';
         this.buffs = {};
         this.events = {};
@@ -45,7 +45,7 @@ public function buffs_init(){
 }
 
 public function buffs_delete(){
-	apiDeleteTimers();
+	Server.instance.apiDeleteTimers();
 	
 	this.player.buffs = new Buffs(config, player);
 	/*

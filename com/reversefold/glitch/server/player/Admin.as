@@ -22,7 +22,7 @@ public function adminSetLocation(loc){
 
 log.info('arg', loc);
 
-    var location = apiFindObject(loc.tsid);
+    var location = Server.instance.apiFindObject(loc.tsid);
 
     if (!location){
         return 0;
@@ -132,7 +132,7 @@ public function adminIsBuddy(args){
 public function adminHasBagSpace(args){
     var stack = false;;
     if (args && args.stack_tsid){
-        stack = apiFindObject(args.stack_tsid);
+        stack = Server.instance.apiFindObject(args.stack_tsid);
     }
     return this.isBagFull(stack) ? 0 : 1;
 }
@@ -176,7 +176,7 @@ public function adminExecMulti(args){
 
 public function adminDebugSkills(){
     this.adminGetSkills();
-    return apiGetIOOps();
+    return Server.instance.apiGetIOOps();
 }
 
 public function adminGetProfile(args){
@@ -189,7 +189,7 @@ public function adminGetProfile(args){
     // online?
     //
 
-    out.is_online = apiIsPlayerOnline(this.tsid);
+    out.is_online = Server.instance.apiIsPlayerOnline(this.tsid);
 
 
     //
@@ -227,7 +227,7 @@ public function adminGetProfile(args){
         // does the viewer count us as a contact
         //
 
-        var viewer = apiFindObject(args.viewer_tsid);
+        var viewer = Server.instance.apiFindObject(args.viewer_tsid);
         var ret = viewer ? viewer.getBuddyGroup(this.tsid) : null;
         if (ret != null){
             out.is_rev_contact = 1;
@@ -326,7 +326,7 @@ public function adminGetFullInfo(args){
     // online?
     //
 
-    out.is_online = apiIsPlayerOnline(this.tsid);
+    out.is_online = Server.instance.apiIsPlayerOnline(this.tsid);
 
     if (out.is_online){
         out.last_online = 0;
@@ -365,7 +365,7 @@ public function adminGetFullInfo(args){
         // does the viewer count us as a contact
         //
 
-        var viewer = apiFindObject(args.viewer_tsid);
+        var viewer = Server.instance.apiFindObject(args.viewer_tsid);
         var ret = viewer ? viewer.getBuddyGroup(this.tsid) : null;
         if (ret != null){
             out.is_rev_contact = true;
@@ -440,7 +440,7 @@ public function adminGetFullInfo(args){
 }
 
 public function adminGetLocationInfo(){
-    var is_online = apiIsPlayerOnline(this.tsid);
+    var is_online = Server.instance.apiIsPlayerOnline(this.tsid);
     var out = {
         is_online: is_online,
 
@@ -461,7 +461,7 @@ public function adminGetLocationInfo(){
 }
 
 public function adminIsOnline(){
-    return apiIsPlayerOnline(this.tsid);
+    return Server.instance.apiIsPlayerOnline(this.tsid);
 }
 
 public function adminHasUnlearningAbility() {
@@ -505,7 +505,7 @@ public function adminGetGodProfile(args){
     // online?
     //
 
-    out.is_online = apiIsPlayerOnline(this.tsid);
+    out.is_online = Server.instance.apiIsPlayerOnline(this.tsid);
     out.date_last_login = this.date_last_login;
 
 
@@ -943,7 +943,7 @@ public function admin_get_remote_location(){
         for (var hub_id in config.data_maps.streets[mote_id]){
             for (var tsid in config.data_maps.streets[mote_id][hub_id]){
 
-                var street = apiFindObject(tsid);
+                var street = Server.instance.apiFindObject(tsid);
                 if (street.isRemote) return street;
             }
         }
@@ -986,11 +986,11 @@ public function admin_get_inventory_cabinets(){
     out['cabinets'] = [];
     if (this.houses){
         for (var house_tsid in this.houses){
-            var house = apiFindObject(house_tsid);
+            var house = Server.instance.apiFindObject(house_tsid);
             var items = house.admin_get_items();
 
             for (var item_tsid in items.items){
-                var item = apiFindObject(item_tsid);
+                var item = Server.instance.apiFindObject(item_tsid);
                 if (item.is_cabinet){
                     out['cabinets'].push({
                         class_tsid: item.class_id,
@@ -1152,7 +1152,7 @@ public function admin_renamed(args){
 public function adminGetItemDescExtras(args){
     if (!args || !args.class_id) return {};
 
-    var proto = apiFindItemPrototype(args.class_id);
+    var proto = Server.instance.apiFindItemPrototype(args.class_id);
     if (!proto || !proto.getDescExtras) return {};
 
     return proto.getDescExtras(this);
@@ -1164,7 +1164,7 @@ public function adminGetGodExtras(args){
         is_in_coneofsilence: this.player.isInConeOfSilence(),
         is_in_help_coneofsilence: this.player.isInConeOfSilence('help'),
         img_migrated: (this.imagination && this.imagination.converted_at) ? this.imagination.converted_at : 0,
-        is_online: apiIsPlayerOnline(this.tsid)
+        is_online: Server.instance.apiIsPlayerOnline(this.tsid)
     };
 }
 
@@ -1224,7 +1224,7 @@ public function admin_get_named_animals(){
             var row = utils.apiCopyHash(this.animals_named[i]);
 
             var item = null;
-            if (row.tsid) item = apiFindObject(row.tsid);
+            if (row.tsid) item = Server.instance.apiFindObject(row.tsid);
             if (item) row.current = item.getNameInfo();
 
             out[i] = row;
@@ -1390,7 +1390,7 @@ public function admin_create_new_home(){
 public function admin_craftytasking_robot_category_items(args){
     var crafty_bot = null;
     if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = apiFindObject(this.crafty_bot.tsid);
+        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
@@ -1406,7 +1406,7 @@ public function admin_craftytasking_robot_sequenceSteps(args){
 
     var crafty_bot = null;
     if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = apiFindObject(this.crafty_bot.tsid);
+        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
@@ -1422,7 +1422,7 @@ public function admin_craftytasking_robot_queueAdd(args){
 
     var crafty_bot = null;
     if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = apiFindObject(this.crafty_bot.tsid);
+        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
@@ -1434,7 +1434,7 @@ public function admin_craftytasking_robot_queueRemove(args){
 
     var crafty_bot = null;
     if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = apiFindObject(this.crafty_bot.tsid);
+        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
@@ -1445,7 +1445,7 @@ public function admin_craftytasking_robot_queueRemove(args){
 public function admin_craftytasking_robot_get_status(args){
     var crafty_bot = null;
     if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = apiFindObject(this.crafty_bot.tsid);
+        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
@@ -1460,7 +1460,7 @@ public function admin_craftytasking_robot_get_status(args){
 public function admin_craftytasking_robot_stop(args){
     var crafty_bot = null;
     if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = apiFindObject(this.crafty_bot.tsid);
+        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
@@ -1474,7 +1474,7 @@ public function admin_craftytasking_robot_stop(args){
 public function admin_craftytasking_robot_canRefuel(args){
     var crafty_bot = null;
     if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = apiFindObject(this.crafty_bot.tsid);
+        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
@@ -1489,7 +1489,7 @@ public function admin_craftytasking_robot_canRefuel(args){
 public function admin_craftytasking_robot_refuel(args){
     var crafty_bot = null;
     if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = apiFindObject(this.crafty_bot.tsid);
+        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
@@ -1502,7 +1502,7 @@ public function admin_craftytasking_robot_refuel(args){
 public function admin_craftytasking_robot_queue(args){
     var crafty_bot = null;
     if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = apiFindObject(this.crafty_bot.tsid);
+        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
@@ -1538,7 +1538,7 @@ public function admin_craftytasking_robot_queue(args){
 public function admin_craftytasking_robot_queueItem(args){
     var crafty_bot = null;
     if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = apiFindObject(this.crafty_bot.tsid);
+        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
@@ -1649,7 +1649,7 @@ public function admin_pack_more_moving_boxes(){
         for (var i in this.houses_backup){
             if (this.player.houses.houses_is_our_home(i)) continue;
 
-            var pol = apiFindObject(i);
+            var pol = Server.instance.apiFindObject(i);
             if (pol){
                 pol.pack_moving_boxes();
             }
@@ -1678,7 +1678,7 @@ public function admin_fix_home_door(){
 
 public function admin_remove_deleted_houses(){
     for (var i in this.houses){
-        var loc = apiFindObject(i);
+        var loc = Server.instance.apiFindObject(i);
         if (!loc) continue;
 
         if (loc.getProp('is_deleted')){
@@ -1789,7 +1789,7 @@ public function adminGetFriends(args){
     };
 
     if (args.fetch_online){
-        out.online = apiCallMethodForOnlinePlayers('buddies_get_simple_online_info', out.fwd);
+        out.online = Server.instance.apiCallMethodForOnlinePlayers('buddies_get_simple_online_info', out.fwd);
     }
 
     return out;

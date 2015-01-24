@@ -31,7 +31,7 @@ package com.reversefold.glitch.server.player {
 
 public function counters_init(){
     if (this.counters === undefined || this.counters === null){
-        //this.counters = apiNewOwnedDC(this);
+        //this.counters = Server.instance.apiNewOwnedDC(this);
         this.label = 'Counters';
         this.counters = new Dictionary();
     }

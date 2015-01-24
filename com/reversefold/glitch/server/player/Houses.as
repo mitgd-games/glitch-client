@@ -51,7 +51,7 @@ public function houses_logout(){
 
     if (this.houses){
         for (var i in this.houses){
-            var house = apiFindObject(i);
+            var house = Server.instance.apiFindObject(i);
             if (!house || house.getProp('is_public')) continue;
 
             if (!house.pols_trusteeOnline(this)){
@@ -103,7 +103,7 @@ public function house_set_auth(key){
     var loc_tsid = a[0];
     var pc_tsid = a[1];
 
-    var pc = apiFindObject(pc_tsid);
+    var pc = Server.instance.apiFindObject(pc_tsid);
     pc.sendOnlineActivity(this.player.linkifyLabel()+" has let you into their location");
     pc.prompts_add({
         txt     : this.player.linkifyLabel()+" has let you into their house.",
@@ -204,7 +204,7 @@ public function houses_has_house(){
     //return num_keys(this.houses) || num_keys(this.home) ? 1 : 0;
 
     for (var i in this.houses){
-        var house = apiFindObject(i);
+        var house = Server.instance.apiFindObject(i);
         if (!house.getProp('is_home') && !house.getProp('is_deleted')) return true;
     }
 
@@ -215,7 +215,7 @@ public function houses_get_login(){
 
     if (!this.houses) this.houses = {};
     for (var i in this.houses){
-        var house = apiFindObject(i);
+        var house = Server.instance.apiFindObject(i);
         if (house.getProp('is_home') || house.getProp('is_deleted')) continue;
 
         return house.get_client_info();
@@ -253,7 +253,7 @@ public function houses_get(){
 public function houses_get_all(){
     var ret = [];
     for (var i in this.houses){
-        var loc = apiFindObject(i);
+        var loc = Server.instance.apiFindObject(i);
         if (loc && !loc.getProp('is_deleted')) ret.push();
     }
 
@@ -265,7 +265,7 @@ public function houses_get_all(){
 public function houses_get_old(){
     var ret = [];
     for (var i in this.houses){
-        var house = apiFindObject(i);
+        var house = Server.instance.apiFindObject(i);
         if (house && !house.getProp('is_home')) ret.push(house);
     }
 
@@ -294,7 +294,7 @@ public function houses_get_entrances(){
 
     var entrances = {};
     for (var i in this.houses){
-        var house = apiFindObject(i);
+        var house = Server.instance.apiFindObject(i);
         if (house && !house.getProp('is_deleted')){
             var links = house.geo_links_get_outgoing();
             for (var l in links){
@@ -409,7 +409,7 @@ public function houses_familiar_no_owner(choice, details){
 
     if (choice == 'purchase'){
 
-        var loc = apiFindObject(details.loc_tsid);
+        var loc = Server.instance.apiFindObject(details.loc_tsid);
 
         var ret = loc.pols_buyHouse(this);
 
@@ -467,7 +467,7 @@ public function houses_familiar_knock(choice, details){
 
     if (choice == 'start'){
 
-        var owner = apiFindObject(details.owner_tsid);
+        var owner = Server.instance.apiFindObject(details.owner_tsid);
 
         if (this.player.buddies.buddies_is_ignored_by(owner)){
             return {
@@ -501,7 +501,7 @@ public function houses_familiar_knock(choice, details){
 
     if (choice == 'knock'){
 
-        var loc = apiFindObject(details.loc_tsid);
+        var loc = Server.instance.apiFindObject(details.loc_tsid);
 
         loc.owner.houses_auth_request(loc, this);
 
@@ -588,7 +588,7 @@ public function houses_familiar_org_create(choice, details){
 
     if (choice == 'purchase'){
 
-        var loc = apiFindObject(details.loc_tsid);
+        var loc = Server.instance.apiFindObject(details.loc_tsid);
 
         //
         // Charge them
@@ -637,7 +637,7 @@ public function houses_familiar_org_create(choice, details){
 }
 
 public function houses_familiar_unnamed_org(choice, details){
-    var loc = apiFindObject(details.loc_tsid);
+    var loc = Server.instance.apiFindObject(details.loc_tsid);
     var org = loc.owner;
     if (!org) return {done: true};
 
@@ -740,7 +740,7 @@ public function houses_remove_all(){
     if (!this.houses) this.houses = {};
 
     for (var i in this.houses){
-        var loc = apiFindObject(i);
+        var loc = Server.instance.apiFindObject(i);
         if (loc) loc.pols_sellHouse(this);
     }
 
@@ -981,7 +981,7 @@ public function admin_houses_visit(args){
 public function houses_visit(player_tsid){
 
     // find player
-    var player = apiFindObject(player_tsid);
+    var player = Server.instance.apiFindObject(player_tsid);
     if (!player){
         return {
             ok: 0,
@@ -1017,7 +1017,7 @@ public function houses_visit(player_tsid){
         var followers_have_clearance = 1;
 
         for (var i in this.followers){
-            var follower = apiFindObject(i);
+            var follower = Server.instance.apiFindObject(i);
 
             var fret = house.pols_canEnter(follower);
 
@@ -1084,7 +1084,7 @@ public function houses_record_leave(){
     if (this.location.isInstance() && this.location.class_tsid != 'newbie_island'){
         var exit = this.player.instances.instances_unwind_exit();
         if (exit && exit.tsid){
-            var exit_loc = apiFindObject(exit.tsid);
+            var exit_loc = Server.instance.apiFindObject(exit.tsid);
             if (exit_loc && (!exit_loc.pols_is_pol() || !exit_loc.getProp('is_home'))){
                 this.home_leave = exit;
             }
@@ -1129,7 +1129,7 @@ public function houses_create_location(label, type, db_sync){
     // get the template/source
     //
 
-    var source = apiFindObject(pol_cfg.template);
+    var source = Server.instance.apiFindObject(pol_cfg.template);
 
     if (!source.tsid){
         return {
@@ -1189,7 +1189,7 @@ public function houses_is_at_home(){
 }
 
 public function houses_is_our_home(tsid){
-    var loc = apiFindObject(tsid);
+    var loc = Server.instance.apiFindObject(tsid);
     if (!loc) return false;
     return loc.homes_belongs_to(this.tsid);
 }
@@ -1316,7 +1316,7 @@ public function houses_leave(){
         return config.is_dev ? this.player.teleportHome() : this.player.teleportSomewhere();
     }
 
-    var loc = apiFindObject(target.tsid);
+    var loc = Server.instance.apiFindObject(target.tsid);
     if (loc && loc.class_tsid == 'newbie_island'){
         this.player.removeFollowers();
     }
@@ -1332,7 +1332,7 @@ public function houses_get_previous_location(){
     // Newxp forcing to newbie island
     if (this.player.quests.getQuestStatus('leave_gentle_island') == 'todo' && !config.is_dev){
         if (target && target.tsid){
-            loc = apiFindObject(target.tsid);
+            loc = Server.instance.apiFindObject(target.tsid);
             if (loc && loc.class_tsid == 'newbie_island') return target;
         }
 
@@ -1346,7 +1346,7 @@ public function houses_get_previous_location(){
 
     if (!target || !target.tsid) return {};
 
-    loc = apiFindObject(target.tsid);
+    loc = Server.instance.apiFindObject(target.tsid);
     if (!loc) return {};
 
     if ((loc.is_hidden() || loc.jobs_is_street_locked()) && loc.class_tsid != 'newbie_island'){
@@ -1368,7 +1368,7 @@ public function houses_get_previous_location_client(){
     var target = this.houses_get_previous_location();
     if (!target.tsid) return {};
 
-    return apiFindObject(target.tsid).getMapInfo();
+    return Server.instance.apiFindObject(target.tsid).getMapInfo();
 }
 
 public function admin_reset_house(args){
@@ -1679,7 +1679,7 @@ public function houses_style_set(t){
         }
     }
 
-    apiLogAction('HOME_STYLE_SWITCH', 'pc='+this.tsid, 'location='+this.location.tsid, 'street_type='+s, 'old_style='+this.location.style, 'new_style='+t);
+    Server.instance.apiLogAction('HOME_STYLE_SWITCH', 'pc='+this.tsid, 'location='+this.location.tsid, 'street_type='+s, 'old_style='+this.location.style, 'new_style='+t);
 
     // do eeet
     this.location.homes_set_style(t);
@@ -1778,7 +1778,7 @@ public function houses_rebuild_from_template(){
 
 public function houses_signpost(player_tsid){
     // find player
-    var player = apiFindObject(player_tsid);
+    var player = Server.instance.apiFindObject(player_tsid);
     if (!player){
         return {
             ok: 0,

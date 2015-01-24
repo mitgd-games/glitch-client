@@ -36,7 +36,7 @@ package com.reversefold.glitch.server.player {
 
 public function achievements_init(){
     if (this.achievements === null){
-        //this.achievements = apiNewOwnedDC(this);
+        //this.achievements = Server.instance.apiNewOwnedDC(this);
         this.label = 'Achievements';
         this.achievements = new Dictionary();
         this.queue = [];
@@ -67,7 +67,7 @@ public function achievements_login(){
 }
 
 public function achievements_delete_all(){
-	apiDeleteTimers();
+	Server.instance.apiDeleteTimers();
 	this.player.achievements = new Achievements(config, player);
 	/*
     if (this.achievements){

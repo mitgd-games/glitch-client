@@ -172,7 +172,7 @@ public function findArtifactForPiece(class_tsid){
 
 
 public function createArtifact(artifact_type){
-    var prot = apiFindItemPrototype(artifact_map[artifact_type].artifact);
+    var prot = Server.instance.apiFindItemPrototype(artifact_map[artifact_type].artifact);
     this.player.announcements.announce_vp_overlay({
             duration: 5000,
             locking: true,
@@ -198,7 +198,7 @@ public function createArtifact(artifact_type){
 
 
 public function createArtifactNecklace(piece_type){
-    var prot = apiFindItemPrototype(artifact_necklaces[piece_type].produces);
+    var prot = Server.instance.apiFindItemPrototype(artifact_necklaces[piece_type].produces);
     this.player.announcements.announce_vp_overlay({
             duration: 5000,
             locking: true,
@@ -240,7 +240,7 @@ public function items_has_list(class_list, num) {
 // Return what, if anything, we have from the drop table
 public function items_has_drops(drop_table, num) {
     var out_list = [];
-    var prot = apiFindItemPrototype('catalog_drop_tables');
+    var prot = Server.instance.apiFindItemPrototype('catalog_drop_tables');
     if (prot.drop_tables[drop_table]){
         var table = prot.drop_tables[drop_table];
         for (var drop_chance in table.drops){
@@ -295,7 +295,7 @@ public function items_format_multiple(items){
                 out.push(items[i]+' currants');
             }
         }else{
-            var proto = apiFindItemPrototype(i);
+            var proto = Server.instance.apiFindItemPrototype(i);
 
             if (items[i] == 1){
                 out.push(proto.article+" "+proto.name_single);
@@ -492,7 +492,7 @@ public function takeItemsFromBag(class_id, num){
 }
 
 public function createItem(class_id, num, destroy_remainder, props){
-    var s = apiNewItemStack(class_id, num);
+    var s = Server.instance.apiNewItemStack(class_id, num);
     if (!s) return num;
 
     var size = s.count;
@@ -509,7 +509,7 @@ public function createItem(class_id, num, destroy_remainder, props){
 }
 
 public function createItemFromGround(class_id, num, destroy_remainder, props){
-    var s = apiNewItemStackFromXY(class_id, num, this.x, this.y);
+    var s = Server.instance.apiNewItemStackFromXY(class_id, num, this.x, this.y);
     if (!s) return num;
 
     if (props) {
@@ -540,7 +540,7 @@ public function createItemFromGround(class_id, num, destroy_remainder, props){
 }
 
 public function createItemFromXY(class_id, num, x, y, destroy_remainder, props){
-    var s = apiNewItemStackFromXY(class_id, num, x, y);
+    var s = Server.instance.apiNewItemStackFromXY(class_id, num, x, y);
     if (!s) return num;
 
     if (props) {
@@ -571,7 +571,7 @@ public function createItemFromXY(class_id, num, x, y, destroy_remainder, props){
 }
 
 public function createItemFromFamiliar(class_id, num, props){
-    var s = apiNewItemStackFromFamiliar(class_id, num);
+    var s = Server.instance.apiNewItemStackFromFamiliar(class_id, num);
     if (!s) return num;
 
     if (props) {
@@ -674,7 +674,7 @@ public function createItemFromOffset(class_id, num, sourcePosition, destroy_rema
     var ix = (sourcePosition ? sourcePosition.x : 0) + ((sourceItem) ? sourceItem.x : 0);
     var iy = (sourcePosition ? sourcePosition.y : 0) + ((sourceItem) ? sourceItem.y : 0);
 
-    var s = apiNewItemStackFromXY(class_id, num, ix, iy);
+    var s = Server.instance.apiNewItemStackFromXY(class_id, num, ix, iy);
     if (!s) return num;
 
     if (this.isBagFull(s)){
@@ -705,7 +705,7 @@ public function createItemFromOffsetWithEscrow(class_id, num, sourcePosition, de
     var ix = (sourcePosition ? sourcePosition.x : 0) + ((sourceItem) ? sourceItem.x : 0);
     var iy = (sourcePosition ? sourcePosition.y : 0) + ((sourceItem) ? sourceItem.y : 0);
 
-    var s = apiNewItemStackFromXY(class_id, num, ix, iy);
+    var s = Server.instance.apiNewItemStackFromXY(class_id, num, ix, iy);
     if (!s) return num;
 
     if (this.isBagFull(s)){
@@ -738,7 +738,7 @@ public function createItemFromOffsetWithEscrow(class_id, num, sourcePosition, de
 
 
 public function createItemFromSource(class_id, num, sourceItem, destroy_remainder, props){
-    var s = apiNewItemStackFromSource(class_id, num, sourceItem);
+    var s = Server.instance.apiNewItemStackFromSource(class_id, num, sourceItem);
     if (!s) return num;
 
     if (props) {
@@ -1035,7 +1035,7 @@ public function zilloweenTreater(pc, candy_tsid) {
     }
 
     if (!this.zilloweenTreaters) {
-        this.zilloweenTreaters = apiNewOwnedDC(this);
+        this.zilloweenTreaters = Server.instance.apiNewOwnedDC(this);
         this.zilloweenTreaters.players = {};
     }
 

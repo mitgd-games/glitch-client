@@ -22,7 +22,7 @@ package com.reversefold.glitch.server.player {
 
 public function teleportation_init(){
     if (this.teleportation === undefined || this.teleportation === null){
-        this.teleportation = apiNewOwnedDC(this);
+        this.teleportation = Server.instance.apiNewOwnedDC(this);
         this.teleportation.label = 'Teleportation';
 
         this.teleportation.targets = {};
@@ -117,7 +117,7 @@ public function teleportation_get_all_targets(){
         if (t && t.tsid){
             targets[i] = t;
 
-            var target = apiFindObject(targets[i].tsid);
+            var target = Server.instance.apiFindObject(targets[i].tsid);
             if (!target){
                 //log.info(this+' teleportation_get_all_targets deleting stale target: '+this.teleportation.targets[i]);
                 delete targets[i]; // http://bugs.tinyspeck.com/10452
@@ -153,7 +153,7 @@ public function teleportation_can_teleport(teleport_id, skip_skill, target){
 
     var loc;
     if (target){
-        loc = apiFindObject(target.tsid);
+        loc = Server.instance.apiFindObject(target.tsid);
     }
 
     if (this.is_dead){
@@ -212,7 +212,7 @@ public function teleportation_can_teleport(teleport_id, skip_skill, target){
     }
 
     if (target){
-        loc = apiFindObject(target.tsid);
+        loc = Server.instance.apiFindObject(target.tsid);
         if (!loc || loc.getProp('is_deleted')){
             delete this.teleportation_target;
             return {
@@ -264,7 +264,7 @@ public function teleportation_can_teleport(teleport_id, skip_skill, target){
                 var followers_have_clearance = 1;
 
                 for (var i in this.followers){
-                    var follower = apiFindObject(i);
+                    var follower = Server.instance.apiFindObject(i);
 
                     var fret = loc.pols_canEnter(follower);
 
@@ -286,7 +286,7 @@ public function teleportation_can_teleport(teleport_id, skip_skill, target){
 
         if (this.player.countFollowers){
             for (var i in this.followers){
-                var follower = apiFindObject(i);
+                var follower = Server.instance.apiFindObject(i);
 
                 if (follower.buffs_has('dont_get_caught')){
                     return {
@@ -387,7 +387,7 @@ public function teleportation_teleport(teleport_id, skip_skill, target, skip_cos
 
     if (!target) var target = this.teleportation_get_target(teleport_id);
 
-    var loc = apiFindObject(target.tsid);
+    var loc = Server.instance.apiFindObject(target.tsid);
     if (loc.pols_is_pol() && !loc.pols_is_owner(this) && !loc.getProp('is_public')){
         target = loc.pols_get_entrance_outside();
     }
@@ -397,7 +397,7 @@ public function teleportation_teleport(teleport_id, skip_skill, target, skip_cos
     }
 
     // Check quests
-    var target_info = apiFindObject(target.tsid).get_info();
+    var target_info = Server.instance.apiFindObject(target.tsid).get_info();
     if (this.location.hubid == 63){
         if (target_info.hub_id == 92){
             this.player.quests.quests_set_flag('teleport_between_zones');
@@ -482,7 +482,7 @@ public function teleportation_map_teleport(tsid, use_token){
         }
     }
 
-    var target = apiFindObject(tsid);
+    var target = Server.instance.apiFindObject(tsid);
 
     var pt = {};
     // Pick a random signpost/door target in the street to send us to
@@ -590,7 +590,7 @@ public function teleportation_random_teleport() {
         done = true;
         street = teleport_candidates[street_num];
         array_remove(teleport_candidates, street_num);
-        loc = apiFindObject(street);
+        loc = Server.instance.apiFindObject(street);
         if(!loc || loc.pols_is_pol() || loc.isInstance() || loc.instances_instance_me() || loc.is_hidden() || loc.jobs_is_street_locked()) {
             done = false;
         }
@@ -1039,7 +1039,7 @@ public function teleportation_imbue_script_prompt(value, details){
 
         this.teleportation_spend_token("Imbueing a Teleportation Script to "+script.destination.name+".");
 
-        var imbued_script = apiNewItemStack('teleportation_script_imbued', 1);
+        var imbued_script = Server.instance.apiNewItemStack('teleportation_script_imbued', 1);
         if (!imbued_script) {
             log.error("Could not create teleportation script for player "+this);
             return;

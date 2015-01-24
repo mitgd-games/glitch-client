@@ -26,7 +26,7 @@ package com.reversefold.glitch.server.player {
 public function organizations_init(){
 
     if (this.organizations === undefined || this.organizations === null){
-        this.organizations = apiNewOwnedDC(this);
+        this.organizations = Server.instance.apiNewOwnedDC(this);
         this.organizations.label = 'Organizations';
         this.organizations.organizations = {};
     }
@@ -48,7 +48,7 @@ public function organizations_delete_all(){
 
 public function organizations_create(name, desc){
 
-    var organization = apiNewGroup('organization');
+    var organization = Server.instance.apiNewGroup('organization');
 
     organization.doCreate(name, desc, 'public_apply', this); // Invite/apply
 
@@ -65,7 +65,7 @@ public function organizations_create(name, desc){
 public function organizations_delete(tsid){
     if (!tsid) return null;
 
-    var organization = apiFindObject(tsid);
+    var organization = Server.instance.apiFindObject(tsid);
 
     if (!organization) return null;
 
@@ -95,7 +95,7 @@ public function organizations_logout(){
 
 public function organizations_join(tsid){
 
-    var org = apiFindObject(tsid);
+    var org = Server.instance.apiFindObject(tsid);
 
     if (!org) return null;
 

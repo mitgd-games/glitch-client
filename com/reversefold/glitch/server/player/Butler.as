@@ -24,7 +24,7 @@ public function createButler(x_pos) {
 
     if (this.butler_tsid) {
 
-        var old_butler = apiFindObject(this.butler_tsid);
+        var old_butler = Server.instance.apiFindObject(this.butler_tsid);
 
         if (!old_butler || (old_butler.location != this.home.exterior)) {
             // check for error cases - if we find one, just delete the butler and start over
@@ -76,7 +76,7 @@ public function createButler(x_pos) {
 public function removeButler(){
     if (!this.butler_tsid) { return; }
 
-    var butler = apiFindObject(this.butler_tsid);
+    var butler = Server.instance.apiFindObject(this.butler_tsid);
 
     log.info("Deleting butler "+butler);
 
@@ -117,7 +117,7 @@ public function giveButlerBox() {
 
 public function getButler(){
     if (this.butler_tsid) {
-        return apiFindObject(this.butler_tsid);
+        return Server.instance.apiFindObject(this.butler_tsid);
     }
 
     return null;

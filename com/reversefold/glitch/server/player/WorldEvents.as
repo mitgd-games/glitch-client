@@ -20,7 +20,7 @@ package com.reversefold.glitch.server.player {
 
 public function world_events_init() {
     if (!this.world_events) {
-        this.world_events = apiNewOwnedDC(this);
+        this.world_events = Server.instance.apiNewOwnedDC(this);
         this.world_events.label = "WorldEvents";
     }
 }
@@ -56,7 +56,7 @@ public function startLoneliness(source_item, type, test_only, uid) {
             var text = "Whoops. This item ain't hooked up right.";
         }
 
-        apiLogAction('LONELINESS_INVITE', 'pc='+this.tsid, 'target='+source_item.tsid, 'type='+type, 'uid='+uid);
+        Server.instance.apiLogAction('LONELINESS_INVITE', 'pc='+this.tsid, 'target='+source_item.tsid, 'type='+type, 'uid='+uid);
 
         this.apiSetTimer('showLonelinessPrompt', 15000);
     }
@@ -122,7 +122,7 @@ public function canDoLoneliness(loneliness_location) {
         if (!loneliness_location) {
             return false;
         }
-        var path = apiFindGlobalPathX(loneliness_location, this.location);
+        var path = Server.instance.apiFindGlobalPathX(loneliness_location, this.location);
         log.info("Loneliness path has length "+path.length);
         if (path.length >= 3) {
             return true;

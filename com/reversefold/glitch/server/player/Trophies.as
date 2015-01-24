@@ -37,7 +37,7 @@ public function trophies_find_container(){
         if (it.is_trophycontainer){
             if (it.class_tsid == 'bag_generic'){
                 // This is outdated. Make a new one
-                var new_it = apiNewItemStack('bag_private', 1);
+                var new_it = Server.instance.apiNewItemStack('bag_private', 1);
                 new_it.label = 'Private Trophy Storage';
                 new_it.is_trophycontainer = true;
 
@@ -60,7 +60,7 @@ public function trophies_find_container(){
     }
 
     // Still here? Make a new one
-    var it = apiNewItemStack('bag_private', 1);
+    var it = Server.instance.apiNewItemStack('bag_private', 1);
     it.label = 'Private Trophy Storage';
     it.is_trophycontainer = true;
 

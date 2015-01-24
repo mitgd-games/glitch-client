@@ -22,7 +22,7 @@ package com.reversefold.glitch.server.player {
 
 public function feats_init(){
     if (!this.feats){
-        this.feats = apiNewOwnedDC(this);
+        this.feats = Server.instance.apiNewOwnedDC(this);
         this.feats.label = 'Feats';
         this.feats.todo = {};
         this.feats.feats = {};
@@ -48,7 +48,7 @@ public function feats_get(class_tsid, skip_range){
     }
 
     // Find object
-    var feat = apiFindObject(cfg.tsid);
+    var feat = Server.instance.apiFindObject(cfg.tsid);
     if (feat === undefined || feat === null) return null;
 
     return feat;
@@ -235,7 +235,7 @@ public function feats_familiar_turnin_do(choice, details){
         delete rewards_clean.favor_points_perf;
 
         for (var i in rewards_clean.items){
-            var proto = apiFindItemPrototype(rewards_clean.items[i].class_tsid);
+            var proto = Server.instance.apiFindItemPrototype(rewards_clean.items[i].class_tsid);
             if (proto){
                 if (rewards_clean.items[i].count == 1){
                     rewards_clean.items[i].label = proto.name_single;
@@ -299,7 +299,7 @@ public function feats_gather_rewards(feat_id){
     delete this.feats.todo[feat_id];
 
     this.player.achievements.achievements_increment('feats', 'contributed_to');
-    apiLogAction('FEAT_REWARDS', 'pc='+this.tsid, 'feat_id='+rewards.feat_id, 'xp='+intval(rewards.xp), 'mood='+intval(rewards.mood), 'energy='+intval(rewards.energy), 'currants='+intval(rewards.currants));
+    Server.instance.apiLogAction('FEAT_REWARDS', 'pc='+this.tsid, 'feat_id='+rewards.feat_id, 'xp='+intval(rewards.xp), 'mood='+intval(rewards.mood), 'energy='+intval(rewards.energy), 'currants='+intval(rewards.currants));
 }
 
 public function feats_has_contributed(feat_id){

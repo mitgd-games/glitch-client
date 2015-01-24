@@ -21,7 +21,7 @@ package com.reversefold.glitch.server.player {
 public function trading_init(){
     if (!this.trading){
     //if (this.trading === undefined || this.trading === null){
-        this.trading = apiNewOwnedDC(this);
+        this.trading = Server.instance.apiNewOwnedDC(this);
         this.trading.label = 'Trading';
 
         this.trading_create_escrow_bag();
@@ -40,7 +40,7 @@ public function trading_init(){
 
 public function trading_create_escrow_bag(){
     // Create a new private storage bag for holding items in escrow
-    var it = apiNewItemStack('bag_escrow', 1);
+    var it = Server.instance.apiNewItemStack('bag_escrow', 1);
     it.label = 'Private Trading Storage';
 
     this.apiAddHiddenStack(it);

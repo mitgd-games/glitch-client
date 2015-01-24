@@ -20,7 +20,7 @@ package com.reversefold.glitch.server.player {
 
 public function conversations_init(){
     if (this.conversations === undefined || this.conversations === null){
-        this.conversations = apiNewOwnedDC(this);
+        this.conversations = Server.instance.apiNewOwnedDC(this);
         this.conversations.label = 'Conversations';
 
         this.conversations.completed = {};
@@ -214,7 +214,7 @@ public function conversations_login(){
         return;
     }
 
-    var stack = apiFindObject(this.conversations.state.itemstack_tsid);
+    var stack = Server.instance.apiFindObject(this.conversations.state.itemstack_tsid);
     if (!stack) {
         log.error("Player "+this+" attempting to resume conversation "+this.conversations.state.conversation_name+" with itemstack "+this.conversations.state.itemstack_tsid+", but it cannot be found.");
         return;

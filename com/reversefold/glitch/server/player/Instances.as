@@ -24,7 +24,7 @@ package com.reversefold.glitch.server.player {
 
 public function instances_init(){
     if (!this.instances){
-        this.instances = apiNewOwnedDC(this);
+        this.instances = Server.instance.apiNewOwnedDC(this);
         this.instances.label = 'Instances';
         this.instances.instances = {};
         this.instances.previously = {};
@@ -63,7 +63,7 @@ public function instances_create(id, base_tsid, options, location_options){
         if (instance.base_tsid == base_tsid) return instance;
         var locations = instance.get_locations();
         for (var i in locations){
-            var loc = apiFindObject(locations[i]);
+            var loc = Server.instance.apiFindObject(locations[i]);
             if (loc && loc.getProp('instance_of') == base_tsid) return instance;
         }
 
@@ -72,7 +72,7 @@ public function instances_create(id, base_tsid, options, location_options){
     }
 
     log.info(this+' Creating instance '+id);
-    instance = apiNewGroup('instance');
+    instance = Server.instance.apiNewGroup('instance');
     instance.init(id, base_tsid, options, location_options);
 
     this.instances_add(id, instance);
@@ -188,7 +188,7 @@ public function instances_left(id, randomize, no_auto_return, force){
                 var x = prev.x;
                 if (randomize) x += randInt(-150, 150);
 
-                var prev_loc = apiFindObject(prev.tsid);
+                var prev_loc = Server.instance.apiFindObject(prev.tsid);
                 if (prev_loc && prev_loc.pols_is_pol() && !prev_loc.pols_is_owner(this) && !prev_loc.getProp('is_public')){
                     prev_loc = prev_loc.pols_get_entrance_outside();
                 }
@@ -415,7 +415,7 @@ public function instances_exit_delayed(details) {
 public function instances_unwind_exit(){
     for (var i in this.instances.previously){
         var prev = this.instances.previously[i];
-        var prev_loc = apiFindObject(prev.tsid);
+        var prev_loc = Server.instance.apiFindObject(prev.tsid);
         if (prev_loc && !prev_loc.isInstance()) return prev;
     }
 

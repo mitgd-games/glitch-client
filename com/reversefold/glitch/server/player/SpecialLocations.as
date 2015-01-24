@@ -214,9 +214,9 @@ public function do_baqala_boot() {
 
     if(config.is_dev) {
         // Find a target on dev
-        var target = apiFindObject('LM4104P19669M');
+        var target = Server.instance.apiFindObject('LM4104P19669M');
     } else if(config.is_prod) {
-        var target = apiFindObject(choose_one([
+        var target = Server.instance.apiFindObject(choose_one([
             "LHV17T973F42GEP",
             "LHV1OOC40U42TKA",
             "LHV9BF0AUJ42CLQ",

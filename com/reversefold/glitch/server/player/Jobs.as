@@ -21,14 +21,14 @@ package com.reversefold.glitch.server.player {
 public function jobs_init(){
     if (!this.jobs) this.jobs = {};
     if (this.jobs.todo === undefined || this.jobs.todo === null){
-        this.jobs.todo = apiNewOwnedDC(this);
+        this.jobs.todo = Server.instance.apiNewOwnedDC(this);
         this.jobs.todo.label = 'To Do';
     }
 
     if (!this.jobs.todo.jobs) this.jobs.todo.jobs = {};
 
     if (this.jobs.done === undefined || this.jobs.done === null) {
-        this.jobs.done = apiNewOwnedDC(this);
+        this.jobs.done = Server.instance.apiNewOwnedDC(this);
         this.jobs.done.label = 'Done';
     }
 
@@ -169,7 +169,7 @@ public function jobs_get(job_location, job_id, class_id){
 
     if (this.jobs.todo.jobs[job_location] && !this.jobs.todo.jobs[job_location][job_id]){
         for (var i in this.jobs.todo.jobs[job_location]){
-            var jobs = apiFindObject(job_location).jobs_get_all();
+            var jobs = Server.instance.apiFindObject(job_location).jobs_get_all();
             for (var j in jobs){
                 var job = jobs[j];
                 if (!job) continue;
@@ -189,7 +189,7 @@ public function jobs_get(job_location, job_id, class_id){
 
     if (this.jobs.done.jobs[job_location] && !this.jobs.done.jobs[job_location][job_id]){
         for (var i in this.jobs.done.jobs[job_location]){
-            var jobs = apiFindObject(job_location).jobs_get_all();
+            var jobs = Server.instance.apiFindObject(job_location).jobs_get_all();
             for (var j in jobs){
                 var job = jobs[j];
                 if (!job) continue;
@@ -209,8 +209,8 @@ public function jobs_get(job_location, job_id, class_id){
 
     // And thus begins the only part that matters
     var job_loc = null;
-    if (this.jobs.todo.jobs[job_location] && this.jobs.todo.jobs[job_location][job_id]) job_loc = apiFindObject(job_location);
-    if (this.jobs.done.jobs[job_location] && this.jobs.done.jobs[job_location][job_id]) job_loc = apiFindObject(job_location);
+    if (this.jobs.todo.jobs[job_location] && this.jobs.todo.jobs[job_location][job_id]) job_loc = Server.instance.apiFindObject(job_location);
+    if (this.jobs.done.jobs[job_location] && this.jobs.done.jobs[job_location][job_id]) job_loc = Server.instance.apiFindObject(job_location);
 
     if (job_loc){
         return job_loc.jobs_get(job_id, class_id);
@@ -254,7 +254,7 @@ public function jobs_familiar_turnin_do(choice, details){
     var job = this.jobs_get(details.job_location, details.job_id, details.class_id);
     if (!job){
         // must not have contributed to this phase. let's go grab it from the location
-        job = apiFindObject(details.job_location).jobs_get(details.job_id, details.class_id);
+        job = Server.instance.apiFindObject(details.job_location).jobs_get(details.job_id, details.class_id);
     }
 
     if (choice == 'job-complete'){
@@ -267,11 +267,11 @@ public function jobs_familiar_turnin_do(choice, details){
 
                 if (details.is_winner){
                     var performance_rewards = job.applyPerformanceRewards(this);
-                    apiLogAction('JOB_COMPLETE', 'pc='+this.tsid, 'job_id='+details.job_id, 'phase='+details.class_id, 'xp='+intval(actual_rewards.xp), 'mood='+intval(actual_rewards.mood), 'energy='+intval(actual_rewards.energy), 'currants='+intval(actual_rewards.currants), 'xp_perf='+intval(performance_rewards.xp), 'mood_perf='+intval(performance_rewards.mood), 'energy_perf='+intval(performance_rewards.energy), 'currants_perf='+intval(performance_rewards.currants));
+                    Server.instance.apiLogAction('JOB_COMPLETE', 'pc='+this.tsid, 'job_id='+details.job_id, 'phase='+details.class_id, 'xp='+intval(actual_rewards.xp), 'mood='+intval(actual_rewards.mood), 'energy='+intval(actual_rewards.energy), 'currants='+intval(actual_rewards.currants), 'xp_perf='+intval(performance_rewards.xp), 'mood_perf='+intval(performance_rewards.mood), 'energy_perf='+intval(performance_rewards.energy), 'currants_perf='+intval(performance_rewards.currants));
                 }
                 else{
                     var performance_rewards = {};
-                    apiLogAction('JOB_COMPLETE', 'pc='+this.tsid, 'job_id='+details.job_id, 'phase='+details.class_id, 'xp='+intval(actual_rewards.xp), 'mood='+intval(actual_rewards.mood), 'energy='+intval(actual_rewards.energy), 'currants='+intval(actual_rewards.currants));
+                    Server.instance.apiLogAction('JOB_COMPLETE', 'pc='+this.tsid, 'job_id='+details.job_id, 'phase='+details.class_id, 'xp='+intval(actual_rewards.xp), 'mood='+intval(actual_rewards.mood), 'energy='+intval(actual_rewards.energy), 'currants='+intval(actual_rewards.currants));
                 }
 
                 this.jobs_mark_complete(details.job_location, details.job_id, details.class_id, actual_rewards, performance_rewards);
@@ -377,7 +377,7 @@ public function jobs_familiar_job_complete_cancel(job_location, job_id){
 
 public function jobs_familiar_job_complete_do(choice, details){
 
-    var job_location = apiFindObject(details.job_location);
+    var job_location = Server.instance.apiFindObject(details.job_location);
     var job = job_location.jobs_get(details.job_id);
 
     if (!job || !job.isDone()){
@@ -397,7 +397,7 @@ public function jobs_familiar_job_complete_do(choice, details){
     //
 
     if (job.type != 5){
-        var s = apiNewItemStackFromFamiliar('teleportation_script_imbued', 1);
+        var s = Server.instance.apiNewItemStackFromFamiliar('teleportation_script_imbued', 1);
         if (s){
             var primary = job.getPrimaryLocation();
             if (primary){
@@ -495,7 +495,7 @@ public function jobs_familiar_job_complete_do(choice, details){
             job_txt += job.expandText("Since you contributed, you got "+Math.round(rewards.xp)+" imagination.", this);
         }
 
-        apiLogAction('JOB_COMPLETE', 'pc='+this.tsid, 'job_id='+details.job_id, 'class_id='+job.class_id, 'location='+details.job_location, 'xp='+intval(rewards.xp), 'mood='+intval(rewards.mood), 'energy='+intval(rewards.energy), 'currants='+intval(rewards.currants));
+        Server.instance.apiLogAction('JOB_COMPLETE', 'pc='+this.tsid, 'job_id='+details.job_id, 'class_id='+job.class_id, 'location='+details.job_location, 'xp='+intval(rewards.xp), 'mood='+intval(rewards.mood), 'energy='+intval(rewards.energy), 'currants='+intval(rewards.currants));
 
         this.player.sendActivity(job_txt, null, true);
         completion_text = job_txt;

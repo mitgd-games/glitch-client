@@ -21,7 +21,7 @@ package com.reversefold.glitch.server.player {
 public function avatar_init(){
 
     if (this.clothing === null || this.clothing === undefined){
-        this.clothing = apiNewOwnedDC(this);
+        this.clothing = Server.instance.apiNewOwnedDC(this);
         this.clothing.label = 'Clothing';
         this.clothing.slots = {};
     }
@@ -573,7 +573,7 @@ public function avatar_checksum(hash){
     pairs.sort();
     var base = pairs.join('&');
 
-    return apiMD5(base);
+    return Server.instance.apiMD5(base);
 }
 
 public function avatar_base_hash(){

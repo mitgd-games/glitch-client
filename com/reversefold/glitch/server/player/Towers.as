@@ -25,7 +25,7 @@ public function getTestTower(){
 
     if (this.tower_tsid){
 
-        var tower = apiFindObject(this.tower_tsid);
+        var tower = Server.instance.apiFindObject(this.tower_tsid);
         delete this.tower_tsid;
         this.home.tower = tower;
         this.home.exterior.homes_position_tower(tower, 48, -97);
@@ -33,7 +33,7 @@ public function getTestTower(){
 
     if (!this.home.tower){
 
-        var tower = apiNewLocation("Test Tower", config.is_prod ? '15' : '28', 'POL_'+this.tsid, 'tower');
+        var tower = Server.instance.apiNewLocation("Test Tower", config.is_prod ? '15' : '28', 'POL_'+this.tsid, 'tower');
         tower.tower_create(this);
         this.home.tower = tower;
         this.home.exterior.homes_position_tower(tower, 48, -97);

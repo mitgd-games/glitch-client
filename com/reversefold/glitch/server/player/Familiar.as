@@ -491,14 +491,14 @@ public function familiar_upgrade_do(choice, details){
 
             var fam_choices = {};
             for (var i in choices.upgrade){
-                var temp = apiFindObject(choices.upgrade[i].tsid);
+                var temp = Server.instance.apiFindObject(choices.upgrade[i].tsid);
                 fam_choices[i] = {
                     txt : "Upgrade to "+temp.label+" ("+temp.tsid+")",
                     value   : choices.upgrade[i].tsid
                 };
             }
             for (var i in choices.downgrade){
-                var temp = apiFindObject(choices.downgrade[i].tsid);
+                var temp = Server.instance.apiFindObject(choices.downgrade[i].tsid);
                 fam_choices[i] = {
                     txt : "Downgrade to "+temp.label+" ("+temp.tsid+")",
                     value   : choices.downgrade[i].tsid

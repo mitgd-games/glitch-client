@@ -2395,7 +2395,7 @@ public function games_get_name(class_tsid, location_id) {
     if(location_id == undefined || !config.shared_instances[class_tsid].locations[location_id]) {
         return config.shared_instances[class_tsid].name;
     } else {
-        var loc = apiFindObject(config.shared_instances[class_tsid].locations[location_id]);
+        var loc = Server.instance.apiFindObject(config.shared_instances[class_tsid].locations[location_id]);
         if (loc) {
             return loc.label;
         } else {
@@ -2620,7 +2620,7 @@ public function games_invite_start(){
     var q = config.shared_instances[this.games_invite.class_tsid];
     if (!q) return false;
 
-    var manager = apiFindObject(config.shared_instance_manager);
+    var manager = Server.instance.apiFindObject(config.shared_instance_manager);
     if (!manager) return false;
 
     var uid = manager.playerJoinInstance(this, this.games_invite.class_tsid, true, this.games_invite.location_id);

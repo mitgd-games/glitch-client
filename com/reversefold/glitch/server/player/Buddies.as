@@ -335,14 +335,14 @@ public function buddiesSendMsg(msg){
 
     var tsids = this.buddies_get_tsids();
 
-    apiSendToGroup(msg, tsids);
+    Server.instance.apiSendToGroup(msg, tsids);
 }
 
 public function reverseBuddiesSendMsg(msg){
 
     var tsids = this.buddies_get_reverse_tsids();
 
-    apiSendToGroup(msg, tsids);
+    Server.instance.apiSendToGroup(msg, tsids);
 }
 
 public function buddies_get_reverse_tsids(){
@@ -377,12 +377,12 @@ public function buddies_get_online_login_info(){
 
     }
 
-    //ret.io = apiGetIOOps();
+    //ret.io = Server.instance.apiGetIOOps();
     return ret;
 }
 
 public function buddies_get_login_info(){
-    var online = apiIsPlayerOnline(this.player.tsid);
+    var online = Server.instance.apiIsPlayerOnline(this.player.tsid);
 
     var ret = {
         ok: 1,
@@ -410,7 +410,7 @@ public function buddies_get_login_info(){
         };
     }
 
-    //ret.io = apiGetIOOps();
+    //ret.io = Server.instance.apiGetIOOps();
     return ret;
 }
 
@@ -421,7 +421,7 @@ public function buddies_get_login(max){
 
     var tsids = this.buddies_get_tsids();
 
-    var online = apiCallMethodForOnlinePlayers('buddies_get_online_login_info', tsids);
+    var online = Server.instance.apiCallMethodForOnlinePlayers('buddies_get_online_login_info', tsids);
 
 
     //
@@ -502,7 +502,7 @@ public function buddies_get_random_slice(count){
 
     var pcs = {};
 
-    var online = apiCallMethodForOnlinePlayers('buddies_get_online_login_info', get);
+    var online = Server.instance.apiCallMethodForOnlinePlayers('buddies_get_online_login_info', get);
 
     for(var j in get){
 
@@ -659,7 +659,7 @@ public function buddies_get_ignoring_login(){
     // For now, all we need are tsids
     var tsids = this.buddies_get_ignoring_tsids();
 
-    var all = apiCallMethod('buddies_get_login_info', tsids);
+    var all = Server.instance.apiCallMethod('buddies_get_login_info', tsids);
 
 
     //
@@ -700,7 +700,7 @@ public function buddies_get_ignored_by_login(){
     // For now, all we need are tsids
     var tsids = this.buddies_get_ignored_by_tsids();
 
-    var all = apiCallMethod('buddies_get_login_info', tsids);
+    var all = Server.instance.apiCallMethod('buddies_get_login_info', tsids);
 
 
     //
@@ -795,7 +795,7 @@ public function buddies_get_from_cache(tsid){
     }
 
     if (cache.tsid){
-        cache = apiGetObjectContent(cache.tsid);
+        cache = Server.instance.apiGetObjectContent(cache.tsid);
         if (cache){
             cache = cache.contents;
         }
@@ -894,7 +894,7 @@ public function buddies_changed(){
 public function buddies_get_simple_online(){
 
     var tsids = this.buddies_get_tsids();
-    var ret = apiCallMethodForOnlinePlayers('buddies_get_simple_online_info', tsids);
+    var ret = Server.instance.apiCallMethodForOnlinePlayers('buddies_get_simple_online_info', tsids);
 
     for (var i=0; i<tsids.length; i++){
         ret[tsids[i]].order = i+1;

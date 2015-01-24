@@ -145,7 +145,7 @@ public function storeBuy(msg, item){
 
     var store_items = this.getStoreItems(item, store_info, msg.class_tsid, count);
     //log.info(store_items);
-    var item_proto = apiFindItemPrototype(msg.class_tsid);
+    var item_proto = Server.instance.apiFindItemPrototype(msg.class_tsid);
 
     if (!num_keys(store_items)){
         log.info("store doesn't sell that item");
@@ -230,7 +230,7 @@ public function storeBuy(msg, item){
 
     if (item.store_sold && item.store_sold[msg.class_tsid] !== undefined){
         item.store_sold[msg.class_tsid] += got;
-        apiLogAction('RARE_SALE', 'pc='+this.tsid, 'class_id='+msg.class_tsid, 'amount='+got);
+        Server.instance.apiLogAction('RARE_SALE', 'pc='+this.tsid, 'class_id='+msg.class_tsid, 'amount='+got);
     }
 
     if (!item.sales_made) item.sales_made = 0;
@@ -394,7 +394,7 @@ public function storeSell(msg, item){
     this.player.achievements.achievements_increment('items_sold', msg.sellstack_class, intval(msg.count));
 
 
-    var item_proto = apiFindItemPrototype(msg.sellstack_class);
+    var item_proto = Server.instance.apiFindItemPrototype(msg.sellstack_class);
     var text = "You sold "+item_proto.formatStack(msg.count)+" for "+cost+" currants."
 
     var amt = (cost - cost_no_upgrade);
@@ -576,7 +576,7 @@ public function findClosestVendor(type) {
     }
 
     // Get closest loc and path
-    var path = apiFindShortestGlobalPath(this.location.tsid, locs);
+    var path = Server.instance.apiFindShortestGlobalPath(this.location.tsid, locs);
 
     if(!path || !path.length) {
         log.error("Player "+this+" cannot find closest vendor. All vendors are unreachable.");

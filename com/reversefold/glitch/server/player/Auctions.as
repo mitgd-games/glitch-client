@@ -24,7 +24,7 @@ package com.reversefold.glitch.server.player {
 public function auctions_init(){
 
     if (this.auctions === undefined || this.auctions === null){
-        this.auctions = apiNewOwnedDC(this);
+        this.auctions = Server.instance.apiNewOwnedDC(this);
         this.auctions.label = 'Auctions';
     }
 
@@ -46,7 +46,7 @@ public function auctions_find_container(){
     }
 
     // Still here? Make a new one
-    var it = apiNewItemStack('bag_private', 1);
+    var it = Server.instance.apiNewItemStack('bag_private', 1);
     it.label = 'Private Auction Storage';
     it.is_auctioncontainer = true;
 
@@ -220,7 +220,7 @@ public function auctions_start(stack, count, cost, fee_percent, fee_min){
     // create the auction
     //
 
-    apiLogAction('AUCTION_START', 'pc='+this.tsid, 'stack='+_use.tsid, 'count='+count);
+    Server.instance.apiLogAction('AUCTION_START', 'pc='+this.tsid, 'stack='+_use.tsid, 'count='+count);
 
     if (_use.onAuctionList) _use.onAuctionList(this);
 
@@ -277,7 +277,7 @@ public function auctions_cancel(uid, destroy_items){
     delete this.auctions.active[uid];
     var stack = details.stack;
 
-    apiLogAction('AUCTION_CANCEL', 'pc='+this.tsid, 'stack='+stack.tsid, 'count='+stack.count);
+    Server.instance.apiLogAction('AUCTION_CANCEL', 'pc='+this.tsid, 'stack='+stack.tsid, 'count='+stack.count);
     this.auctions_flatten(details, "cancelled");
     details.cancelled = time();
     this.auctions.cancelled[uid] = details;
@@ -333,7 +333,7 @@ public function auctions_expire(uid){
     this.auctions.expired[uid] = details;
     this.auctions_sync(uid);
 
-    apiLogAction('AUCTION_EXPIRE', 'pc='+this.tsid, 'stack='+stack.tsid, 'count='+stack.count);
+    Server.instance.apiLogAction('AUCTION_EXPIRE', 'pc='+this.tsid, 'stack='+stack.tsid, 'count='+stack.count);
 
     this.player.mail.mail_add_auction_delivery(stack.tsid, config.auction_delivery_time, uid, this.tsid, 'expired');
 
@@ -525,7 +525,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
 
     var result = this.player.stats.stats_add_currants(proceeds, {type:'auction_buy',class_id: stack.class_tsid, count: stack.count});
 
-    apiLogAction('AUCTION_PURCHASE', 'pc='+this.tsid, 'buyer='+buyer.tsid, 'stack='+stack.tsid, 'count='+stack.count, 'currants='+proceeds);
+    Server.instance.apiLogAction('AUCTION_PURCHASE', 'pc='+this.tsid, 'buyer='+buyer.tsid, 'stack='+stack.tsid, 'count='+stack.count, 'currants='+proceeds);
 
     // Item callback for a sold auction.
     if (stack.onAuctionSold) {
@@ -719,7 +719,7 @@ public function admin_auctions_relist_broken(args){
     // do we own this stack?
     //
 
-    var stack = apiFindObject(args.stack_tsid);
+    var stack = Server.instance.apiFindObject(args.stack_tsid);
 
     if (!stack){
         return {
@@ -797,7 +797,7 @@ public function admin_auctions_start(args){
         };
     }
 
-    var stack = apiFindObject(args.stack_tsid);
+    var stack = Server.instance.apiFindObject(args.stack_tsid);
 
     if (!stack){
         return {
@@ -833,7 +833,7 @@ public function admin_auctions_start(args){
 
 public function admin_auctions_purchase(args){
 
-    var buyer = apiFindObject(args.buyer_tsid);
+    var buyer = Server.instance.apiFindObject(args.buyer_tsid);
 
     if (!buyer){
         return {

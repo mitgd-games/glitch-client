@@ -20,7 +20,7 @@ package com.reversefold.glitch.server.player {
 
 public function daily_history_init(){
     if (this.daily_history === undefined || this.daily_history === null){
-        this.daily_history = apiNewOwnedDC(this);
+        this.daily_history = Server.instance.apiNewOwnedDC(this);
         this.daily_history.label = 'Daily History';
         this.daily_history.days = {};
     }

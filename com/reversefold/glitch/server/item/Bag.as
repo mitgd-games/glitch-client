@@ -446,7 +446,7 @@ public function canContain(stack){
 
 // Is this bag full? Optional stack argument will also test that the bag can contain that stack
 public function isBagFull(stack){
-	apiResetThreadCPUClock();
+	Server.instance.apiResetThreadCPUClock();
 	//if (stack && !this.canContain(stack)) return true;
 	var items = this.getContents();
 
@@ -461,7 +461,7 @@ public function isBagFull(stack){
 		if (it_exists && it.is_bag && !it.isHidden && !it.isBagFull(stack)) return false; // Found a subbag that's not full
 		if (it_exists && stack && it.class_tsid == stack.class_tsid && it.count < it.stackmax) return false; // Found a stackable item slot
 	}
-	apiResetThreadCPUClock("isBagFull");
+	Server.instance.apiResetThreadCPUClock("isBagFull");
 
 	return true;
 }
@@ -521,7 +521,7 @@ public function canFitEntireStack(stack) {
 public function canFitHowMany(class_id, count) {
 	var items = this.getContents();
 
-	var proto = apiFindItemPrototype(class_id);
+	var proto = Server.instance.apiFindItemPrototype(class_id);
 
 	//log.info("MG called canFitHowMany with "+class_id+" and "+count+" and proto is "+proto);
 
@@ -555,7 +555,7 @@ public function canFitHowMany(class_id, count) {
 public function canFitWhere(class_id) {
 	var items = this.getContents();
 
-	var proto = apiFindItemPrototype(class_id);
+	var proto = Server.instance.apiFindItemPrototype(class_id);
 
 	// Don't use this for furniture!
 	if (proto.has_parent('furniture_base')) return null;
@@ -699,7 +699,7 @@ public function findFirst(class_tsid, args){
 }
 
 public function createItemInBag(class_id, num){
-	var s = apiNewItemStack(class_id, num);
+	var s = Server.instance.apiNewItemStack(class_id, num);
 	if (!s) return num;
 
 	return this.addItemStack(s);

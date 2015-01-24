@@ -23,7 +23,7 @@ public function making_init(){
     //
 
     if (this.recipes === undefined || this.recipes === null){
-        this.recipes = apiNewOwnedDC(this);
+        this.recipes = Server.instance.apiNewOwnedDC(this);
         this.recipes.label = 'Recipes';
         this.recipes.recipes = {};
     }
@@ -859,10 +859,10 @@ public function finishMakingKnown(inf){
             if (is_chance(.05) || this.player.buffs.buffs_has('max_luck')) { // 5% chance
                 // assume we're only making one thing
                 var output_class = recipe_info.outputs[0][0];
-                var proto = apiFindItemPrototype(output_class);
+                var proto = Server.instance.apiFindItemPrototype(output_class);
                 var value = proto.getBaseCost();
 
-                var catalog = apiFindItemPrototype('catalog');
+                var catalog = Server.instance.apiFindItemPrototype('catalog');
                 var give_candidates = [];
                 for(var i in catalog.class_tsids) {
                     var candidate_class = catalog.class_tsids[i];
@@ -876,7 +876,7 @@ public function finishMakingKnown(inf){
                         continue; // not allowed!
                     }
 
-                    var candidate_proto = apiFindItemPrototype(candidate_class);
+                    var candidate_proto = Server.instance.apiFindItemPrototype(candidate_class);
                     var candidate_value = candidate_proto.getBaseCost();
                     if ( candidate_proto.hasTag("tool")
                         && !candidate_proto.hasTag("no_rube") // May apply to new tools that have not been released yet
@@ -939,7 +939,7 @@ public function finishMakingKnown(inf){
 
     if (gift) {
         //log.info("IMG "+gift);
-        var gift_proto = apiFindItemPrototype(gift);
+        var gift_proto = Server.instance.apiFindItemPrototype(gift);
         msg += " You took the extra parts and made "+gift_proto.article+" "+gift_proto.name_single+".";
 
         this.player.items.createItem(gift, 1);
@@ -1066,7 +1066,7 @@ public function checkIngredients(inputs, count, remove, item){
     //
     // test/remove.
     // this has a race condition for removing items, but pc.items_destroy_multi()
-    // is currently broken due to a bug in apiSplit() (actually caused by stacking too high)
+    // is currently broken due to a bug in Server.instance.apiSplit() (actually caused by stacking too high)
     //
 
     for (var i=0; i<find.length; i++){
@@ -1191,7 +1191,7 @@ public function finishMakingUnknown(inf){
                     }
                 }
                 else{
-                    var proto = apiFindItemPrototype(input);
+                    var proto = Server.instance.apiFindItemPrototype(input);
                     xp += (proto.base_cost * info.inputs[i][1]);
                     this.player.items.items_destroy(input, info.inputs[i][1]);
                 }
@@ -1277,7 +1277,7 @@ public function finishMakingUnknown(inf){
             if (required[input]) to_destroy = info.inputs[i][1] - required[input];
             this.player.items.items_destroy(input, to_destroy);
 
-            var proto = apiFindItemPrototype(input);
+            var proto = Server.instance.apiFindItemPrototype(input);
             extras.push(pluralize(to_destroy, proto.name_single, proto.name_plural));
         }
     }
@@ -1533,7 +1533,7 @@ public function making_execute_recipe(recipe_id, count, energy_cost, item){
                 this.location.createItem(output[0], remainder, this.x, this.y, 250);
             }
 
-            var proto = apiFindItemPrototype(output[0]);
+            var proto = Server.instance.apiFindItemPrototype(output[0]);
             if (proto && proto.hasTag('bean')){
                 this.player.quests.quests_inc_counter('beans_seasoned', count);
             }
@@ -1666,7 +1666,7 @@ public function making_recipe_request(msg){
     var rsp = {};
 
     //log.info(msg);
-    var all_recipes = apiFindItemPrototype('catalog_recipes').recipes;
+    var all_recipes = Server.instance.apiFindItemPrototype('catalog_recipes').recipes;
 
     // Loop over the items we want to make
     for (var i in msg.class_tsids){
@@ -1688,7 +1688,7 @@ public function making_recipe_request(msg){
                     if (rsp[class_id].learnt == 0) rsp[class_id].discoverable = 1;
 
                     // Get the tool that makes this recipe
-                    var tool = apiFindItemPrototype(r.tool);
+                    var tool = Server.instance.apiFindItemPrototype(r.tool);
 
                     // Change task_limit based on potential upgrades
                     var task_limit_multiplier = this.get_task_limit_multiplier(tool);

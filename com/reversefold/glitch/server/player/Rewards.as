@@ -21,7 +21,7 @@ package com.reversefold.glitch.server.player {
 public function rewards_init(){
     if (!this.rewards){
     //if (this.rewards === undefined || this.rewards === null){
-        this.rewards = apiNewOwnedDC(this);
+        this.rewards = Server.instance.apiNewOwnedDC(this);
         this.rewards.label = 'Rewards';
 
         this.rewards_create_bag();
@@ -35,7 +35,7 @@ public function rewards_init(){
 
 public function rewards_create_bag(){
     // Create a new private storage bag for holding overflow items
-    var it = apiNewItemStack('bag_private', 1);
+    var it = Server.instance.apiNewItemStack('bag_private', 1);
     it.label = 'Private Rewards Overflow Storage';
 
     this.apiAddHiddenStack(it);
@@ -144,7 +144,7 @@ public function rewards_return(){
         if (overflow){
             var overflow_array = [];
             for (var i in overflow_items){
-                var proto = apiFindItemPrototype(i);
+                var proto = Server.instance.apiFindItemPrototype(i);
                 if (proto){
                     overflow_array.push(pluralize(overflow_items[i], proto.name_single, proto.name_plural));
                 }
@@ -163,7 +163,7 @@ public function rewards_return(){
             var is_plural = 0;
             var returned_array = [];
             for (var i in returned){
-                var proto = apiFindItemPrototype(i);
+                var proto = Server.instance.apiFindItemPrototype(i);
                 if (proto){
                     if (returned[i] > 1) is_plural = 1;
                     returned_array.push(pluralize(returned[i], proto.name_single, proto.name_plural));

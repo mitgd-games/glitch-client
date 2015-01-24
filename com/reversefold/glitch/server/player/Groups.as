@@ -21,7 +21,7 @@ package com.reversefold.glitch.server.player {
 public function groups_init(){
 
     if (this.groups === undefined || this.groups === null){
-        this.groups = apiNewOwnedDC(this);
+        this.groups = Server.instance.apiNewOwnedDC(this);
         this.groups.label = 'Groups';
         this.groups.groups = {};
     }
@@ -56,7 +56,7 @@ public function groups_delete_all(){
 
 public function groups_create(name, desc, mode){
 
-    var group = apiNewGroup('group');
+    var group = Server.instance.apiNewGroup('group');
 
     group.doCreate(name, desc, mode, this);
 
@@ -98,7 +98,7 @@ public function groups_create(name, desc, mode){
 
 public function groups_delete(tsid){
 
-    var group = apiFindObject(tsid);
+    var group = Server.instance.apiFindObject(tsid);
 
     if (!group) return null;
 
@@ -116,7 +116,7 @@ public function groups_delete(tsid){
 
 public function groups_join(tsid){
 
-    var group = apiFindObject(tsid);
+    var group = Server.instance.apiFindObject(tsid);
 
     if (!group) return null;
 
@@ -156,7 +156,7 @@ public function groups_join(tsid){
 
 public function groups_apply(tsid){
 
-    var group = apiFindObject(tsid);
+    var group = Server.instance.apiFindObject(tsid);
 
     if (!group) return null;
 
@@ -181,7 +181,7 @@ public function groups_unapplied(group){
 
 public function groups_leave(tsid, promote_tsid){
 
-    var group = apiFindObject(tsid);
+    var group = Server.instance.apiFindObject(tsid);
 
     if (!group) return null;
 
@@ -263,7 +263,7 @@ public function adminGetGroups(){
     }
     if (this.group_invites){
         for (var i in this.group_invites){
-            var g = apiFindObject(i);
+            var g = Server.instance.apiFindObject(i);
             if (g){
                 var invite = g.get_invite(this.tsid);
                 if (invite){
@@ -307,7 +307,7 @@ public function adminApplyGroup(args){
 
 public function adminGetGroupPromotionCandidate(args){
 
-    var group = apiFindObject(args.tsid);
+    var group = Server.instance.apiFindObject(args.tsid);
 
     if (!group) return null;
 
@@ -339,7 +339,7 @@ public function groups_chat(tsid, txt){
 
     // Handle chat-only groups first
     if (in_array_real(tsid, config.live_help_groups) || in_array_real(tsid, config.newbie_live_help_groups) || in_array_real(tsid, config.global_chat_groups) || in_array_real(tsid, config.trade_chat_groups)){
-        apiFindObject(tsid).chat_send(this, txt);
+        Server.instance.apiFindObject(tsid).chat_send(this, txt);
     }
     else if (this.groups && this.groups.groups[tsid]){
 
@@ -353,7 +353,7 @@ public function groups_chat_join(tsid){
 
     // Handle chat-only groups first
     if (in_array_real(tsid, config.live_help_groups) || in_array_real(tsid, config.newbie_live_help_groups) || in_array_real(tsid, config.global_chat_groups) || in_array_real(tsid, config.trade_chat_groups)){
-        apiFindObject(tsid).chat_join(this);
+        Server.instance.apiFindObject(tsid).chat_join(this);
 
         if (!this.group_chat) this.groups_init();
         if (!in_array_real(tsid, this.group_chats)) this.group_chats.push(tsid);
@@ -372,7 +372,7 @@ public function groups_chat_leave(tsid){
 
     // Handle chat-only groups first
     if (in_array_real(tsid, config.live_help_groups) || in_array_real(tsid, config.newbie_live_help_groups) || in_array_real(tsid, config.global_chat_groups) || in_array_real(tsid, config.trade_chat_groups)){
-        apiFindObject(tsid).chat_leave(this);
+        Server.instance.apiFindObject(tsid).chat_leave(this);
 
         if (this.group_chats){
             array_remove_value(this.group_chats, tsid);
@@ -403,7 +403,7 @@ public function groups_logout(){
         for (var i=0; i<this.group_chats.length; i++){
             var c = this.group_chats[i];
             log.info(this+' groups_logout: '+c);
-            apiFindObject(c).chat_logout(this);
+            Server.instance.apiFindObject(c).chat_logout(this);
             array_remove_value(this.group_chats, c);
         }
     }
@@ -480,7 +480,7 @@ public function groups_get_all(){
         };
     }
 
-    var ret = apiCallMethod('get_member_status', tsids, this.tsid);
+    var ret = Server.instance.apiCallMethod('get_member_status', tsids, this.tsid);
     for (var i in ret){
         out[i].rev = ret[i];
     }
@@ -496,7 +496,7 @@ public function groups_has(tsid){
 
 public function groups_get(tsid){
     if (in_array_real(tsid, config.live_help_groups) || in_array_real(tsid, config.newbie_live_help_groups) || in_array_real(tsid, config.global_chat_groups) || in_array_real(tsid, config.trade_chat_groups)){
-        return apiFindObject(tsid);
+        return Server.instance.apiFindObject(tsid);
     }
     else{
         return this.groups.groups[tsid];
@@ -508,7 +508,7 @@ public function groups_check_pointers(){
 
     var gg = this.groups.groups;
     for (var i in gg){
-        var g = apiFindObject(i);
+        var g = Server.instance.apiFindObject(i);
         if (!g || !g.is_member(this) || g.getProp('deleted')){
             log.info(this+" groups_check_pointers deleting "+i);
             delete gg[i];
@@ -517,7 +517,7 @@ public function groups_check_pointers(){
 
     var gi = this.group_invites;
     for (var i in gi){
-        var g = apiFindObject(i);
+        var g = Server.instance.apiFindObject(i);
         if (!g || !g.get_invite(this.tsid) || g.getProp('deleted')){
             log.info(this+" groups_check_pointers deleting invite "+i);
             delete gg[i];
@@ -526,7 +526,7 @@ public function groups_check_pointers(){
 
     var ga = this.group_applied;
     for (var i in ga){
-        var g = apiFindObject(i);
+        var g = Server.instance.apiFindObject(i);
         if (!g || !g.get_apply(this.tsid) || g.getProp('deleted')){
             log.info(this+" groups_check_pointers deleting application "+i);
             delete gg[i];

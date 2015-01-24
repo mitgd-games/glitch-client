@@ -35,7 +35,7 @@ public function setHiEmoteVariant(variant, tracker_str) {
 
     // make sure we have the daily target dc
     if (!this.hi_emote_daily_targets) {
-        this.hi_emote_daily_targets = apiNewOwnedDC(this);
+        this.hi_emote_daily_targets = Server.instance.apiNewOwnedDC(this);
     }
 
     // remember yesterdays
@@ -47,7 +47,7 @@ public function setHiEmoteVariant(variant, tracker_str) {
     this.hi_emote_daily_targets.butlers = {};
 
     // track it!
-    var hi_variants_tracker = apiFindObject(config.hi_variants_tracker);
+    var hi_variants_tracker = Server.instance.apiFindObject(config.hi_variants_tracker);
     var leaderboard = hi_variants_tracker.increment_count(variant, tracker_str);
     if (config.feature_hi_viral) {
         var msg = {
@@ -70,7 +70,7 @@ public function setHiEmoteVariantRandomly() {
     var variant = choose_one(config.hi_emote_variants);
     if (config.feature_hi_viral) {
         // log it
-        apiLogAction('HI_SIGN_GOT_RANDOM', 'pc='+this.tsid,'variant='+variant);
+        Server.instance.apiLogAction('HI_SIGN_GOT_RANDOM', 'pc='+this.tsid,'variant='+variant);
     }
 
     return this.setHiEmoteVariant(variant, 'random');
@@ -84,13 +84,13 @@ public function setHiEmoteVariantFromInfector(infector) {
     if (config.feature_hi_viral) {
         // log it
         if (infector.is_player) {
-            apiLogAction('HI_SIGN_INFECTED_BY_PC', 'pc='+this.tsid,'variant='+variant,'infector='+infector.tsid);
-            apiLogAction('HI_SIGN_INFECTED_PC', 'pc='+infector.tsid,'variant='+variant,'infectee='+this.tsid);
+            Server.instance.apiLogAction('HI_SIGN_INFECTED_BY_PC', 'pc='+this.tsid,'variant='+variant,'infector='+infector.tsid);
+            Server.instance.apiLogAction('HI_SIGN_INFECTED_PC', 'pc='+infector.tsid,'variant='+variant,'infectee='+this.tsid);
 
             infector.achievements_increment('infected_pc', variant, 1);
             this.player.achievements.achievements_increment('infected_by_pc', variant, 1);
         } else {
-            apiLogAction('HI_SIGN_INFECTED_BY_BUTLER', 'pc='+this.tsid,'variant='+variant,'infector='+infector.tsid);
+            Server.instance.apiLogAction('HI_SIGN_INFECTED_BY_BUTLER', 'pc='+this.tsid,'variant='+variant,'infector='+infector.tsid);
 
             this.player.achievements.achievements_increment('infected_by_butler', variant, 1);
         }
@@ -387,7 +387,7 @@ public function maybe_set_evasion_record(msg){
     var secs = msg.seconds;
     var ret;
     var location = this.location;
-    if (location.instance_of) location = apiFindObject(location.instance_of);
+    if (location.instance_of) location = Server.instance.apiFindObject(location.instance_of);
 
     if (!location) {
         log.error('no location?', e);
@@ -441,21 +441,21 @@ public function maybe_set_evasion_record(msg){
         all_timed_changed = true;
         ret = {status: 'set_alltime', msg: secs+' seconds set the <b>ALL TIME</b> hi sign evasion record for this location!'};
 
-        apiLogAction('HI_EVASION_SET_RECORD', 'pc='+this.tsid,'secs='+secs,'version='+msg.version,'loc='+this.location.tsid,'recordloc='+location.tsid);
+        Server.instance.apiLogAction('HI_EVASION_SET_RECORD', 'pc='+this.tsid,'secs='+secs,'version='+msg.version,'loc='+this.location.tsid,'recordloc='+location.tsid);
 
     } else if (secs > alltime_record.secs) {
 
         all_timed_changed = true;
         ret = {status: 'broke_alltime', msg: secs+' seconds broke the previous <b>ALL TIME</b> hi sign evasion record of '+alltime_record.secs+' seconds for this location, set by '+utils.escape(alltime_record.pc_label)+'!'};
 
-        apiLogAction('HI_EVASION_BROKE_RECORD', 'pc='+this.tsid,'secs='+secs,'version='+msg.version,'loc='+this.location.tsid,'recordloc='+location.tsid,'recordsecs='+alltime_record.secs);
+        Server.instance.apiLogAction('HI_EVASION_BROKE_RECORD', 'pc='+this.tsid,'secs='+secs,'version='+msg.version,'loc='+this.location.tsid,'recordloc='+location.tsid,'recordsecs='+alltime_record.secs);
 
     } else if (secs == alltime_record.secs) {
 
         all_timed_changed = true;
         ret = {status: 'tied_alltime', msg: secs+' seconds tied the previous <b>ALL TIME</b> hi sign evasion record for this location, set by '+utils.escape(alltime_record.pc_label)+'!'};
 
-        apiLogAction('HI_EVASION_TIED_RECORD', 'pc='+this.tsid,'secs='+secs,'version='+msg.version,'loc='+this.location.tsid,'recordloc='+location.tsid);
+        Server.instance.apiLogAction('HI_EVASION_TIED_RECORD', 'pc='+this.tsid,'secs='+secs,'version='+msg.version,'loc='+this.location.tsid,'recordloc='+location.tsid);
 
     }
 
@@ -466,19 +466,19 @@ public function maybe_set_evasion_record(msg){
 
             ret = {status: 'set_daily', msg: secs+' seconds set today\'s hi sign evasion record for this location!'};
 
-            apiLogAction('HI_EVASION_SET_DAILY_RECORD', 'pc='+this.tsid,'secs='+secs,'version='+msg.version,'loc='+this.location.tsid,'recordloc='+location.tsid);
+            Server.instance.apiLogAction('HI_EVASION_SET_DAILY_RECORD', 'pc='+this.tsid,'secs='+secs,'version='+msg.version,'loc='+this.location.tsid,'recordloc='+location.tsid);
 
         } else if (secs > daily_record.secs) {
 
             ret = {status: 'broke_daily', msg: secs+' seconds broke today\'s hi sign evasion record of '+daily_record.secs+' seconds for this location, set by '+utils.escape(daily_record.pc_label)+'!'};
 
-            apiLogAction('HI_EVASION_BROKE_DAILY_RECORD', 'pc='+this.tsid,'secs='+secs,'version='+msg.version,'loc='+this.location.tsid,'recordloc='+location.tsid,'recordsecs='+daily_record.secs);
+            Server.instance.apiLogAction('HI_EVASION_BROKE_DAILY_RECORD', 'pc='+this.tsid,'secs='+secs,'version='+msg.version,'loc='+this.location.tsid,'recordloc='+location.tsid,'recordsecs='+daily_record.secs);
 
         } else if (secs == daily_record.secs) {
 
             ret = {status: 'tied_daily', msg: secs+' seconds tied today\'s hi sign evasion record for this location, set by '+utils.escape(daily_record.pc_label)+'!'};
 
-            apiLogAction('HI_EVASION_TIED_DAILY_RECORD', 'pc='+this.tsid,'secs='+secs,'version='+msg.version,'loc='+this.location.tsid,'recordloc='+location.tsid);
+            Server.instance.apiLogAction('HI_EVASION_TIED_DAILY_RECORD', 'pc='+this.tsid,'secs='+secs,'version='+msg.version,'loc='+this.location.tsid,'recordloc='+location.tsid);
 
         }
     }
@@ -506,7 +506,7 @@ public function make_and_store_evasion_record(msg, location, today_key, alltime)
     };
 
     // track it!
-    var hi_variants_tracker = apiFindObject(config.hi_variants_tracker);
+    var hi_variants_tracker = Server.instance.apiFindObject(config.hi_variants_tracker);
     hi_variants_tracker.remember_pcs_daily_evasion_record(this, location.tsid);
 
     location.hi_sign_daily_evasion_record = ob;
@@ -548,15 +548,15 @@ public function doHiEmoteMissileHit(msg){
 
     if (!from_tsid) {
         if (this.is_god) this.player.sendActivity('ADMIN: NO FROM TSID?');
-        apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=no from_tsid');
+        Server.instance.apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=no from_tsid');
         return;
     }
 
-    var from_ob = apiFindObject(from_tsid); // could be a butler or another pc
+    var from_ob = Server.instance.apiFindObject(from_tsid); // could be a butler or another pc
 
     if (!from_ob) {
         if (this.is_god) this.player.sendActivity('ADMIN: NO from_ob?');
-        apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=no from_ob');
+        Server.instance.apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=no from_ob');
         return;
     }
 
@@ -564,13 +564,13 @@ public function doHiEmoteMissileHit(msg){
 
     if (!targets) {
         if (this.is_god) this.player.sendActivity('ADMIN: NO from_ob.hi_emote_daily_targets?');
-        apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=no from_ob.hi_emote_daily_targets');
+        Server.instance.apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=no from_ob.hi_emote_daily_targets');
         return;
     }
 
     if (!targets.pcs) {
         if (this.is_god) this.player.sendActivity('ADMIN: NO from_ob.hi_emote_daily_targets.pcs?');
-        apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=no from_ob.hi_emote_daily_targets.pcs');
+        Server.instance.apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=no from_ob.hi_emote_daily_targets.pcs');
         return;
     }
 
@@ -587,7 +587,7 @@ public function doHiEmoteMissileHit(msg){
         } else {
             // we have no record of a missile being sent from from_tsid to this player!
             if (this.is_god) this.player.sendActivity('ADMIN: no time_targeted?');
-            apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=no time_targeted');
+            Server.instance.apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=no time_targeted');
             return;
         }
     }
@@ -595,7 +595,7 @@ public function doHiEmoteMissileHit(msg){
     if (loc_tsid && loc_tsid != this.location.tsid) {
         // cheating?
         if (this.is_god) this.player.sendActivity('ADMIN: loc_tsid:'+loc_tsid+' does not match this.location.tsid'+this.location.tsid);
-        apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=loc_tsid:'+loc_tsid+' does not match this.location.tsid'+this.location.tsid);
+        Server.instance.apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=loc_tsid:'+loc_tsid+' does not match this.location.tsid'+this.location.tsid);
         return;
     }
 
@@ -605,7 +605,7 @@ public function doHiEmoteMissileHit(msg){
         // diff is how much time has passed since this player was targeted, minus how much time the client reported the player evaded
         // we allow 5 seconds for lag: longer than that we think there is cheating
         if (this.is_god) this.player.sendActivity('ADMIN: diff:'+diff+' seems bogus');
-        apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=no time_targeted');
+        Server.instance.apiLogAction('HI_EVASION_SEEMS_BOGUS', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid,'reason=no time_targeted');
         return;
     }
 
@@ -629,7 +629,7 @@ public function doHiEmoteMissileHit(msg){
 
     // end achievements --------------------------------------------------------------
 
-    apiLogAction('HI_EVASION', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid);
+    Server.instance.apiLogAction('HI_EVASION', 'pc='+this.tsid,'secs='+client_seconds,'loc='+this.location.tsid);
 
     if (loc_tsid && client_seconds >= min_record_seconds) {
         record_status = this.maybe_set_evasion_record(msg);

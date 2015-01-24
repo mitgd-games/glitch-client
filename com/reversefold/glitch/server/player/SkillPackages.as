@@ -21,7 +21,7 @@ package com.reversefold.glitch.server.player {
 public function runDropTable(class_id, source, preface, offsets, props, combine_messages){
     //log.info('runDropTable: '+class_id);
 
-    var prot = apiFindItemPrototype('catalog_drop_tables');
+    var prot = Server.instance.apiFindItemPrototype('catalog_drop_tables');
     if (prot.drop_tables[class_id]){
         var table = prot.drop_tables[class_id];
 
@@ -38,7 +38,7 @@ public function runDropTable(class_id, source, preface, offsets, props, combine_
 
                     var it = items[i];
                     if (it.class_id && it.count){
-                        var item_prot = apiFindItemPrototype(it.class_id);
+                        var item_prot = Server.instance.apiFindItemPrototype(it.class_id);
                         it.label = item_prot.label;
                         if (source){
                             if(offsets) {
@@ -225,7 +225,7 @@ public function runSkillPackage(class_id, source_item, args){
         details: details
     };
 
-    if (details.duration && apiIsPlayerOnline(this.tsid) && (args.tool_item || args.overlay_id) && !args.no_timers){
+    if (details.duration && Server.instance.apiIsPlayerOnline(this.tsid) && (args.tool_item || args.overlay_id) && !args.no_timers){
 
         if (source_item.isOnGround()){
             // Which direction are we "facing"?
@@ -425,10 +425,10 @@ public function finishSkillPackage(){
     }
 
 
-    apiResetThreadCPUClock();
+    Server.instance.apiResetThreadCPUClock();
     var class_id = this.skill_package.class_id;
     if (this.skill_package.source_item_tsid){
-        var source_item = apiFindObject(this.skill_package.source_item_tsid);
+        var source_item = Server.instance.apiFindObject(this.skill_package.source_item_tsid);
     }
     else{
         var source_item = this.skill_package.source_item;
@@ -467,7 +467,7 @@ public function finishSkillPackage(){
                     args.callback(ret);
                 }
             }
-            apiResetThreadCPUClock("finishSkillPackage_"+class_id+"_failed");
+            Server.instance.apiResetThreadCPUClock("finishSkillPackage_"+class_id+"_failed");
             return ret;
         }
     }
@@ -491,7 +491,7 @@ public function finishSkillPackage(){
                     args.callback(ret);
                 }
             }
-            apiResetThreadCPUClock("finishSkillPackage_"+class_id+"_interval");
+            Server.instance.apiResetThreadCPUClock("finishSkillPackage_"+class_id+"_interval");
             return ret;
         }
 
@@ -530,7 +530,7 @@ public function finishSkillPackage(){
                 args.callback(ret);
             }
         }
-        apiResetThreadCPUClock("finishSkillPackage_"+class_id+"_failed");
+        Server.instance.apiResetThreadCPUClock("finishSkillPackage_"+class_id+"_failed");
         return ret;
     }
 
@@ -568,7 +568,7 @@ public function finishSkillPackage(){
                 if (it.class_id){
                     if (!slugs.items) slugs.items = [];
 
-                    var item_prot = apiFindItemPrototype(it.class_id);
+                    var item_prot = Server.instance.apiFindItemPrototype(it.class_id);
                     slugs.items.push({
                         class_tsid  : it.class_id,
                         label       : item_prot.label,
@@ -598,7 +598,7 @@ public function finishSkillPackage(){
             args.callback(ret);
         }
     }
-    apiResetThreadCPUClock("finishSkillPackage_"+class_id);
+    Server.instance.apiResetThreadCPUClock("finishSkillPackage_"+class_id);
     return ret;
 }
 
@@ -791,7 +791,7 @@ public function cancelSkillPackage(){
 
     var source_item;
     if (this.skill_package.source_item_tsid){
-        source_item = apiFindObject(this.skill_package.source_item_tsid);
+        source_item = Server.instance.apiFindObject(this.skill_package.source_item_tsid);
     }
     else{
         source_item = this.skill_package.source_item;

@@ -130,7 +130,7 @@ public function party_invited(party, inviter){
 
     var space = party.get_space();
     if (space){
-        var loc = apiFindObject(space.get_entrance());
+        var loc = Server.instance.apiFindObject(space.get_entrance());
         if (loc){
             txt += "Party in "+utils.escape(loc.label)+".";
         }
@@ -374,7 +374,7 @@ public function party_chat(txt){
 
         this.party.chat(this, txt);
 
-        apiLogAction('CHAT_PARTY', 'pc='+this.tsid, 'party='+this.party.tsid, 'msg='+txt);
+        Server.instance.apiLogAction('CHAT_PARTY', 'pc='+this.tsid, 'party='+this.party.tsid, 'msg='+txt);
     }else{
         this.party_activity("You're not in a party!");
     }
@@ -454,7 +454,7 @@ public function party_create(){
 
     //log.error('party_create for '+this.tsid);
 
-    this.party = apiNewGroup('party');
+    this.party = Server.instance.apiNewGroup('party');
 
     this.party.init(this);
 }

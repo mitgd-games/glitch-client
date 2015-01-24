@@ -35,7 +35,7 @@ public function skills_init(){
             log.printStackTrace();
         }
 
-        this.skills = apiNewOwnedDC(this);
+        this.skills = Server.instance.apiNewOwnedDC(this);
         this.skills.label = 'Skills';
         this.skills.skills = {};
     }
@@ -130,7 +130,7 @@ public function skills_auto_learn_recipes(skill_id, tell_client){
     var updates = [];
 
     // loop over recipes
-    var book = apiFindItemPrototype('catalog_recipes');
+    var book = Server.instance.apiFindItemPrototype('catalog_recipes');
     for (var i in book.recipes){
 
         var r = book.recipes[i];
@@ -506,7 +506,7 @@ public function skills_unlearnable_list() {
 }
 
 public function skills_remove(id){
-    apiLogAction('SKILLS_REMOVE', 'pc='+this.tsid, 'skill='+id);
+    Server.instance.apiLogAction('SKILLS_REMOVE', 'pc='+this.tsid, 'skill='+id);
 
     //log.info(this+" Unlearning: removing skill "+id);
 
@@ -531,7 +531,7 @@ public function skills_remove(id){
         //
 
 
-        var book = apiFindItemPrototype('catalog_recipes');
+        var book = Server.instance.apiFindItemPrototype('catalog_recipes');
         for (var i in book.recipes){
 
             var r = book.recipes[i];
@@ -762,7 +762,7 @@ public function skills_train(id){
         return { busyUnlearning: 1, learn: 1, id: id, fullname: skill_name } ;
     }
 
-    apiLogAction('SKILLS_TRAIN', 'pc='+this.tsid, 'skill='+id);
+    Server.instance.apiLogAction('SKILLS_TRAIN', 'pc='+this.tsid, 'skill='+id);
 
     //
     // Have the pre-reqs?
@@ -820,7 +820,7 @@ public function skills_train(id){
 
                 utils.http_get('callbacks/skill.php', args);
 
-            apiLogAction('SKILLS_PAUSE', 'pc='+this.tsid, 'skill='+i);
+            Server.instance.apiLogAction('SKILLS_PAUSE', 'pc='+this.tsid, 'skill='+i);
             }
         }
     }
@@ -1441,7 +1441,7 @@ public function skills_give(id){
     var data = this.skills_get(id);
     if (!data) return;
 
-    apiLogAction('SKILLS_GIVE', 'pc='+this.tsid, 'skill='+id);
+    Server.instance.apiLogAction('SKILLS_GIVE', 'pc='+this.tsid, 'skill='+id);
 
     this.skills.skills[id] = time();
 

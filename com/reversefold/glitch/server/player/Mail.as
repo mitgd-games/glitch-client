@@ -20,7 +20,7 @@ package com.reversefold.glitch.server.player {
 
 public function mail_init(){
     if (this.mail === undefined || this.mail === null){
-        this.mail = apiNewOwnedDC(this);
+        this.mail = Server.instance.apiNewOwnedDC(this);
         this.mail.label = 'Mail';
 
         this.mail.inbox = {};
@@ -31,7 +31,7 @@ public function mail_init(){
 
 public function mail_create_bag(){
     // Create a new private storage bag for holding mail items
-    var it = apiNewItemStack('bag_private', 1);
+    var it = Server.instance.apiNewItemStack('bag_private', 1);
     it.label = 'Private Mail Storage';
 
     this.apiAddHiddenStack(it);
@@ -433,7 +433,7 @@ public function mail_test_auctions(num) {
 
     for(var i = 0; i < num; i++) {
         for(var j in item_list) {
-            var s = apiNewItemStack(item_list[j], 1);
+            var s = Server.instance.apiNewItemStack(item_list[j], 1);
             var slot = bag.firstEmptySlot();
             bag.addItemStack(s, slot);
 
@@ -660,7 +660,7 @@ public function get_message_goodies(msg_id, no_prompts) {
     // REMOVEME: if we have an item on this message, try fixing in case it is broken.
     if(this.mail.inbox[msg_id].items) {
         for (var i in this.mail.inbox[msg_id].items) {
-            var stack = apiFindObject(this.mail.inbox[msg_id].items[i]);
+            var stack = Server.instance.apiFindObject(this.mail.inbox[msg_id].items[i]);
             if(stack) {
                 log.info("Running mail item recovery on item "+stack);
                 if(!stack.apiRecoverAndReturnToContainer()) {
@@ -1153,7 +1153,7 @@ public function mail_do_delayed_player_deliveries() {
 
         // Try to find the item associated with this delivery. Throw an error and try again
         var new_item = this.mail.delayed_mail_items[i];
-        var stack = apiFindObject(new_item.itemstack_tsid);
+        var stack = Server.instance.apiFindObject(new_item.itemstack_tsid);
         if(!stack) {
             log.error("Error posting delayed mail item "+new_item.itemstack_tsid+" to player "+this);
             if(new_item.tries) {
@@ -1227,9 +1227,9 @@ public function mail_add_player_delivery(itemstack_tsid, sender_tsid, currants, 
 }
 
 public function mail_add_auction_delivery(itemstack_tsid, delay, uid, sender_tsid, subType) {
-    apiResetThreadCPUClock();
+    Server.instance.apiResetThreadCPUClock();
     this.mail_add_item(itemstack_tsid, delay, 'auction', uid, sender_tsid, subType);
-    apiResetThreadCPUClock("mail_add_auction_delivery");
+    Server.instance.apiResetThreadCPUClock("mail_add_auction_delivery");
 }
 
 public function mail_add_item(itemstack_tsid, delay, mailType, id, sender_tsid, subType) {
@@ -1239,7 +1239,7 @@ public function mail_add_item(itemstack_tsid, delay, mailType, id, sender_tsid, 
 
     var bag = this.mail_get_bag();
     if (bag) {
-        var obj = apiFindObject(itemstack_tsid);
+        var obj = Server.instance.apiFindObject(itemstack_tsid);
         switch(obj.getContainerType()) {
             case 'pack':
             case 'bag':
@@ -1256,16 +1256,16 @@ public function mail_add_item(itemstack_tsid, delay, mailType, id, sender_tsid, 
         // already locked and a second lock will fail.
         if(owner && owner.is_player) {
             if (mailType == 'auction'){
-                var stack = apiFindObject(itemstack_tsid);
+                var stack = Server.instance.apiFindObject(itemstack_tsid);
             } else {
                 var stack = owner.removeItemStackTsid(itemstack_tsid);
                 if(!stack) {
-                    stack = apiFindObject(itemstack_tsid);
+                    stack = Server.instance.apiFindObject(itemstack_tsid);
                 }
             }
         } else  {
             // Otherwise, it is a temp stack and does not need to be locked.
-            var stack = apiFindObject(itemstack_tsid);
+            var stack = Server.instance.apiFindObject(itemstack_tsid);
         }
 
         if (stack) {
@@ -1397,7 +1397,7 @@ public function build_mail_check_msg(from_item, to_msg, fetch_all) {
         }
         if(this.mail.inbox[i].items.length) {
             // For now, only one item can be attached to a message
-            var it = apiFindObject(this.mail.inbox[i].items[0]);
+            var it = Server.instance.apiFindObject(this.mail.inbox[i].items[0]);
             if(it) {
 
                 newMsg.item = {class_tsid: it.class_tsid, count: it.count};
@@ -1548,7 +1548,7 @@ public function mail_replace_mail_item(source_tsid, replacement_item){
     for (var i in this.mail.inbox){
         if (!this.mail.inbox[i].items[0] || this.mail.inbox[i].items[0] != source_tsid) continue;
 
-        var source_stack = apiFindObject(this.mail.inbox[i].items[0]);
+        var source_stack = Server.instance.apiFindObject(this.mail.inbox[i].items[0]);
         if (source_stack){
             replacement_item.addDeliveryPacket(source_stack.getDeliveryPacket());
             this.mail.inbox[i].items[0] = replacement_item.tsid;
@@ -1583,7 +1583,7 @@ public function mail_send_special_item(class_tsid, number, message, min_level) {
     if (!bag) return;
     var slot = bag.firstEmptySlot();
 
-    var s = apiNewItemStack(class_tsid, n_sending);
+    var s = Server.instance.apiNewItemStack(class_tsid, n_sending);
     if(!s) {
         log.error("Couldn't create special item of type "+class_tsid+" for player "+this);
         return;

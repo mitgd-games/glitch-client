@@ -526,7 +526,7 @@ public function newxpComplete(){
 	*/
 
 	// Log it
-	apiLogAction('NEWXP_COMPLETE', 'pc='+this.tsid);
+	Server.instance.apiLogAction('NEWXP_COMPLETE', 'pc='+this.tsid);
 }
 
 public function newxpReturnToGentleIsland(){
@@ -683,7 +683,7 @@ public function onLogin(){
 			label: this.location.is_hidden() ? 'A secret place' : this.location.getProp('label')
 		}
 	};
-	var online = apiCallMethodForOnlinePlayers('buddies_send_buddy_online', tsids, args);
+	var online = Server.instance.apiCallMethodForOnlinePlayers('buddies_send_buddy_online', tsids, args);
 
 	this.date_last_login = time();
 
@@ -808,7 +808,7 @@ public function onLogout(){
 	//
 
 	var tsids = this.player.buddies.buddies_get_reverse_tsids();
-	var online = apiCallMethodForOnlinePlayers('buddies_send_buddy_offline', tsids, {tsid: this.tsid, label: this.label});
+	var online = Server.instance.apiCallMethodForOnlinePlayers('buddies_send_buddy_offline', tsids, {tsid: this.tsid, label: this.label});
 
 	//
 	// tell old location we've gone offline (this is to handle when client reloads mid-move, after player has been removed from old location already
@@ -836,7 +836,7 @@ public function onLogout(){
 		if (!this.time_played) this.time_played = 0;
 		this.time_played += time_played;
 
-		apiLogAction('LOGOUT', 'pc='+this.tsid);
+		Server.instance.apiLogAction('LOGOUT', 'pc='+this.tsid);
 	}
 
 	if (this['!current_overlay_script']){
@@ -1125,7 +1125,7 @@ public function teleportToLocation(tsid, x, y, args){
 		};
 	}
 
-	apiLogAction('TELEPORT', 'pc='+this.tsid, 'location='+tsid, 'x='+x, 'y='+y);
+	Server.instance.apiLogAction('TELEPORT', 'pc='+this.tsid, 'location='+tsid, 'x='+x, 'y='+y);
 
 	var target = Server.instance.apiFindObject(tsid);
 	if (!target){
@@ -1455,7 +1455,7 @@ public function doNewDay(){
 		mood = this.player.metabolics.metabolics_set_mood(this.metabolics.mood.top);
 	}
 
-	apiLogAction('NEW_DAY', 'pc='+this.tsid, 'energy='+energy, 'mood='+mood);
+	Server.instance.apiLogAction('NEW_DAY', 'pc='+this.tsid, 'energy='+energy, 'mood='+mood);
 
 	var maxDonationXP = Math.round(this.player.stats.stats_calc_level_from_xp(this.player.stats.stats_get_xp()).xp_for_this * 0.1);
 
@@ -1808,7 +1808,7 @@ public function croak(){
 	if (this.is_dead || this.player.buffs.buffs_has('walking_dead') || this.location.isInHell()) return 0;
 	if (!this.has_done_intro || this.location.class_tsid == 'newbie_island') return 0;
 
-	apiLogAction('CROAKED', 'pc='+this.tsid);
+	Server.instance.apiLogAction('CROAKED', 'pc='+this.tsid);
 	this.apiSendAnnouncement({type: 'stop_all_music'});
 	this.player.announcements.announce_sound('CROAK');
 
@@ -1889,7 +1889,7 @@ public function resurrect(){
 	if (this.apiPlayerHasLockForCurrentLocation()) return 0;
 	if (!this.is_dead && !this.location.isInHell()) return 0;
 
-	apiLogAction('RESURRECTED', 'pc='+this.tsid);
+	Server.instance.apiLogAction('RESURRECTED', 'pc='+this.tsid);
 
 	//log.info('---------------- resurrect');
 	this.is_dead = 0;
@@ -2632,7 +2632,7 @@ public function make_hash_online(){
 	return {
 		tsid	: this.tsid,
 		label	: this.label,
-		online	: apiIsPlayerOnline(this.tsid),
+		online	: Server.instance.apiIsPlayerOnline(this.tsid),
 		is_admin	: (this.is_god || this.is_help) ? true : false,
 		is_guide	: this.is_guide ? true : false,
 		home_info	: this.player.houses.houses_get_login_new()
@@ -2647,7 +2647,7 @@ public function make_hash_with_location(){
 		y	: this.y,
 		s	: this.s,
 		level	: this.player.stats.stats_get_level(),
-		online	: apiIsPlayerOnline(this.tsid),
+		online	: Server.instance.apiIsPlayerOnline(this.tsid),
 		location: {
 			tsid	: this.location.tsid,
 			label	: this.location.is_hidden() ? 'A secret place' : this.location.label
@@ -2673,7 +2673,7 @@ public function make_hash_with_avatar(){
 		tsid	: this.tsid,
 		label	: this.label,
 		level	: this.player.stats.stats_get_level(),
-		online	: apiIsPlayerOnline(this.tsid),
+		online	: Server.instance.apiIsPlayerOnline(this.tsid),
 		location: {
 			tsid	: this.location.tsid,
 			label	: this.location.is_hidden() ? 'A secret place' : this.location.label
@@ -3076,7 +3076,7 @@ public function buildPath(dst, src){
 			fix_dst.push(dst_street);
 		}
 
-		if (config.is_dev) log.info(this+' apiFindShortestGlobalPath: '+src+', '+fix_dst);
+		if (config.is_dev) log.info(this+' Server.instance.apiFindShortestGlobalPath: '+src+', '+fix_dst);
 		path = apiFindShortestGlobalPath(src, fix_dst);
 
 	}
@@ -3095,7 +3095,7 @@ public function buildPath(dst, src){
 			return {ok: 0, error: "You're already there! (or really, really close)", non_fatal: 1};
 		}
 
-		if (config.is_dev) log.info(this+' apiFindGlobalPathX: '+src+', '+dst);
+		if (config.is_dev) log.info(this+' Server.instance.apiFindGlobalPathX: '+src+', '+dst);
 		path = apiFindGlobalPathX(src, dst);
 
 	}
@@ -3274,7 +3274,7 @@ public function transit_disembark_callback(value, details){
 }
 
 // Sends a message to the player, catching exceptions and discarding them
-// apiIsPlayerOnline is "expensive" and doesn't catch all the error conditions anyway
+// Server.instance.apiIsPlayerOnline is "expensive" and doesn't catch all the error conditions anyway
 // So if you want to send a message to a player, and you don't care if they don't get it, use this!
 public function sendMsgOnline(out){
 	try{
@@ -3505,7 +3505,7 @@ public function naughtySplanking(count,spacing){
 
 public function doNaughtySplanking(){
 	if (!this.naughty_splanking){
-		apiCancelTimer('doNaughtySplanking');
+		Server.instance.apiCancelTimer('doNaughtySplanking');
 		return false;
 	}
 
@@ -3777,7 +3777,7 @@ public function sorryForDeletingYourTPTarget(){
 	if (!bag) return false;
 	var slot = bag.firstEmptySlot();
 
-	var s = apiNewItemStack('note', 1);
+	var s = Server.instance.apiNewItemStack('note', 1);
 	if (!s){
 		log.error("Couldn't create apology note for player "+this);
 		return false;
