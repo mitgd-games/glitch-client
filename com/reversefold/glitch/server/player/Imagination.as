@@ -113,16 +113,16 @@ public function imagination_purchase_upgrade(hand_id){
 
     this.imagination_purchase_time_ms = getTime();
 
-    if (this.location.upgradeGranted){
-        this.location.upgradeGranted(this, card.class_tsid);
+    if (this.player.location.upgradeGranted){
+        this.player.location.upgradeGranted(this, card.class_tsid);
     }
 
     return true;
 }
 
 public function imagination_purchase_upgrade_confirmed(id){
-    if (this.location.upgradeConfirmed){
-        this.location.upgradeConfirmed(this, id);
+    if (this.player.location.upgradeConfirmed){
+        this.player.location.upgradeConfirmed(this, id);
     }
 }
 
@@ -613,7 +613,7 @@ public function imagination_get_all(){
                 case 1:
                     out[i].reqs.push({
                         'type'  : c.type,
-                        'ok'    : this.location.is_newxp ? 1 : 0
+                        'ok'    : this.player.location.is_newxp ? 1 : 0
                     });
                     out[i].is_newxp = true;
                     break;
@@ -687,10 +687,10 @@ public function imagination_get_all(){
         else{
             var ok = 1;
 
-            if (out[i].is_newxp && !this.location.is_newxp){
+            if (out[i].is_newxp && !this.player.location.is_newxp){
                 ok = 0;
             }
-            else if (!out[i].is_newxp && this.location.is_newxp && !this.imagination_has_upgrade('encyclopeddling') && !this.imagination_is_in_hand('encyclopeddling')){
+            else if (!out[i].is_newxp && this.player.location.is_newxp && !this.imagination_has_upgrade('encyclopeddling') && !this.imagination_is_in_hand('encyclopeddling')){
                 ok = 0;
             }
 

@@ -476,7 +476,7 @@ public function tests_fail(msg){
 }
 
 public function tests_instance_my_location() {
-    this.player.instances.instances_create('test_instance', this.location.tsid);
+    this.player.instances.instances_create('test_instance', this.player.location.tsid);
     this.player.instances.instances_enter('test_instance', this.x, this.y);
 }
 

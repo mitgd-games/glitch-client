@@ -33,18 +33,18 @@ public function houses_logout(){
     // In a POL that is yours? Everyone else goes to the entrance
     //
 
-    if (this.location.pols_is_pol() && !this.location.getProp('is_public')){
-        var entrance = this.location.pols_get_entrance_outside();
+    if (this.player.location.pols_is_pol() && !this.player.location.getProp('is_public')){
+        var entrance = this.player.location.pols_get_entrance_outside();
 
-        if (this.location.pols_is_owner(this)){
-            var pcs = this.location.getAllPlayers();
+        if (this.player.location.pols_is_owner(this)){
+            var pcs = this.player.location.getAllPlayers();
             for (var i in pcs){
-                if (i == this.tsid || pcs[i].is_god || pcs[i].is_help || this.location.acl_keys_player_has_key(pcs[i])) continue;
+                if (i == this.tsid || pcs[i].is_god || pcs[i].is_help || this.player.location.acl_keys_player_has_key(pcs[i])) continue;
 
                 pcs[i].teleportToLocationDelayed(entrance.tsid, entrance.x, entrance.y);
             }
         }
-        else if (!this.is_god && !this.is_help){
+        else if (!this.player.is_god && !this.player.is_help){
             this.player.teleportToLocationDelayed(entrance.tsid, entrance.x, entrance.y);
         }
     }
@@ -919,7 +919,7 @@ public function houses_go_to_new_house(force_recreate, no_teleport, go_inside){
         // newxp
         //
 
-        if (this.location.is_skillquest){
+        if (this.player.location.is_skillquest){
             return {ok: 0, error: "Just finish the quest first! It's easy!"};
         }
 
@@ -939,7 +939,7 @@ public function houses_go_to_new_house(force_recreate, no_teleport, go_inside){
 
 public function houses_go_to_tower(){
     if (!this.home || !this.home.tower) return {ok: 0, error: "You don't have a tower!"};
-    if (this.location.is_skillquest){
+    if (this.player.location.is_skillquest){
         return {ok: 0, error: "Just finish the quest first! It's easy!"};
     }
 
@@ -1081,7 +1081,7 @@ public function houses_teleport_to(target_house, x, y){
 }
 
 public function houses_record_leave(){
-    if (this.location.isInstance() && this.location.class_tsid != 'newbie_island'){
+    if (this.player.location.isInstance() && this.player.location.class_tsid != 'newbie_island'){
         var exit = this.player.instances.instances_unwind_exit();
         if (exit && exit.tsid){
             var exit_loc = Server.instance.apiFindObject(exit.tsid);
@@ -1090,8 +1090,8 @@ public function houses_record_leave(){
             }
         }
     }
-    else if (this.location.no_teleportation){
-        var targets = this.location.geo_links_get_incoming();
+    else if (this.player.location.no_teleportation){
+        var targets = this.player.location.geo_links_get_incoming();
         var choice = choose_one(array_keys(targets));
 
         if (targets[choice]){
@@ -1103,15 +1103,15 @@ public function houses_record_leave(){
         }
         else{
             this.home_leave = {
-                tsid: this.location.tsid,
+                tsid: this.player.location.tsid,
                 x: this.x,
                 y: this.y
             };
         }
     }
-    else if (!this.location.pols_is_pol() || !this.location.getProp('is_home')){
+    else if (!this.player.location.pols_is_pol() || !this.player.location.getProp('is_home')){
         this.home_leave = {
-            tsid: this.location.tsid,
+            tsid: this.player.location.tsid,
             x: this.x,
             y: this.y
         };
@@ -1185,7 +1185,7 @@ public function houses_get_external_entrance(){
 }
 
 public function houses_is_at_home(){
-    return this.location.homes_belongs_to(this.tsid);
+    return this.player.location.homes_belongs_to(this.tsid);
 }
 
 public function houses_is_our_home(tsid){
@@ -1199,7 +1199,7 @@ public function houses_check_inside_home(){
         this.player.sendActivity('Only works in your own house');
         return false;
     }
-    if (this.location.tsid != this.home.interior.tsid){
+    if (this.player.location.tsid != this.home.interior.tsid){
         this.player.sendActivity('Only works in your own house');
         return false;
     }
@@ -1216,19 +1216,19 @@ public function houses_check_inside_home(){
 public function houses_reset(){
     if (!this.houses_check_inside_home()) return false;
 
-    return this.location.homes_reset();
+    return this.player.location.homes_reset();
 }
 
 public function houses_rebuild(){
     if (!this.houses_check_inside_home()) return false;
 
-    return this.location.homes_rebuild_rooms();
+    return this.player.location.homes_rebuild_rooms();
 }
 
 public function houses_add_floor(){
     if (!this.houses_check_inside_home()) return false;
 
-    return this.location.homes_add_floor_at(this.location.homes_guess_door_pos());
+    return this.player.location.homes_add_floor_at(this.player.location.homes_guess_door_pos());
 }
 
 //
@@ -1308,7 +1308,7 @@ public function houses_undo_moving_boxes(){
 }
 
 public function houses_leave(){
-    if (!this.location.getProp('is_home')) return this.player.sendActivity("To leave, you must first go /home");
+    if (!this.player.location.getProp('is_home')) return this.player.sendActivity("To leave, you must first go /home");
 
     var target = this.houses_get_previous_location();
     if (!target.tsid){
@@ -1396,19 +1396,19 @@ public function houses_expand_costs(){
         };
     }
 
-    var house_type = this.location.homes_get_type();
+    var house_type = this.player.location.homes_get_type();
 
     if (house_type == 'tower'){
         return {
             ok: 1,
-            costs: this.location.tower_get_expand_costs()
+            costs: this.player.location.tower_get_expand_costs()
         };
     }
 
     if (house_type == 'interior' || house_type == 'exterior'){
         return {
             ok: 1,
-            costs: this.location.homes_get_expand_costs()
+            costs: this.player.location.homes_get_expand_costs()
         };
     }
 
@@ -1480,9 +1480,9 @@ public function houses_expand_yard(side){
     // in our backyard?
     //
 
-    if (this.location.tsid == this.home.interior.tsid){
+    if (this.player.location.tsid == this.home.interior.tsid){
 
-        var costs = this.location.home_get_yard_expansion_costs();
+        var costs = this.player.location.home_get_yard_expansion_costs();
         var context = {
             'type'      : 'expand_backyard',
             'remaining' : costs.count
@@ -1504,7 +1504,7 @@ public function houses_expand_yard(side){
             }
         }
 
-        return this.location.home_add_expansion();
+        return this.player.location.home_add_expansion();
     }
 
 
@@ -1512,9 +1512,9 @@ public function houses_expand_yard(side){
     // in our frontyard?
     //
 
-    if (this.location.tsid == this.home.exterior.tsid){
+    if (this.player.location.tsid == this.home.exterior.tsid){
 
-        var costs = this.location.home_get_yard_expansion_costs();
+        var costs = this.player.location.home_get_yard_expansion_costs();
         side = side == 'left' ? 'left' : 'right';
 
         var side_count = side == 'left' ? costs.count_left : costs.count_right;
@@ -1542,7 +1542,7 @@ public function houses_expand_yard(side){
             }
         }
 
-        return this.location.home_add_expansion(side);
+        return this.player.location.home_add_expansion(side);
     }
 
     return {
@@ -1598,31 +1598,31 @@ public function houses_unexpand(){
 
 public function houses_expand_tower(side){
 
-    if (this.location.tsid != this.home.tower.tsid){
+    if (this.player.location.tsid != this.home.tower.tsid){
         return {
             ok: 0,
             error: 'not_in_tower'
         };
     }
 
-    return this.location.tower_start_expand();
+    return this.player.location.tower_start_expand();
 }
 
 public function houses_set_tower_floor_name(connect_id, custom_label){
 
-    if (this.location.tsid != this.home.tower.tsid){
+    if (this.player.location.tsid != this.home.tower.tsid){
         return {
             ok: 0,
             error: 'not_in_tower'
         };
     }
 
-    return this.location.tower_set_floor_name(connect_id, custom_label);
+    return this.player.location.tower_set_floor_name(connect_id, custom_label);
 }
 
 public function houses_style_choices(){
 
-    if (this.location.tsid != this.home.interior.tsid && this.location.tsid != this.home.exterior.tsid){
+    if (this.player.location.tsid != this.home.interior.tsid && this.player.location.tsid != this.home.exterior.tsid){
 
         return {
             ok: 0,
@@ -1633,7 +1633,7 @@ public function houses_style_choices(){
     return {
         ok: 1,
         cost: this.house_style_switch_cost(),
-        choices: this.location.homes_get_style_choices(!!this.is_god)
+        choices: this.player.location.homes_get_style_choices(!!this.player.is_god)
     };
 }
 
@@ -1660,13 +1660,13 @@ public function houses_style_set(t){
 
     // deduct imagination
     var s = '?';
-    if (this.location.tsid != this.home.interior.tsid) s = 'interior';
-    if (this.location.tsid != this.home.exterior.tsid) s = 'exterior';
+    if (this.player.location.tsid != this.home.interior.tsid) s = 'interior';
+    if (this.player.location.tsid != this.home.exterior.tsid) s = 'exterior';
 
     var context = {
         'type'      : 'home_style_switch',
         'street'    : s,
-        'from_style'    : this.location.style,
+        'from_style'    : this.player.location.style,
         'to_style'  : t
     };
 
@@ -1679,10 +1679,10 @@ public function houses_style_set(t){
         }
     }
 
-    Server.instance.apiLogAction('HOME_STYLE_SWITCH', 'pc='+this.tsid, 'location='+this.location.tsid, 'street_type='+s, 'old_style='+this.location.style, 'new_style='+t);
+    Server.instance.apiLogAction('HOME_STYLE_SWITCH', 'pc='+this.tsid, 'location='+this.player.location.tsid, 'street_type='+s, 'old_style='+this.player.location.style, 'new_style='+t);
 
     // do eeet
-    this.location.homes_set_style(t);
+    this.player.location.homes_set_style(t);
 
     return {
         ok: 1
@@ -1712,7 +1712,7 @@ public function houses_reset_for_r2(){
 
 public function houses_set_name(name){
 
-    if (this.location.tsid != this.home.interior.tsid && this.location.tsid != this.home.exterior.tsid){
+    if (this.player.location.tsid != this.home.interior.tsid && this.player.location.tsid != this.home.exterior.tsid){
 
         return {
             ok: 0,
@@ -1720,7 +1720,7 @@ public function houses_set_name(name){
         };
     }
 
-    return this.location.homes_set_name(name);
+    return this.player.location.homes_set_name(name);
 }
 
 public function houses_get_img_rewards(){

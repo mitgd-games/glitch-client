@@ -67,11 +67,11 @@ public function teleportation_set_target(teleport_id){
     if (!ret['ok']) return ret;
 
     var target = this.player.get_simple_location();
-    var pol = this.location.pols_get_status();
+    var pol = this.player.location.pols_get_status();
 
     // Rewrite pols to be the door coming in
     if (pol.is_pol && pol.owner == this.tsid && !pol.is_public){
-        var outgoing = this.location.geo_links_get_outgoing();
+        var outgoing = this.player.location.geo_links_get_outgoing();
         for (var i in outgoing){
             if (outgoing[i] && outgoing[i].target.tsid != target.tsid){
                 target = {
@@ -86,7 +86,7 @@ public function teleportation_set_target(teleport_id){
     this.teleportation.targets[teleport_id] = target;
 
 
-    if(this.location.hubid == 95 || (config.is_dev && this.location.hubid == 8)) {
+    if(this.player.location.hubid == 95 || (config.is_dev && this.player.location.hubid == 8)) {
         this.player.quests.quests_set_flag('teleportation_point_in_xalanga');
     }
 
@@ -330,8 +330,8 @@ public function teleportation_can_set_target(teleport_id){
         };
     }
 
-    if (this.location.isInstance() || this.location.jobs_is_street_locked() || this.location.getProp('no_teleportation')){
-        if (!in_array_real(this.location.tsid, config.teleportation_ok_streets)){
+    if (this.player.location.isInstance() || this.player.location.jobs_is_street_locked() || this.player.location.getProp('no_teleportation')){
+        if (!in_array_real(this.player.location.tsid, config.teleportation_ok_streets)){
             return {
                 ok: 0,
                 error: "You can't save this location as a Teleportation Point."
@@ -339,7 +339,7 @@ public function teleportation_can_set_target(teleport_id){
         }
     }
 
-    var pol = this.location.pols_get_status();
+    var pol = this.player.location.pols_get_status();
     if (pol.is_pol && pol.owner != this.tsid && !pol.is_public){
         return {
             ok: 0,
@@ -381,8 +381,8 @@ public function teleportation_teleport(teleport_id, skip_skill, target, skip_cos
     // If we are in an instance, leave it from our instance list so we don't try and get put back to where we were when we entered
     //
 
-    if (this.location.isInstance()){
-        this.player.instances.instances_left(this.location.instance_id, false, true);
+    if (this.player.location.isInstance()){
+        this.player.instances.instances_left(this.player.location.instance_id, false, true);
     }
 
     if (!target) var target = this.teleportation_get_target(teleport_id);
@@ -398,18 +398,18 @@ public function teleportation_teleport(teleport_id, skip_skill, target, skip_cos
 
     // Check quests
     var target_info = Server.instance.apiFindObject(target.tsid).get_info();
-    if (this.location.hubid == 63){
+    if (this.player.location.hubid == 63){
         if (target_info.hub_id == 92){
             this.player.quests.quests_set_flag('teleport_between_zones');
         }
     }
-    if (this.location.hubid != 95){
+    if (this.player.location.hubid != 95){
         if (target_info.hub_id == 95){
             this.player.quests.quests_set_flag('teleport_to_xalanga');
         }
     }
     if (config.is_dev){
-        if (this.location.hubid != 8){
+        if (this.player.location.hubid != 8){
             if (target_info.hub_id == 8){
                 this.player.quests.quests_set_flag('teleport_to_xalanga');
             }
@@ -538,7 +538,7 @@ public function teleportation_map_teleport(tsid, use_token){
     }
 
     // Check quests
-    if (this.location.hubid == 63){
+    if (this.player.location.hubid == 63){
         var target_info = target.get_info();
         if (target_info.hub_id == 92){
             this.player.quests.quests_set_flag('teleport_between_zones');
@@ -643,14 +643,14 @@ public function teleportation_summon(pc){
 
     var summonses = this.teleportation_get_max_summons();
 
-    if (!this.location.isGreetingLocation() || !this.player.isGreeter() || !pc.isGreeter()){
+    if (!this.player.location.isGreetingLocation() || !this.player.isGreeter() || !pc.isGreeter()){
         var ret = this.teleportation_can_summon(pc);
         if (!ret['ok']) return ret;
     }
 
     // Greeter summonses are free
     var method;
-    if (!this.location.isGreetingLocation()){
+    if (!this.player.location.isGreetingLocation()){
         if (summonses[0] > this.teleportation.free_summons_today){
             this.teleportation.free_summons_today++;
             this.player.metabolics.metabolics_lose_energy(this.teleportation_get_energy_cost());
@@ -676,18 +676,18 @@ public function teleportation_summon(pc){
 
 
     var target = {
-        tsid: this.location.tsid,
+        tsid: this.player.location.tsid,
         x: this.x+20,
         y: this.y
     };
 
-    if (this.location.pols_is_pol() && this.location.getProp('is_home')){
+    if (this.player.location.pols_is_pol() && this.player.location.getProp('is_home')){
         pc.houses_record_leave();
     }
 
-    if (!this.location.isInstance()){
-        if (this.location.pols_is_pol() && !this.location.pols_is_owner(this) && !this.location.pols_is_owner(pc) && !this.location.getProp('is_public')){
-            target = this.location.pols_get_entrance_outside();
+    if (!this.player.location.isInstance()){
+        if (this.player.location.pols_is_pol() && !this.player.location.pols_is_owner(this) && !this.player.location.pols_is_owner(pc) && !this.player.location.getProp('is_public')){
+            target = this.player.location.pols_get_entrance_outside();
         }
 
         pc.removeFollowers();
@@ -699,7 +699,7 @@ public function teleportation_summon(pc){
         this.player.achievements.achievements_increment('teleportation_others', 'summoner');
     }
     else{
-        if (this.location.isInstance('party_space')){
+        if (this.player.location.isInstance('party_space')){
             if (pc.party_get() == this.player.party.party_get()){
                 pc.party_enter_space();
             }
@@ -708,9 +708,9 @@ public function teleportation_summon(pc){
             }
         }
         else{
-            var instance_id = this.location.getProp('instance_id');
+            var instance_id = this.player.location.getProp('instance_id');
             if (instance_id){
-                pc.instances_add(instance_id, this.location.getProp('instance'));
+                pc.instances_add(instance_id, this.player.location.getProp('instance'));
                 pc.instances_enter(instance_id, target.x, target.y);
             }
             else{
@@ -731,7 +731,7 @@ public function teleportation_cancel_summons(target){
 
     if (target){
 
-        if (this.location.isInstance('party_space') && target.party_get() != this.player.party.party_get()){
+        if (this.player.location.isInstance('party_space') && target.party_get() != this.player.party.party_get()){
             this.player.party.party_invite_declined(target);
         }
 
@@ -785,7 +785,7 @@ public function teleportation_can_summon(target){
         };
     }
 
-    if (this.location.isGreetingLocation() && this.player.isGreeter() && target.isGreeter()){
+    if (this.player.location.isGreetingLocation() && this.player.isGreeter() && target.isGreeter()){
         return {
             ok: 1,
             free: 0,
@@ -794,7 +794,7 @@ public function teleportation_can_summon(target){
     }
 
 
-    if (this.location.isInstance() && !this.location.isInstance('party_space')){
+    if (this.player.location.isInstance() && !this.player.location.isInstance('party_space')){
         if (target.party_get() != this.player.party.party_get()){
             return {
                 ok: 0,
@@ -815,8 +815,8 @@ public function teleportation_can_summon(target){
         };
     }
 
-    if (this.location.pols_is_pol() && !this.location.pols_is_owner(this)){
-        var ret = this.location.pols_canEnter(target);
+    if (this.player.location.pols_is_pol() && !this.player.location.pols_is_owner(this)){
+        var ret = this.player.location.pols_canEnter(target);
         if (!ret['ok']){
             return {
                 ok: 0,
@@ -1003,18 +1003,18 @@ public function teleportation_get_token_balance(){
 //////////////////////////////////////////////////////////////////////
 
 public function teleportation_add_history(tsid){
-    if (!this.is_god) return;
+    if (!this.player.is_god) return;
 
-    if (!this.location_history) this.location_history = {};
-    this.location_history[tsid] = time();
+    if (!this.player.location_history) this.player.location_history = {};
+    this.player.location_history[tsid] = time();
 }
 
 public function teleportation_get_history(num){
 
-    if (!this.location_history) this.location_history = {};
+    if (!this.player.location_history) this.player.location_history = {};
 
     var pairs = [];
-    for (var i in this.location_history) pairs.push([i, this.location_history[i] - 1288036000]);
+    for (var i in this.player.location_history) pairs.push([i, this.player.location_history[i] - 1288036000]);
     pairs.sort(function(a,b){return b[1]-a[1];});
 
     pairs = pairs.slice(0, num?num:5);

@@ -9,9 +9,11 @@ package com.reversefold.glitch.server.player {
 	import com.reversefold.glitch.server.player.Metabolics;
 	import com.reversefold.glitch.server.player.Skills;
 	import com.reversefold.glitch.server.player.Stats;
-
+	
 	import flash.utils.Dictionary;
-
+	
+	import mx.utils.UIDUtil;
+	
 	import org.osmf.logging.Log;
 	import org.osmf.logging.Logger;
 
@@ -20,7 +22,7 @@ package com.reversefold.glitch.server.player {
 
 		private var config : Config;
 
-		public var tsid = 1;
+		public var tsid : String = UIDUtil.createUID();
 
 		public var is_dead : int;
 		public var label : String;
@@ -35,6 +37,11 @@ package com.reversefold.glitch.server.player {
 		public var already_sorry : Boolean;
 		public var apply_buff = null;
 		public var x;
+		public var y;
+		
+		public var is_god : Boolean = false;
+		public var is_help : Boolean = false;
+		public var is_guide : Boolean = false;
 
 		public function Player(config : Config) : void {
 			//init();
@@ -1072,9 +1079,9 @@ public function teleportToLocationVariableDelay(tsid, x, y, time, args){
 	this.apiSetTimer('handleDelayedTeleport', time);
 }
 
-public function teleportToLocationDelayed(tsid, x, y, args){
+public function teleportToLocationDelayed(tsid, x, y, args=null){
 
-	if (!apiIsPlayerOnline(this.tsid)){
+	if (!Server.instance.apiIsPlayerOnline(this.tsid)){
 		return this.teleportToLocation(tsid, x, y, args);
 	}
 
@@ -1809,7 +1816,7 @@ public function croak(){
 	if (!this.has_done_intro || this.location.class_tsid == 'newbie_island') return 0;
 
 	Server.instance.apiLogAction('CROAKED', 'pc='+this.tsid);
-	this.apiSendAnnouncement({type: 'stop_all_music'});
+	this.player.announcements.apiSendAnnouncement({type: 'stop_all_music'});
 	this.player.announcements.announce_sound('CROAK');
 
 	if (!this.deaths_today) this.deaths_today = 0;
@@ -2883,7 +2890,7 @@ public function reloadGeometry(x, y, type){
 
 	// Start music
 	if (this.location.geometry.music_file){
-		this.apiSendAnnouncement({type: 'stop_all_music'});
+		this.player.announcements.apiSendAnnouncement({type: 'stop_all_music'});
 		this.player.announcements.announce_music(this.location.geometry.music_file, 999);
 	}
 
@@ -3205,7 +3212,7 @@ public function sneeze(){
 
 	this.location.apiSendAnnouncementX(annc, this);
 	annc.locking = true;
-	this.apiSendAnnouncement(annc);
+	this.player.announcements.apiSendAnnouncement(annc);
 
 	this.sendActivity('Achoo!! Argh! Hate that.');
 }
@@ -3528,7 +3535,7 @@ public function doNaughtySplanking(){
 		duration: 10000,
 		size: "225%"
 	};
-	this.apiSendAnnouncement(rsp);
+	this.player.announcements.apiSendAnnouncement(rsp);
 
 	this.naughty_splanking.delivered++;
 
@@ -3587,7 +3594,7 @@ public function show_rainbow(overlay_key, delay=0){
 	if (delay) args.delay_ms = delay;
 
 	if (overlay_key == 'rainbow_secretspot') {
-		this.apiSendAnnouncement(args);
+		this.player.announcements.apiSendAnnouncement(args);
 	}
 	else {
 		this.location.apiSendAnnouncement(args);

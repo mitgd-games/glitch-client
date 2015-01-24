@@ -117,8 +117,8 @@ public function broadcastPCRSChange(){
             tsid: this.tsid,
             label: this.label,
             location: {
-                tsid: this.location.tsid,
-                label: this.location.label
+                tsid: this.player.location.tsid,
+                label: this.player.location.label
             },
             rs: this.isRooked()
         }

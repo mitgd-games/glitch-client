@@ -39,7 +39,7 @@ public function adminSendActivity(arg){
 }
 
 public function adminTeleport(arg){
-    //if (!this.is_god) return {ok: 0, error: "You're not allowed to do that."};
+    //if (!this.player.is_god) return {ok: 0, error: "You're not allowed to do that."};
 
     if (arg.sudo_make_me_an_instance){
         var instance = this.player.instances.instances_create('admin_teleport_'+arg.tsid, arg.tsid, {preserve_links: true});
@@ -282,11 +282,11 @@ public function adminGetProfile(args){
     if (!args.skip_achievements) out.achievements = this.player.achievements.achievements_get_profile();
 
     out.location = {
-        'name' : this.location.label,
-        'tsid' : this.location.tsid,
+        'name' : this.player.location.label,
+        'tsid' : this.player.location.tsid,
         'x' : this.x,
         'y' : this.y,
-        'is_hidden' : this.location.is_hidden()
+        'is_hidden' : this.player.location.is_hidden()
     };
 
     out.a2 = this.player.avatar.avatar_hash();
@@ -426,12 +426,12 @@ public function adminGetFullInfo(args){
     out.metabolics = this.player.profile.profile_get_metabolics();
 
     out.location = {
-        'name' : this.location.label,
-        'tsid' : this.location.tsid,
+        'name' : this.player.location.label,
+        'tsid' : this.player.location.tsid,
         'x' : this.x,
         'y' : this.y,
-        'is_hidden' : this.location.is_hidden(),
-        'is_pol' : this.location.pols_is_pol()
+        'is_hidden' : this.player.location.is_hidden(),
+        'is_pol' : this.player.location.pols_is_pol()
     };
 
     out.houses = this.player.houses.houses_get_with_streets();
@@ -447,12 +447,12 @@ public function adminGetLocationInfo(){
         last_online: is_online ? 0 : this.date_last_logout,
 
         location: {
-            'name' : this.location.label,
-            'tsid' : this.location.tsid,
+            'name' : this.player.location.label,
+            'tsid' : this.player.location.tsid,
             'x' : this.x,
             'y' : this.y,
-            'is_hidden' : this.location.is_hidden(),
-            'is_pol' : this.location.pols_is_pol()
+            'is_hidden' : this.player.location.is_hidden(),
+            'is_pol' : this.player.location.pols_is_pol()
         },
         houses: this.player.houses.houses_get_with_streets()
     };
@@ -545,8 +545,8 @@ public function adminGetGodProfile(args){
     //
 
     out.location = {
-        'name' : this.location.label,
-        'tsid' : this.location.tsid,
+        'name' : this.player.location.label,
+        'tsid' : this.player.location.tsid,
         'x' : this.x,
         'y' : this.y
     };
@@ -891,7 +891,7 @@ public function admin_place_pol_callback(choice, details){
         var idx = choice.substr(14);
         var pol = utils.get_pol_config(idx);
 
-        var ret = this.location.pols_write_create(pol.template_tsid, this.x, this.y, pol.uid, true);
+        var ret = this.player.location.pols_write_create(pol.template_tsid, this.x, this.y, pol.uid, true);
 
         if (ret.ok){
 
@@ -954,7 +954,7 @@ public function admin_get_remote_location(){
 
 public function admin_get_leaderboards(){
 
-    if (!config.is_dev && (this.is_god || this.is_help || this.tsid == 'PCRFDQOCKNS1LIS')) return {};
+    if (!config.is_dev && (this.player.is_god || this.player.is_help || this.tsid == 'PCRFDQOCKNS1LIS')) return {};
 
     var out = {
         'players': {
@@ -1061,19 +1061,19 @@ public function adminDebug(args){
 }
 
 public function adminCheckDoneIntro(args){
-    if (!this.has_done_intro && (config.force_intro || this.quickstart_needs_player) && (!this.intro_steps || this.intro_steps['new_player_part1']) && this.player.stats.stats_get_level() < 2 && !this.location.is_newxp && !this.location.is_skillquest){
+    if (!this.has_done_intro && (config.force_intro || this.quickstart_needs_player) && (!this.intro_steps || this.intro_steps['new_player_part1']) && this.player.stats.stats_get_level() < 2 && !this.player.location.is_newxp && !this.player.location.is_skillquest){
         this.no_reset_teleport = true;
         this.player.resetForTesting();
         this.player.goToNewNewStartingLevel();
         log.info(this+' adminCheckDoneIntro reset because not has_done_intro original');
     }
-    else if (!this.has_done_intro && (config.force_intro || this.quickstart_needs_player) && !this.location.is_newxp && !this.location.is_skillquest && this.player.stats.stats_get_level() < 4){
+    else if (!this.has_done_intro && (config.force_intro || this.quickstart_needs_player) && !this.player.location.is_newxp && !this.player.location.is_skillquest && this.player.stats.stats_get_level() < 4){
         this.no_reset_teleport = true;
         this.player.resetForTesting();
         this.player.goToNewNewStartingLevel();
         log.info(this+' adminCheckDoneIntro reset because not has_done_intro');
     }
-    else if (this.location.isInstance('new_starting')){
+    else if (this.player.location.isInstance('new_starting')){
         this.no_reset_teleport = true;
         this.player.resetForTesting();
         this.player.goToNewNewStartingLevel();
@@ -1090,7 +1090,7 @@ public function adminCheckDoneIntro(args){
 }
 
 public function admin_get_location(){
-    var info = this.location.getInfo();
+    var info = this.player.location.getInfo();
 
     return {
         ok      : 1,
@@ -1100,7 +1100,7 @@ public function admin_get_location(){
         hubid       : info.hubid,
         x       : this.x,
         y       : this.y,
-        is_god      : this.is_god,
+        is_god      : this.player.is_god,
         is_instance : info.is_instance,
         is_pol      : info.is_pol,
         logged_in   : this.date_last_login
@@ -1108,8 +1108,8 @@ public function admin_get_location(){
 }
 
 public function admin_is_instanced(){
-    if (this.location.is_instance){
-        var members = this.location.instance.get_members();
+    if (this.player.location.is_instance){
+        var members = this.player.location.instance.get_members();
         var joined = 0;
 
         for (var member_tsid in members){
@@ -1658,8 +1658,8 @@ public function admin_pack_more_moving_boxes(){
 }
 
 public function admin_evacuate_houses(){
-    if (this.location.pols_is_pol()){
-        if (this.location.getProp('is_home')){
+    if (this.player.location.pols_is_pol()){
+        if (this.player.location.getProp('is_home')){
             this.player.houses.houses_leave();
         }
         else{

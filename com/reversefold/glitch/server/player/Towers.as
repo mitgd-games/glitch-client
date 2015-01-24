@@ -59,17 +59,17 @@ public function visitTower(){
 
 public function rebuildTower(){
     var tower = this.getTestTower();
-    if (this.location.tsid == tower.tsid) tower.tower_rebuild();
+    if (this.player.location.tsid == tower.tsid) tower.tower_rebuild();
 }
 
 public function setTowerFloors(num){
     var tower = this.getTestTower();
-    if (this.location.tsid == tower.tsid) tower.tower_set_floors(num);
+    if (this.player.location.tsid == tower.tsid) tower.tower_set_floors(num);
 }
 
 public function resetTower(){
     var tower = this.getTestTower();
-    if (this.location.tsid == tower.tsid) tower.tower_reset();
+    if (this.player.location.tsid == tower.tsid) tower.tower_reset();
 }
 
 public function removeTower(){

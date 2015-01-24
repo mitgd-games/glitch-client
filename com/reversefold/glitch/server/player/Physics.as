@@ -147,7 +147,7 @@ public function removeAllTempPhysics(and_send){
 
     // iterate over physics and remove any temps
     for (key in physics){
-        if (!physics[key].is_permanent && physics[key].location_tsid != this.location.tsid){
+        if (!physics[key].is_permanent && physics[key].location_tsid != this.player.location.tsid){
             delete physics[key];
         }
     }
@@ -254,7 +254,7 @@ public function addPhysics(hash, key){
     }
 
     if (!hash.is_img) {
-        hash.location_tsid = this.location.tsid;
+        hash.location_tsid = this.player.location.tsid;
     }
     hash.added_time = getTime();
 
@@ -321,7 +321,7 @@ public function makeStackedPhysics(){
     var c;          // tracks the number of records in percentages setting a given settable
 
     // is this location marked to ignore upgrade physics?
-    var no_upgrade_physics_adjustments = (this.location && this.location.geometry && this.location.geometry.no_upgrade_physics_adjustments);
+    var no_upgrade_physics_adjustments = (this.player.location && this.player.location.geometry && this.player.location.geometry.no_upgrade_physics_adjustments);
 
     //
     // iterate over physics and do stacking
@@ -357,7 +357,7 @@ public function makeStackedPhysics(){
 
         for (key in physics){
 
-            if (config.is_dev || this.is_god){
+            if (config.is_dev || this.player.is_god){
                 // debugging
                 if (i == 0) adjustments.keys[key] = physics[key];
             }
@@ -421,7 +421,7 @@ public function sendPhysicsAdjustments(){
     this.player.sendMsgOnline(evt);
 
     if (this.player.isOnline()) {
-        this.location.apiSendMsgX({
+        this.player.location.apiSendMsgX({
             type: 'pc_physics_changes',
             pc_tsid: this.tsid,
             adjustments: this.reducePhysicsAdjustmentsToMinumum(this.stacked_physics_cache)

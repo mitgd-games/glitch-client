@@ -66,7 +66,7 @@ public function removeFreeze(rung) {
 // Called at end of intro sequence
 public function displayAllRungs() {
     var rungs = this.party.get_space().getProp('rungs');
-    var current_freeze_rung = this.location.getCurrentFreezeRung();
+    var current_freeze_rung = this.player.location.getCurrentFreezeRung();
 
     for (var r in rungs) {
         if (r >= current_freeze_rung) {
@@ -77,7 +77,7 @@ public function displayAllRungs() {
         }
     }
 
-    this.location.recordMountaineer(this.tsid);
+    this.player.location.recordMountaineer(this.tsid);
 }
 
 // Pan the camera to a rung and turn the deco on for that rung if necessary.
@@ -135,7 +135,7 @@ public function onColdZone(box) {
                         'Soooooo Coooooold!'];
 
 
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             type: 'vp_canvas',
             uid: 'cold_zone',
             canvas: {
@@ -193,20 +193,20 @@ public function onSendWindMessage() {
 public function onExitWindZone(id) {
     this.player.physics.removePhysics(this.tsid, true);
 
-    this.location.removePlayerFromWind(this.tsid, id);
+    this.player.location.removePlayerFromWind(this.tsid, id);
 }
 
 public function onWindZone(id, box) {
     //log.info("MT checking windzone");
 
     // If it's not a mountaineering level, bail out.
-    if (!this.location.isMountain || !this.location.isMountain()) {
+    if (!this.player.location.isMountain || !this.player.location.isMountain()) {
         return;
     }
 
     // If there's no box, then find the box (this happens the first time through).
     if (!box) {
-        box = this.location.find_hitbox_by_id(id);
+        box = this.player.location.find_hitbox_by_id(id);
     }
 
     // If the id was bad, then bail out.

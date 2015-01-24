@@ -39,12 +39,12 @@ public function broadcastActionRequest(type, tsid, txt, need=false, got=false){
     if (type == 'trade') timeout = 5*60; // 5 minute timeout for trades
 
     // Store some flags on the location
-    if (!this.location.action_requests) this.location.action_requests = {};
-    if (this.location.action_requests[this.tsid]){
-        this.cancelActionRequestBroadcast(this.location.action_requests[this.tsid].type, this.location.action_requests[this.tsid].tsid);
+    if (!this.player.location.action_requests) this.player.location.action_requests = {};
+    if (this.player.location.action_requests[this.tsid]){
+        this.cancelActionRequestBroadcast(this.player.location.action_requests[this.tsid].type, this.player.location.action_requests[this.tsid].tsid);
     }
 
-    this.location.action_requests[this.tsid] = {
+    this.player.location.action_requests[this.tsid] = {
         type: type,
         tsid: tsid,
         txt: txt,
@@ -54,7 +54,7 @@ public function broadcastActionRequest(type, tsid, txt, need=false, got=false){
         offered: time()
     };
 
-    this.location.apiSendMsgX({
+    this.player.location.apiSendMsgX({
         type: "action_request",
         txt: txt,
         pc: this.player.make_hash(),
@@ -213,12 +213,12 @@ public function actionRequestCancel(msg){
 }
 
 public function cancelActionRequestBroadcast(type, tsid){
-    if (!this.location.action_requests) this.location.action_requests = {};
-    var details = this.location.action_requests[this.tsid];
+    if (!this.player.location.action_requests) this.player.location.action_requests = {};
+    var details = this.player.location.action_requests[this.tsid];
     if (!details) return;
     if (details.type != type) return;
 
-    this.location.apiSendMsg({
+    this.player.location.apiSendMsg({
         type: "action_request_cancel",
         player_tsid: this.tsid,
         event_type: details.type,
@@ -226,12 +226,12 @@ public function cancelActionRequestBroadcast(type, tsid){
         uid: this.tsid+'_'+details.type+'_'+details.tsid
     });
 
-    delete this.location.action_requests[this.tsid];
+    delete this.player.location.action_requests[this.tsid];
 }
 
 public function cancelActionRequest(from, type, tsid){
-    if (!this.location.action_requests) this.location.action_requests = {};
-    var details = this.location.action_requests[from.tsid];
+    if (!this.player.location.action_requests) this.player.location.action_requests = {};
+    var details = this.player.location.action_requests[from.tsid];
     if (!details) return;
     if (details.type != type) return;
 
@@ -245,11 +245,11 @@ public function cancelActionRequest(from, type, tsid){
 }
 
 public function updateActionRequest(txt, got){
-    if (!this.location.action_requests) this.location.action_requests = {};
-    var details = this.location.action_requests[this.tsid];
+    if (!this.player.location.action_requests) this.player.location.action_requests = {};
+    var details = this.player.location.action_requests[this.tsid];
     if (!details) return;
 
-    this.location.apiSendMsg({
+    this.player.location.apiSendMsg({
         type: "action_request_update",
         player_tsid: this.tsid,
         event_type: details.type,
@@ -260,16 +260,16 @@ public function updateActionRequest(txt, got){
         uid: this.tsid+'_'+details.type+'_'+details.tsid
     });
 
-    this.location.action_requests[this.tsid].got = got;
-    if (txt) this.location.action_requests[this.tsid].txt = txt;
+    this.player.location.action_requests[this.tsid].got = got;
+    if (txt) this.player.location.action_requests[this.tsid].txt = txt;
 }
 
 public function addActionRequestReply(from){
     if (!this.action_request_replies) this.action_request_replies = {};
 
-    this.action_request_replies[from.tsid] = this.location.action_requests[from.tsid];
+    this.action_request_replies[from.tsid] = this.player.location.action_requests[from.tsid];
     if (this.action_request_replies[from.tsid]){
-        this.action_request_replies[from.tsid].location = this.location.tsid;
+        this.action_request_replies[from.tsid].location = this.player.location.tsid;
     }
 }
 

@@ -31,7 +31,7 @@ public function secretLocationsQuestNumToChoose() {
 
 // Start the 11 secret locations quest/achievement
 public function startSecretLocationsQuest() {
-    //if (!(this.is_god)) return;   // for testing - only let gods do this
+    //if (!(this.player.is_god)) return;   // for testing - only let gods do this
 
     // if the player already has the achievement, then make sure the data is cleared out
     if (this.player.achievements.achievements_has('eleven_secret_locations')) {
@@ -65,7 +65,7 @@ public function startSecretLocationsQuest() {
     }
 
     // If the current location has one of the secrets, turn the marker on.
-    this.showSecretLocationMarker(this.location);
+    this.showSecretLocationMarker(this.player.location);
 }
 
 // For testing
@@ -121,8 +121,8 @@ public function showAllSecretOverlays() {
 
     var max = config.secret_spots.length;
     for (var i = 0; i < max; i ++) {
-        if (config.secret_spots[i].tsid == this.location.tsid) {
-            this.apiSendAnnouncement({
+        if (config.secret_spots[i].tsid == this.player.location.tsid) {
+            this.player.announcements.apiSendAnnouncement({
                 type: 'location_overlay',
                 swf_url: overlay_key_to_url('secret_location_marker'),
                 state: 'active',
@@ -223,7 +223,7 @@ public function showSecretLocationMarker(loc) {
             this.fixBrokenMarker(i);
 
             if (this.secret_locations[i] && this.secret_locations[i].tsid == loc.tsid) {
-                this.apiSendAnnouncement({
+                this.player.announcements.apiSendAnnouncement({
                     type: 'location_overlay',
                     swf_url: overlay_key_to_url('secret_location_marker'),
                     state: 'active',
@@ -239,7 +239,7 @@ public function showSecretLocationMarker(loc) {
         }
     }
     // For testing:
-    else if (this.is_god && this.showAllSecrets) {
+    else if (this.player.is_god && this.showAllSecrets) {
         this.showAllSecretOverlays();
     }
 }
@@ -257,7 +257,7 @@ public function triggerSecretLocationMarker(loc, id) {
                 ) {
                 this.player.announcements.announce_sound('11_SECRET_LOCATIONS_COLLISION');
                 this.player.announcements.announce_sound_stop('11_SECRET_LOCATIONS_BEACON_LOOP');
-                this.location.apiSendMsg({type: 'overlay_state', uid: 'secret_location_marker '+this.secret_locations[i].id, state: 'off'});
+                this.player.location.apiSendMsg({type: 'overlay_state', uid: 'secret_location_marker '+this.secret_locations[i].id, state: 'off'});
             }
         }
     }
@@ -383,7 +383,7 @@ public function handleElevenSecrets(id) {
     var txt = 'You stumbled on another unique cluster of genetic dust, triggering a DNA deja vu... ('+count+'/11)';
 
     if (count > 1) {    // skip the announcement for the 1st giant since they get the intro text instead
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "eleven_secret_spots",
             type: "vp_overlay",
             duration: 0,
@@ -419,7 +419,7 @@ public function elevenSecretsIncrement() {
 
 // Intro text:
 public function introFirst() {
-    this.apiSendAnnouncement({
+    this.player.announcements.apiSendAnnouncement({
         uid: "eleven_secret_spots",
         type: "vp_overlay",
         duration: 0,
@@ -440,7 +440,7 @@ public function introFirst() {
 }
 
 public function introSecond() {
-    this.apiSendAnnouncement({
+    this.player.announcements.apiSendAnnouncement({
         uid: "eleven_secret_spots",
         type: "vp_overlay",
         duration: 0,

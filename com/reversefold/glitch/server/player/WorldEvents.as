@@ -111,18 +111,18 @@ public function endLoneliness() {
 }
 
 public function canDoLoneliness(loneliness_location) {
-    if ((!this.world_events || !this.world_events.loneliness || !this.world_events.loneliness.running) && !this.location.isInstance() && !this.is_dead) {
+    if ((!this.world_events || !this.world_events.loneliness || !this.world_events.loneliness.running) && !this.player.location.isInstance() && !this.is_dead) {
         log.info("Checking player "+this+" for loneliness.");
-        if (loneliness_location == this.location) {
+        if (loneliness_location == this.player.location) {
             log.info("Player is in the loneliness location already!");
             return false;
         }
 
-        log.info("Trying to establish path between "+loneliness_location+" and "+this.location);
+        log.info("Trying to establish path between "+loneliness_location+" and "+this.player.location);
         if (!loneliness_location) {
             return false;
         }
-        var path = Server.instance.apiFindGlobalPathX(loneliness_location, this.location);
+        var path = Server.instance.apiFindGlobalPathX(loneliness_location, this.player.location);
         log.info("Loneliness path has length "+path.length);
         if (path.length >= 3) {
             return true;
@@ -152,7 +152,7 @@ public function showLonelinessPrompt() {
 
 public function prompts_loneliness_callback(value, details) {
     if (value == 'yes') {
-        var ret = this.player.buildPath(this.world_events.loneliness.location.tsid, this.location.tsid);
+        var ret = this.player.buildPath(this.world_events.loneliness.location.tsid, this.player.location.tsid);
 
         var rsp = {
             type: 'get_path_to_location',

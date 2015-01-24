@@ -20,13 +20,23 @@ package com.reversefold.glitch.server {
 			return timers.hasOwnProperty(callback_name);
 		}
 		
-		public function apiSetTimer(callback_name : String, ms : int) : void {
+		private function _apiSetTimer(name : String, ms : int, callback : Function) : void {
 			var timer : Timer = new Timer(ms, 0);
-			timers[callback_name] = timer;
+			timers[name] = timer;
 			timer.addEventListener(TimerEvent.TIMER, function(e : Event) : void {
-				this[callback_name]();
+				callback();
 			});
 			timer.start();
+		}
+
+		public function apiSetTimer(callback_name : String, ms : int) : void {
+			_apiSetTimer(callback_name, ms, this[callback_name]);
+		}
+		
+		public function apiSetTimerX(callback_name : String, ms : int, x) {
+			_apiSetTimer(callback_name, ms, function() : void {
+				this[callback_name](x);
+			});
 		}
 
 		public function apiCancelTimer(callback_name : String) : Boolean {
@@ -53,7 +63,12 @@ package com.reversefold.glitch.server {
 		public function apiSendMsg(msg) {
 			Server.instance.sendMessage(msg);
 		}
-
+		
+		
+		public function randInt(min : int, max : int) : int {
+			return Math.floor(min + Math.random() * (1 + max - min));
+		}
+		
 
 public static function getPlayer(tsid){
     if (!tsid) return null;

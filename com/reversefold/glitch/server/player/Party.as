@@ -527,7 +527,7 @@ public function party_space_prompt_callback(choice, details){
 
 public function party_create_teleporter(){
     //log.info(this+' Creating party teleporter');
-    var tp = this.location.createAndReturnItem('teleporter_visible', 1, this.x+100, this.y+40, 0, this.tsid);
+    var tp = this.player.location.createAndReturnItem('teleporter_visible', 1, this.x+100, this.y+40, 0, this.tsid);
     if (tp){
         this.player.announcements.announce_sound('TELEPORTER_VISIBLE_APPEAR');
         this.player.announcements.announce_sound_delayed('TELEPORTER_VISIBLE_PORTAL', 0, 0, 1);
@@ -545,7 +545,7 @@ public function party_create_teleporter(){
 public function party_find_teleporter(){
     var is_tp = function(it, args){ return it.class_tsid == 'teleporter_visible' && it.only_visible_to == args; };
 
-    var tp = this.location.find_items(is_tp, this.tsid)[0];
+    var tp = this.player.location.find_items(is_tp, this.tsid)[0];
     if (tp){
         this.player.moveAvatar(tp.x, tp.y-40, 'right');
         return true;

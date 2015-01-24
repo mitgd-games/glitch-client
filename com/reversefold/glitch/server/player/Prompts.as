@@ -188,7 +188,7 @@ public function prompts_choice(uid, value){
                 this.player.groups.groups_chat(config.greeter_group, "I got "+pc.label+"!");
                 utils.irc_inject('#greeters', this.label+': I got '+pc.label+'!');
 
-                this.greeting_previous_location = {tsid: this.location.tsid, x: this.x, y: this.y};
+                this.greeting_previous_location = {tsid: this.player.location.tsid, x: this.x, y: this.y};
 
                 var instance_id = dst.getProp('instance_id');
                 if (instance_id){
@@ -258,7 +258,7 @@ public function prompts_test_callback(value, details){
 
 public function prompts_itemstack_location_callback(value, details){
     if (details.itemstack_tsid){
-        var items = this.location.getItems();
+        var items = this.player.location.getItems();
         if (items[details.itemstack_tsid]){
             var it = items[details.itemstack_tsid];
             if (it.modal_callback){

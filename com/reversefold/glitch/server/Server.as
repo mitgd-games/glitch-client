@@ -57,39 +57,64 @@ package com.reversefold.glitch.server {
 		}
 		
 		public function apiAsyncHttpCall(url : String, ... args : Array) : void {
-			log.warn("apiAsyncHttpCall " + url);
+			log.warn('apiAsyncHttpCall ' + url);
 		}
 		
 		public function apiFindObject(tsid) {
-			throw new Error("apiFindObject " + tsid);
+			throw new Error('apiFindObject ' + tsid);
 		}
 		
 		public function apiFindItemPrototype(tsid) {
-			throw new Error("apiFindItemPrototype " + tsid);
+			throw new Error('apiFindItemPrototype ' + tsid);
 		}
 		
 		public function apiCopyHash(obj) {
 			//RVRS: TODO: this gets passed the result of apiGetJSFileObject in at least one place
 			// does this just make a copy of the object?
-			throw new Error("apiCopyHash " + obj);
+			throw new Error('apiCopyHash ' + obj);
 		}
 		
 		public function apiGetJSFileObject(path) {
 			//RVRS: TODO: this is supposed to get the object defined by the JS file
 			// it's the magic file-to-class/object method!
-			throw new Error("apiGetJSFileObject " + path);
+			throw new Error('apiGetJSFileObject ' + path);
 		}
 		
 		public function apiNewOwnedQuest(quest_class, quests : Quests) {
 			//RVRS: TODO
 			//quest_class may be a tsid
 			//quests is meant to be a player, but we can access that via quests.player if we need to
-			throw new Error("apiNewOwnedQuest " + quest_class);
+			throw new Error('apiNewOwnedQuest ' + quest_class);
 		}
 		
 		public function apiFindQuestPrototype(class_tsid) {
 			//RVRS: TODO
-			throw new Error("apiFindQuestPrototype " + class_tsid);
+			throw new Error('apiFindQuestPrototype ' + class_tsid);
+		}
+		
+		public function apiSendToGroup(msg, tsids) {
+			//RVRS: TODO
+			throw new Error('apiSendToGroup ' + msg + ' ' + tsids);
+		}
+		
+		public function apiIsPlayerOnline(tsid) : Boolean {
+			//RVRS: TODO: if we want to support multiplayer this needs to change
+			return tsid == pc.tsid;
+		}
+		
+		public function apiCallMethodForOnlinePlayers(func : String, tsids) {
+			//RVRS: TODO: Call for just us until multiplayer?
+			throw new Error('apiCallMethodForOnlinePlayers ' + func + ' ' + tsids);
+		}
+		
+		public function apiCallMethod(func : String, tsids) {
+			//RVRS: TODO: Call for just us until multiplayer?
+			throw new Error('apiCallMethod ' + func + ' ' + tsids);
+		}
+		
+		public function apiGetObjectContent(tsid) {
+			//RVRS: TODO
+			throw new Error(' apiGetObjectContent ' + tsid);
 		}
 		
 		// END api funcs

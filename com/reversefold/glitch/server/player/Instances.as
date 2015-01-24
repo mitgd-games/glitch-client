@@ -98,8 +98,8 @@ public function instances_enter(id, x, y, immediate){
     this.player.removeFollowers();
 
     if (instance.player_enter(this)){
-        if (this.location.pols_is_pol() && !this.location.pols_is_owner(this) && !this.location.getProp('is_public')){
-            this.instances.previously[id] = this.location.pols_get_entrance_outside();
+        if (this.player.location.pols_is_pol() && !this.player.location.pols_is_owner(this) && !this.player.location.getProp('is_public')){
+            this.instances.previously[id] = this.player.location.pols_get_entrance_outside();
         }
         else{
             this.instances.previously[id] = this.player.get_simple_location();
@@ -168,9 +168,9 @@ public function instances_left(id, randomize, no_auto_return, force){
         // Instead, we should swap the resurrect location with this one, UNLESS they are the same???
         //
 
-        if (prev.tsid != this.location.tsid){
+        if (prev.tsid != this.player.location.tsid){
             log.info(this+' Instance previous location '+prev);
-            if (!instance.is_location(this.location.tsid)){
+            if (!instance.is_location(this.player.location.tsid)){
                 log.info(this+' not in a location in this instance');
 
                 for (var i in this.instances.previously){
@@ -200,9 +200,9 @@ public function instances_left(id, randomize, no_auto_return, force){
         }
     }
     else{
-        if (prev.tsid != this.location.tsid){
+        if (prev.tsid != this.player.location.tsid){
             log.info(this+' Instance previous location '+prev);
-            if (!instance.is_location(this.location.tsid)){
+            if (!instance.is_location(this.player.location.tsid)){
                 log.info(this+' not in a location in this instance');
 
                 for (var i in this.instances.previously){
@@ -447,7 +447,7 @@ public function hintPrompt(text, time_delay, location_event_yes, location_event_
 public function  hintResponse(value, details) {
     if (value == "yes") {
         if (details.location_event_yes) {
-            this.location.events_broadcast(details.location_event_yes);
+            this.player.location.events_broadcast(details.location_event_yes);
         }
         //log.info("HINT: event is "+details.location_event+" and delay is "+details.delay);
     }
@@ -457,7 +457,7 @@ public function  hintResponse(value, details) {
         }
         else {
             if (details.location_event_no) {
-                this.location.events_broadcast(details.location_event_no);
+                this.player.location.events_broadcast(details.location_event_no);
             }
         }
     }

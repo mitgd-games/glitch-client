@@ -1,4 +1,5 @@
 package com.reversefold.glitch.server.player {
+    import com.reversefold.glitch.server.Common;
     import com.reversefold.glitch.server.Server;
     import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
@@ -7,7 +8,7 @@ package com.reversefold.glitch.server.player {
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
-    public class Buddies {
+    public class Buddies extends Common {
         private static var log : Logger = Log.getLogger("server.Player");
 
         public var config : Config;
@@ -253,7 +254,7 @@ public function buddies_has_added(pc){
     }
 }
 
-public function removeBuddy(player_tsid, silent){
+public function removeBuddy(player_tsid, silent=false){
 
     if (!silent) silent = false;
 
@@ -361,11 +362,11 @@ public function buddies_get_reverse_tsids(){
 public function buddies_get_online_login_info(){
 
     var ret = {};
-    ret.is_admin = (this.is_god || this.is_help) ? true : false;
-    ret.is_guide = (!ret.is_admin && this.is_guide) ? true : false;
+    ret.is_admin = (this.player.is_god || this.player.is_help) ? true : false;
+    ret.is_guide = (!ret.is_admin && this.player.is_guide) ? true : false;
     ret.location = {
-        tsid: this.location.tsid,
-        label: this.location.is_hidden() ? 'A secret place' : this.location.label
+        tsid: this.player.location.tsid,
+        label: this.player.location.is_hidden() ? 'A secret place' : this.player.location.label
     };
 
     var props = this.player.avatar.avatar_get_pc_msg_props();
@@ -387,10 +388,10 @@ public function buddies_get_login_info(){
     var ret = {
         ok: 1,
         tsid: this.player.tsid,
-        label: this.label,
+        label: this.player.label,
         online: online,
         level: this.player.stats.stats_get_level(),
-        is_admin: (this.is_god || this.is_help) ? true : false
+        is_admin: (this.player.is_god || this.player.is_help) ? true : false
     };
 
     var props = this.player.avatar.avatar_get_pc_msg_props();
@@ -401,12 +402,12 @@ public function buddies_get_login_info(){
         ret[i] = props[i];
     }
 
-    ret.is_guide = (!ret.is_admin && this.is_guide) ? true : false;
+    ret.is_guide = (!ret.is_admin && this.player.is_guide) ? true : false;
 
     if (online){
         ret.location = {
-            tsid: this.location.tsid,
-            label: this.location.is_hidden() ? 'A secret place' : this.location.label
+            tsid: this.player.location.tsid,
+            label: this.player.location.is_hidden() ? 'A secret place' : this.player.location.label
         };
     }
 
@@ -439,7 +440,7 @@ public function buddies_get_login(max){
             for (var j in this.friends[i].pcs){
 
                 pcs[j] = this.buddies_get_from_cache(j);
-                if (!pcs[j].tsid) pcs[j] = this.buddies_add_to_cache(apiFindObject(j));
+                if (!pcs[j].tsid) pcs[j] = this.buddies_add_to_cache(Server.instance.apiFindObject(j));
                 if (pcs[j].is_deleted){
                     delete pcs[j];
                     continue;
@@ -509,7 +510,7 @@ public function buddies_get_random_slice(count){
         var tsid = get[j];
 
         pcs[tsid] = this.buddies_get_from_cache(tsid);
-        if (!pcs[tsid].tsid) pcs[tsid] = this.buddies_add_to_cache(apiFindObject(tsid));
+        if (!pcs[tsid].tsid) pcs[tsid] = this.buddies_add_to_cache(Server.instance.apiFindObject(tsid));
         if (pcs[tsid].is_deleted){
             delete pcs[tsid];
             this.removeBuddy(tsid, true);
@@ -735,8 +736,8 @@ public function buddies_get_ignored_by_count(){
 
 public function buddies_get_cache_data(){
     var out = {
-        version: config.buddies_cache_version,
-        name: this.label,
+        version: config.base.buddies_cache_version,
+        name: this.player.label,
         level: this.player.stats.stats_get_level()
     };
 
@@ -785,7 +786,7 @@ public function buddies_get_from_cache(tsid){
         delete this.friends.cache.pcs[tsid];
         var pc = Server.instance.apiFindObject(tsid);
         if (!pc) return {};
-        return this.buddies_get_cache_data(pc);
+        return pc.buddies.buddies_get_cache_data();
     }
 
     if (cache.name && cache.tsid){
@@ -814,7 +815,7 @@ public function buddies_get_from_cache(tsid){
         return pc.buddies_get_cache_data();
     }
 
-    if (cache.version != config.buddies_cache_version && 0){
+    if (cache.version != config.base.buddies_cache_version && 0){
         var pc = Server.instance.apiFindObject(tsid);
         if (!pc) return {};
         pc.buddies_update_reverse_cache();
@@ -881,7 +882,7 @@ public function buddies_changed(){
     var fwd_tsids = this.buddies_get_tsids();
     var rev_tsids = this.buddies_get_reverse_tsids();
 
-    utils.http_post('callbacks/buddy_change.php', {
+    Utils.http_post('callbacks/buddy_change.php', {
 
         'fwd'   : fwd_tsids.join(','),
         'rev'   : rev_tsids.join(','),
@@ -908,13 +909,13 @@ public function buddies_get_simple_online_info(){
     var ret = {
         ok      : 1,
         offline     : false,
-        is_admin    : (this.is_god || this.is_help) ? true : false
+        is_admin    : (this.player.is_god || this.player.is_help) ? true : false
     };
 
     ret.location = {
-        tsid: this.location.tsid,
-        label: this.location.label,
-        secret: this.location.is_hidden()
+        tsid: this.player.location.tsid,
+        label: this.player.location.label,
+        secret: this.player.location.is_hidden()
     };
 
     return ret;

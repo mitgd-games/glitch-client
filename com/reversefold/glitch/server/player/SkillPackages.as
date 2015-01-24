@@ -232,7 +232,7 @@ public function runSkillPackage(class_id, source_item, args){
             var pc_action_distance = source_item.getClassProp('pc_action_distance') !== undefined ? intval(source_item.getClassProp('pc_action_distance')) : undefined;
             var max_pc_action_distance;
             if (pc_action_distance === undefined){
-                if ((config.is_dev || this.is_god) && args.msg && args.msg.verb){
+                if ((config.is_dev || this.player.is_god) && args.msg && args.msg.verb){
                     if (source_item.verbs && source_item.verbs[args.msg.verb]){
                         if (source_item.verbs[args.msg.verb].proximity_override) max_pc_action_distance = source_item.verbs[args.msg.verb].proximity_override;
                     }
@@ -310,7 +310,7 @@ public function runSkillPackage(class_id, source_item, args){
 
             if (distance) annc['delay_ms'] = Math.round(distance / 400 * 1000);
 
-            this.apiSendAnnouncement(annc);
+            this.player.announcements.apiSendAnnouncement(annc);
 
             var anncx = {
                 type: 'pc_overlay',
@@ -332,7 +332,7 @@ public function runSkillPackage(class_id, source_item, args){
                 anncx['state'] = state;
             }
 
-            this.location.apiSendAnnouncementX(anncx, this);
+            this.player.location.apiSendAnnouncementX(anncx, this);
         }
         else{
             var annc = {
@@ -364,7 +364,7 @@ public function runSkillPackage(class_id, source_item, args){
                 annc['dismiss_payload'].item_tsids = [source_item.tsid];
                 if (args.tool_item && args.tool_item.tsid != source_item.tsid) annc['dismiss_payload'].item_tsids.push(args.tool_item.tsid);
             }
-            this.apiSendAnnouncement(annc);
+            this.player.announcements.apiSendAnnouncement(annc);
 
             var anncx = {
                 type: 'pc_overlay',
@@ -386,7 +386,7 @@ public function runSkillPackage(class_id, source_item, args){
                 anncx['state'] = 'tool_animation';
             }
 
-            this.location.apiSendAnnouncementX(anncx, this);
+            this.player.location.apiSendAnnouncementX(anncx, this);
         }
 
         this['!skill_package_running'] = {

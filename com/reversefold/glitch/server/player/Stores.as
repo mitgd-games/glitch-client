@@ -576,7 +576,7 @@ public function findClosestVendor(type) {
     }
 
     // Get closest loc and path
-    var path = Server.instance.apiFindShortestGlobalPath(this.location.tsid, locs);
+    var path = Server.instance.apiFindShortestGlobalPath(this.player.location.tsid, locs);
 
     if(!path || !path.length) {
         log.error("Player "+this+" cannot find closest vendor. All vendors are unreachable.");

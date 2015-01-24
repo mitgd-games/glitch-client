@@ -197,7 +197,7 @@ public function games_color_finish_on_color(end_color) {
                 label: "OK"
             }]});*/
 
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "color_game_tip",
             type: "vp_overlay",
             duration: 3000,
@@ -223,7 +223,7 @@ public function games_color_finish_on_color(end_color) {
                 label: "OK"
             }]});*/
 
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "color_game_tip",
             type: "vp_overlay",
             duration: 3000,
@@ -301,8 +301,8 @@ public function games_set_color_group(color, secondary_color) {
             tsid: this.tsid,
             label: this.label,
             location: {
-                tsid: this.location.tsid,
-                label: this.location.label
+                tsid: this.player.location.tsid,
+                label: this.player.location.label
             },
             color_group: color,
             secondary_color_group: secondary_color,
@@ -310,7 +310,7 @@ public function games_set_color_group(color, secondary_color) {
         }
     };
 
-    this.location.apiSendMsg(msg);
+    this.player.location.apiSendMsg(msg);
 }
 
 public function games_get_color_group() {
@@ -426,7 +426,7 @@ public function games_is_it(){
         if (remaining > 60) remaining = 60;
         this.apiSetTimer('games_end_it_game', 1000 * remaining);
 
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "it_game_tip",
             type: "vp_overlay",
             duration: 3000,
@@ -443,7 +443,7 @@ public function games_is_it(){
     else{
         log.info('[GAMES] '+this+' is above the play line');
 
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "it_game_tip",
             type: "vp_overlay",
             duration: 3000,
@@ -476,14 +476,14 @@ public function games_set_it_map(){
             tsid: this.tsid,
             label: this.label,
             location: {
-                tsid: this.location.tsid,
-                label: this.location.label
+                tsid: this.player.location.tsid,
+                label: this.player.location.label
             },
             color_group: '#e5c33f'
         }
     };
 
-    this.location.apiSendMsg(msg);
+    this.player.location.apiSendMsg(msg);
 }
 
 // We are not it!
@@ -509,7 +509,7 @@ public function games_is_not_it(){
 
         this.apiCancelTimer('games_end_it_game');
 
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "it_game_tip",
             type: "vp_overlay",
             duration: 3000,
@@ -526,7 +526,7 @@ public function games_is_not_it(){
     else{
         log.info('[GAMES] '+this+' is above the play line');
 
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "it_game_tip",
             type: "vp_overlay",
             duration: 3000,
@@ -555,14 +555,14 @@ public function games_set_notit_map(){
             tsid: this.tsid,
             label: this.label,
             location: {
-                tsid: this.location.tsid,
-                label: this.location.label
+                tsid: this.player.location.tsid,
+                label: this.player.location.label
             },
             color_group: null
         }
     };
 
-    this.location.apiSendMsg(msg);
+    this.player.location.apiSendMsg(msg);
 }
 
 // Player passed through the starting gate
@@ -584,7 +584,7 @@ public function games_it_game_gate(){
             this.apiSetTimer('games_end_it_game', 1000 * 60);
 
             this.player.announcements.overlay_dismiss('it_game_tip');
-            this.apiSendAnnouncement({
+            this.player.announcements.apiSendAnnouncement({
                 uid: "it_game_tip",
                 type: "vp_overlay",
                 duration: 3000,
@@ -612,7 +612,7 @@ public function games_it_game_gate(){
             this.apiCancelTimer('games_end_it_game');
 
             this.player.announcements.overlay_dismiss('it_game_tip');
-            this.apiSendAnnouncement({
+            this.player.announcements.apiSendAnnouncement({
                 uid: "it_game_tip",
                 type: "vp_overlay",
                 duration: 3000,
@@ -890,7 +890,7 @@ public function games_it_game_start_scores(it){
     this.player.announcements.overlay_dismiss('crown_game_indicator');
     this.player.announcements.overlay_dismiss('crown_game_king');
     if (it.tsid == this.tsid){
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "crown_game_indicator",
             type: "vp_overlay",
             duration: 0,
@@ -902,7 +902,7 @@ public function games_it_game_start_scores(it){
         });
     }
     else{
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "crown_game_indicator",
             type: "vp_overlay",
             duration: 0,
@@ -913,7 +913,7 @@ public function games_it_game_start_scores(it){
             swf_url: overlay_key_to_url('crown_game_indicator_someone_else')
         });
 
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "crown_game_king",
             type: "vp_overlay",
             duration: 0,
@@ -936,7 +936,7 @@ public function games_it_game_update_scores(remaining, is_it){
     if (config.is_dev) log.info('[GAMES] '+this+' update scores: '+remaining+', '+is_it);
     this.player.announcements.overlay_dismiss('crown_game_score');
     if (is_it){
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "crown_game_score",
             type: "vp_overlay",
             duration: 0,
@@ -953,7 +953,7 @@ public function games_it_game_update_scores(remaining, is_it){
     else{
         this.player.announcements.announce_remove_indicator('it_game_crown'); // temporary?
 
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "crown_game_score",
             type: "vp_overlay",
             duration: 0,
@@ -1082,7 +1082,7 @@ public function games_end_math_mayhem(){
     if (winner && winner.tsid == this.tsid){
         log.info('[GAMES] '+this+" games_end_math_mayhem was winner!");
 
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "game_results",
             type: "vp_overlay",
             duration: 0,
@@ -1107,7 +1107,7 @@ public function games_end_math_mayhem(){
         this.player.achievements.achievements_increment('math_mayhem', 'lost');
 
         if (winner){
-            this.apiSendAnnouncement({
+            this.player.announcements.apiSendAnnouncement({
                 uid: "game_results",
                 type: "vp_overlay",
                 duration: 0,
@@ -1118,7 +1118,7 @@ public function games_end_math_mayhem(){
                 swf_url: overlay_key_to_url('crown_game_winner_someone_else')
             });
 
-            this.apiSendAnnouncement({
+            this.player.announcements.apiSendAnnouncement({
                 uid: "game_winner_name",
                 type: "vp_overlay",
                 duration: 0,
@@ -1133,7 +1133,7 @@ public function games_end_math_mayhem(){
         }
     }
 
-    this.apiSendAnnouncement({
+    this.player.announcements.apiSendAnnouncement({
         uid: "game_button_again",
         type: "vp_overlay",
         duration: 0,
@@ -1150,7 +1150,7 @@ public function games_end_math_mayhem(){
         }
     });
 
-    this.apiSendAnnouncement({
+    this.player.announcements.apiSendAnnouncement({
         uid: "game_button_leave",
         type: "vp_overlay",
         duration: 0,
@@ -1194,8 +1194,8 @@ public function games_show_mayhem_score(color, score){
             tsid: this.tsid,
             label: this.label,
             location: {
-                tsid: this.location.tsid,
-                label: this.location.label
+                tsid: this.player.location.tsid,
+                label: this.player.location.label
             },
             color_group: out_color,
             show_color_dot: true,
@@ -1203,7 +1203,7 @@ public function games_show_mayhem_score(color, score){
         }
     };
 
-    this.location.apiSendMsg(msg);
+    this.player.location.apiSendMsg(msg);
 }
 
 public function games_clear_mayhem_score(){
@@ -1213,15 +1213,15 @@ public function games_clear_mayhem_score(){
             tsid: this.tsid,
             label: this.label,
             location: {
-                tsid: this.location.tsid,
-                label: this.location.label
+                tsid: this.player.location.tsid,
+                label: this.player.location.label
             },
             color_group: null,
             show_color_dot: false
         }
     };
 
-    this.location.apiSendMsg(msg);
+    this.player.location.apiSendMsg(msg);
 }
 
 public function games_mayhem_show_target(score){
@@ -1231,7 +1231,7 @@ public function games_mayhem_show_target(score){
 
     log.info('[GAMES] '+this+' start scores.');
 
-    this.apiSendAnnouncement({
+    this.player.announcements.apiSendAnnouncement({
         uid: "math_mayhem_target",
         type: "vp_overlay",
         duration: 0,
@@ -1493,7 +1493,7 @@ public function quoin_grab_show_overlays() {
         return;
     }
 
-    var remaining = this.location.countItemClass('quoin');
+    var remaining = this.player.location.countItemClass('quoin');
 
     var scores = this.quoin_grab.game.quoin_grab_get_all_scores();
     var overlay_text = "";
@@ -1506,7 +1506,7 @@ public function quoin_grab_show_overlays() {
 
 
     log.info("Showing quoin grab overlays");
-    this.apiSendAnnouncement({
+    this.player.announcements.apiSendAnnouncement({
         uid: "game_scores",
         type: "vp_overlay",
         locking: false,
@@ -1706,7 +1706,7 @@ public function cloudhopolis_show_overlays() {
 
 
     log.info("[GAMES] Showing cloudhopolis overlays");
-    this.apiSendAnnouncement({
+    this.player.announcements.apiSendAnnouncement({
         uid: "game_scores",
         type: "vp_overlay",
         locking: false,
@@ -1902,7 +1902,7 @@ public function hogtie_piggy_show_overlays() {
         overlay_text += utils.escape(scores[i].label)+": "+scores[i].score+"<br />";
     }
 
-    this.apiSendAnnouncement({
+    this.player.announcements.apiSendAnnouncement({
         uid: "game_scores",
         type: "vp_overlay",
         locking: false,
@@ -1941,7 +1941,7 @@ public function games_hogtie_piggy_pickup_bait() {
     if (!score){
         this.player.announcements.overlay_dismiss('piggy_tip');
 
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "pig_bait_tip",
             type: "vp_overlay",
             duration: 3000,
@@ -1958,7 +1958,7 @@ public function games_hogtie_piggy_pickup_bait() {
     else if (score){
         this.player.announcements.overlay_dismiss('piggy_tip');
 
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "pig_bait_tip",
             type: "vp_overlay",
             duration: 2000,
@@ -1987,7 +1987,7 @@ public function games_hogtie_piggy_pickup_pig() {
 
         if (!score){
             this.player.announcements.overlay_dismiss('pig_bait_tip');
-            this.apiSendAnnouncement({
+            this.player.announcements.apiSendAnnouncement({
                 uid: "piggy_tip",
                 type: "vp_overlay",
                 duration: 3000,
@@ -2004,7 +2004,7 @@ public function games_hogtie_piggy_pickup_pig() {
         else if (score == 1){
             this.player.announcements.overlay_dismiss('pig_bait_tip');
 
-            this.apiSendAnnouncement({
+            this.player.announcements.apiSendAnnouncement({
                 uid: "piggy_tip",
                 type: "vp_overlay",
                 duration: 2000,
@@ -2022,7 +2022,7 @@ public function games_hogtie_piggy_pickup_pig() {
         return true;
     }
     else if (!this.player.announcements.announce_has_indicator('has_hogtied_piggy')){
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "piggy_tip",
             type: "vp_overlay",
             duration: 3000,
@@ -2054,7 +2054,7 @@ public function games_hogtie_piggy_add_pig() {
     var score = this.hogtie_piggy.game.hogtie_piggy_get_score(this);
 
     if (!score) {
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "piggy_tip",
             type: "vp_overlay",
             duration: 3000,
@@ -2069,7 +2069,7 @@ public function games_hogtie_piggy_add_pig() {
         });
     }
     else if (score == 1){
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "piggy_tip",
             type: "vp_overlay",
             duration: 2000,
@@ -2091,7 +2091,7 @@ public function games_hogtie_piggy_add_pig() {
         this.games_win_hogtie_piggy();
     }
 
-    var piggy = this.location.createItemStack('npc_piggy', 1, 0, -875);
+    var piggy = this.player.location.createItemStack('npc_piggy', 1, 0, -875);
     if (piggy) piggy.in_pen = true;
 }
 
@@ -2227,16 +2227,16 @@ public function games_leave_instance(value, details) {
         this.player.announcements.overlay_dismiss('game_instructions_text');
 
         this.player.announcements.announce_music_stop('WAITING_MUZAK');
-        this.player.instances.instances_exit(this.location.instance_id, true);
+        this.player.instances.instances_exit(this.player.location.instance_id, true);
     }
     else if (value == 'again'){
         // Add our spawn point back in.
-        var instance = this.player.instances.instances_get(this.location.instance_id);
+        var instance = this.player.instances.instances_get(this.player.location.instance_id);
         if(instance){
 
             // Move to another spawn point
             var spawn_point = instance.get_spawn_point();
-            this.player.teleportToLocation(this.location.tsid, spawn_point.x, spawn_point.y);
+            this.player.teleportToLocation(this.player.location.tsid, spawn_point.x, spawn_point.y);
 
 
             // Register ourselves as ready
@@ -2257,7 +2257,7 @@ public function games_leave_instance(value, details) {
 public function games_has_stalemate() {
     var found_color = null;
     if(this.color_game) {
-        var players = this.location.getActivePlayers();
+        var players = this.player.location.getActivePlayers();
         for(var i in players) {
             if(players[i].games_is_playing()) {
                 if(found_color) {
@@ -2545,7 +2545,7 @@ public function games_add_opponent(pc){
 
         // Remove waiting prompts, add starting prompts!
         this.player.prompts.prompts_remove(this['!invite_uid_'+this.tsid]);
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: "race_start_delay",
             type: "vp_overlay",
             duration: 5000,

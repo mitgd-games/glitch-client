@@ -41,9 +41,9 @@ public function createButler(x_pos) {
     if (!loc) { return; }
 
     var butler = null;
-    if (loc == this.location) {
+    if (loc == this.player.location) {
         if (Math.abs(x_pos - this.x) < 25) {
-            if ((this.x +50) < this.location.geo.r) {
+            if ((this.x +50) < this.player.location.geo.r) {
                 x_pos = this.x +50;
             }
             else {
@@ -51,7 +51,7 @@ public function createButler(x_pos) {
             }
         }
 
-        butler = this.location.createItemStackWithPoof('bag_butler', 1, x_pos, this.y);
+        butler = this.player.location.createItemStackWithPoof('bag_butler', 1, x_pos, this.y);
     }
     else {
         this.player.sendActivity("You must be on your home street to create a butler.");

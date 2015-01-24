@@ -1,8 +1,9 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +12,10 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var baqala_times;
+		public var last_hub_visited;
+		public var taken_purple;
 
         public function SpecialLocations(config : Config, player : Player) {
             this.config = config;
@@ -140,7 +145,7 @@ public function set_baqala_times(times) {
         this.baqala_times = {};
     }
 
-    for(i in times) {
+    for(var i in times) {
         this.baqala_times[i] = times[i];
     }
 }
@@ -174,7 +179,7 @@ public function check_baqala_boot() {
     }
 
     // If this is removed while we're in the savanna, and we're over the time, we are done for!
-    if(this.location.hub_region() == "Savanna" && (this.get_baqala_buff_time() > 595 || !this.player.buffs.buffs_has('ancestral_nostalgia'))) {
+    if(this.player.location.hub_region() == "Savanna" && (this.get_baqala_buff_time() > 595 || !this.player.buffs.buffs_has('ancestral_nostalgia'))) {
         log.info(this+" is being booted from the savanna.");
         if(!this.player.buffs.buffs_has('too_much_nostalgia')) {
             this.player.buffs.buffs_apply('too_much_nostalgia');
@@ -192,7 +197,7 @@ public function do_baqala_boot() {
         delete this['on_overwhelmed_prompt'];
     }
 
-    if (this.is_god) {
+    if (this.player.is_god) {
         if(!this.baqala_times.total_time_spent) {
             this.baqala_times.total_time_spent = 0;
         }
@@ -202,11 +207,11 @@ public function do_baqala_boot() {
     // Reset times and do teleport:
     this.reset_baqala_times();
 
-    if(this.location.hub_region() != "Savanna" || this.get_baqala_buff_time() < 595) {
+    if(this.player.location.hub_region() != "Savanna" || this.get_baqala_buff_time() < 595) {
         if (this.get_baqala_buff_time() < 595) {
             log.error("Attempted to kick "+this+" out of the Savanna, but their time spent is only "+this.get_baqala_buff_time());
         }
-        if (this.location.hub_region() != "Savanna") {
+        if (this.player.location.hub_region() != "Savanna") {
             log.error("Attempted to kick "+this+" out of the Savanna, but they aren't in the Savanna.");
         }
         return;
@@ -267,7 +272,7 @@ public function overwhelmed_prompt_callback() {
 
 public function juju_bandit_curse() {
     // Jujus will only appear in savanna hubs
-    if(this.location.hub_region() != "Savanna") {
+    if(this.player.location.hub_region() != "Savanna") {
         return;
     }
 
@@ -279,7 +284,7 @@ public function juju_bandit_curse() {
     }
 
     // Is the PC currently being pursued by any jujus? If so, abort.
-    var jujus = this.location.find_items('npc_juju_bandit');
+    var jujus = this.player.location.find_items('npc_juju_bandit');
     for (var i in jujus) {
         if (jujus[i].getTarget() == this) {
             return;
@@ -291,24 +296,24 @@ public function juju_bandit_curse() {
     if(is_chance(0.5)) {
         var offset = 250;
 
-        if(this.x + offset > this.location.geo.r) {
+        if(this.player.x + offset > this.player.location.geo.r) {
             offset = -250;
         }
     } else {
         var offset = -250;
 
-        if(this.x + offset < this.location.geo.l) {
+        if(this.player.x + offset < this.player.location.geo.l) {
             offset = 250;
         }
     }
 
-    var point = this.location.apiGetPointOnTheClosestPlatformLineBelow(this.x + offset, this.y - 800);
+    var point = this.player.location.apiGetPointOnTheClosestPlatformLineBelow(this.player.x + offset, this.player.y - 800);
     if(!point) {
         // Nowhere to go!
         return;
     }
 
-    var juju = this.location.createItemStack('npc_juju_bandit', 1, point.x, point.y);
+    var juju = this.player.location.createItemStack('npc_juju_bandit', 1, point.x, point.y);
     juju.setParams(this, item_class);
 
     if (this.baqala_times.offer_quest && this.player.quests.getQuestStatus('help_juju_bandits') == 'none') {
@@ -317,7 +322,7 @@ public function juju_bandit_curse() {
 }
 
 public function is_in_savanna() {
-    return this.location.is_savanna();
+    return this.player.location.is_savanna();
 }
 
 public function last_region() {
@@ -415,7 +420,7 @@ public function begin_purple_journey(stage) {
             break;
         case 12:
             if (this.taken_purple) {
-                delete this.taken_purple;
+                this.taken_purple = false;
             }
             return;
     }
@@ -439,7 +444,7 @@ public function begin_purple_journey(stage) {
             ];
         }
 
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             type: 'vp_canvas',
             uid: 'purple_haze',
             canvas: {
@@ -449,7 +454,7 @@ public function begin_purple_journey(stage) {
             }
         });
 
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             uid: vogUID,
             type: "vp_overlay",
             duration: 2500,
@@ -466,23 +471,24 @@ public function begin_purple_journey(stage) {
 
 /***************** Mountaineering ***********************/
 public function mountaineering_start(expedition_id, duration, difficulty){
-    if (!this.party) return {ok: 0, error: "You are not in a party."};
+    if (!this.player.party.party) return {ok: 0, error: "You are not in a party."};
     if (this.player.party.party_has_space()) return {ok: 0, error: "There's already a space!"};
 
-    this.party.create_mountain(expedition_id, duration, difficulty, this);
+	//RVRS: TODO: create_mountain is in groups/party.js
+    this.player.party.create_mountain(expedition_id, duration, difficulty, this);
 
     return {ok: 1};
 }
 
 /*public function displayFreeze(y_pos, height, rung){
-    var width = Math.abs(this.location.geometry.l);
+    var width = Math.abs(this.player.location.geometry.l);
 
     var y = y_pos;
     var x = 0;
 
     this.player.sendActivity("displaying freeze at "+x+" "+y+" width "+width*2+" height "+height);
 
-    this.location.apiSendAnnouncement({
+    this.player.location.apiSendAnnouncement({
         type: 'location_overlay',
         swf_url: overlay_key_to_url('mountain_freezetile'),
         x: x,
@@ -494,7 +500,7 @@ public function mountaineering_start(expedition_id, duration, difficulty){
 }*/
 
 /*public function removeFreeze(rung) {
-    this.location.apiSendMsg({type: 'overlay_cancel', uid: 'freeze_tile_'+rung});
+    this.player.location.apiSendMsg({type: 'overlay_cancel', uid: 'freeze_tile_'+rung});
 }*/
 
     }

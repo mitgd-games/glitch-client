@@ -1119,7 +1119,7 @@ public function skills_points_to_seconds(points, category=null){
     // If in new newxp, first skill takes 3s
     //
 
-    if (this.location.is_newxp && this.skills_get_count() === 0) return 3;
+    if (this.player.location.is_newxp && this.skills_get_count() === 0) return 3;
 
     //
     // Apply brain capacity modifier
@@ -1508,7 +1508,7 @@ public function skills_give(id){
     // give out any skill quests
     //
 
-    if (!this.location.is_newxp || this.location.current_step != 'choose_skill'){
+    if (!this.player.location.is_newxp || this.player.location.current_step != 'choose_skill'){
         // Hard-code some quests that need to happen before the other skill quests but *only* when we learn the skill
         // outside of newxp (so they can't go in the normal map)
         if (id == 'animalkinship_1'){

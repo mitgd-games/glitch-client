@@ -732,7 +732,7 @@ public function avatar_set_sheets(args){
         var props = this.avatar_get_pc_msg_props();
         for (var i in props) msg[i] = props[i];
 
-        this.location.apiSendMsg(msg);
+        this.player.location.apiSendMsg(msg);
     }
 
     if (args.url){
@@ -1052,15 +1052,15 @@ public function avatar_admin_set_default(args){
         'version'   : args.version
     });
 
-    if (this.location.class_tsid == 'newxp_training1'){
+    if (this.player.location.class_tsid == 'newxp_training1'){
         if (this.quickstart_needs_player){
-            var flamingo = this.location.getFlamingo();
+            var flamingo = this.player.location.getFlamingo();
             if (flamingo){
                 this.player.openInputBox('player_name_picker', 'What should we call you?', {check_user_name: true, input_max_chars: 19, cancelable: false, itemstack_tsid: flamingo.tsid, follow: true, input_label: 'What should we call you?'});
             }
         }
         else{
-            this.location.runTutorialStep(this.location.getNextStep(this.location.current_step), null);
+            this.player.location.runTutorialStep(this.player.location.getNextStep(this.player.location.current_step), null);
         }
     }
 }

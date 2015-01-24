@@ -79,7 +79,7 @@ public function metabolics_add_energy(x, quiet, force){
     this.player.daily_history.daily_history_increment('energy_gained', change);
 
     if (change && !quiet){
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             type: "energy_stat",
             delta: change
         });
@@ -98,7 +98,7 @@ public function metabolics_add_energy(x, quiet, force){
     return change;
 }
 
-public function metabolics_add_mood(x, quiet, force){
+public function metabolics_add_mood(x, quiet=false, force=false){
 
     if (this.is_dead){
         if (!quiet){
@@ -110,7 +110,7 @@ public function metabolics_add_mood(x, quiet, force){
     var change = this.metabolics.mood.apiInc(x);
 
     if (change && !quiet){
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             type: "mood_stat",
             delta: change
         });
@@ -131,7 +131,7 @@ public function metabolics_lose_energy(x, quiet, force){
 
     // No energy loss during newxp
     if (!force){
-        if (this.location.is_newxp && (this.location.isInstance('newxp_intro') || this.location.isInstance('newxp_training1'))){
+        if (this.player.location.is_newxp && (this.player.location.isInstance('newxp_intro') || this.player.location.isInstance('newxp_training1'))){
             return 0;
         }
     }
@@ -146,7 +146,7 @@ public function metabolics_lose_energy(x, quiet, force){
     var change = this.metabolics.energy.apiDec(x);
 
     if (change && !quiet){
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             type: "energy_stat",
             delta: change
         });
@@ -199,16 +199,16 @@ public function metabolics_try_lose_mood(x){
     return 0;
 }
 
-public function metabolics_lose_mood(x, quiet, force){
+public function metabolics_lose_mood(x, quiet=false, force=false){
 
     // No mood loss during newxp
     if (!force){
-        if (this.location.is_newxp && (this.location.isInstance('newxp_intro') || this.location.isInstance('newxp_training1'))){
+        if (this.player.location.is_newxp && (this.player.location.isInstance('newxp_intro') || this.player.location.isInstance('newxp_training1'))){
             return 0;
         }
     }
 
-    if (this.is_dead){
+    if (this.player.is_dead){
         if (!quiet){
             this.player.sendOnlineActivity("You would have lost some mood, but you're dead!");
         }
@@ -218,13 +218,13 @@ public function metabolics_lose_mood(x, quiet, force){
     var change = this.metabolics.mood.apiDec(x);
 
     if (change && !quiet){
-        this.apiSendAnnouncement({
+        this.player.announcements.apiSendAnnouncement({
             type: "mood_stat",
             delta: change
         });
     }
 
-    if (this.location.instance_id != 'tower_quest_desert'){
+    if (this.player.location.instance_id != 'tower_quest_desert'){
         if (this.metabolics_get_percentage('mood') <= 20 && !this.player.buffs.buffs_has('walking_dead') && !this.is_dead){
             this.player.sendOnlineActivity('Your mood is getting very low! Try drinking something tasty.');
         }
@@ -234,7 +234,7 @@ public function metabolics_lose_mood(x, quiet, force){
         }
     }
 
-    if (this.metabolics_get_mood() == 0 && this.is_god){
+    if (this.metabolics_get_mood() == 0 && this.player.is_god){
         this.player.quests.quests_offer('zero_mood');
     }
 

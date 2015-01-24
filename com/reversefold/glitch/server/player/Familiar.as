@@ -216,7 +216,7 @@ public function familiar_get_uid(){
 
 public function familiar_announce_queue(){
 
-    this.apiSendAnnouncement({
+    this.player.announcements.apiSendAnnouncement({
         type: 'new_familiar_msgs',
         num: this.familiar.stack.length
     });
@@ -483,7 +483,7 @@ public function familiar_upgrade(){
 
 public function familiar_upgrade_do(choice, details){
 
-    var choices = this.location.upgrades_get_details();
+    var choices = this.player.location.upgrades_get_details();
 
     if (choice == 'start'){
 
@@ -533,7 +533,7 @@ public function familiar_upgrade_do(choice, details){
 
     if (details){
 
-        this.location.upgrades_apply(details);
+        this.player.location.upgrades_apply(details);
 
         return {
             done: true

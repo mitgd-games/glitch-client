@@ -45,7 +45,7 @@ public function buffs_init(){
 }
 
 public function buffs_delete(){
-	Server.instance.apiDeleteTimers();
+	this.apiDeleteTimers();
 	
 	this.player.buffs = new Buffs(config, player);
 	/*
@@ -470,7 +470,7 @@ public function buffs_extend_time(class_tsid, amount) {
     this.player.sendMsgOnline(out);
 }
 
-public function buffs_alter_time(class_tsid, amount, duration) {
+public function buffs_alter_time(class_tsid, amount, duration=null) {
     var result_amount = amount;
     var buff = this.buffs_get_instance(class_tsid);
 

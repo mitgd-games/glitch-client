@@ -106,7 +106,7 @@ public function conversations_offer(source_item, id){
 
     var now = time();
     if (!config.is_dev && now - this.date_last_loggedin < (5*60)) return false; // 5 minutes from last login
-    if (now - this.player.stats.stats_get_last_street_visit(this.location.tsid) < 10) return false; // At least 10s on this street
+    if (now - this.player.stats.stats_get_last_street_visit(this.player.location.tsid) < 10) return false; // At least 10s on this street
 
     var timeout = config.is_dev ? 10 : 30*60;
     if (num_keys(this.conversations.chains_inprogress)) timeout = config.is_dev ? 5 : 15; // If we're on a chain, we can continue every 15 seconds
@@ -221,7 +221,7 @@ public function conversations_login(){
     }
 
     // Ensure the stack is appropriately close to begin a conversation
-    if (stack.container != this.location || Math.abs(stack.x - this.x) > 300 || Math.abs(stack.y - this.y) > 150){
+    if (stack.container != this.player.location || Math.abs(stack.x - this.x) > 300 || Math.abs(stack.y - this.y) > 150){
         log.info("Player "+this+" attempting to resume conversation"+this.conversations.state.conversation_name+" with itemstack "+this.conversations.state.itemstack_tsid+" but itemstack is out of range.");
         return;
     }

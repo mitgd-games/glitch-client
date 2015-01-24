@@ -156,7 +156,7 @@ public function trading_request_start(target_tsid){
         };
     }
 
-    if (target.getProp('location').tsid != this.location.tsid){
+    if (target.getProp('location').tsid != this.player.location.tsid){
         return {
             ok: 0,
             error: "Oh come on, they're not even in the same location as you!"
@@ -218,7 +218,7 @@ public function trading_request_start(target_tsid){
         uid: this.tsid+'_trading'
     };
 
-    this.location.apiSendAnnouncementX(anncx, this);
+    this.player.location.apiSendAnnouncementX(anncx, this);
 
     anncx['pc_tsid'] = target.tsid;
     anncx['uid'] = target.tsid+'_trading';
@@ -263,7 +263,7 @@ public function trading_cancel(target_tsid){
     // Overlays
     //
 
-    this.location.apiSendMsgAsIsX({
+    this.player.location.apiSendMsgAsIsX({
         type: 'overlay_cancel',
         uid: this.tsid+'_trading'
     }, this);
@@ -1038,7 +1038,7 @@ public function trading_complete(target_tsid){
     // Overlays
     //
 
-    this.location.apiSendMsgAsIsX({
+    this.player.location.apiSendMsgAsIsX({
         type: 'overlay_cancel',
         uid: this.tsid+'_trading'
     }, this);

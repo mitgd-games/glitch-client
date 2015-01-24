@@ -304,7 +304,7 @@ public function reschedule_mail() {
 
 public function has_frog_already() {
     // Find out if a frog is here, here for this player and not done delivering.
-    var allFrogs = this.location.find_items('npc_yoga_frog');
+    var allFrogs = this.player.location.find_items('npc_yoga_frog');
     var frogVisiting = false;
     for(var i = 0; i < allFrogs.length; ++i) {
         if(allFrogs[i].isDeliveringTo(this) && allFrogs[i].mailType == this.delivery_type) {
@@ -323,7 +323,7 @@ public function deliver_mail() {
     }
 
     // If the player is in an instance or in hell, reschedule
-    if(this.location.isInstance() || this.location.isInHell() || this.player.doNotDisturb()) {
+    if(this.player.location.isInstance() || this.player.location.isInHell() || this.player.doNotDisturb()) {
         log.error("Player "+this+" had a mail delivery, but is in a undeliverable location!");
         this.reschedule_mail();
         return;
@@ -351,7 +351,7 @@ public function answer_mail_prompt() {
     }
     var offset = choose_one([-500, 500]);
 
-    var frog = this.location.createItemStack('npc_yoga_frog', 1, this.x + offset, this.y - 400);
+    var frog = this.player.location.createItemStack('npc_yoga_frog', 1, this.x + offset, this.y - 400);
     if(this.delivery_type == 'courier') {
         frog.setInstanceProp('variant', 'frogBlue');
     } else {
@@ -710,8 +710,8 @@ public function new_inbox_growl() {
     this.player.sendActivity("You have new messages in your mailbox!");
 
     // And tell any mailboxes in our area to update!
-    if(this.location) {
-        var boxes = this.location.find_items('npc_mailbox');
+    if(this.player.location) {
+        var boxes = this.player.location.find_items('npc_mailbox');
         for(var i = 0; i < boxes.length; ++i) {
             boxes[i].doIdle(this);
         }
@@ -1498,7 +1498,7 @@ public function mail_cancel_deliveries() {
 }
 
 public function admin_clear_mail() {
-    if(!this.mail || !this.is_god) {
+    if(!this.mail || !this.player.is_god) {
         return;
     }
 

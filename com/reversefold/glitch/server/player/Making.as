@@ -479,7 +479,7 @@ public function making_make_known(msg, item){
     }
     else{
         //log.info("Making is "+making);
-        this.location.apiSendAnnouncementX({
+        this.player.location.apiSendAnnouncementX({
             type: 'pc_overlay',
             item_class: item.class_tsid,
             duration: making.wait,
@@ -677,7 +677,7 @@ public function tryToMake(msg, item){
     }
     else{
         //log.info("Making is "+making);
-        this.location.apiSendAnnouncementX({
+        this.player.location.apiSendAnnouncementX({
             type: 'pc_overlay',
             item_class: item.class_tsid,
             duration: making.wait,
@@ -850,7 +850,7 @@ public function finishMakingKnown(inf){
         info.item.broadcastStatus();
 
         // http://bugs.tinyspeck.com/8964
-        this.location.cultivation_add_img_rewards(this, 7.0);
+        this.player.location.cultivation_add_img_rewards(this, 7.0);
     }
 
 
@@ -1530,7 +1530,7 @@ public function making_execute_recipe(recipe_id, count, energy_cost, item){
         if (item.getClassProp('making_type') != 'machine'){
             var remainder = this.player.items.createItem(output[0], output[1] * count);
             if (remainder){
-                this.location.createItem(output[0], remainder, this.x, this.y, 250);
+                this.player.location.createItem(output[0], remainder, this.x, this.y, 250);
             }
 
             var proto = Server.instance.apiFindItemPrototype(output[0]);

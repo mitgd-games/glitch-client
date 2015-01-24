@@ -502,7 +502,7 @@ public function createItem(class_id, num, destroy_remainder, props){
     }
 
     if (remaining && !destroy_remainder){
-        remaining = this.location.createItem(class_id, remaining, this.x, this.y-29, 100, this, props);
+        remaining = this.player.location.createItem(class_id, remaining, this.x, this.y-29, 100, this, props);
     }
 
     return remaining;
@@ -533,7 +533,7 @@ public function createItemFromGround(class_id, num, destroy_remainder, props){
         s.apiDelete();
     }
     else if (remaining){
-        remaining = this.location.createItem(class_id, remaining, this.x, this.y-29, 100, this, props);
+        remaining = this.player.location.createItem(class_id, remaining, this.x, this.y-29, 100, this, props);
     }
 
     return remaining + remaining_two;
@@ -564,7 +564,7 @@ public function createItemFromXY(class_id, num, x, y, destroy_remainder, props){
         s.apiDelete();
     }
     else if (remaining){
-        remaining = this.location.createItem(class_id, remaining, this.x, this.y-29, 100, this, props);
+        remaining = this.player.location.createItem(class_id, remaining, this.x, this.y-29, 100, this, props);
     }
 
     return remaining + remaining_two;
@@ -680,7 +680,7 @@ public function createItemFromOffset(class_id, num, sourcePosition, destroy_rema
     if (this.isBagFull(s)){
         s.apiDelete();
         if (!destroy_remainder){
-            return this.location.createItem(class_id, num, ix, iy - 20, 100, null, props);
+            return this.player.location.createItem(class_id, num, ix, iy - 20, 100, null, props);
         }
         else{
             return num;
@@ -694,7 +694,7 @@ public function createItemFromOffset(class_id, num, sourcePosition, destroy_rema
     }
 
     if (remaining && !destroy_remainder){
-        remaining = this.location.createItem(class_id, remaining, ix, iy-20, 100, this, props);
+        remaining = this.player.location.createItem(class_id, remaining, ix, iy-20, 100, this, props);
     }
 
     return remaining;
@@ -730,7 +730,7 @@ public function createItemFromOffsetWithEscrow(class_id, num, sourcePosition, de
 
     if (remaining && !destroy_remainder){
         log.info("ESCROW: creating item in location  "+remaining);
-        remaining = this.location.createItem(class_id, remaining, ix, iy-20, 100, this, props);
+        remaining = this.player.location.createItem(class_id, remaining, ix, iy-20, 100, this, props);
     }
 
     return remaining;
@@ -752,10 +752,10 @@ public function createItemFromSource(class_id, num, sourceItem, destroy_remainde
         s.apiDelete();
         if (!destroy_remainder){
             if (sourceItem.getContainerType() == 'street'){
-                return this.location.createItem(class_id, num, sourceItem ? sourceItem.x : this.x, sourceItem.y-20, 100, this, props);
+                return this.player.location.createItem(class_id, num, sourceItem ? sourceItem.x : this.x, sourceItem.y-20, 100, this, props);
             }
             else{
-                return this.location.createItem(class_id, num, this.x, this.y-20, 100, this, props);
+                return this.player.location.createItem(class_id, num, this.x, this.y-20, 100, this, props);
             }
         }
         else{
@@ -771,10 +771,10 @@ public function createItemFromSource(class_id, num, sourceItem, destroy_remainde
 
     if (remaining && !destroy_remainder){
         if (sourceItem.getContainerType() == 'street'){
-            remaining = this.location.createItem(class_id, remaining, sourceItem.x, sourceItem.y-20, 100, this, props);
+            remaining = this.player.location.createItem(class_id, remaining, sourceItem.x, sourceItem.y-20, 100, this, props);
         }
         else{
-            remaining = this.location.createItem(class_id, remaining, this.x, this.y-20, 100, this, props);
+            remaining = this.player.location.createItem(class_id, remaining, this.x, this.y-20, 100, this, props);
         }
     }
 
@@ -784,7 +784,7 @@ public function createItemFromSource(class_id, num, sourceItem, destroy_remainde
 
 public function items_destory_stack(tsid){
 
-    var s = this.location.apiLockStack(tsid);
+    var s = this.player.location.apiLockStack(tsid);
 
     if (!s){
         var items = this.getAllContents();
@@ -823,14 +823,14 @@ public function items_added(stack){
     this.player.counters.counters_increment('items_collected', stack.class_tsid);
     var seen_count = this.player.counters.counters_get_label_count('items_collected', stack.class_tsid);
     var discovery_dialog_shown = false;
-    if (seen_count == 1 && this.player.isOnline() && (this.has_done_intro || this.location.class_tsid == 'newbie_island')){
+    if (seen_count == 1 && this.player.isOnline() && (this.has_done_intro || this.player.location.class_tsid == 'newbie_island')){
         var context = {'verb':'new_item','stack':stack.class_tsid};
         var xp = this.player.stats.stats_add_xp(config.qurazy_rewards[this.stats.level-1], false, context);
         if (stack.suppress_discovery) {
             // This stack has been set to supress the discovery dialogue when added. Remove that property.
             delete stack.suppress_discovery;
         } else if (!stack.hasTag('no_discovery_dialog')){
-            if (this.location.class_tsid == 'newbie_island' && !this.player.imagination.imagination_has_upgrade('encyclopeddling')){
+            if (this.player.location.class_tsid == 'newbie_island' && !this.player.imagination.imagination_has_upgrade('encyclopeddling')){
                 this.player.sendActivity(stack.label+'!. You discovered a useful new item +'+xp+'IMG', null, false, true);
             }else{
                 var rsp = {
@@ -888,8 +888,8 @@ public function items_added(stack){
         this.player.sendCameraAbilities();
     }
 
-    if (this.location && this.location.eventFired){
-        this.location.eventFired('items_added', this, {pc:this, stack:stack});
+    if (this.player.location && this.player.location.eventFired){
+        this.player.location.eventFired('items_added', this, {pc:this, stack:stack});
     }
 
     if (stack.hasTag('artifactpiece')){
@@ -984,7 +984,7 @@ public function onDropFirstSwf() {
     this.swf_two = this.findFirst('swf_2');
 
     if (this.swf_two) {
-        this.location.apiPutItemIntoPosition(this.swf_two, this.x + 40, this.y);
+        this.player.location.apiPutItemIntoPosition(this.swf_two, this.x + 40, this.y);
     }
 
     this.apiSetTimer('onDropSecondSwf', 400);
@@ -994,7 +994,7 @@ public function onDropSecondSwf() {
     this.swf_three = this.findFirst('swf_3');
 
     if (this.swf_three) {
-        this.location.apiPutItemIntoPosition(this.swf_three, this.x + 80, this.y);
+        this.player.location.apiPutItemIntoPosition(this.swf_three, this.x + 80, this.y);
     }
 
     this.apiSetTimer('onDropThirdSwf', 400);
