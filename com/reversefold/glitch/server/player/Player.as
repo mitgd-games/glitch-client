@@ -48,6 +48,7 @@ package com.reversefold.glitch.server.player {
 		public var date_last_loggedin;
 		public var trade_chat_group;
 		public var return_to_gentle_island;
+		public var do_not_disturb;
 		
 		public var is_god : Boolean = false;
 		public var is_help : Boolean = false;

@@ -1,8 +1,9 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +12,14 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var label : String;
+		public var completed;
+		public var offered;
+		public var chains_completed;
+		public var chains_inprogress;
+		public var state;
+		public var last_offer;
 
         public function Conversations(config : Config, player : Player) {
             this.config = config;
@@ -19,32 +28,36 @@ package com.reversefold.glitch.server.player {
 
 
 public function conversations_init(){
-    if (this.conversations === undefined || this.conversations === null){
-        this.conversations = Server.instance.apiNewOwnedDC(this);
-        this.conversations.label = 'Conversations';
+    if (this.completed === undefined || this.completed === null){
+        //this.conversations = Server.instance.apiNewOwnedDC(this);
+        this.label = 'Conversations';
 
-        this.conversations.completed = {};
-        this.conversations.offered = {};
+        this.completed = {};
+        this.offered = {};
     }
 
-    if (!this.conversations.chains_completed) this.conversations.chains_completed = {};
-    if (!this.conversations.chains_inprogress) this.conversations.chains_inprogress = {};
+    if (!this.chains_completed) this.chains_completed = {};
+    if (!this.chains_inprogress) this.chains_inprogress = {};
 }
 
 public function conversations_delete(){
+	apiDeleteTimers();
+	this.player.conversations = new Conversations(config, player);
+	/*
     if (this.conversations){
         this.conversations.apiDelete();
         delete this.conversations;
     }
+	*/
 }
 
 public function conversations_reset(){
-    if (this.conversations){
-        this.conversations.completed = {};
-        this.conversations.offered = {};
+    if (this.completed){
+        this.completed = {};
+        this.offered = {};
 
-        this.conversations.chains_completed = {};
-        this.conversations.chains_inprogress = {};
+        this.chains_completed = {};
+        this.chains_inprogress = {};
     }
 }
 
@@ -61,11 +74,11 @@ public function conversations_has_completed(class_id, id){
 
     // Completed?
     if (class_id){
-        if (this.conversations.completed[class_id] && this.conversations.completed[class_id][id]) return true;
+        if (this.completed[class_id] && this.completed[class_id][id]) return true;
     }
     else{
-        for (var i in this.conversations.completed){
-            if (this.conversations.completed[i] && this.conversations.completed[i][id]) return true;
+        for (var i in this.completed){
+            if (this.completed[i] && this.completed[i][id]) return true;
         }
     }
 
@@ -80,16 +93,16 @@ public function conversations_has_offered(class_id, id){
 
     // Offered?
     if (class_id){
-        if (this.conversations.offered[class_id] && this.conversations.offered[class_id][id]){
-            if (time() - this.conversations.offered[class_id][id] >= timeout) return false;
+        if (this.offered[class_id] && this.offered[class_id][id]){
+            if (time() - this.offered[class_id][id] >= timeout) return false;
 
             return true;
         }
     }
     else{
-        for (var i in this.conversations.offered){
-            if (this.conversations.offered[i] && this.conversations.offered[i][id]){
-                if (time() - this.conversations.offered[i][id] >= timeout) return false;
+        for (var i in this.offered){
+            if (this.offered[i] && this.offered[i][id]){
+                if (time() - this.offered[i][id] >= timeout) return false;
 
                 return true;
             }
@@ -105,13 +118,13 @@ public function conversations_offer(source_item, id){
     if (source_item.is_poisoned) return false;
 
     var now = time();
-    if (!config.is_dev && now - this.date_last_loggedin < (5*60)) return false; // 5 minutes from last login
+    if (!config.is_dev && now - this.player.date_last_loggedin < (5*60)) return false; // 5 minutes from last login
     if (now - this.player.stats.stats_get_last_street_visit(this.player.location.tsid) < 10) return false; // At least 10s on this street
 
     var timeout = config.is_dev ? 10 : 30*60;
-    if (num_keys(this.conversations.chains_inprogress)) timeout = config.is_dev ? 5 : 15; // If we're on a chain, we can continue every 15 seconds
+    if (num_keys(this.chains_inprogress)) timeout = config.is_dev ? 5 : 15; // If we're on a chain, we can continue every 15 seconds
 
-    if (this.conversations.last_offer > (now - timeout)) return false;
+    if (this.last_offer > (now - timeout)) return false;
     if (this.conversations_get_last_completed_conversation() > (now - timeout)) return false;
 
     var donate_to_all_shrines = this.player.quests.getQuestInstance('donate_to_all_shrines');
@@ -124,39 +137,39 @@ public function conversations_offer(source_item, id){
     if (source_item[conversation_canoffer]) can_offer = source_item[conversation_canoffer](this);
     if (!can_offer) return false;
 
-    if (!this.conversations.offered[source_item.class_tsid]) this.conversations.offered[source_item.class_tsid] = {};
-    this.conversations.offered[source_item.class_tsid][id] = now;
+    if (!this.offered[source_item.class_tsid]) this.offered[source_item.class_tsid] = {};
+    this.offered[source_item.class_tsid][id] = now;
 
-    this.conversations.last_offer = now;
+    this.last_offer = now;
 
     return true;
 }
 
 public function conversations_force_offer(class_tsid, id){
-    if (!this.conversations.offered[class_tsid]) this.conversations.offered[class_tsid] = {};
-    this.conversations.offered[class_tsid][id] = time();
+    if (!this.offered[class_tsid]) this.offered[class_tsid] = {};
+    this.offered[class_tsid][id] = time();
 }
 
 public function conversations_complete(class_id, id, chain){
     this.conversations_init();
 
-    for (var i in this.conversations.offered){
-        if (this.conversations.offered[i] && this.conversations.offered[i][id]){
-            delete this.conversations.offered[i][id];
-            if (!num_keys(this.conversations.offered[i])) delete this.conversations.offered[i];
+    for (var i in this.offered){
+        if (this.offered[i] && this.offered[i][id]){
+            delete this.offered[i][id];
+            if (!num_keys(this.offered[i])) delete this.offered[i];
         }
     }
 
-    if (!this.conversations.completed[class_id]) this.conversations.completed[class_id] = {};
-    this.conversations.completed[class_id][id] = time();
+    if (!this.completed[class_id]) this.completed[class_id] = {};
+    this.completed[class_id][id] = time();
 
     if (chain){
         if (chain.level == chain.max_level){
-            this.conversations.chains_completed[chain.id] = time();
-            delete this.conversations.chains_inprogress;
+            this.chains_completed[chain.id] = time();
+            this.chains_inprogress = null;
         }
         else{
-            this.conversations.chains_inprogress[chain.id] = time();
+            this.chains_inprogress[chain.id] = time();
         }
     }
 
@@ -164,10 +177,10 @@ public function conversations_complete(class_id, id, chain){
 }
 
 public function conversations_offered_for_class(class_id){
-    if (!this.conversations.offered[class_id]) return [];
+    if (!this.offered[class_id]) return [];
 
     var convos = [];
-    for (var i in this.conversations.offered[class_id]){
+    for (var i in this.offered[class_id]){
         convos.push(i);
     }
 
@@ -186,9 +199,9 @@ public function conversations_offered_for_item(item){
 
 public function conversations_get_last_completed_conversation(){
     var highest = 0;
-    for (var i in this.conversations.completed){
-        for (var j in this.conversations.completed[i]){
-            if (this.conversations.completed[i][j] > highest) highest = this.conversations.completed[i][j];
+    for (var i in this.completed){
+        for (var j in this.completed[i]){
+            if (this.completed[i][j] > highest) highest = this.completed[i][j];
         }
     }
 
@@ -198,43 +211,43 @@ public function conversations_get_last_completed_conversation(){
 public function conversations_set_current_state(itemstack_tsid, conversation_name, choice) {
     this.conversations_init();
 
-    this.conversations.state = {itemstack_tsid: itemstack_tsid, conversation_name: conversation_name, choice: choice};
+    this.state = {itemstack_tsid: itemstack_tsid, conversation_name: conversation_name, choice: choice};
 }
 
 public function conversations_clear_current_state() {
     this.conversations_init();
 
-    if(this.conversations.state) {
-        delete this.conversations.state;
+    if(this.state) {
+        this.state = null;
     }
 }
 
 public function conversations_login(){
-    if (!this.conversations || !this.conversations.state){
+    if (!this.completed || !this.state){
         return;
     }
 
-    var stack = Server.instance.apiFindObject(this.conversations.state.itemstack_tsid);
+    var stack = Server.instance.apiFindObject(this.state.itemstack_tsid);
     if (!stack) {
-        log.error("Player "+this+" attempting to resume conversation "+this.conversations.state.conversation_name+" with itemstack "+this.conversations.state.itemstack_tsid+", but it cannot be found.");
+        log.error("Player "+this+" attempting to resume conversation "+this.state.conversation_name+" with itemstack "+this.state.itemstack_tsid+", but it cannot be found.");
         return;
     }
 
     // Ensure the stack is appropriately close to begin a conversation
-    if (stack.container != this.player.location || Math.abs(stack.x - this.x) > 300 || Math.abs(stack.y - this.y) > 150){
-        log.info("Player "+this+" attempting to resume conversation"+this.conversations.state.conversation_name+" with itemstack "+this.conversations.state.itemstack_tsid+" but itemstack is out of range.");
+    if (stack.container != this.player.location || Math.abs(stack.x - this.player.x) > 300 || Math.abs(stack.y - this.player.y) > 150){
+        log.info("Player "+this+" attempting to resume conversation"+this.state.conversation_name+" with itemstack "+this.state.itemstack_tsid+" but itemstack is out of range.");
         return;
     }
 
     // We have a conversation in progress with an item in our location
-    var conversation = 'conversation_run_'+this.conversations.state.conversation_name;
+    var conversation = 'conversation_run_'+this.state.conversation_name;
     if (!stack[conversation]){
-        log.error("Player "+this+" attempting to resume conversation "+this.conversations.state.conversation_name+" with itemstack "+stack+", but conversation does not exist.");
+        log.error("Player "+this+" attempting to resume conversation "+this.state.conversation_name+" with itemstack "+stack+", but conversation does not exist.");
         return;
     }
 
     // Kind of a kludge.
-    var msg = {type: 'conversation_login', choice: this.conversations.state.choice};
+    var msg = {type: 'conversation_login', choice: this.state.choice};
     stack[conversation](this, msg, true);
     this.conversations_clear_current_state();
 }
@@ -243,13 +256,13 @@ public function conversations_can_do_chain(chain){
     this.conversations_init();
 
     // This isn't part of a chain, and we aren't in the middle of another
-    if (!chain && !num_keys(this.conversations.chains_inprogress)) return true;
+    if (!chain && !num_keys(this.chains_inprogress)) return true;
 
     // We are already on this chain
-    if (chain && this.conversations.chains_inprogress[chain.id]) return true;
+    if (chain && this.chains_inprogress[chain.id]) return true;
 
     // We are in the middle of another chain
-    if (num_keys(this.conversations.chains_inprogress)) return false;
+    if (num_keys(this.chains_inprogress)) return false;
 
     return true;
 }
@@ -271,7 +284,7 @@ public var convo_bubble_choices = [
 ];
 
 public function conversations_offer_bubble(source){
-    if (!this.do_not_disturb){
+    if (!this.player.do_not_disturb){
         var choice = choose_one(this.convo_bubble_choices);
         choice = choice.replace(/{pc_label}/g, this.player.getLabel());
 

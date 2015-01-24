@@ -73,11 +73,14 @@ public function auctions_delete(destroy_items){
         }
 
         apiDeleteTimers();
+		this.player.auctions = new Auctions(config, player);
+		/*
         this.active = null;
 		this.cancelled = null;
 		this.done = null;
 		this.prompts = null;
 		this.expired = null;
+		*/
     }
 }
 

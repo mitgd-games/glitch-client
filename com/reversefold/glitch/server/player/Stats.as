@@ -118,6 +118,7 @@ public function stats_delete(){
     delete this.giant_emblems;
 */
     this.stats_reset_street_history();
+	this.player.stats = new Stats(config, player);
 }
 
 public function stats_reset_xp(){

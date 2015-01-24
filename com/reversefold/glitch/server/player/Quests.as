@@ -87,6 +87,7 @@ public function quests_delete(){
     }
 
     this.last_quest_offer = null;
+	this.player.quests = new Quests(config, player);
 }
 
 public function quests_reset(){

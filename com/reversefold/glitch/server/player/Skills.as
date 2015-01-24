@@ -73,10 +73,13 @@ public function skills_init(){
 
 public function skills_delete(){
     log.info(this+' *******************************************SKILLS-DELETE');
+	this.player.skills = new com.reversefold.glitch.server.player.Skills(config, player);
+	/*
     if (this.skills){
         //this.skills.apiDelete();
         this.skills = null;
     }
+	*/
 }
 
 public function skills_reset(){
