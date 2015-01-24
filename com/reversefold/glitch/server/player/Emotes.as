@@ -1,8 +1,10 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +13,9 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var hi_emote_variant;
+		public var hi_emote_daily_targets;
 
         public function Emotes(config : Config, player : Player) {
             this.config = config;
@@ -27,7 +32,7 @@ public function setHiEmoteVariant(variant, tracker_str) {
     }
 
     // make sure we get a valid variant
-    if (config.hi_emote_variants.indexOf(variant) == -1) {
+    if (config.base.hi_emote_variants.indexOf(variant) == -1) {
         return;
     }
 
@@ -35,7 +40,7 @@ public function setHiEmoteVariant(variant, tracker_str) {
 
     // make sure we have the daily target dc
     if (!this.hi_emote_daily_targets) {
-        this.hi_emote_daily_targets = Server.instance.apiNewOwnedDC(this);
+        this.hi_emote_daily_targets = {};//Server.instance.apiNewOwnedDC(this);
     }
 
     // remember yesterdays
@@ -67,7 +72,7 @@ public function setHiEmoteVariant(variant, tracker_str) {
 }
 
 public function setHiEmoteVariantRandomly() {
-    var variant = choose_one(config.hi_emote_variants);
+    var variant = choose_one(config.base.hi_emote_variants);
     if (config.feature_hi_viral) {
         // log it
         Server.instance.apiLogAction('HI_SIGN_GOT_RANDOM', 'pc='+this.player.tsid,'variant='+variant);
@@ -112,8 +117,8 @@ public function doEmote(msg){
     var did_infect_target_pc = false;
     var did_infect_butler = false;
 
-    var base_mood = config.hi_emote_base_mood;
-    var bonus_mood = config.hi_emote_bonus_mood;
+    var base_mood = config.base.hi_emote_base_mood;
+    var bonus_mood = config.base.hi_emote_bonus_mood;
 
     // get the variant of the day for this person
     var variant = this.hi_emote_variant;
@@ -122,15 +127,15 @@ public function doEmote(msg){
         variant = this.setHiEmoteVariantRandomly();
     }
 
-    var variant_name = config.hi_emote_variants_name_map[variant];
+    var variant_name = config.base.hi_emote_variants_name_map[variant];
 
     // which way is player facing?
-    var facing = intval(this.s) / Math.abs(intval(this.s));
+    var facing = intval(this.player.s) / Math.abs(intval(this.player.s));
 
     var target_variant;
     var radius = 400; // we want things within 400 pixels of player
-    var center_x = this.x;
-    var center_y = this.y;
+    var center_x = this.player.x;
+    var center_y = this.player.y;
     var players;
     var shards;
     var target_pc;
@@ -178,7 +183,7 @@ public function doEmote(msg){
             if (this.hi_emote_daily_targets.pcs[players[i].pc.tsid]) continue;
 
             // if players[i].x is behind the player, keep track of it in case we don't find someone in front of the player
-            if ((facing == 1 && players[i].x < this.x) || (facing == -1 && players[i].x > this.x)) {
+            if ((facing == 1 && players[i].x < this.player.x) || (facing == -1 && players[i].x > this.player.x)) {
                 if (potential_target_pc_behind) continue;
 
                 // keep track of this guy
@@ -341,7 +346,7 @@ public function doHiEmoteBonusWithButler(target_butler, emote, variant, pc_mood)
         type: 'emote_bonus',
         emote: emote,
         variant: variant,
-        variant_color: config.hi_emote_variants_color_map[variant],
+        variant_color: config.base.hi_emote_variants_color_map[variant],
         pc_tsid: this.player.tsid,
         itemstack_tsid: target_butler.tsid,
         emote_bonus_mood_granted: emote_bonus_mood_granted
@@ -361,7 +366,7 @@ public function doHiEmoteBonusWithOtherPlayer(target_pc, emote, variant, pc_mood
         type: 'emote_bonus',
         emote: emote,
         variant: variant,
-        variant_color: config.hi_emote_variants_color_map[variant],
+        variant_color: config.base.hi_emote_variants_color_map[variant],
         pc_tsid: this.player.tsid,
         other_pc_tsid: target_pc.tsid,
         emote_bonus_mood_granted: emote_bonus_mood_granted
@@ -390,7 +395,7 @@ public function maybe_set_evasion_record(msg){
     if (location.instance_of) location = Server.instance.apiFindObject(location.instance_of);
 
     if (!location) {
-        log.error('no location?', e);
+        log.error('no location?');//, e);
         return {status: 'fail', msg: 'no location?'};
     }
 
@@ -498,7 +503,7 @@ public function make_and_store_evasion_record(msg, location, today_key, alltime)
     var secs = msg.seconds;
     var ob = {
         pc_tsid: this.player.tsid,
-        pc_label: this.label,
+        pc_label: this.player.label,
         secs: secs,
         when: time(),
         version: msg.version,
