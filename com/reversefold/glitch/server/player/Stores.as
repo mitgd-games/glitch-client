@@ -1,8 +1,10 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
     import com.reversefold.glitch.server.data.Config;
+    import com.reversefold.glitch.server.data.MapExtras;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -278,15 +280,15 @@ public function storeSell(msg, item){
     // check they have the items they are trying to sell
     //
 
-    var have_count = this.countItemClass(msg.sellstack_class);
-    var items = this.getAllContents();
+    var have_count = this.player.bag.countItemClass(msg.sellstack_class);
+    var items = this.player.bag.getAllContents();
 
     var stack;
     if (msg.sellstack_tsid && items[msg.sellstack_tsid]){
-        stack = this.removeItemStack(items[msg.sellstack_tsid].path);
+        stack = this.player.bag.removeItemStack(items[msg.sellstack_tsid].path);
     }
     else{
-        stack = this.removeItemStackClass(msg.sellstack_class, msg.count);
+        stack = this.player.bag.removeItemStackClass(msg.sellstack_class, msg.count);
     }
 
 
@@ -349,7 +351,7 @@ public function storeSell(msg, item){
         }
 
         do {
-            stack = this.removeItemStackClass(msg.sellstack_class, remainder);
+            stack = this.player.bag.removeItemStackClass(msg.sellstack_class, remainder);
             remainder -= stack.count;
             stack.apiDelete();
             this.player.items.items_removed(stack);
@@ -455,19 +457,19 @@ public function storeGetUpgradeMultiplier(){
 // Handle Wheeler Dealer imagination upgrades
 public function storeGetUpgradeName(){
     if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_4")){
-        var upgrade = Imagination.data_imagination_upgrades["vendors_higher_buy_price_4"];
+        var upgrade = com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades["vendors_higher_buy_price_4"];
         return upgrade.name;
     }
     else if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_3")){
-        var upgrade = Imagination.data_imagination_upgrades["vendors_higher_buy_price_3"];
+        var upgrade = com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades["vendors_higher_buy_price_3"];
         return upgrade.name;
     }
     else if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_2")){
-        var upgrade = Imagination.data_imagination_upgrades["vendors_higher_buy_price_2"];
+        var upgrade = com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades["vendors_higher_buy_price_2"];
         return upgrade.name;
     }
     else if (this.player.imagination.imagination_has_upgrade("vendors_higher_buy_price_1")){
-        var upgrade = Imagination.data_imagination_upgrades["vendors_higher_buy_price_1"];
+        var upgrade = com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades["vendors_higher_buy_price_1"];
         return upgrade.name;
     }
 
@@ -483,13 +485,13 @@ public function storeSellCheck(msg, item){
     var store_id = this.storeGetID(item, msg.verb);
     var store_info = get_store(intval(store_id));
 
-    var items = this.getAllContents();
+    var items = this.player.bag.getAllContents();
     var stack;
     if (msg.sellstack_tsid && items[msg.sellstack_tsid]){
-        stack = this.removeItemStackTsid(msg.sellstack_tsid);
+        stack = this.player.bag.removeItemStackTsid(msg.sellstack_tsid);
     }
     else{
-        stack = this.removeItemStackClass(msg.sellstack_class);
+        stack = this.player.bag.removeItemStackClass(msg.sellstack_class);
     }
 
     if (!stack){
@@ -569,8 +571,8 @@ public function findClosestVendor(type) {
     var locs = [];
 
     // This is not terribly efficient, but what are you going to do?
-    for (var i in config.map_stores) {
-        if(config.map_stores[i] == type) {
+    for (var i in MapExtras.map_stores) {
+        if(MapExtras.map_stores[i] == type) {
             locs.push(i);
         }
     }

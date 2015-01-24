@@ -279,7 +279,7 @@ public function prompts_itemstack_location_callback(value, details){
 
 public function prompts_itemstack_modal_callback(value, details){
     if (details.itemstack_tsid){
-        var items = this.getAllContents();
+        var items = this.player.bag.getAllContents();
         if (items[details.itemstack_tsid]){
             var it = items[details.itemstack_tsid];
             if (it.modal_callback){

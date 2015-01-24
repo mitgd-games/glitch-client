@@ -1353,7 +1353,7 @@ public function adminGetProfileFriends(args){
 }
 
 public function adminCleanLostHiddenItems(){
-    var hidden = this.hiddenItems;
+    var hidden = this.player.hiddenItems;
 
     var currants = 0;
     var item_count = 0;
@@ -1367,7 +1367,7 @@ public function adminCleanLostHiddenItems(){
 }
 
 public function adminCountLostHiddenItems(){
-    var hidden = this.hiddenItems;
+    var hidden = this.player.hiddenItems;
 
     var currants = 0;
     var item_count = 0;

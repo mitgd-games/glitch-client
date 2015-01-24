@@ -1,8 +1,9 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -62,7 +63,7 @@ public function visiting_opt_in_done(){
 }
 
 public function visiting_opt_out_done(){
-    delete this.player.houses.home_allow_visits;
+    this.player.houses.home_allow_visits = false;
     this.player.sendActivity("You've been opted out - you will no longer receive random visitors to your street.");
 }
 

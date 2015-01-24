@@ -54,7 +54,8 @@ package com.reversefold.glitch.server.player {
 		public var acl_keys_backup;
 		public var newxp_allow_home;
 		public var followers;
-		
+		public var hiddenItems = {};
+
 		public var is_god : Boolean = false;
 		public var is_help : Boolean = false;
 		public var is_guide : Boolean = false;
@@ -630,7 +631,7 @@ public function init(){
 	// various bits
 	//
 
-	this.player.stats.stats_init();
+	this.stats.stats_init();
 	this.skills.skills_init();
 	this.making.making_init();
 	this.buffs.buffs_init();
@@ -654,6 +655,7 @@ public function init(){
 	this.counters.counters_init();
 	this.imagination.imagination_init();
 	this.furniture.furniture_init();
+	this.world_events.world_events_init();
 
 	// Hardcoded values matching the client
 	this.h = 112;

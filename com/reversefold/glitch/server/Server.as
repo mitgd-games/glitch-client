@@ -147,6 +147,26 @@ package com.reversefold.glitch.server {
 			throw new Error('apiNewItemStackFromSource ' + class_id + ' ' + num + ' ' + source_item);
 		}
 		
+		public function apiResetThreadCPUClock(x=null) {
+			//RVRS: TODO
+			throw new Error('apiResetThreadCPUClock ' + x);
+		}
+		
+		public function apiFindShortestGlobalPath(loc_tsid, locs) {
+			//RVRS: TODO
+			throw new Error('apiFindShortestGlobalPath ' + loc_tsid + ' ' + locs);
+		}
+		
+		public function apiNewLocation(a, b, c, d) {
+			//RVRS: TODO
+			throw new Error('apiNewLocation ' + a + ' ' + b + ' ' + c + ' ' + d);
+		}
+		
+		public function apiFindGlobalPathX(src, dst) {
+			//RVRS: TODO
+			throw new Error('apiFindGlobalPathX ' + src + ' ' + dst);
+		}
+		
 		// END api funcs
 
 		
@@ -487,7 +507,7 @@ package com.reversefold.glitch.server {
 			return itemstacks;
 		}
 
-		function make_item(item, pc){
+		function make_item(item, pc=null){
 			var ret = make_item_simple(item);
 			if (config.is_dev){
 				ret.ctor_func = 'make_item';

@@ -2,9 +2,12 @@ package com.reversefold.glitch.server.item {
 	import com.reversefold.glitch.server.Server;
 
 	public class Bag {
-		public function Bag() {
-		}
 
+		public function apiLockStack(path) {
+			//RVRS: TODO
+			throw new Error('apiLockStack ' + path);
+		}
+		
 public var capacity = 16; // The number of slots in the bag
 public var is_bag = true;
 public var is_pack = true;
@@ -320,7 +323,7 @@ public function removeItemStack(path, count=null){
 }
 
 // Removes up to count of items of type class_tsid from the bag, using the first slot that matches
-public function removeItemStackClass(class_tsid, count, args=null){
+public function removeItemStackClass(class_tsid, count=null, args=null){
 	var items = this.getContents();
 
 	var is_function = (typeof class_tsid == 'function');
@@ -410,7 +413,7 @@ public function removeItemStackClassExact(class_tsid, count, args){
 	return stack;	// shouldn't happen unless there weren't any appropriate item stacks, in which case this is null.
 }
 
-public function removeItemStackTsid(tsid, count){
+public function removeItemStackTsid(tsid, count=null){
 	var items = this.getContents();
 
 	// Walk the contents of this bag

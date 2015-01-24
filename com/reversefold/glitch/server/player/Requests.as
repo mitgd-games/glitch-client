@@ -11,6 +11,8 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var action_request_replies;
 
         public function Requests(config : Config, player : Player) {
             this.config = config;
@@ -181,7 +183,7 @@ public function actionRequestCancel(msg){
 
             // Remove prompts
             this.player.prompts.prompts_remove(this['!invite_uid_'+this.player.tsid]);
-            for (var i in this.games_invite.opponents){
+            for (var i in this.player.games.games_invite.opponents){
                 var opp = getPlayer(i);
                 if (opp){
                     opp.prompts_remove(opp['!invite_uid_'+this.player.tsid]);
@@ -193,11 +195,11 @@ public function actionRequestCancel(msg){
             this.cancelActionRequestBroadcast('game_accept', msg.event_tsid);
             this.player.events.events_remove(function(details){ return details.callback == 'games_invite_timeout'; });
 
-            if (this.games_invite && this.games_invite.ticket_on_cancel){
-                this.player.items.createItemFromFamiliar(this.games_invite.ticket_on_cancel, 1);
+            if (this.player.games.games_invite && this.player.games.games_invite.ticket_on_cancel){
+                this.player.items.createItemFromFamiliar(this.player.games.games_invite.ticket_on_cancel, 1);
             }
 
-            delete this.games_invite;
+            this.player.games.games_invite = null;
         }
         return true;
     } else if (msg.event_type == 'trade'){
@@ -302,7 +304,7 @@ public function cancelActionRequestReplies(){
         //this.cancelActionRequest(from, deets.type, deets.tsid);
     }
 
-    delete this.action_request_replies;
+    this.action_request_replies = null;
 }
 
 public function removeActionRequestReply(from){
@@ -310,7 +312,7 @@ public function removeActionRequestReply(from){
 
     delete this.action_request_replies[from.tsid];
 
-    if (!num_keys(this.action_request_replies)) delete this.action_request_replies;
+    if (!num_keys(this.action_request_replies)) this.action_request_replies = null;
 }
 
     }

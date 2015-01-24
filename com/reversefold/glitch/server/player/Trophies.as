@@ -1,8 +1,9 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -23,7 +24,7 @@ public function trophies_reset(){
 
     var items = container.apiGetAllItems();
     for (var i in items){
-        if (!in_array(items[i].class_tsid, this.collectible_item_classes)){
+        if (!in_array(items[i].class_tsid, this.player.collectible_item_classes)){
             items[i].apiDelete();
         }
     }
@@ -32,8 +33,8 @@ public function trophies_reset(){
 }
 
 public function trophies_find_container(){
-    for (var i in this.hiddenItems){
-        var it = this.hiddenItems[i];
+    for (var i in this.player.hiddenItems){
+        var it = this.player.hiddenItems[i];
         if (it.is_trophycontainer){
             if (it.class_tsid == 'bag_generic'){
                 // This is outdated. Make a new one

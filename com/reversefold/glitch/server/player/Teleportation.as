@@ -1032,7 +1032,7 @@ public function teleportation_get_history(num){
 public function teleportation_imbue_script_prompt(value, details){
 
     if (value == 'yes'){
-        var script = this.removeItemStackTsid(details.tsid, 1);
+        var script = this.player.bag.removeItemStackTsid(details.tsid, 1);
         if (!script || script.class_tsid != 'teleportation_script') return this.player.sendActivity("That's not a Teleportation Script.");
 
         if (!this.teleportation_get_token_balance()) return this.player.sendActivity("Buy more Teleportation Tokens!");

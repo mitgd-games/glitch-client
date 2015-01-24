@@ -74,7 +74,7 @@ public function rewards_delete(){
 }
 
 public function rewards_get_bag(){
-    return this.hiddenItems[this.rewards.storage_tsid];
+    return this.player.hiddenItems[this.rewards.storage_tsid];
 }
 
 public function rewards_has_items(){

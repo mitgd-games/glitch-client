@@ -1,8 +1,9 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +12,9 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var label : String;
+		public var loneliness;
 
         public function WorldEvents(config : Config, player : Player) {
             this.config = config;
@@ -19,29 +23,31 @@ package com.reversefold.glitch.server.player {
 
 
 public function world_events_init() {
-    if (!this.world_events) {
-        this.world_events = Server.instance.apiNewOwnedDC(this);
-        this.world_events.label = "WorldEvents";
-    }
+    //this.world_events = Server.instance.apiNewOwnedDC(this);
+    this.label = "WorldEvents";
 }
 
 public function getLoneliness() {
+	/*
     if (!this.world_events) {
         return;
     }
+	*/
 
-    return this.world_events.loneliness;
+    return this.loneliness;
 }
 
 public function startLoneliness(source_item, type, test_only, uid) {
+	/*
     if (!this.world_events) {
         this.world_events_init();
     }
-
+	*/
+	
     if (test_only) {
         var text = "Whoop whoop whoop. Testing testing testing. Whoop whoop whoop.";
     } else {
-        this.world_events.loneliness = {
+        this.loneliness = {
             start_time: time(),
             type: type,
             option: randInt(0, 8),
@@ -51,7 +57,7 @@ public function startLoneliness(source_item, type, test_only, uid) {
             uid: uid
         };
         if (source_item.lonelinessGetText) {
-            var text = source_item.lonelinessGetText(this, this.world_events.loneliness.type, this.world_events.loneliness.option, source_item.container.label, 0).text;
+            var text = source_item.lonelinessGetText(this, this.loneliness.type, this.loneliness.option, source_item.container.label, 0).text;
         } else{
             var text = "Whoops. This item ain't hooked up right.";
         }
@@ -92,11 +98,11 @@ public function startLoneliness(source_item, type, test_only, uid) {
 }
 
 public function cancelLoneliness() {
-    if (this.world_events.loneliness && this.world_events.loneliness.running) {
-        this.world_events.loneliness.running = false;
+    if (this.loneliness && this.loneliness.running) {
+        this.loneliness.running = false;
 
         this.player.prompts.prompts_add({
-            txt     : 'Someone else cheered up the Street Spirit in '+this.world_events.loneliness.location.label+'. Looks like you missed your chance!',
+            txt     : 'Someone else cheered up the Street Spirit in '+this.loneliness.location.label+'. Looks like you missed your chance!',
             choices     : [
                 { value : 'ok', label : 'OK' }
             ]
@@ -105,13 +111,13 @@ public function cancelLoneliness() {
 }
 
 public function endLoneliness() {
-    if (this.world_events.loneliness) {
-        this.world_events.loneliness.running = false;
+    if (this.loneliness) {
+        this.loneliness.running = false;
     }
 }
 
 public function canDoLoneliness(loneliness_location) {
-    if ((!this.world_events || !this.world_events.loneliness || !this.world_events.loneliness.running) && !this.player.location.isInstance() && !this.player.is_dead) {
+    if ((!this.loneliness || !this.loneliness.running) && !this.player.location.isInstance() && !this.player.is_dead) {
         log.info("Checking player "+this+" for loneliness.");
         if (loneliness_location == this.player.location) {
             log.info("Player is in the loneliness location already!");
@@ -133,15 +139,15 @@ public function canDoLoneliness(loneliness_location) {
 }
 
 public function world_events_clear() {
-    delete this.world_events.loneliness;
+    this.loneliness = null;
 }
 
 public function showLonelinessPrompt() {
-    if (!this.world_events || !this.world_events.loneliness || !this.world_events.loneliness.running) {
+    if (!this.loneliness || !this.loneliness.running) {
         return;
     }
     this.player.prompts.prompts_add({
-        txt     : 'A Street Spirit in '+this.world_events.loneliness.location.label+' needs your help. Would you like to set that as your destination?',
+        txt     : 'A Street Spirit in '+this.loneliness.location.label+' needs your help. Would you like to set that as your destination?',
         choices     : [
             { value : 'yes', label : 'Yes' },
             { value : 'no', label : 'No' }
@@ -152,7 +158,7 @@ public function showLonelinessPrompt() {
 
 public function prompts_loneliness_callback(value, details) {
     if (value == 'yes') {
-        var ret = this.player.buildPath(this.world_events.loneliness.location.tsid, this.player.location.tsid);
+        var ret = this.player.buildPath(this.loneliness.location.tsid, this.player.location.tsid);
 
         var rsp = {
             type: 'get_path_to_location',

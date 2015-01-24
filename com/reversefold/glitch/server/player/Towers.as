@@ -1,8 +1,9 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +12,8 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var tower_tsid;
 
         public function Towers(config : Config, player : Player) {
             this.config = config;
@@ -26,7 +29,7 @@ public function getTestTower(){
     if (this.tower_tsid){
 
         var tower = Server.instance.apiFindObject(this.tower_tsid);
-        delete this.tower_tsid;
+        this.tower_tsid = null;
         this.player.houses.home.tower = tower;
         this.player.houses.home.exterior.homes_position_tower(tower, 48, -97);
     }
@@ -39,7 +42,7 @@ public function getTestTower(){
         this.player.houses.home.exterior.homes_position_tower(tower, 48, -97);
     }
 
-    this.player.houses.home.tower.tower_set_label(this.label+"'s Tower");
+    this.player.houses.home.tower.tower_set_label(this.player.label+"'s Tower");
 
     return this.player.houses.home.tower;
 }
@@ -95,7 +98,7 @@ public function removeTower(){
     if (this.player.houses.home.tower) this.player.houses.home.tower.tower_delete();
 
     delete this.player.houses.home.tower;
-    delete this.tower_tsid;
+    this.tower_tsid = null;
 }
 
     }

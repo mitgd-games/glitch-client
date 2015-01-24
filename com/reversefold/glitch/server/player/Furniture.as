@@ -23,7 +23,6 @@ package com.reversefold.glitch.server.player {
 		public var ceilings;
 		public var chassis;
 		public var storage_tsid;
-		public var hiddenItems;
 
         public function Furniture(config : Config, player : Player) {
             this.config = config;
@@ -89,7 +88,7 @@ public function furniture_create_bag(){
 
 public function furniture_get_bag(){
     if (!this.storage_tsid) this.furniture_init();
-    return this.hiddenItems[this.storage_tsid];
+    return this.player.hiddenItems[this.storage_tsid];
 }
 
 public function furniture_add_hidden(furniture){

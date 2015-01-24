@@ -134,7 +134,7 @@ public function tests_bag_add_apple_slot(){
 }
 
 public function tests_bag_remove_item_slot(){
-    var stack = this.removeItemStackSlot(10);
+    var stack = this.player.bag.removeItemStackSlot(10);
     stack.apiDelete();
 
     var contents = this.getContents();
@@ -147,7 +147,7 @@ public function tests_bag_remove_item_slot(){
 }
 
 public function tests_bag_remove_partial_item(){
-    var stack = this.removeItemStackSlot(0, 1);
+    var stack = this.player.bag.removeItemStackSlot(0, 1);
     stack.apiDelete();
 
     var contents = this.getContents();
@@ -201,7 +201,7 @@ public function tests_bag_add_item_fail(){
 }
 
 public function tests_bag_add_subbag(){
-    var stack = this.removeItemStackSlot(0);
+    var stack = this.player.bag.removeItemStackSlot(0);
     stack.apiDelete();
 
     var remaining = this.player.bag.addItemStack(apiNewItemStack('bag_generic', 1));
@@ -328,7 +328,7 @@ public function tests_bag_add_banana_subbag_slot(){
 }
 
 public function tests_bag_delete_subbag(){
-    var stack = this.removeItemStackSlot(0);
+    var stack = this.player.bag.removeItemStackSlot(0);
     stack.apiDelete();
 
     var ret = tests_assert_equals('Bag size', this.capacity-1, this.size);

@@ -24,8 +24,8 @@ package com.reversefold.glitch.server.player {
 		public var home_backup;
 		public var home_is_creating;
 		public var home_leave;
-		public var hiddenItems;
 		public var home_tower;
+		public var home_allow_visits;
 
         public function Houses(config : Config, player : Player) {
             this.config = config;
@@ -1299,8 +1299,8 @@ public function houses_undo_moving_boxes(){
 
     var offset = 200;
     try{
-        for (var i in this.hiddenItems){
-            var it = this.hiddenItems[i];
+        for (var i in this.player.hiddenItems){
+            var it = this.player.hiddenItems[i];
             if (it && it.class_tsid == 'bag_moving_box'){
                 log.info(this+" houses_undo_moving_boxes doing "+it);
                 if (!it.countContents()){

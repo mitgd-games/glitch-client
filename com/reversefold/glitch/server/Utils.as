@@ -53,7 +53,7 @@ public static function http_get_world(url, args){
 }
 
 // obj_tsid is optional, but should be the tsid of the calling object. Used for callback ordering.
-public static function http_post(url, args, obj_tsid){
+public static function http_post(url, args, obj_tsid=null){
 
     // jdev/jstaging have callbacks disabled by unsetting these config vars
     if (!Config.instance.web_api_url) return;

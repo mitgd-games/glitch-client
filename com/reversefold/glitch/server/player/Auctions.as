@@ -20,7 +20,6 @@ package com.reversefold.glitch.server.player {
 		public var cancelled;
 		public var expired;
 		public var prompts;
-		public var hiddenItems = {};
 
         public function Auctions(config : Config, player : Player) {
             this.config = config;
@@ -48,8 +47,8 @@ public function auctions_init(){
 }
 
 public function auctions_find_container(){
-    for (var i in this.hiddenItems){
-        var it = this.hiddenItems[i];
+    for (var i in this.player.hiddenItems){
+        var it = this.player.hiddenItems[i];
         if (it.is_auctioncontainer){
             return it;
         }

@@ -83,7 +83,7 @@ public function trading_delete(){
 }
 
 public function trading_get_escrow_bag(){
-    return this.hiddenItems[this.trading.storage_tsid];
+    return this.player.hiddenItems[this.trading.storage_tsid];
 }
 
 public function trading_has_escrow_items(){
@@ -441,7 +441,7 @@ public function trading_add_item(target_tsid, itemstack_tsid, amount){
 
 public function trading_add_item_do(itemstack_tsid, amount, destination_slot){
     //log.info('trading_add_item_do '+itemstack_tsid+' ('+amount+')');
-    var item = this.removeItemStackTsid(itemstack_tsid, amount);
+    var item = this.player.bag.removeItemStackTsid(itemstack_tsid, amount);
     if (!item){
         return {
             ok: 0,
@@ -460,7 +460,7 @@ public function trading_add_item_do(itemstack_tsid, amount, destination_slot){
     }
 
     var item_class = item.class_tsid;
-    var have_count = this.countItemClass(item_class);
+    var have_count = this.player.bag.countItemClass(item_class);
     if (item.has_parent('furniture_base')){
         have_count = this.player.furniture.furniture_get_bag().countItemClass(item_class);
     }
@@ -527,7 +527,7 @@ public function trading_add_item_do(itemstack_tsid, amount, destination_slot){
         var still_need = amount - item_count;
 
         do {
-            var stack = this.removeItemStackClass(item_class, still_need);
+            var stack = this.player.bag.removeItemStackClass(item_class, still_need);
             if (!stack){
                 return {
                     ok: 0,
@@ -681,7 +681,7 @@ public function trading_remove_item_do(itemstack_tsid, amount){
 
     var remaining = this.player.bag.addItemStack(item);
     if (remaining){
-        var restore = this.removeItemStackClass(item.class_tsid, remaining);
+        var restore = this.player.bag.removeItemStackClass(item.class_tsid, remaining);
         this.player.items.items_put_back(item);
 
         escrow.addItemStack(restore);
