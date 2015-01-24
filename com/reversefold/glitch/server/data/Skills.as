@@ -1,7 +1,7 @@
 package com.reversefold.glitch.server.data {
     public class Skills {
 
-public var data_skills = {
+public static var data_skills = {
 
 'alchemy_1': {
         id: 51,
@@ -3778,7 +3778,7 @@ public var data_skills = {
 
 
 
-public function skills_get_quest_map(){
+public static function skills_get_quest_map(){
     return {
         "soil_appreciation_1"       : "soilappreciation_dig_earth",
         "soil_appreciation_2"       : "soilappreciation_help_digging",

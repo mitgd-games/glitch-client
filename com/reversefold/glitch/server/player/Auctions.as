@@ -447,7 +447,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
     // log it to the economy sales table
     //
 
-    utils.http_get('callbacks/auctions_purchased.php', {
+    Utils.http_get('callbacks/auctions_purchased.php', {
         seller_tsid : this.player.tsid,
         buyer_tsid  : buyer.tsid,
         item_class_tsid : stack.class_tsid,
@@ -609,7 +609,7 @@ public function auctions_get_uid(){
 
 public function auctions_sync(uid){
 
-    utils.http_get('callbacks/auctions_update.php', {
+    Utils.http_get('callbacks/auctions_update.php', {
         'player_tsid'   : this.player.tsid,
         'auction_uid'   : uid
     });
@@ -617,7 +617,7 @@ public function auctions_sync(uid){
 
 public function auctions_sync_all(){
 
-    utils.http_get('callbacks/auctions_update.php', {
+    Utils.http_get('callbacks/auctions_update.php', {
         'player_tsid'   : this.player.tsid
     });
 }

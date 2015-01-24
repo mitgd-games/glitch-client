@@ -83,7 +83,7 @@ public function groups_create(name, desc, mode){
 
     this.player.sendMsgOnline(info);
 
-    utils.http_get('callbacks/groups_joined.php', {
+    Utils.http_get('callbacks/groups_joined.php', {
         group_tsid: group.tsid,
         pc_tsid: this.player.tsid
     });
@@ -146,7 +146,7 @@ public function groups_join(tsid){
 
     this.player.sendMsgOnline(info);
 
-    utils.http_get('callbacks/groups_joined.php', {
+    Utils.http_get('callbacks/groups_joined.php', {
         group_tsid: group.tsid,
         pc_tsid: this.player.tsid
     });
@@ -207,7 +207,7 @@ public function groups_leave(tsid, promote_tsid){
         tsid: tsid
     });
 
-    utils.http_get('callbacks/groups_left.php', {
+    Utils.http_get('callbacks/groups_left.php', {
         group_tsid: tsid,
         pc_tsid: this.player.tsid
     });
@@ -239,7 +239,7 @@ public function groups_left(tsid){
         tsid: tsid
     });
 
-    utils.http_get('callbacks/groups_left.php', {
+    Utils.http_get('callbacks/groups_left.php', {
         group_tsid: tsid,
         pc_tsid: this.player.tsid
     });
@@ -434,7 +434,7 @@ public function groups_uninvited(group){
     this.groups_init();
     delete this.group_invites[group.tsid];
 
-    utils.http_get('callbacks/groups_declined.php', {
+    Utils.http_get('callbacks/groups_declined.php', {
         group_tsid: group.tsid,
         pc_tsid: this.player.tsid
     });

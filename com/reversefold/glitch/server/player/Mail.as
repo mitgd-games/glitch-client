@@ -616,7 +616,7 @@ public function mail_read(msg_id, is_read) {
 
     if (was_read != is_read) {
         // send callback to www so it can update unread count on mobile
-        utils.http_get('callbacks/mail_read.php', {
+        Utils.http_get('callbacks/mail_read.php', {
             'player_tsid' : this.player.tsid,
             'unread': this.mail_count_unread(),
             'msg_id': msg_id
@@ -628,7 +628,7 @@ public function mail_archive_message(msg_id){
 
     if (this.mail.inbox[msg_id].items.__count || this.mail.inbox[msg_id].currants) return false;
 
-    utils.http_get('callbacks/mail_archive.php', {
+    Utils.http_get('callbacks/mail_archive.php', {
         'player_tsid' : this.player.tsid,
         'msg_id': msg_id
     });
@@ -1216,7 +1216,7 @@ public function mail_add_player_delivery(itemstack_tsid, sender_tsid, currants, 
     }
 
     // Notify www via callback
-    utils.http_get('callbacks/mail.php', {
+    Utils.http_get('callbacks/mail.php', {
         'sender_tsid' : sender_tsid,
         'receiver_tsid' : this.player.tsid,
         'mail_id' : this.mail.next_msg_id,

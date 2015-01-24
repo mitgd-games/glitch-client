@@ -3,6 +3,7 @@ package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Server;
     import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
+    import com.reversefold.glitch.server.data.Skills;
     import com.reversefold.glitch.server.player.Player;
     
     import org.osmf.logging.Log;
@@ -1000,7 +1001,7 @@ public var first_tool_skills = {
     'meditativearts_1': 'focusing_orb'
 };
 public function quests_learnt_skill_do(details){
-    var map = config.base.skills.skills_get_quest_map();
+    var map = com.reversefold.glitch.server.data.Skills.skills_get_quest_map();
 
     if (map[details.skill_id] && (!this.player.location.is_newxp || this.player.location.class_tsid == 'newbie_island') && !this.player.location.is_skillquest){
 
@@ -1009,7 +1010,7 @@ public function quests_learnt_skill_do(details){
 }
 
 public function quests_get_quest_for_unlearnt_skill(skill_id) {
-    var map = config.base.skills.skills_get_quest_map();
+    var map = com.reversefold.glitch.server.data.Skills.skills_get_quest_map();
     var quest_id = map[skill_id];
 
     var stat = this.getQuestStatus(quest_id);

@@ -1,16 +1,24 @@
 package com.reversefold.glitch.server.player {
+	import com.reversefold.glitch.server.Common;
+	import com.reversefold.glitch.server.Server;
+	import com.reversefold.glitch.server.Utils;
 	import com.reversefold.glitch.server.data.Config;
+	import com.reversefold.glitch.server.data.Skills;
 	import com.reversefold.glitch.server.player.Player;
-
+	
 	import org.osmf.logging.Log;
 	import org.osmf.logging.Logger;
 
-    public class Skills {
+    public class Skills extends Common {
 		private static var log : Logger = Log.getLogger("server.player.Skills");
 
 		public var config : Config;
 		public var player : Player;
 		public var capacity;
+		public var skills;
+		public var label : String;
+		public var vog_skill_learning;
+		public var category_reductions;
 		
 
 		public function Skills(config : Config, player : Player) {
@@ -19,7 +27,6 @@ package com.reversefold.glitch.server.player {
 		}
 
 public function skills_init(){
-    var skills = this.skills;
     if (skills === undefined || skills === null){
         //log.info('*******************************************SKILLS-INIT');
 
@@ -33,12 +40,12 @@ public function skills_init(){
                 log.error(this+' WARNING: Skills DC is definitely missing = '+this.skills+' vs '+skills);
             }
 
-            log.printStackTrace();
+            //log.printStackTrace();
         }
 
-        this.skills = Server.instance.apiNewOwnedDC(this);
-        this.skills.label = 'Skills';
-        this.skills.skills = {};
+        //this.skills = Server.instance.apiNewOwnedDC(this);
+        this.label = 'Skills';
+        this.skills = {};
     }
 
     if (!this.skills.queue){
@@ -53,12 +60,13 @@ public function skills_init(){
 
     // Check skills you are learning, and remove the ones that don't exist anymore
     for (var i in this.skills.queue){
-        var s = config.data_skills[i];
+		com.reversefold.glitch.server.data.Skills.data_skills;
+        var s = com.reversefold.glitch.server.data.Skills.data_skills[i];
         if (!s) delete this.skills.queue[i];
     }
 
     for (var i in this.skills.unlearningQueue){
-        var s = config.data_skills[i];
+        var s = com.reversefold.glitch.server.data.Skills.data_skills[i];
         if (!s) delete this.skills.unlearningQueue[i];
     }
 }
@@ -66,8 +74,8 @@ public function skills_init(){
 public function skills_delete(){
     log.info(this+' *******************************************SKILLS-DELETE');
     if (this.skills){
-        this.skills.apiDelete();
-        delete this.skills;
+        //this.skills.apiDelete();
+        this.skills = null;
     }
 }
 
@@ -138,7 +146,7 @@ public function skills_auto_learn_recipes(skill_id, tell_client){
 
 
         var has_all_skills = true;
-        if (in_array_real(skill_id, r.skills)){
+        if (Common.in_array_real(skill_id, r.skills)){
             for (var j in r.skills){
                 var s = r.skills[j];
 
@@ -153,7 +161,7 @@ public function skills_auto_learn_recipes(skill_id, tell_client){
 
             this.player.making.making_try_learn_recipe(i);
 
-            var recipe = get_recipe(i);
+            var recipe = Common.get_recipe(i);
 
             for (var o in recipe.outputs){
                 updates.push(recipe.outputs[o][0]);
@@ -183,7 +191,7 @@ public function skills_has(id){
     return this.skills.skills[id] ? 1 : 0;
 }
 
-public function skills_get_all(is_admin){
+public function skills_get_all(is_admin=false){
 
     this.skills_init();
 
@@ -195,9 +203,9 @@ public function skills_get_all(is_admin){
     //
 
     var queue = this.skills_get_queue();
-    for (var i in config.data_skills){
+    for (var i in com.reversefold.glitch.server.data.Skills.data_skills){
 
-        var s = config.data_skills[i];
+        var s = com.reversefold.glitch.server.data.Skills.data_skills[i];
         if (s.is_secret && !is_admin) continue;
 
         out[i] = {
@@ -252,7 +260,7 @@ public function skills_get_all(is_admin){
             var queue = this.skills_get_queue();
             if (queue[i] && !queue[i].is_paused) {
                 //log.info(this+" unlearning skills_get_all current skill "+i);
-                var points = points - this.skills_seconds_to_points(queue[i].end - time(), s.category_id);
+                var points = points - this.skills_seconds_to_points(queue[i].end - Common.time(), s.category_id);
             }
             else if (queue[i]) {
                 //log.info(this+" unlearning skills_get_all paused skill " +i);
@@ -300,7 +308,7 @@ public function skills_get_all(is_admin){
 
     for (var i in out){
 
-        var s = config.data_skills[i];
+        var s = com.reversefold.glitch.server.data.Skills.data_skills[i];
 
         //
         // level requirement?
@@ -458,7 +466,7 @@ public function skills_can_unlearn(id){
     var can_unlearn = true;
 
     if (this.skills_has(id)){
-        var dependent_skills = config.data_skills[id].post_skills;
+        var dependent_skills = com.reversefold.glitch.server.data.Skills.data_skills[id].post_skills;
         if (dependent_skills){ // check skills that require this one
             for (var i in dependent_skills){
                 if (this.skills_has(dependent_skills[i]) || this.skills_in_learning_queue(dependent_skills[i])){
@@ -473,7 +481,7 @@ public function skills_can_unlearn(id){
         // Check for dependent skills just in case. (Brendan had a case where Soil Appreciation 2 and 3
         // were both in his learning queue, but I think it may be due to adding/removing stuff through the
         // god tool.)
-        var dependent_skills = config.data_skills[id].post_skills;
+        var dependent_skills = com.reversefold.glitch.server.data.Skills.data_skills[id].post_skills;
         if (dependent_skills){
             for (var i in dependent_skills){
                 if (this.skills_has(dependent_skills[i]) || this.skills_in_learning_queue(dependent_skills[i])) {
@@ -497,7 +505,7 @@ public function skills_unlearnable_list() {
 
     var out = {};
 
-    for (var id in config.data_skills){
+    for (var id in com.reversefold.glitch.server.data.Skills.data_skills){
         if (this.skills_can_unlearn(id)) {
             out[id] = skills_get_name(id);
         }
@@ -537,7 +545,7 @@ public function skills_remove(id){
 
             var r = book.recipes[i];
 
-            if (r.skill == id || in_array_real(id, r.skills)){
+            if (r.skill == id || Common.in_array_real(id, r.skills)){
 
                 this.player.making.making_unlearn_recipe(i);
             }
@@ -553,7 +561,7 @@ public function skills_remove(id){
 }
 
 public function skills_get(id){
-    return config.data_skills[id];
+    return com.reversefold.glitch.server.data.Skills.data_skills[id];
 }
 
 public function skills_get_count(){
@@ -561,18 +569,18 @@ public function skills_get_count(){
 }
 
 public function skills_get_name(id){
-    if (!config.data_skills[id]) return '';
+    if (!com.reversefold.glitch.server.data.Skills.data_skills[id]) return '';
 
-    var n = config.data_skills[id].name;
-    if (config.data_skills[id].level) n += ' '+utils.to_roman_numerals(config.data_skills[id].level);
+    var n = com.reversefold.glitch.server.data.Skills.data_skills[id].name;
+    if (com.reversefold.glitch.server.data.Skills.data_skills[id].level) n += ' '+Utils.to_roman_numerals(com.reversefold.glitch.server.data.Skills.data_skills[id].level);
     return n;
 }
 
 public function skills_linkify(id){
-    if (!config.data_skills[id]) return '';
+    if (!com.reversefold.glitch.server.data.Skills.data_skills[id]) return '';
 
-    var n = config.data_skills[id].name;
-    if (config.data_skills[id].level) n += ' '+utils.to_roman_numerals(config.data_skills[id].level);
+    var n = com.reversefold.glitch.server.data.Skills.data_skills[id].name;
+    if (com.reversefold.glitch.server.data.Skills.data_skills[id].level) n += ' '+Utils.to_roman_numerals(com.reversefold.glitch.server.data.Skills.data_skills[id].level);
     return '<a href="event:skill|'+id+'">'+n+'</a>';
 }
 
@@ -606,13 +614,13 @@ public function skills_unlearn(id) {
         this.skills.unlearningQueue = {};
     }
 
-    if (!this.player.imagination.imagination_has_upgrade("unlearning_ability")) { this.player.sendActivity("You don't know how to unlearn"); return api_error("You don't know how to unlearn."); }
+    if (!this.player.imagination.imagination_has_upgrade("unlearning_ability")) { this.player.sendActivity("You don't know how to unlearn"); return Common.api_error("You don't know how to unlearn."); }
 
-    var skill = config.data_skills[id];
-    if (!skill) { this.player.sendActivity("bad skill"); return api_error('Invalid skill: '+id); }
+    var skill = com.reversefold.glitch.server.data.Skills.data_skills[id];
+    if (!skill) { this.player.sendActivity("bad skill"); return Common.api_error('Invalid skill: '+id); }
 
-    if (!this.skills_has(id) && !this.skills_in_learning_queue(id)) { /*log.info("don't have skill");*/ return api_error("You don't have skill "+id+"."); }
-    if (!this.skills_can_unlearn(id)) { /*log.info("skill needed for other skills");*/ return api_error("You can't unlearn a skill that is required for your other skills."); }
+    if (!this.skills_has(id) && !this.skills_in_learning_queue(id)) { /*log.info("don't have skill");*/ return Common.api_error("You don't have skill "+id+"."); }
+    if (!this.skills_can_unlearn(id)) { /*log.info("skill needed for other skills");*/ return Common.api_error("You can't unlearn a skill that is required for your other skills."); }
 
     if (this.skills_get_unlearning_queue_length() > 0){
         var skill_name = this.skills_get_name(id);
@@ -625,7 +633,7 @@ public function skills_unlearn(id) {
     //
     var partial_skill = false;
     var queue = this.skills_get_queue();
-    if (num_keys(queue)){
+    if (Common.num_keys(queue)){
         this.apiCancelTimer('skills_complete_training');
 
         for (var i in queue){
@@ -634,15 +642,15 @@ public function skills_unlearn(id) {
                 // pause it
                 this.skills.queue[i].is_paused = 1;
                 this.skills.queue[i].paused = time();
-                this.skills.queue[i].points_remaining = this.skills_seconds_to_points(this.skills.queue[i].end - time(), config.data_skills[i].category_id);
+                this.skills.queue[i].points_remaining = this.skills_seconds_to_points(this.skills.queue[i].end - time(), com.reversefold.glitch.server.data.Skills.data_skills[i].category_id);
 
                 var out = {
                     type: 'skill_train_pause',
                     tsid: i,
                     name: this.skills_get_name(i),
-                    desc: config.data_skills[i].description,
-                    time_remaining: this.skills_points_to_seconds(this.skills.queue[i].points_remaining, config.data_skills[i].category_id),
-                    total_time: this.skills_points_to_seconds(config.data_skills[i].point_cost, config.data_skills[i].category_id)
+                    desc: com.reversefold.glitch.server.data.Skills.data_skills[i].description,
+                    time_remaining: this.skills_points_to_seconds(this.skills.queue[i].points_remaining, com.reversefold.glitch.server.data.Skills.data_skills[i].category_id),
+                    total_time: this.skills_points_to_seconds(com.reversefold.glitch.server.data.Skills.data_skills[i].point_cost, com.reversefold.glitch.server.data.Skills.data_skills[i].category_id)
                 };
 
                 this.player.sendMsgOnline(out);
@@ -663,7 +671,7 @@ public function skills_unlearn(id) {
                     action  : 'pause'
                 };
 
-                utils.http_get('callbacks/skill.php', args);
+                Utils.http_get('callbacks/skill.php', args);
             }
             else if (i == id) {
                 //log.info(this+" Unlearning partial skill "+id);
@@ -685,7 +693,7 @@ public function skills_unlearn(id) {
                 var points = skill.point_cost;
             }
             else {
-                var points = skill.point-cost - this.skills.queue[id].points_remaining;
+                var points = skill.point_cost - this.skills.queue[id].points_remaining;
             }
         }
         else if (!points){
@@ -754,7 +762,7 @@ public function skills_train(id){
         this.skills.unlearningQueue = {};
     }
 
-    var skill = config.data_skills[id];
+    var skill = com.reversefold.glitch.server.data.Skills.data_skills[id];
     if (!skill) return api_error('Invalid skill: '+id);
 
     if (this.skills_get_unlearning_queue_length() > 0){
@@ -797,15 +805,15 @@ public function skills_train(id){
                 // pause it
                 this.skills.queue[i].is_paused = 1;
                 this.skills.queue[i].paused = time();
-                this.skills.queue[i].points_remaining = this.skills_seconds_to_points(this.skills.queue[i].end - time(), config.data_skills[i].category_id);
+                this.skills.queue[i].points_remaining = this.skills_seconds_to_points(this.skills.queue[i].end - time(), com.reversefold.glitch.server.data.Skills.data_skills[i].category_id);
 
                 var out = {
                     type: 'skill_train_pause',
                     tsid: i,
                     name: this.skills_get_name(i),
-                    desc: config.data_skills[i].description,
-                    time_remaining: this.skills_points_to_seconds(this.skills.queue[i].points_remaining, config.data_skills[i].category_id),
-                    total_time: this.skills_points_to_seconds(config.data_skills[i].point_cost, config.data_skills[i].category_id)
+                    desc: com.reversefold.glitch.server.data.Skills.data_skills[i].description,
+                    time_remaining: this.skills_points_to_seconds(this.skills.queue[i].points_remaining, com.reversefold.glitch.server.data.Skills.data_skills[i].category_id),
+                    total_time: this.skills_points_to_seconds(com.reversefold.glitch.server.data.Skills.data_skills[i].point_cost, com.reversefold.glitch.server.data.Skills.data_skills[i].category_id)
                 };
 
                 this.player.sendMsgOnline(out);
@@ -819,7 +827,7 @@ public function skills_train(id){
                     action  : 'pause'
                 };
 
-                utils.http_get('callbacks/skill.php', args);
+                Utils.http_get('callbacks/skill.php', args);
 
             Server.instance.apiLogAction('SKILLS_PAUSE', 'pc='+this.player.tsid, 'skill='+i);
             }
@@ -882,7 +890,7 @@ public function skills_train(id){
             action  : 'resume'
         };
 
-        utils.http_get('callbacks/skill.php', args);
+        Utils.http_get('callbacks/skill.php', args);
     }
     else{
         log.info('Starting skill training for '+id+' with duration '+duration+', end is '+(time() + duration));
@@ -907,7 +915,7 @@ public function skills_train(id){
             action  : 'start'
         };
 
-        utils.http_get('callbacks/skill.php', args);
+        Utils.http_get('callbacks/skill.php', args);
     }
 
     this.player.quests.quests_set_flag('learn_skill');
@@ -929,9 +937,9 @@ public function skills_train(id){
     }
 
     if (this.vog_skill_learning){
-        delete this.vog_skill_learning;
+        this.vog_skill_learning = null;
 
-        this.apiSetTimerX('announce_vog_fade', 2000, "Skill learning will continue while you do other things. It even goes on when you're not playing the game.//When you're ready, you can close the skill picker and continue playing.", {no_locking: true, duration: 3000, css_class:'nuxp_medium', fade_alpha:0.7, y:'62%'})
+        this.player.announcements.apiSetTimerX('announce_vog_fade', 2000, "Skill learning will continue while you do other things. It even goes on when you're not playing the game.//When you're ready, you can close the skill picker and continue playing.", {no_locking: true, duration: 3000, css_class:'nuxp_medium', fade_alpha:0.7, y:'62%'})
     }
 
     return {
@@ -1324,7 +1332,7 @@ public function skills_complete_training(){
             var skill = queue[id];
 
             if (skill.is_paused){
-                var duration = this.skills_points_to_seconds(skill.points_remaining, config.data_skills[id].category_id);
+                var duration = this.skills_points_to_seconds(skill.points_remaining, com.reversefold.glitch.server.data.Skills.data_skills[id].category_id);
 
                 this.skills.queue[id] = {
                     start: time(),
@@ -1337,9 +1345,9 @@ public function skills_complete_training(){
                     type: 'skill_train_resume',
                     tsid: id,
                     name: this.skills_get_name(id),
-                    desc: config.data_skills[id].description,
+                    desc: com.reversefold.glitch.server.data.Skills.data_skills[id].description,
                     time_remaining: duration,
-                    total_time: this.skills_points_to_seconds(config.data_skills[id].point_cost, config.data_skills[id].category_id)
+                    total_time: this.skills_points_to_seconds(com.reversefold.glitch.server.data.Skills.data_skills[id].point_cost, com.reversefold.glitch.server.data.Skills.data_skills[id].category_id)
                 };
 
                 this.player.sendMsgOnline(out);
@@ -1353,7 +1361,7 @@ public function skills_complete_training(){
                     action  : 'resume'
                 };
 
-                utils.http_get('callbacks/skill.php', args);
+                Utils.http_get('callbacks/skill.php', args);
 
                 log.info(this+' skills_complete_training resuming '+id);
                 return;
@@ -1450,8 +1458,8 @@ public function skills_give(id){
         type: 'skill_train_complete',
         tsid: id,
         name: this.skills_get_name(id),
-        desc: config.data_skills[id].description,
-        learned: config.data_skills[id].learned,
+        desc: com.reversefold.glitch.server.data.Skills.data_skills[id].description,
+        learned: com.reversefold.glitch.server.data.Skills.data_skills[id].learned,
         sound: 'SKILL_ACHIEVED',
         stats: {}
     };
@@ -1481,7 +1489,7 @@ public function skills_give(id){
         action  : 'complete'
     };
 
-    utils.http_get('callbacks/skill.php', args);
+    Utils.http_get('callbacks/skill.php', args);
 
 
     this.player.activity_notify({
@@ -1561,7 +1569,7 @@ public function skills_remove_notify(id){
         type: 'skill_unlearn_complete',
         tsid: id,
         name: this.skills_get_name(id),
-        desc: config.data_skills[id].description,
+        desc: com.reversefold.glitch.server.data.Skills.data_skills[id].description,
         sound: 'SKILL_ACHIEVED',
         stats: {}
     };
@@ -1583,7 +1591,7 @@ public function skills_remove_notify(id){
         action  : 'complete'
     };
 
-    utils.http_get('callbacks/skill_unlearn.php', args);
+    Utils.http_get('callbacks/skill_unlearn.php', args);
 
     this.player.activity_notify({
         type    : 'skill_unlearned',
@@ -1712,9 +1720,9 @@ public function skills_format_queued(queue){
 public function skills_get_by_achievement(achievement_id){
 
     var skills = [];
-    for (var skill_id in config.data_skills){
-        for (var i in config.data_skills[skill_id].req_achievements){
-            if (config.data_skills[skill_id].req_achievements[i] == achievement_id){
+    for (var skill_id in com.reversefold.glitch.server.data.Skills.data_skills){
+        for (var i in com.reversefold.glitch.server.data.Skills.data_skills[skill_id].req_achievements){
+            if (com.reversefold.glitch.server.data.Skills.data_skills[skill_id].req_achievements[i] == achievement_id){
                 skills.push(skill_id);
             }
         }
@@ -1745,7 +1753,7 @@ public function skills_admin_check_states(args){
     var unlearningQueue = this.skills.unlearningQueue;
     for (var i in args.skills){
         var skill = args.skills[i];
-        if (!config.data_skills[skill]) continue;
+        if (!com.reversefold.glitch.server.data.Skills.data_skills[skill]) continue;
 
         out.skills[skill] = {
             'got' : 0
@@ -1761,18 +1769,18 @@ public function skills_admin_check_states(args){
             // learnt
             out.skills[skill].got = 1;
             out.skills[skill].when = this.skills.skills[skill];
-            out.skills[skill].unlearn_time = this.skills_unlearning_time(config.data_skills[skill].point_cost);
+            out.skills[skill].unlearn_time = this.skills_unlearning_time(com.reversefold.glitch.server.data.Skills.data_skills[skill].point_cost);
         }else if (queue[skill]){
             // learning
             out.skills[skill].learning = 1;
             out.skills[skill].paused = queue[skill].is_paused ? 1 : 0;
             out.skills[skill].point_cost = queue[skill].points_remaining;
-            out.skills[skill].seconds = this.skills_points_to_seconds(out.skills[skill].point_cost, config.data_skills[skill].category_id);
+            out.skills[skill].seconds = this.skills_points_to_seconds(out.skills[skill].point_cost, com.reversefold.glitch.server.data.Skills.data_skills[skill].category_id);
             out.skills[skill].unlearn_time = this.skills_unlearning_time(out.skills[skill].point_cost);
         }else{
             // not started
-            out.skills[skill].point_cost = config.data_skills[skill].point_cost;
-            out.skills[skill].seconds = this.skills_points_to_seconds(out.skills[skill].point_cost, config.data_skills[skill].category_id);
+            out.skills[skill].point_cost = com.reversefold.glitch.server.data.Skills.data_skills[skill].point_cost;
+            out.skills[skill].seconds = this.skills_points_to_seconds(out.skills[skill].point_cost, com.reversefold.glitch.server.data.Skills.data_skills[skill].category_id);
         }
     }
 
@@ -1848,8 +1856,8 @@ public function skills_learnable_list(is_new_style, include_locked){
             if (is_new_style){
                 out[i] = {
                     'name': skills_get_name(i),
-                    'url': '/skills/'+config.data_skills[i].id+'/',
-                    'description': config.data_skills[i].description,
+                    'url': '/skills/'+com.reversefold.glitch.server.data.Skills.data_skills[i].id+'/',
+                    'description': com.reversefold.glitch.server.data.Skills.data_skills[i].description,
                     'seconds': skills[i].total_time,
                     'learning': queue[i] ? true : false,
                     'paused': (queue[i] && queue[i].is_paused) ? true : false,
@@ -1924,7 +1932,7 @@ public function skills_increase_brain_capacity(amount){
         for (var i in this.skills.queue){
             if (this.skills.queue[i].is_paused) continue;
 
-            var s = config.data_skills[i];
+            var s = com.reversefold.glitch.server.data.Skills.data_skills[i];
             this.apiCancelTimer('skills_complete_training');
             var time_change = Math.round((this.skills.queue[i].end - this.skills.queue[i].start) * (1-percent));
             var new_end = Math.max(this.skills.queue[i].end - time_change, time()+1);
@@ -1957,17 +1965,17 @@ public function skills_set_brain_capacity(amount){
 public function skills_remove_removed(){
     // Check skills you are learning, and remove the ones that don't exist anymore
     for (var i in this.skills.queue){
-        var s = config.data_skills[i];
+        var s = com.reversefold.glitch.server.data.Skills.data_skills[i];
         if (!s) delete this.skills.queue[i];
     }
 
     for (var i in this.skills.unlearningQueue){
-        var s = config.data_skills[i];
+        var s = com.reversefold.glitch.server.data.Skills.data_skills[i];
         if (!s) delete this.skills.unlearningQueue[i];
     }
 
     for (var i in this.skills.skills){
-        var s = config.data_skills[i];
+        var s = com.reversefold.glitch.server.data.Skills.data_skills[i];
         if (!s) delete this.skills.skills[i];
     }
 }
@@ -2000,7 +2008,7 @@ public function applyCategoryReduction(category_id, percent){
     for (var i in this.skills.queue){
         if (this.skills.queue[i].is_paused) continue;
 
-        var s = config.data_skills[i];
+        var s = com.reversefold.glitch.server.data.Skills.data_skills[i];
         if (s.category_id == category_id){
             this.apiCancelTimer('skills_complete_training');
             var time_change = Math.round((this.skills.queue[i].end - this.skills.queue[i].start) * (percent / 100));
@@ -2032,8 +2040,8 @@ public function applyCategoryReduction(category_id, percent){
 public function skills_get_urls(){
     var urls = {};
 
-    for (var i in config.data_skills){
-        urls[i] = config.data_skills[i].icons;
+    for (var i in com.reversefold.glitch.server.data.Skills.data_skills){
+        urls[i] = com.reversefold.glitch.server.data.Skills.data_skills[i].icons;
     }
 
     return urls;

@@ -3444,7 +3444,7 @@ public function placeInTimeout(args){
 		'value': 1
 	};
 
-	utils.http_get('callbacks/player_update.php', args);
+	Utils.http_get('callbacks/player_update.php', args);
 
 	//
 	// Kick offline
@@ -3477,7 +3477,7 @@ public function removeFromTimeout(args){
 		'value': 0
 	};
 
-	utils.http_get('callbacks/player_update.php', args);
+	Utils.http_get('callbacks/player_update.php', args);
 }
 
 public function isInTimeout(){
@@ -3787,7 +3787,7 @@ public function lastActiveCallback(type){
 		'type': type ? type : ''
 	};
 
-	utils.http_get('callbacks/player_active.php', args);
+	Utils.http_get('callbacks/player_active.php', args);
 }
 
 public function sorryForDeletingYourTPTarget(){

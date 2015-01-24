@@ -864,7 +864,7 @@ public function teleportation_spend_token(reason){
             tokens  : 1,
             reason  : reason
         };
-        utils.http_get('callbacks/tp_tokens_spend.php', args);
+        Utils.http_get('callbacks/tp_tokens_spend.php', args);
 
         this.teleportation_notify_client();
 
@@ -883,7 +883,7 @@ public function teleportation_give_tokens(count, reason){
         tokens  : count,
         reason  : reason
     };
-    utils.http_get('callbacks/tp_tokens_give.php', args);
+    Utils.http_get('callbacks/tp_tokens_give.php', args);
 
     this.teleportation_notify_client();
 

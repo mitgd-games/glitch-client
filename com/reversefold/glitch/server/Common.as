@@ -41,9 +41,9 @@ package com.reversefold.glitch.server {
 			_apiSetTimer(callback_name, ms, callback);
 		}
 		
-		public function apiSetTimerX(callback_name : String, ms : int, x) {
-			//RVRS: TODO: I think this is right, but why not just use apiSetTimer directly?
-			apiSetTimer(callback_name, ms, x);
+		public function apiSetTimerX(callback_name : String, ms : int, ... args) {
+			//RVRS: TODO: it looks like this can take the same args as apiSetTimer so how should apiSetTimerX differ?
+			apiSetTimer.apply(this, [callback_name, ms] + args);
 			/*
 			_apiSetTimer(callback_name, ms, function() : void {
 				this[callback_name](x);

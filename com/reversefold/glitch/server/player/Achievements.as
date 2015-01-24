@@ -113,7 +113,7 @@ public function achievements_reset(){
 // Increment a counter used for tracking achievement progress
 //
 
-public function achievements_increment(group, label, count, no_callback=false, immediate_callback=false){
+public function achievements_increment(group, label, count=1, no_callback=false, immediate_callback=false){
     this.achievements_init();
 
     if (group && group.length > 50){
@@ -126,6 +126,7 @@ public function achievements_increment(group, label, count, no_callback=false, i
         return;
     }
 
+	//RVRS: TODO: this can probably be removed
     if (count === undefined){
         count = 1;
     }

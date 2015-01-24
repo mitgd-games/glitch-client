@@ -8,7 +8,7 @@ package com.reversefold.glitch.server.data {
 		//Faces is static
 		
 //#include inc_data_skills.js
-        public var skills : Skills = new Skills();
+        //Skills is static
 //#include achievements/inc_data_counters.js
 //#include inc_data_imagination.js
 		//Imagination is static
