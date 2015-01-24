@@ -86,6 +86,11 @@ package com.reversefold.glitch.server {
 			return Math.floor(min + Math.random() * (1 + max - min));
 		}
 		
+		public function round(n : Number, d : uint) : Number {
+			var m : Number = Math.pow(10, d);
+			return Math.round(n * m) / m;
+		}
+		
 
 public static function getPlayer(tsid){
     if (!tsid) return null;

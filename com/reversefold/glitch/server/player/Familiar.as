@@ -1,8 +1,9 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +12,9 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var details;
+		public var stack;
 
         public function Familiar(config : Config, player : Player) {
             this.config = config;
@@ -20,14 +24,12 @@ package com.reversefold.glitch.server.player {
 
 public function familiar_init(){
 
-    if (!this.familiar) this.familiar = {};
-    if (!this.familiar.details) this.familiar.details = {};
-    if (!this.familiar.stack) this.familiar.stack = [];
+    if (!this.details) this.details = {};
+    if (!this.stack) this.stack = [];
 }
 
 public function familiar_delete(){
-
-    delete this.familiar;
+	this.player.familiar = new Familiar(config, player);
 }
 
 public function familiar_reset(){
@@ -35,7 +37,7 @@ public function familiar_reset(){
     this.familiar_init();
 }
 
-public function familiar_conversation_reply(uid, msg, txt, choices, extras){
+public function familiar_conversation_reply(uid, msg, txt=null, choices=null, extras=null){
 
     var rsp = {
         type        : 'conversation',
@@ -99,8 +101,8 @@ public function familiar_send_alert(details){
 
     var uid = this.familiar_get_uid();
 
-    this.familiar.details[uid] = details;
-    this.familiar.stack.push(uid);
+    this.details[uid] = details;
+    this.stack.push(uid);
 
     this.familiar_announce_queue();
 }
@@ -122,8 +124,8 @@ public function familiar_send_alert_now(details){
     var uid = this.familiar_get_uid();
     details.remove_on_load = true;
 
-    this.familiar.details[uid] = details;
-    this.familiar.stack.push(uid);
+    this.details[uid] = details;
+    this.stack.push(uid);
 
     this.familiar_announce_queue();
 }
@@ -145,7 +147,7 @@ public function familiar_send_targeted(details){
     var uid = this.familiar_get_uid();
 
     details.remove_on_load = true;
-    this.familiar.details[uid] = details;
+    this.details[uid] = details;
 
 
     //
@@ -164,8 +166,8 @@ public function familiar_clean_queue(){
 
     var remove_uids = [];
 
-    for (var i in this.familiar.details){
-        if (this.familiar.details[i].remove_on_load){
+    for (var i in this.details){
+        if (this.details[i].remove_on_load){
             remove_uids.push(i);
         }
     }
@@ -186,9 +188,9 @@ public function familiar_find_alerts(callback){
 
     var temp = {};
 
-    for (var i in this.familiar.details){
-        if (this.familiar.details[i].callback == callback){
-            temp[i] = this.familiar.details[i];
+    for (var i in this.details){
+        if (this.details[i].callback == callback){
+            temp[i] = this.details[i];
         }
     }
 
@@ -208,7 +210,7 @@ public function familiar_remove_alert(uid){
 public function familiar_get_uid(){
 
     var uid = time();
-    while (this.familiar.details[str(uid)]){
+    while (this.details[str(uid)]){
         uid++;
     }
     return str(uid);
@@ -218,7 +220,7 @@ public function familiar_announce_queue(){
 
     this.player.announcements.apiSendAnnouncement({
         type: 'new_familiar_msgs',
-        num: this.familiar.stack.length
+        num: this.stack.length
     });
 }
 
@@ -234,7 +236,7 @@ public function familiar_on_conversation(msg){
     var uid = msg.uid;
 
     if (!uid){
-        uid = this.familiar.stack[0];
+        uid = this.stack[0];
         if (!uid){
             this.familiar_conversation_reply(0, msg, "That's odd, I coulda sworn I had something for you...");
             this.familiar_announce_queue();
@@ -242,7 +244,7 @@ public function familiar_on_conversation(msg){
         }
     }
 
-    var details = this.familiar.details[uid];
+    var details = this.details[uid];
     if (!details){
         this.familiar_conversation_reply(0, msg, "That's odd, I coulda sworn I had something for you...");
         this.familiar_remove_message(uid);
@@ -339,7 +341,7 @@ public function familiar_on_conversation_cancel(msg){
 
 public function familiar_remove_message(uid){
 
-    var old_stack = this.familiar.stack;
+    var old_stack = this.stack;
     var new_stack = [];
 
     for (var i=0; i<old_stack.length; i++){
@@ -348,9 +350,9 @@ public function familiar_remove_message(uid){
         }
     }
 
-    this.familiar.stack = new_stack;
+    this.stack = new_stack;
 
-    delete this.familiar.details[uid];
+    delete this.details[uid];
 }
 
 
@@ -394,7 +396,7 @@ public function familiar_get_login(){
 
     var out = {};
 
-    out.messages = this.familiar.stack.length;
+    out.messages = this.stack.length;
     out.tsid = config.familiar_tsid;
 
     if (this.player.skills.skills_is_accelerated()){

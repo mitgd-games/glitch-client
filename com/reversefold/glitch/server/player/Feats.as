@@ -1,8 +1,10 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +13,10 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var label : String;
+		public var todo;
+		public var feats;
 
         public function Feats(config : Config, player : Player) {
             this.config = config;
@@ -22,17 +28,17 @@ package com.reversefold.glitch.server.player {
 
 public function feats_init(){
     if (!this.feats){
-        this.feats = Server.instance.apiNewOwnedDC(this);
-        this.feats.label = 'Feats';
-        this.feats.todo = {};
-        this.feats.feats = {};
+        //this.feats = Server.instance.apiNewOwnedDC(this);
+        this.label = 'Feats';
+        this.todo = {};
+        this.feats = {};
     }
 
-    if (!this.feats.todo) this.feats.todo = {};
+    if (!this.todo) this.todo = {};
     if (!this.feats.in_progress) this.feats.in_progress = {};
 }
 
-public function feats_get(class_tsid, skip_range){
+public function feats_get(class_tsid, skip_range=null){
     // In catalog?
     var cfg = config.feats[class_tsid];
     if (!cfg) return null;
@@ -60,7 +66,7 @@ public function feats_increment(class_tsid, amount){
     if (feat === undefined || feat === null) return 0;
 
     // Are we allowed to contribute?
-    if (!this.has_blown_conch) return 0;
+    if (!this.player.quests.has_blown_conch) return 0;
 
     // Increment
     amount = feat.increment(this, amount);
@@ -76,11 +82,11 @@ public function feats_increment(class_tsid, amount){
                 this.player.achievements.achievements_increment('epics_contributed', cfg.epic_id, 1);
 
                 var feat_all_the_epics = 1;
-                for (var i in this.feats.todo){
+                for (var i in this.todo){
                     if (config.feats[i] && config.feats[i].epic_id == cfg.epic_id) feat_all_the_epics++;
                 }
 
-                for (var i in this.feats.feats){
+                for (var i in this.feats){
                     if (config.feats[i] && config.feats[i].epic_id == cfg.epic_id) feat_all_the_epics++;
                 }
 
@@ -95,7 +101,7 @@ public function feats_increment(class_tsid, amount){
             if (vog_text){
                 var status = feat.get_status();
                 if (status.value <= status.goal){
-                    vog_text = vog_text.replace(/\{remaining\}/g, Math.round(status.goal - status.value, 2));
+                    vog_text = vog_text.replace(/\{remaining\}/g, round(status.goal - status.value, 2));
 
                     //vog_text += '<br /><a href="event:external|/feats/'+cfg.url+'">See Feat details</a>';
                     this.player.announcements.announce_vog_fade(vog_text, {css_class: 'nuxp_medium'});
@@ -149,10 +155,10 @@ public function feats_get_status(class_tsid){
 public function adminFeatsGiveRewards(rewards){
     this.feats_init();
 
-    if (this.feats.todo[rewards.feat_id]) return;
-    if (this.feats.feats[rewards.feat_id]) return;
+    if (this.todo[rewards.feat_id]) return;
+    if (this.feats[rewards.feat_id]) return;
 
-    this.feats.todo[rewards.feat_id] = rewards;
+    this.todo[rewards.feat_id] = rewards;
     delete this.feats.in_progress[rewards.feat_id];
 
     // Achievements
@@ -171,10 +177,10 @@ public function adminFeatsGiveRewards(rewards){
 }
 
 public function feats_has_unclaimed_rewards(){
-    if (!this.feats || !this.feats.todo) return false;
+    if (!this.feats || !this.todo) return false;
     if (num_keys(this.player.familiar.familiar_find_alerts('feats_familiar_turnin_do'))) return false;
 
-    for (var i in this.feats.todo){
+    for (var i in this.todo){
         return i;
     }
 
@@ -203,7 +209,7 @@ public function feats_familiar_turnin_do(choice, details){
     }
     else{
 
-        var rewards = this.feats.todo[details.feat_id];
+        var rewards = this.todo[details.feat_id];
         var feat = this.feats_get_status(details.feat_id);
 
         var completion_text = "The ancient Feat \""+rewards.title+"\" has been successfully recreated by modern Glitches. Your participation has earned you the following rewards:";
@@ -273,7 +279,7 @@ public function feats_familiar_turnin_do(choice, details){
 }
 
 public function feats_gather_rewards(feat_id){
-    var rewards = this.feats.todo[feat_id];
+    var rewards = this.todo[feat_id];
     if (!rewards) return;
 
     if (rewards.xp) rewards.xp = this.player.stats.stats_add_xp(rewards.xp, false, {type: 'feat_complete', feat_id: rewards.feat_id});
@@ -295,8 +301,8 @@ public function feats_gather_rewards(feat_id){
         this.player.skill_packages.runDropTable(rewards.drop_table[i].class_tsid);
     }
 
-    this.feats.feats[rewards.feat_id] = rewards;
-    delete this.feats.todo[feat_id];
+    this.feats[rewards.feat_id] = rewards;
+    delete this.todo[feat_id];
 
     this.player.achievements.achievements_increment('feats', 'contributed_to');
     Server.instance.apiLogAction('FEAT_REWARDS', 'pc='+this.player.tsid, 'feat_id='+rewards.feat_id, 'xp='+intval(rewards.xp), 'mood='+intval(rewards.mood), 'energy='+intval(rewards.energy), 'currants='+intval(rewards.currants));
@@ -304,8 +310,8 @@ public function feats_gather_rewards(feat_id){
 
 public function feats_has_contributed(feat_id){
     this.feats_init();
-    if (this.feats.todo[feat_id]) return true;
-    if (this.feats.feats[feat_id]) return true;
+    if (this.todo[feat_id]) return true;
+    if (this.feats[feat_id]) return true;
     if (feat_id == 'qurazy_quoin_collecting' && this.feats.in_progress[feat_id] < 1350003600) return false; // hack for accidentally released feat.
     if (this.feats.in_progress[feat_id]) return true;
 
@@ -342,7 +348,7 @@ public function feats_increment_for_commit(amount){
     return;
     this.feats_init();
     // Are we allowed to contribute?
-    if (!this.has_blown_conch) return 0;
+    if (!this.player.quests.has_blown_conch) return 0;
 
     if (!this.feats.to_commit) this.feats.to_commit = 0;
     this.feats.to_commit += amount;

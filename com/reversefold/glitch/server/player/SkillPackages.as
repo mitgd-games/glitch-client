@@ -18,7 +18,7 @@ package com.reversefold.glitch.server.player {
         }
 
 
-public function runDropTable(class_id, source, preface, offsets, props, combine_messages){
+public function runDropTable(class_id, source=null, preface=null, offsets=null, props=null, combine_messages=null){
     //log.info('runDropTable: '+class_id);
 
     var prot = Server.instance.apiFindItemPrototype('catalog_drop_tables');
