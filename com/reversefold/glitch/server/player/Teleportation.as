@@ -1052,7 +1052,7 @@ public function teleportation_imbue_script_prompt(value, details){
         imbued_script.last_edited = time();
 
         script.apiDelete();
-        var remaining = this.addItemStack(imbued_script);
+        var remaining = this.player.bag.addItemStack(imbued_script);
         if (remaining) {
             this.sendAcivity("You don't have room for an imbued script, which is honestly pretty weird.");
             imbued_script.apiDelete();

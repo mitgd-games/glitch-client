@@ -1,8 +1,10 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +13,17 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var color_game;
+		public var it_game;
+		public var math_mayhem;
+		public var color_group;
+		public var games_invite;
+		public var race;
+		public var quoin_grab;
+		public var cloudhopolis;
+		public var hogtie_piggy;
+		public var games_spawn_point;
 
         public function Games(config : Config, player : Player) {
             this.config = config;
@@ -170,7 +183,7 @@ public function games_end_color_game() {
     this.games_set_color_group();
 
     this.color_game.game.playerFinish(this);
-    delete this.color_game;
+    this.color_game = null;
 
     this.games_scoreboard_end('color_game');
 }
@@ -279,7 +292,7 @@ public function games_color_get_colors(colors) {
 }
 
 // Set our colors
-public function games_color_game_set_color(color, secondary_color) {
+public function games_color_game_set_color(color, secondary_color=null) {
     this.color_game.color = color;
     if(secondary_color) {
         this.color_game.safe_color = secondary_color;
@@ -292,14 +305,14 @@ public function games_color_game_set_color(color, secondary_color) {
 }
 
 // Tell the client about our colors
-public function games_set_color_group(color, secondary_color) {
+public function games_set_color_group(color=null, secondary_color=null) {
     this.color_group = color;
 
     var msg = {
         type: 'pc_game_flag_change',
         pc: {
             tsid: this.player.tsid,
-            label: this.label,
+            label: this.player.label,
             location: {
                 tsid: this.player.location.tsid,
                 label: this.player.location.label
@@ -474,7 +487,7 @@ public function games_set_it_map(){
         type: 'pc_game_flag_change',
         pc: {
             tsid: this.player.tsid,
-            label: this.label,
+            label: this.player.label,
             location: {
                 tsid: this.player.location.tsid,
                 label: this.player.location.label
@@ -553,7 +566,7 @@ public function games_set_notit_map(){
         type: 'pc_game_flag_change',
         pc: {
             tsid: this.player.tsid,
-            label: this.label,
+            label: this.player.label,
             location: {
                 tsid: this.player.location.tsid,
                 label: this.player.location.label
@@ -751,7 +764,7 @@ public function games_end_it_game(){
     }
 
     this.it_game.game.playerFinish(this);
-    delete this.it_game;
+    this.it_game = null;
 
     this.games_scoreboard_end('it_game');
 }
@@ -869,7 +882,7 @@ public function games_it_game_is_started(){
         return true;
     }
     else{
-        if (this.y >= -1390){
+        if (this.player.y >= -1390){
             this.it_game.is_started = true;
             return true;
         }
@@ -1168,7 +1181,7 @@ public function games_end_math_mayhem(){
     });
 
     this.math_mayhem.game.playerFinish(this);
-    delete this.math_mayhem;
+    this.math_mayhem = null;
 
     this.games_scoreboard_end('math_mayhem');
 }
@@ -1192,7 +1205,7 @@ public function games_show_mayhem_score(color, score){
         type: 'pc_game_flag_change',
         pc: {
             tsid: this.player.tsid,
-            label: this.label,
+            label: this.player.label,
             location: {
                 tsid: this.player.location.tsid,
                 label: this.player.location.label
@@ -1211,7 +1224,7 @@ public function games_clear_mayhem_score(){
         type: 'pc_game_flag_change',
         pc: {
             tsid: this.player.tsid,
-            label: this.label,
+            label: this.player.label,
             location: {
                 tsid: this.player.location.tsid,
                 label: this.player.location.label
@@ -1437,7 +1450,7 @@ public function games_end_race(){
     }
 
     this.race.game.playerFinish(this);
-    delete this.race;
+    this.race = null;
 
     this.games_scoreboard_end('race');
 }
@@ -1636,7 +1649,7 @@ public function games_end_quoin_grab(){
     }
 
     this.quoin_grab.game.playerFinish(this);
-    delete this.quoin_grab;
+    this.quoin_grab = null;
 
     this.games_scoreboard_end('quoin_grab');
 }
@@ -1836,7 +1849,7 @@ public function games_end_cloudhopolis(){
     }
 
     this.cloudhopolis.game.playerFinish(this);
-    delete this.cloudhopolis;
+    this.cloudhopolis = null;
 
     this.games_scoreboard_end('cloudhopolis');
 }
@@ -2197,7 +2210,7 @@ public function games_end_hogtie_piggy(){
     }
 
     this.hogtie_piggy.game.playerFinish(this);
-    delete this.hogtie_piggy;
+    this.hogtie_piggy = null;
 
     this.games_scoreboard_end('hogtie_piggy');
 }
@@ -2333,7 +2346,7 @@ public function games_assign_spawn_point(x, y){
 }
 
 public function games_clear_spawn_point(){
-    delete this.games_spawn_point;
+    this.games_spawn_point = null;
 }
 
 public function games_get_spawn_point(){
@@ -2468,7 +2481,7 @@ public function games_invite_timeout(details){
                 this.player.items.createItemFromFamiliar(this.games_invite.ticket_on_cancel, 1);
             }
 
-            delete this.games_invite;
+            this.games_invite = null;
         }
     }
 }
@@ -2478,7 +2491,8 @@ public function games_accept(value, details){
         var challenger = getPlayer(details.challenger);
         if (!challenger || challenger.tsid == this.player.tsid) return;
 
-        var q = config.shared_instances[class_tsid];
+		//RVRS: TODO: Where does this class_tsid come from? Guessing it should be the invite
+        var q = config.shared_instances[this.games_invite.class_tsid];//[class_tsid];
         if (!q) return;
 
         if (this.games_invite_is_full()){
@@ -2532,7 +2546,7 @@ public function games_add_opponent(pc){
         this.player.requests.cancelActionRequestBroadcast('game_accept', this.games_invite.class_tsid);
 
         var opponent_names = [];
-        opponent_names.push(Utils.escape(this.label));
+        opponent_names.push(Utils.escape(this.player.label));
         for (var i in this.games_invite.opponents){
 
             var opp = getPlayer(this.games_invite.opponents[i]);
@@ -2633,7 +2647,7 @@ public function games_invite_start(){
         }
     }
 
-    delete this.games_invite;
+    this.games_invite = null;
 }
 
 public function games_init_general(){

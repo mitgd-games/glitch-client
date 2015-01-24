@@ -1,8 +1,13 @@
 package com.reversefold.glitch.server.player {
+    import com.adobe.serialization.json.JSONDecoder;
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
+    import com.reversefold.glitch.server.data;
     import com.reversefold.glitch.server.data.Config;
+    import com.reversefold.glitch.server.data.Homes;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +16,14 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var label : String;
+		public var walls;
+		public var floors;
+		public var ceilings;
+		public var chassis;
+		public var storage_tsid;
+		public var hiddenItems;
 
         public function Furniture(config : Config, player : Player) {
             this.config = config;
@@ -19,9 +32,9 @@ package com.reversefold.glitch.server.player {
 
 
 public function furniture_init(){
-    if (this.furniture === undefined || this.furniture === null){
-        this.furniture = Server.instance.apiNewOwnedDC(this);
-        this.furniture.label = 'Furniture';
+    if (this.storage_tsid === undefined || this.storage_tsid === null){
+        //this.furniture = Server.instance.apiNewOwnedDC(this);
+        this.label = 'Furniture';
 
         this.furniture_create_bag();
     }
@@ -31,15 +44,15 @@ public function furniture_init(){
         this.furniture_create_bag();
     }
 
-    if (!this.furniture.walls) this.furniture.walls = {};
-    if (!this.furniture.floors) this.furniture.floors = {};
-    if (!this.furniture.ceilings) this.furniture.ceilings = {};
-    if (!this.furniture.chassis) this.furniture.chassis = {};
+    if (!this.walls) this.walls = {};
+    if (!this.floors) this.floors = {};
+    if (!this.ceilings) this.ceilings = {};
+    if (!this.chassis) this.chassis = {};
     //if (!this.furniture.texture_history) this.furniture.texture_history = { walls: [], floors: [], ceilings: [] };
 }
 
 public function furniture_delete(){
-    if (this.furniture){
+    if (this.storage_tsid){
         var bag = this.furniture_get_bag();
         if (bag){
             var contents = bag.getAllContents();
@@ -51,8 +64,9 @@ public function furniture_delete(){
             bag.apiDelete();
         }
 
-        this.furniture.apiDelete();
-        delete this.furniture;
+        //this.furniture.apiDelete();
+        //delete this.furniture;
+		this.player.furniture = new Furniture(config, player);
     }
 }
 
@@ -68,14 +82,14 @@ public function furniture_create_bag(){
 
     this.apiAddHiddenStack(it);
 
-    this.furniture.storage_tsid = it.tsid;
+    this.storage_tsid = it.tsid;
     this.furniture_populate();
     this.furniture_migrate_trophies();
 }
 
 public function furniture_get_bag(){
-    if (!this.furniture) this.furniture_init();
-    return this.hiddenItems[this.furniture.storage_tsid];
+    if (!this.storage_tsid) this.furniture_init();
+    return this.hiddenItems[this.storage_tsid];
 }
 
 public function furniture_add_hidden(furniture){
@@ -90,7 +104,7 @@ public function furniture_get_hidden(){
     return bag.getAllContents();
 }
 
-public function furniture_populate(force){
+public function furniture_populate(force=false){
     // https://app.asana.com/0/229838047628/498067056902
     var to_give = {
         'furniture_chair': 1,
@@ -109,13 +123,13 @@ public function furniture_populate(force){
         var count = to_give[tsid];
         try {
             if (!force){
-                var has = this.furniture_get_count(tsid) + this.countItemClass(tsid);
+                var has = this.furniture_get_count(tsid) + this.player.bag.countItemClass(tsid);
                 var needs = count-has;
                 if (needs > 0){
                     var s = Server.instance.apiNewItemStack(tsid, needs);
                     if (s){
                         s.setSoulbound(this);
-                        this.addItemStack(s);
+                        this.player.bag.addItemStack(s);
                     }
                 }
             }
@@ -123,7 +137,7 @@ public function furniture_populate(force){
                 var s = Server.instance.apiNewItemStack(tsid, count);
                 if (s){
                     s.setSoulbound(this);
-                    this.addItemStack(s);
+                    this.player.bag.addItemStack(s);
                 }
             }
         } catch (e){
@@ -151,7 +165,7 @@ public function furniture_populate_newxp(){
             if (s){
                 s.setSoulbound(this);
                 s.applyUpgrade(this, upgrade_id);
-                this.addItemStack(s);
+                this.player.bag.addItemStack(s);
             }
         } catch (e){
             log.error(this+' '+e);
@@ -219,14 +233,14 @@ public function furniture_migrate_trophies(){
     }
 
 
-    for (var i in this.achievements.achievements){
+    for (var i in this.player.achievements.achievements){
 
         var trophy = this.player.achievements.achievement_get_trophy(i);
         if (trophy && trophy.class_tsid){
             if (config.is_dev) log.info(this+" has trophy achievement "+i);
             if (!this.player.trophies.trophies_has(trophy.class_tsid)){
                 if (config.is_dev) log.info(this+" is missing trophy "+i);
-                this.player.trophies.trophies_add_hidden(apiNewItemStack(trophy.class_tsid, 1));
+                this.player.trophies.trophies_add_hidden(Server.instance.apiNewItemStack(trophy.class_tsid, 1));
             }
         }
     }
@@ -238,15 +252,15 @@ public function furniture_get_wall_options(){
 
     var out = {};
 
-    for (var i in config.homes_wallpaper_configs){
+    for (var i in Homes.homes_wallpaper_configs){
 
-        var conf = config.homes_wallpaper_configs[i];
+        var conf = Homes.homes_wallpaper_configs[i];
 
         if (!this.player.is_god && !conf.is_visible) continue;
 
-        if (conf.is_default && !this.furniture.walls[i]){
+        if (conf.is_default && !this.walls[i]){
 
-            this.furniture.walls[i] = {
+            this.walls[i] = {
                 'free_default'  : true,
                 'when'      : time()
             };
@@ -262,8 +276,8 @@ public function furniture_get_wall_options(){
             'category'  : conf.category,
             'sort_order'    : conf.sort_order,
             'swatch'    : conf.swatch,
-            'is_owned'  : this.furniture.walls[i] ? true : false,
-            'date_purchased': this.furniture.walls[i] ? intval(this.furniture.walls[i].when) : 0,
+            'is_owned'  : this.walls[i] ? true : false,
+            'date_purchased': this.walls[i] ? intval(this.walls[i].when) : 0,
             'cost_credits'  : conf.cost_credits,
             'is_new'    : conf.is_new,
             'is_subscriber' : conf.is_subscriber
@@ -279,15 +293,15 @@ public function furniture_get_floor_options(){
 
     var out = {};
 
-    for (var i in config.homes_floor_configs){
+    for (var i in Homes.homes_floor_configs){
 
-        var conf = config.homes_floor_configs[i];
+        var conf = Homes.homes_floor_configs[i];
 
         if (!this.player.is_god && !conf.is_visible) continue;
 
-        if (conf.is_default && !this.furniture.floors[i]){
+        if (conf.is_default && !this.floors[i]){
 
-            this.furniture.floors[i] = {
+            this.floors[i] = {
                 'free_default'  : true,
                 'when'      : time()
             };
@@ -303,8 +317,8 @@ public function furniture_get_floor_options(){
             'category'  : conf.category,
             'sort_order'    : conf.sort_order,
             'swatch'    : conf.swatch,
-            'is_owned'  : this.furniture.floors[i] ? true : false,
-            'date_purchased': this.furniture.floors[i] ? intval(this.furniture.floors[i].when) : 0,
+            'is_owned'  : this.floors[i] ? true : false,
+            'date_purchased': this.floors[i] ? intval(this.floors[i].when) : 0,
             'cost_credits'  : conf.cost_credits,
             'is_new'    : conf.is_new,
             'is_subscriber' : conf.is_subscriber
@@ -320,15 +334,15 @@ public function furniture_get_ceiling_options(){
 
     var out = {};
 
-    for (var i in config.homes_ceiling_configs){
+    for (var i in Homes.homes_ceiling_configs){
 
-        var conf = config.homes_ceiling_configs[i];
+        var conf = Homes.homes_ceiling_configs[i];
 
         if (!this.player.is_god && !conf.is_visible) continue;
 
-        if (conf.is_default && !this.furniture.ceilings[i]){
+        if (conf.is_default && !this.ceilings[i]){
 
-            this.furniture.ceilings[i] = {
+            this.ceilings[i] = {
                 'free_default'  : true,
                 'when'      : time()
             };
@@ -344,8 +358,8 @@ public function furniture_get_ceiling_options(){
             'category'  : conf.category,
             'sort_order'    : conf.sort_order,
             'swatch'    : conf.swatch,
-            'is_owned'  : this.furniture.ceilings[i] ? true : false,
-            'date_purchased': this.furniture.ceilings[i] ? intval(this.furniture.ceilings[i].when) : 0,
+            'is_owned'  : this.ceilings[i] ? true : false,
+            'date_purchased': this.ceilings[i] ? intval(this.ceilings[i].when) : 0,
             'cost_credits'  : conf.cost_credits,
             'is_new'    : conf.is_new,
             'is_subscriber' : conf.is_subscriber
@@ -364,7 +378,7 @@ public function furniture_get_ceiling_options(){
 public function furniture_set_wall(wp_key, wp_type){
 
     // do we own this wallpaper?
-    if (!this.furniture.walls[wp_type]){
+    if (!this.walls[wp_type]){
         return {
             'ok' : 0,
             'error' : 'wallpaper_not_owned'
@@ -383,7 +397,7 @@ public function furniture_set_wall(wp_key, wp_type){
 public function furniture_set_floor(floor_key, floor_type){
 
     // do we own this flooring?
-    if (!this.furniture.floors[floor_type]){
+    if (!this.floors[floor_type]){
         return {
             'ok' : 0,
             'error' : 'floor_not_owned'
@@ -402,7 +416,7 @@ public function furniture_set_floor(floor_key, floor_type){
 public function furniture_set_ceiling(ceiling_key, ceiling_type){
 
     // do we own this ceiling?
-    if (!this.furniture.ceilings[ceiling_type]){
+    if (!this.ceilings[ceiling_type]){
         return {
             'ok' : 0,
             'error' : 'ceiling_not_owned'
@@ -470,7 +484,7 @@ public function furniture_buy_wall(wp_type){
 public function furniture_can_buy_wall(wp_type){
 
     // is this a real wallpaper?
-    if (!config.homes_wallpaper_configs[wp_type]){
+    if (!Homes.homes_wallpaper_configs[wp_type]){
         return {
             'ok' : 0,
             'error' : 'invalid_wp_type'
@@ -478,7 +492,7 @@ public function furniture_can_buy_wall(wp_type){
     }
 
     // already owned?
-    if (this.furniture.walls[wp_type]){
+    if (this.walls[wp_type]){
         return {
             'ok' : 0,
             'error' : 'already_owned'
@@ -487,15 +501,15 @@ public function furniture_can_buy_wall(wp_type){
 
     // too expensive?
     var cost = 0;
-    if (!config.home_limits.UPGRADES_ARE_FREE){
-        if (config.homes_wallpaper_configs[wp_type].is_subscriber && !this.player.stats.stats_is_sub()){
+    if (!config.base.home_limits.UPGRADES_ARE_FREE){
+        if (Homes.homes_wallpaper_configs[wp_type].is_subscriber && !this.player.stats.stats_is_sub()){
             return {
                 'ok' : 0,
                 'error' : 'not_a_subscriber'
             };
         }
 
-        cost = config.homes_wallpaper_configs[wp_type].cost_credits;
+        cost = Homes.homes_wallpaper_configs[wp_type].cost_credits;
         if (cost && !this.player.stats.stats_has_credits(cost)){
             return {
                 'ok' : 0,
@@ -523,7 +537,7 @@ public function furniture_buy_wall_do(args){
         return {};
     }
 
-    this.furniture.walls[args.wp_type] = {
+    this.walls[args.wp_type] = {
         'paid_credits'  : args.amount,
         'when'      : time()
     };
@@ -536,7 +550,7 @@ public function furniture_buy_wall_do(args){
     };
 }
 
-public function furniture_buy_wall_done(success, wp_type, error){
+public function furniture_buy_wall_done(success, wp_type, error=null){
 
     this.player.apiSendMsg({
         'type'      : 'houses_wall_purchased',
@@ -571,7 +585,7 @@ public function furniture_buy_floor(floor_type){
 public function furniture_can_buy_floor(floor_type){
 
     // is this a real flooring?
-    if (!config.homes_floor_configs[floor_type]){
+    if (!Homes.homes_floor_configs[floor_type]){
         return {
             'ok' : 0,
             'error' : 'invalid_floor_type'
@@ -579,7 +593,7 @@ public function furniture_can_buy_floor(floor_type){
     }
 
     // already owned?
-    if (this.furniture.floors[floor_type]){
+    if (this.floors[floor_type]){
         return {
             'ok' : 0,
             'error' : 'already_owned'
@@ -589,15 +603,15 @@ public function furniture_can_buy_floor(floor_type){
 
     // too expensive?
     var cost = 0;
-    if (!config.home_limits.UPGRADES_ARE_FREE){
-        if (config.homes_floor_configs[floor_type].is_subscriber && !this.player.stats.stats_is_sub()){
+    if (!config.base.home_limits.UPGRADES_ARE_FREE){
+        if (Homes.homes_floor_configs[floor_type].is_subscriber && !this.player.stats.stats_is_sub()){
             return {
                 'ok' : 0,
                 'error' : 'not_a_subscriber'
             };
         }
 
-        cost = config.homes_floor_configs[floor_type].cost_credits;
+        cost = Homes.homes_floor_configs[floor_type].cost_credits;
         if (cost && !this.player.stats.stats_has_credits(cost)){
             return {
                 'ok' : 0,
@@ -625,7 +639,7 @@ public function furniture_buy_floor_do(args){
         return {};
     }
 
-    this.furniture.floors[args.floor_type] = {
+    this.floors[args.floor_type] = {
         'paid_credits'  : args.amount,
         'when'      : time()
     };
@@ -638,7 +652,7 @@ public function furniture_buy_floor_do(args){
     };
 }
 
-public function furniture_buy_floor_done(success, floor_type, error){
+public function furniture_buy_floor_done(success, floor_type, error=null){
 
     this.player.apiSendMsg({
         'type'      : 'houses_floor_purchased',
@@ -671,7 +685,7 @@ public function furniture_buy_ceiling(ceiling_type){
 public function furniture_can_buy_ceiling(ceiling_type){
 
     // is this a real ceiling?
-    if (!config.homes_ceiling_configs[ceiling_type]){
+    if (!Homes.homes_ceiling_configs[ceiling_type]){
         return {
             'ok' : 0,
             'error' : 'invalid_ceiling_type'
@@ -679,7 +693,7 @@ public function furniture_can_buy_ceiling(ceiling_type){
     }
 
     // already owned?
-    if (this.furniture.ceilings[ceiling_type]){
+    if (this.ceilings[ceiling_type]){
         return {
             'ok' : 0,
             'error' : 'already_owned'
@@ -688,15 +702,15 @@ public function furniture_can_buy_ceiling(ceiling_type){
 
     // too expensive?
     var cost = 0;
-    if (!config.home_limits.UPGRADES_ARE_FREE){
-        if (config.homes_ceiling_configs[ceiling_type].is_subscriber && !this.player.stats.stats_is_sub()){
+    if (!config.base.home_limits.UPGRADES_ARE_FREE){
+        if (Homes.homes_ceiling_configs[ceiling_type].is_subscriber && !this.player.stats.stats_is_sub()){
             return {
                 'ok' : 0,
                 'error' : 'not_a_subscriber'
             };
         }
 
-        cost = config.homes_ceiling_configs[ceiling_type].cost_credits;
+        cost = Homes.homes_ceiling_configs[ceiling_type].cost_credits;
         if (cost && !this.player.stats.stats_has_credits(cost)){
             return {
                 'ok' : 0,
@@ -724,7 +738,7 @@ public function furniture_buy_ceiling_do(args){
         return {};
     }
 
-    this.furniture.ceilings[args.ceiling_type] = {
+    this.ceilings[args.ceiling_type] = {
         'paid_credits'  : args.amount,
         'when'      : time()
     };
@@ -737,7 +751,7 @@ public function furniture_buy_ceiling_do(args){
     };
 }
 
-public function furniture_buy_ceiling_done(success, ceiling_type, error){
+public function furniture_buy_ceiling_done(success, ceiling_type, error=null){
 
     this.player.apiSendMsg({
         'type'      : 'houses_ceiling_purchased',
@@ -762,14 +776,14 @@ public function furniture_upgrade_purchase(item, upgrade_id, msg_id, user_config
     if (item.getInstanceProp('upgrade_id') == upgrade_id) return {ok: 0, error: 'Already upgraded'};
     if (item['!upgrade_in_progress']) return {ok: 0, error: 'Upgrade in progress'};
 
-    if (!config.home_limits.UPGRADES_ARE_FREE && !upgrade.is_owned && upgrade.subscriber_only == 1 && !this.player.stats.stats_is_sub()) return {ok: 0, error: 'The upgrade is subscriber-locked, and you are not a subscriber'};
+    if (!config.base.home_limits.UPGRADES_ARE_FREE && !upgrade.is_owned && upgrade.subscriber_only == 1 && !this.player.stats.stats_is_sub()) return {ok: 0, error: 'The upgrade is subscriber-locked, and you are not a subscriber'};
 
-    if (!config.home_limits.UPGRADES_ARE_FREE && !upgrade.is_owned && upgrade.imagination_cost && !this.player.stats.stats_try_remove_imagination(upgrade.imagination_cost, {'furniture_class': item.class_tsid, 'upgrade_id': upgrade_id})) return {ok: 0, error: 'You don\'t have enough imagination.'};
+    if (!config.base.home_limits.UPGRADES_ARE_FREE && !upgrade.is_owned && upgrade.imagination_cost && !this.player.stats.stats_try_remove_imagination(upgrade.imagination_cost, {'furniture_class': item.class_tsid, 'upgrade_id': upgrade_id})) return {ok: 0, error: 'You don\'t have enough imagination.'};
 
     if (upgrade.is_owned) Server.instance.apiLogAction('FURNITURE_CHANGE', 'pc='+this.player.tsid, 'item='+item.class_tsid, 'upgrade='+upgrade_id, 'config='+Utils.JSON_stringify(user_config)+'');
 
     // Can we do this now?
-    if (!upgrade.credits_cost || upgrade.is_owned || config.home_limits.UPGRADES_ARE_FREE){
+    if (!upgrade.credits_cost || upgrade.is_owned || config.base.home_limits.UPGRADES_ARE_FREE){
         var ret = this.furniture_upgrade_purchase_do({
             tsid: item.tsid,
             upgrade_id: upgrade_id,
@@ -812,7 +826,8 @@ public function furniture_upgrade_purchase_do(args){
     if (args.ok){
         var upgrade = item.applyUpgrade(this, intval(args.upgrade_id));
         if (args.user_config) {
-            eval("var user_config = "+args.user_config+";");
+			var user_config = new JSONDecoder(args.user_config).getValue();
+            //eval("var user_config = "+args.user_config+";");
             item.setInstanceProp('user_config', user_config);
         }
 
@@ -877,24 +892,24 @@ public function furniture_admin_get_textures(){
         ceilings: {}
     };
 
-    for (var i in config.homes_wallpaper_configs){
-        if (this.furniture.walls[i]){
-            out.walls[i] = this.furniture.walls[i];
-            out.walls[i].is_default = config.homes_wallpaper_configs[i].is_default ? true : false;
+    for (var i in Homes.homes_wallpaper_configs){
+        if (this.walls[i]){
+            out.walls[i] = this.walls[i];
+            out.walls[i].is_default = Homes.homes_wallpaper_configs[i].is_default ? true : false;
         }
     }
 
-    for (var i in config.homes_floor_configs){
-        if (this.furniture.floors[i]){
-            out.floors[i] = this.furniture.floors[i];
-            out.floors[i].is_default = config.homes_floor_configs[i].is_default ? true : false;
+    for (var i in Homes.homes_floor_configs){
+        if (this.floors[i]){
+            out.floors[i] = this.floors[i];
+            out.floors[i].is_default = Homes.homes_floor_configs[i].is_default ? true : false;
         }
     }
 
-    for (var i in config.homes_ceiling_configs){
-        if (this.furniture.ceilings[i]){
-            out.ceilings[i] = this.furniture.ceilings[i];
-            out.ceilings[i].is_default = config.homes_ceiling_configs[i].is_default ? true : false;
+    for (var i in Homes.homes_ceiling_configs){
+        if (this.ceilings[i]){
+            out.ceilings[i] = this.ceilings[i];
+            out.ceilings[i].is_default = Homes.homes_ceiling_configs[i].is_default ? true : false;
         }
     }
 
@@ -916,14 +931,14 @@ public function furniture_admin_get_texture_options(){
 public function furniture_admin_remove_texture(args){
     this.furniture_init();
 
-    if (!this.furniture[args.type]){
+    if (!this[args.type]){
         return {
             ok: 0,
             error: "Invalid type"
         };
     }
 
-    if (!this.furniture[args.type][args.id]){
+    if (!this[args.type][args.id]){
         return {
             ok: 0,
             error: "Not owned"
@@ -931,7 +946,7 @@ public function furniture_admin_remove_texture(args){
     }
 
     // Delete it
-    delete this.furniture[args.type][args.id];
+    delete this[args.type][args.id];
 
     // Tell the client and remove from house
     if (args.type == 'walls'){
@@ -970,21 +985,21 @@ public function furniture_admin_remove_texture(args){
 }
 
 public function furniture_admin_add_texture(args){
-    if (!this.furniture[args.type]){
+    if (!this[args.type]){
         return {
             ok: 0,
             error: "Invalid type"
         };
     }
 
-    if (this.furniture[args.type][args.id]){
+    if (this[args.type][args.id]){
         return {
             ok: 0,
             error: "Already owned"
         };
     }
 
-    this.furniture[args.type][args.id] = {
+    this[args.type][args.id] = {
         'paid_credits'  : 0,
         'when'      : time(),
         'staff_gift': args.info.staff_gift
@@ -1008,11 +1023,11 @@ public function furniture_admin_add_texture(args){
 
 public function furniture_owns_chassis(upgrade_id){
     if (upgrade_id == 0) return true;
-    return this.furniture.chassis && this.furniture.chassis[upgrade_id] ? true : false;
+    return this.chassis && this.chassis[upgrade_id] ? true : false;
 }
 
 public function furniture_add_chassis(upgrade_id, amount){
-    this.furniture.chassis[upgrade_id] = {
+    this.chassis[upgrade_id] = {
         'paid_credits'  : amount,
         'when'      : time()
     };
@@ -1026,7 +1041,7 @@ public function furniture_pickup(itemstack_tsid){
 
     if (item.class_tsid == 'furniture_chassis' || item.class_tsid == 'furniture_tower_chassis') return api_error("You can't pick that up");
 
-    if ((item.is_bag && item.countContents()) || (item.class_tsid == 'furniture_door' && (item.hasInProgressJob(pc) || !item.has_job))) return api_error("You can't pick that up");
+    if ((item.is_bag && item.countContents()) || (item.class_tsid == 'furniture_door' && (item.hasInProgressJob(this.player) || !item.has_job))) return api_error("You can't pick that up");
 
     if (item.canPickup){
         var ret = item.canPickup(this);

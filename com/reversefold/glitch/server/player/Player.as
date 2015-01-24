@@ -50,6 +50,10 @@ package com.reversefold.glitch.server.player {
 		public var trade_chat_group;
 		public var return_to_gentle_island;
 		public var do_not_disturb;
+		public var acl_keys;
+		public var acl_keys_backup;
+		public var newxp_allow_home;
+		public var followers;
 		
 		public var is_god : Boolean = false;
 		public var is_help : Boolean = false;
@@ -114,7 +118,18 @@ package com.reversefold.glitch.server.player {
 		}
 		
 		public function apiLogout() {
+			//RVRS: TODO
 			throw new Error('apiLogout');
+		}
+		
+		public function apiSendLocMsg(msg) {
+			//RVRS: TODO
+			throw new Error('apiSendLocMsg ' + msg);
+		}
+		
+		public function apiSendLocMsgX(msg) {
+			//RVRS: TODO
+			throw new Error('apiSendLocMsgX ' + msg);
 		}
 
 //#include inc_admin.js,
@@ -154,7 +169,7 @@ public function acl_keys_init(){
 }
 
 public function acl_keys_grant(pc){
-	if (this.player.buddies.buddies_is_ignored_by(pc)){
+	if (this.buddies.buddies_is_ignored_by(pc)){
 		return {ok: 0, reason: "You can't give them a key."};
 	} else if (pc.buddies_is_ignored_by(this)){
 		return {ok: 0, reason: "You can't give that player a key because you're blocking them."};
@@ -343,7 +358,7 @@ public function acl_keys_get_keys(){
 //
 // this is basically a stub so that bits of house migration stuff still work (maybe) on dev.
 //
-public function acl_keys_get_given(include_reverse){
+public function acl_keys_get_given(include_reverse=false){
 	var loc = this.acl_keys_find_my_house();
 
 	if (loc){

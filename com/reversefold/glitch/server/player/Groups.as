@@ -1,8 +1,10 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +13,15 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var label : String;
+		public var groups;
+		public var group_invites;
+		public var group_applied;
+		public var group_chatrooms;
+		public var group_chats;
+		public var group_chat;
+		
 
         public function Groups(config : Config, player : Player) {
             this.config = config;
@@ -21,9 +32,9 @@ package com.reversefold.glitch.server.player {
 public function groups_init(){
 
     if (this.groups === undefined || this.groups === null){
-        this.groups = Server.instance.apiNewOwnedDC(this);
-        this.groups.label = 'Groups';
-        this.groups.groups = {};
+        //this.groups = Server.instance.apiNewOwnedDC(this);
+        this.label = 'Groups';
+        this.groups = {};
     }
 
     if (!this.group_invites){
@@ -35,7 +46,7 @@ public function groups_init(){
     }
 
     if (this.group_chatrooms){
-        delete this.group_chatrooms;
+        this.group_chatrooms = null;
     }
 
     if (!this.group_chats){
@@ -61,7 +72,7 @@ public function groups_create(name, desc, mode){
     group.doCreate(name, desc, mode, this);
 
     if (!this.groups) this.player.init();
-    this.groups.groups[group.tsid] = group;
+    this.groups[group.tsid] = group;
 
     var info = group.get_basic_info();
 
@@ -124,7 +135,7 @@ public function groups_join(tsid){
     if (!ret['ok']) return ret;
 
     if (!this.groups) this.player.init();
-    this.groups.groups[group.tsid] = group;
+    this.groups[group.tsid] = group;
 
     var info = group.get_basic_info();
 
@@ -179,7 +190,7 @@ public function groups_unapplied(group){
 // leave a group
 //
 
-public function groups_leave(tsid, promote_tsid){
+public function groups_leave(tsid, promote_tsid=null){
 
     var group = Server.instance.apiFindObject(tsid);
 
@@ -192,9 +203,9 @@ public function groups_leave(tsid, promote_tsid){
     // remove pointer from pc->group
     //
 
-    if (this.groups && this.groups.groups){
+    if (this.groups && this.groups){
 
-        delete this.groups.groups[tsid];
+        delete this.groups[tsid];
     }
 
 
@@ -224,9 +235,9 @@ public function groups_left(tsid){
     // remove pointer from pc->group
     //
 
-    if (this.groups && this.groups.groups){
+    if (this.groups && this.groups){
 
-        delete this.groups.groups[tsid];
+        delete this.groups[tsid];
     }
 
 
@@ -255,7 +266,7 @@ public function adminGetGroups(){
     };
 
     if (this.groups){
-        var gg = this.groups.groups;
+        var gg = this.groups;
         for (var i in gg){
 
             out.groups.push(gg[i].get_basic_info());
@@ -316,7 +327,7 @@ public function adminGetGroupPromotionCandidate(args){
 
 public function groups_count(){
 
-    return this.groups ? num_keys(this.groups.groups) : 0;
+    return this.groups ? num_keys(this.groups) : 0;
 }
 
 public function groups_get_login(){
@@ -324,7 +335,7 @@ public function groups_get_login(){
     var out = {};
 
     if (this.groups){
-        var gg = this.groups.groups;
+        var gg = this.groups;
         for (var i in gg){
 
             out[i] = gg[i].get_very_basic_info();
@@ -341,9 +352,9 @@ public function groups_chat(tsid, txt){
     if (in_array_real(tsid, config.live_help_groups) || in_array_real(tsid, config.newbie_live_help_groups) || in_array_real(tsid, config.global_chat_groups) || in_array_real(tsid, config.trade_chat_groups)){
         Server.instance.apiFindObject(tsid).chat_send(this, txt);
     }
-    else if (this.groups && this.groups.groups[tsid]){
+    else if (this.groups && this.groups[tsid]){
 
-        this.groups.groups[tsid].chat_send(this, txt);
+        this.groups[tsid].chat_send(this, txt);
     }else{
         this.player.sendActivity("Group not found");
     }
@@ -358,9 +369,9 @@ public function groups_chat_join(tsid){
         if (!this.group_chat) this.groups_init();
         if (!in_array_real(tsid, this.group_chats)) this.group_chats.push(tsid);
     }
-    else if (this.groups && this.groups.groups[tsid]){
+    else if (this.groups && this.groups[tsid]){
 
-        this.groups.groups[tsid].chat_join(this);
+        this.groups[tsid].chat_join(this);
     }else{
         this.player.sendActivity("Group not found");
     }
@@ -378,9 +389,9 @@ public function groups_chat_leave(tsid){
             array_remove_value(this.group_chats, tsid);
         }
     }
-    else if (this.groups && this.groups.groups[tsid]){
+    else if (this.groups && this.groups[tsid]){
 
-        this.groups.groups[tsid].chat_leave(this);
+        this.groups[tsid].chat_leave(this);
     }else{
         this.player.sendActivity("Group not found");
     }
@@ -391,7 +402,7 @@ public function groups_logout(){
     log.info(this+' groups_logout');
 
     if (this.groups){
-        var gg = this.groups.groups;
+        var gg = this.groups;
         for (var i in gg){
             log.info(this+' groups_logout: '+gg[i]);
             gg[i].chat_logout(this);
@@ -414,9 +425,9 @@ public function groups_is_in_chat(tsid){
     if (in_array_real(tsid, config.live_help_groups) || in_array_real(tsid, config.newbie_live_help_groups) || in_array_real(tsid, config.global_chat_groups) || in_array_real(tsid, config.trade_chat_groups)){
         return in_array_real(tsid, this.group_chats);
     }
-    else if (this.groups && this.groups.groups[tsid]){
+    else if (this.groups && this.groups[tsid]){
 
-        return this.groups.groups[tsid].chat_is_in_roster(this.player.tsid);
+        return this.groups[tsid].chat_is_in_roster(this.player.tsid);
     }else{
         return false;
     }
@@ -449,7 +460,7 @@ public function groups_get_status(tsid){
 
     if (this.group_applied[tsid]) return 'applied';
 
-    if (this.groups.groups[tsid]) return 'member';
+    if (this.groups[tsid]) return 'member';
 
     return 'none';
 }
@@ -461,7 +472,7 @@ public function groups_get_all(){
     var tsids = [];
     var out = {};
 
-    for (var i in this.groups.groups){
+    for (var i in this.groups){
         tsids.push(i);
         out[i] = {
             rel : 'member'
@@ -491,7 +502,7 @@ public function groups_get_all(){
 public function groups_has(tsid){
     if (in_array_real(tsid, config.live_help_groups) || in_array_real(tsid, config.newbie_live_help_groups) || in_array_real(tsid, config.global_chat_groups) || in_array_real(tsid, config.trade_chat_groups)) return true;
 
-    return this.groups.groups[tsid] ? true : false;
+    return this.groups[tsid] ? true : false;
 }
 
 public function groups_get(tsid){
@@ -499,14 +510,14 @@ public function groups_get(tsid){
         return Server.instance.apiFindObject(tsid);
     }
     else{
-        return this.groups.groups[tsid];
+        return this.groups[tsid];
     }
 }
 
 public function groups_check_pointers(){
-    if (!this.groups || !this.groups.groups) return 0;
+    if (!this.groups || !this.groups) return 0;
 
-    var gg = this.groups.groups;
+    var gg = this.groups;
     for (var i in gg){
         var g = Server.instance.apiFindObject(i);
         if (!g || !g.is_member(this) || g.getProp('deleted')){

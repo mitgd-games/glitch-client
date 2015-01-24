@@ -1,8 +1,10 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +13,9 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var todo;
+		public var done;
 
         public function Jobs(config : Config, player : Player) {
             this.config = config;
@@ -19,28 +24,24 @@ package com.reversefold.glitch.server.player {
 
 
 public function jobs_init(){
-    if (!this.jobs) this.jobs = {};
-    if (this.jobs.todo === undefined || this.jobs.todo === null){
-        this.jobs.todo = Server.instance.apiNewOwnedDC(this);
-        this.jobs.todo.label = 'To Do';
+    if (this.todo === undefined || this.todo === null){
+        this.todo = {};//Server.instance.apiNewOwnedDC(this);
+        this.todo.label = 'To Do';
     }
 
-    if (!this.jobs.todo.jobs) this.jobs.todo.jobs = {};
+    if (!this.todo.jobs) this.todo.jobs = {};
 
-    if (this.jobs.done === undefined || this.jobs.done === null) {
-        this.jobs.done = Server.instance.apiNewOwnedDC(this);
-        this.jobs.done.label = 'Done';
+    if (this.done === undefined || this.done === null) {
+        this.done = {};//Server.instance.apiNewOwnedDC(this);
+        this.done.label = 'Done';
     }
 
-    if (!this.jobs.done.jobs) this.jobs.done.jobs = {};
+    if (!this.done.jobs) this.done.jobs = {};
 }
 
 public function jobs_reset(){
-    if (this.jobs){
-        if (this.jobs.todo) this.jobs.todo.apiDelete();
-        if (this.jobs.done) this.jobs.done.apiDelete();
-        delete this.jobs;
-    }
+    if (this.todo) this.todo.apiDelete();
+    if (this.done) this.done.apiDelete();
     this.jobs_init();
 }
 
@@ -50,24 +51,24 @@ public function jobs_has(job_location, job_id, class_id){
 
 public function jobs_get_status(job_location, job_id, class_id){
     // Port old format to new format
-    if (this.jobs.todo.jobs[job_id] == job_location){
-        if (!this.jobs.todo.jobs[job_location]) this.jobs.todo.jobs[job_location] = {};
-        this.jobs.todo.jobs[job_location][job_id] = {};
-        delete this.jobs.todo.jobs[job_id];
+    if (this.todo.jobs[job_id] == job_location){
+        if (!this.todo.jobs[job_location]) this.todo.jobs[job_location] = {};
+        this.todo.jobs[job_location][job_id] = {};
+        delete this.todo.jobs[job_id];
     }
-    else if (this.jobs.done.jobs[job_id] == job_location){
-        if (!this.jobs.done.jobs[job_location]) this.jobs.done.jobs[job_location] = {};
-        this.jobs.done.jobs[job_location][job_id] = {};
-        delete this.jobs.done.jobs[job_id];
+    else if (this.done.jobs[job_id] == job_location){
+        if (!this.done.jobs[job_location]) this.done.jobs[job_location] = {};
+        this.done.jobs[job_location][job_id] = {};
+        delete this.done.jobs[job_id];
     }
 
     if (class_id){
-        if (this.jobs.todo.jobs[job_location] && this.jobs.todo.jobs[job_location][job_id] && this.jobs.todo.jobs[job_location][job_id][class_id]) return 'todo';
-        if (this.jobs.done.jobs[job_location] && this.jobs.done.jobs[job_location][job_id] && this.jobs.done.jobs[job_location][job_id][class_id]) return 'done';
+        if (this.todo.jobs[job_location] && this.todo.jobs[job_location][job_id] && this.todo.jobs[job_location][job_id][class_id]) return 'todo';
+        if (this.done.jobs[job_location] && this.done.jobs[job_location][job_id] && this.done.jobs[job_location][job_id][class_id]) return 'done';
     }
     else{
-        if (this.jobs.todo.jobs[job_location] && this.jobs.todo.jobs[job_location][job_id]) return 'todo';
-        if (this.jobs.done.jobs[job_location] && this.jobs.done.jobs[job_location][job_id]) return 'done';
+        if (this.todo.jobs[job_location] && this.todo.jobs[job_location][job_id]) return 'todo';
+        if (this.done.jobs[job_location] && this.done.jobs[job_location][job_id]) return 'done';
     }
 
     return null;
@@ -78,31 +79,31 @@ public function jobs_mark_complete(job_location, job_id, class_id, actual_reward
     if (status != 'todo') return false;
 
     if (class_id){
-        if (!this.jobs.done.jobs[job_location]) this.jobs.done.jobs[job_location] = {};
-        if (!this.jobs.done.jobs[job_location][job_id]) this.jobs.done.jobs[job_location][job_id] = {};
+        if (!this.done.jobs[job_location]) this.done.jobs[job_location] = {};
+        if (!this.done.jobs[job_location][job_id]) this.done.jobs[job_location][job_id] = {};
 
-        if (this.jobs.todo.jobs[job_location][job_id][class_id]){
-            this.jobs.done.jobs[job_location][job_id][class_id] = this.jobs.todo.jobs[job_location][job_id][class_id];
-            delete this.jobs.todo.jobs[job_location][job_id][class_id];
+        if (this.todo.jobs[job_location][job_id][class_id]){
+            this.done.jobs[job_location][job_id][class_id] = this.todo.jobs[job_location][job_id][class_id];
+            delete this.todo.jobs[job_location][job_id][class_id];
         }
-        else if (this.jobs.todo.jobs[job_location][job_id]){
-            this.jobs.done.jobs[job_location][job_id][class_id] = this.jobs.todo.jobs[job_location][job_id];
-            delete this.jobs.todo.jobs[job_location][job_id];
+        else if (this.todo.jobs[job_location][job_id]){
+            this.done.jobs[job_location][job_id][class_id] = this.todo.jobs[job_location][job_id];
+            delete this.todo.jobs[job_location][job_id];
         }
-        if (!num_keys(this.jobs.todo.jobs[job_location][job_id])) delete this.jobs.todo.jobs[job_location][job_id];
-        if (!num_keys(this.jobs.todo.jobs[job_location])) delete this.jobs.todo.jobs[job_location];
+        if (!num_keys(this.todo.jobs[job_location][job_id])) delete this.todo.jobs[job_location][job_id];
+        if (!num_keys(this.todo.jobs[job_location])) delete this.todo.jobs[job_location];
 
-        this.jobs.done.jobs[job_location][job_id][class_id].actual_rewards = actual_rewards;
-        this.jobs.done.jobs[job_location][job_id][class_id].performance_rewards = performance_rewards;
+        this.done.jobs[job_location][job_id][class_id].actual_rewards = actual_rewards;
+        this.done.jobs[job_location][job_id][class_id].performance_rewards = performance_rewards;
     }
     else{
-        if (!this.jobs.done.jobs[job_location]) this.jobs.done.jobs[job_location] = {};
-        this.jobs.done.jobs[job_location][job_id] = this.jobs.done.jobs[job_location][job_id];
-        delete this.jobs.todo.jobs[job_location][job_id];
-        if (!num_keys(this.jobs.todo.jobs[job_location])) delete this.jobs.todo.jobs[job_location];
+        if (!this.done.jobs[job_location]) this.done.jobs[job_location] = {};
+        this.done.jobs[job_location][job_id] = this.done.jobs[job_location][job_id];
+        delete this.todo.jobs[job_location][job_id];
+        if (!num_keys(this.todo.jobs[job_location])) delete this.todo.jobs[job_location];
 
-        this.jobs.done.jobs[job_location][job_id].actual_rewards = actual_rewards;
-        this.jobs.done.jobs[job_location][job_id].performance_rewards = performance_rewards;
+        this.done.jobs[job_location][job_id].actual_rewards = actual_rewards;
+        this.done.jobs[job_location][job_id].performance_rewards = performance_rewards;
     }
 
     log.info(this+' got rewards for job '+job_location+'-'+job_id+' - '+actual_rewards+' - '+performance_rewards);
@@ -111,16 +112,16 @@ public function jobs_mark_complete(job_location, job_id, class_id, actual_reward
 }
 
 public function jobs_delete(job_location, job_id){
-    delete this.jobs.todo.jobs[job_id];
-    if (this.jobs.todo.jobs[job_location]){
-        delete this.jobs.todo.jobs[job_location][job_id];
-        if (!num_keys(this.jobs.todo.jobs[job_location])) delete this.jobs.todo.jobs[job_location];
+    delete this.todo.jobs[job_id];
+    if (this.todo.jobs[job_location]){
+        delete this.todo.jobs[job_location][job_id];
+        if (!num_keys(this.todo.jobs[job_location])) delete this.todo.jobs[job_location];
     }
 
-    delete this.jobs.done.jobs[job_id];
-    if (this.jobs.done.jobs[job_location]){
-        delete this.jobs.done.jobs[job_location][job_id];
-        if (!num_keys(this.jobs.done.jobs[job_location])) delete this.jobs.done.jobs[job_location];
+    delete this.done.jobs[job_id];
+    if (this.done.jobs[job_location]){
+        delete this.done.jobs[job_location][job_id];
+        if (!num_keys(this.done.jobs[job_location])) delete this.done.jobs[job_location];
     }
 }
 
@@ -131,9 +132,9 @@ public function jobs_delete(job_location, job_id){
 public function jobs_accept(job_id, location, class_id){
     if (this.jobs_has(location.tsid, job_id, class_id)) return false;
 
-    if (!this.jobs.todo.jobs[location.tsid]) this.jobs.todo.jobs[location.tsid] = {};
-    if (!this.jobs.todo.jobs[location.tsid][job_id]) this.jobs.todo.jobs[location.tsid][job_id] = {};
-    this.jobs.todo.jobs[location.tsid][job_id][class_id] = {};
+    if (!this.todo.jobs[location.tsid]) this.todo.jobs[location.tsid] = {};
+    if (!this.todo.jobs[location.tsid][job_id]) this.todo.jobs[location.tsid][job_id] = {};
+    this.todo.jobs[location.tsid][job_id][class_id] = {};
 
     return true;
 }
@@ -146,29 +147,29 @@ public function jobs_get(job_location, job_id, class_id){
     if (!job_id) return null;
 
     if (!job_location){
-        if (this.jobs.todo.jobs[job_id]) job_location = this.jobs.todo.jobs[job_id];
+        if (this.todo.jobs[job_id]) job_location = this.todo.jobs[job_id];
     }
     if (!job_location){
-        if (this.jobs.done.jobs[job_id]) job_location = this.jobs.done.jobs[job_id];
+        if (this.done.jobs[job_id]) job_location = this.done.jobs[job_id];
     }
     if (!job_location){
         return null;
     }
 
     // Port old format to new format
-    if (this.jobs.todo.jobs[job_id] == job_location){
-        if (!this.jobs.todo.jobs[job_location]) this.jobs.todo.jobs[job_location] = {};
-        this.jobs.todo.jobs[job_location][job_id] = {};
-        delete this.jobs.todo.jobs[job_id];
+    if (this.todo.jobs[job_id] == job_location){
+        if (!this.todo.jobs[job_location]) this.todo.jobs[job_location] = {};
+        this.todo.jobs[job_location][job_id] = {};
+        delete this.todo.jobs[job_id];
     }
-    else if (this.jobs.done.jobs[job_id] == job_location){
-        if (!this.jobs.done.jobs[job_location]) this.jobs.done.jobs[job_location] = {};
-        this.jobs.done.jobs[job_location][job_id] = {};
-        delete this.jobs.done.jobs[job_id];
+    else if (this.done.jobs[job_id] == job_location){
+        if (!this.done.jobs[job_location]) this.done.jobs[job_location] = {};
+        this.done.jobs[job_location][job_id] = {};
+        delete this.done.jobs[job_id];
     }
 
-    if (this.jobs.todo.jobs[job_location] && !this.jobs.todo.jobs[job_location][job_id]){
-        for (var i in this.jobs.todo.jobs[job_location]){
+    if (this.todo.jobs[job_location] && !this.todo.jobs[job_location][job_id]){
+        for (var i in this.todo.jobs[job_location]){
             var jobs = Server.instance.apiFindObject(job_location).jobs_get_all();
             for (var j in jobs){
                 var job = jobs[j];
@@ -177,8 +178,8 @@ public function jobs_get(job_location, job_id, class_id){
                 if (job.class_tsid == i){
                     var instance_id = job.getInstanceId();
                     if (instance_id){
-                        this.jobs.todo.jobs[job_location][instance_id] = this.jobs.todo.jobs[job_location][job.class_tsid];
-                        delete this.jobs.todo.jobs[job_location][job.class_tsid];
+                        this.todo.jobs[job_location][instance_id] = this.todo.jobs[job_location][job.class_tsid];
+                        delete this.todo.jobs[job_location][job.class_tsid];
                     }
                 }
 
@@ -187,8 +188,8 @@ public function jobs_get(job_location, job_id, class_id){
         }
     }
 
-    if (this.jobs.done.jobs[job_location] && !this.jobs.done.jobs[job_location][job_id]){
-        for (var i in this.jobs.done.jobs[job_location]){
+    if (this.done.jobs[job_location] && !this.done.jobs[job_location][job_id]){
+        for (var i in this.done.jobs[job_location]){
             var jobs = Server.instance.apiFindObject(job_location).jobs_get_all();
             for (var j in jobs){
                 var job = jobs[j];
@@ -197,8 +198,8 @@ public function jobs_get(job_location, job_id, class_id){
                 if (job.class_tsid == i){
                     var instance_id = job.getInstanceId();
                     if (instance_id){
-                        this.jobs.done.jobs[job_location][instance_id] = this.jobs.done.jobs[job_location][job.class_tsid];
-                        delete this.jobs.done.jobs[job_location][job.class_tsid];
+                        this.done.jobs[job_location][instance_id] = this.done.jobs[job_location][job.class_tsid];
+                        delete this.done.jobs[job_location][job.class_tsid];
                     }
                 }
 
@@ -209,8 +210,8 @@ public function jobs_get(job_location, job_id, class_id){
 
     // And thus begins the only part that matters
     var job_loc = null;
-    if (this.jobs.todo.jobs[job_location] && this.jobs.todo.jobs[job_location][job_id]) job_loc = Server.instance.apiFindObject(job_location);
-    if (this.jobs.done.jobs[job_location] && this.jobs.done.jobs[job_location][job_id]) job_loc = Server.instance.apiFindObject(job_location);
+    if (this.todo.jobs[job_location] && this.todo.jobs[job_location][job_id]) job_loc = Server.instance.apiFindObject(job_location);
+    if (this.done.jobs[job_location] && this.done.jobs[job_location][job_id]) job_loc = Server.instance.apiFindObject(job_location);
 
     if (job_loc){
         return job_loc.jobs_get(job_id, class_id);
@@ -416,7 +417,7 @@ public function jobs_familiar_job_complete_do(choice, details){
 
                     s.setTarget(destination, true);
 
-                    var remaining = this.addItemStack(s);
+                    var remaining = this.player.bag.addItemStack(s);
 
                     if (remaining){
                         // Anything remaining from the familiar we automatically place in rewards overflow storage

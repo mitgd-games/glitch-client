@@ -1042,7 +1042,7 @@ public function get_mail_items(mailType, msg_id) {
                     // This MUST come last, because if there's a half-complete stack of this
                     // item with enough capacity, it might swallow the stack and delete it
                     // from the GS.
-                    if(this.addItemStack(stack)) {
+                    if(this.player.bag.addItemStack(stack)) {
                         // Failure for some reason.
                         log.error("Adding mail item "+stack+" to "+this+" failed horribly.");
                         if(stack) {

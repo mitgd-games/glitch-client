@@ -1,8 +1,11 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
+    import com.reversefold.glitch.server.data.Homes;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -12,7 +15,17 @@ package com.reversefold.glitch.server.player {
         public var config : Config;
         public var player : Player;
 		
+		public var houses;
 		public var home;
+		public var house_auth;
+		public var house_auth_req;
+		public var had_butler;
+		public var social_signpost_backup;
+		public var home_backup;
+		public var home_is_creating;
+		public var home_leave;
+		public var hiddenItems;
+		public var home_tower;
 
         public function Houses(config : Config, player : Player) {
             this.config = config;
@@ -26,8 +39,8 @@ public function houses_login(){
 }
 
 public function houses_logout(){
-    delete this.house_auth;
-    delete this.house_auth_req;
+    this.house_auth = null;
+    this.house_auth_req = null;
 
 
     //
@@ -69,9 +82,9 @@ public function houses_logout(){
     }
 
 
-    if (this.acl_keys){
-        for (var i in this.acl_keys){
-            var house = this.acl_keys[i].location;
+    if (this.player.acl_keys){
+        for (var i in this.player.acl_keys){
+            var house = this.player.acl_keys[i].location;
             if (!house.pols_trusteeOnline(this)){
                 house.pols_kickEveryone();
             }
@@ -130,7 +143,7 @@ public function houses_remove_all_auth(pc){
 
     for (var i in this.houses){
 
-        this.houses_remove_auth(apiFindObject(i), pc);
+        this.houses_remove_auth(Server.instance.apiFindObject(i), pc);
     }
 
     if (this.home && this.home.interior){
@@ -774,14 +787,14 @@ public function houses_remove_all(){
             pol.admin_delete();
         }
     }
-    delete this.home;
+    this.home = null;
 }
 
 public function houses_remove_new(){
     if (this.home){
 
         // Backup keys
-        if (!this.acl_keys_backup) this.acl_keys_backup = this.player.acl_keys_get_given(true);
+        if (!this.player.acl_keys_backup) this.player.acl_keys_backup = this.player.acl_keys_get_given(true);
         this.had_butler = this.player.butler.has_butler();
 
         // Moving boxes
@@ -822,11 +835,11 @@ public function houses_remove_new(){
         }
 
         if (!this.home_backup) this.home_backup = this.home;
-        delete this.home;
+        this.home = null;
     }
 }
 
-public function houses_go_to_new_house(force_recreate, no_teleport, go_inside){
+public function houses_go_to_new_house(force_recreate, no_teleport, go_inside=null){
 
 
     //
@@ -838,7 +851,7 @@ public function houses_go_to_new_house(force_recreate, no_teleport, go_inside){
     }
     else if (!this.home){
         // Backup keys
-        if (!this.acl_keys_backup) this.acl_keys_backup = this.player.acl_keys_get_given();
+        if (!this.player.acl_keys_backup) this.player.acl_keys_backup = this.player.acl_keys_get_given();
     }
 
 
@@ -850,16 +863,16 @@ public function houses_go_to_new_house(force_recreate, no_teleport, go_inside){
         this.home_is_creating = time();
         this.home = {};
 
-        var label = Utils.escape(this.label)+"'s";
+        var label = Utils.escape(this.player.label)+"'s";
         var ret = this.houses_create_location(label+' House', 'home_interior', false);
         if (!ret.ok) return ret;
 
         this.home.interior = ret.pol;
         this.home.interior.homes_demo_backyard(); // init backyard
-        if (this.acl_keys_backup){
-            log.info("Setting interior keys to: "+this.acl_keys_backup);
-            this.home.interior.acl_keys_set(this.acl_keys_backup); // restore keys
-            delete this.acl_keys_backup;
+        if (this.player.acl_keys_backup){
+            log.info("Setting interior keys to: "+this.player.acl_keys_backup);
+            this.home.interior.acl_keys_set(this.player.acl_keys_backup); // restore keys
+            this.player.acl_keys_backup = null;
         }
 
         ret = this.houses_create_location(label+' Home Street', 'home_exterior', false);
@@ -870,7 +883,7 @@ public function houses_go_to_new_house(force_recreate, no_teleport, go_inside){
         this.home.exterior.homes_demo_frontyard(); // init frontyard
         if (this.social_signpost_backup){
             this.home.exterior.setNeighbors(this.social_signpost_backup);
-            delete this.social_signpost_backup;
+            this.social_signpost_backup = null;
         }
 
 
@@ -902,7 +915,7 @@ public function houses_go_to_new_house(force_recreate, no_teleport, go_inside){
         //this.houses_undo_moving_boxes();
 
         this.houses_update_client();
-        delete this.home_is_creating;
+        this.home_is_creating = null;
     }
     else{
         // Migrate?
@@ -925,7 +938,7 @@ public function houses_go_to_new_house(force_recreate, no_teleport, go_inside){
             return {ok: 0, error: "Just finish the quest first! It's easy!"};
         }
 
-        if (this.newxp_allow_home){
+        if (this.player.newxp_allow_home){
             // TA-DA!
             this.player.newxpComplete();
         }
@@ -1018,7 +1031,7 @@ public function houses_visit(player_tsid){
     if (!house.pols_is_owner(this) && this.player.countFollowers()){
         var followers_have_clearance = 1;
 
-        for (var i in this.followers){
+        for (var i in this.player.followers){
             var follower = Server.instance.apiFindObject(i);
 
             var fret = house.pols_canEnter(follower);
@@ -1056,7 +1069,7 @@ public function houses_visit(player_tsid){
     return this.houses_teleport_to(house);
 }
 
-public function houses_teleport_to(target_house, x, y){
+public function houses_teleport_to(target_house, x=null, y=null){
 
     if (this.player.is_dead) return {ok: 0, error: "You are dead."};
 
@@ -1106,16 +1119,16 @@ public function houses_record_leave(){
         else{
             this.home_leave = {
                 tsid: this.player.location.tsid,
-                x: this.x,
-                y: this.y
+                x: this.player.x,
+                y: this.player.y
             };
         }
     }
     else if (!this.player.location.pols_is_pol() || !this.player.location.getProp('is_home')){
         this.home_leave = {
             tsid: this.player.location.tsid,
-            x: this.x,
-            y: this.y
+            x: this.player.x,
+            y: this.player.y
         };
     }
 }
@@ -1123,8 +1136,8 @@ public function houses_record_leave(){
 public function houses_create_location(label, type, db_sync){
 
     var pol_cfg = {};
-    if (type == 'home_interior') pol_cfg = config.homes_interior_configs[config.home_limits.START_INT_TEMPLATE];
-    if (type == 'home_exterior') pol_cfg = config.homes_exterior_configs[config.home_limits.START_EXT_TEMPLATE];
+    if (type == 'home_interior') pol_cfg = Homes.homes_interior_configs[config.base.home_limits.START_INT_TEMPLATE];
+    if (type == 'home_exterior') pol_cfg = Homes.homes_exterior_configs[config.base.home_limits.START_EXT_TEMPLATE];
 
 
     //
@@ -1324,7 +1337,7 @@ public function houses_leave(){
     }
 
     this.player.teleportToLocationDelayed(target.tsid, target.x, target.y);
-    delete this.home_leave;
+    this.home_leave = null;
 }
 
 public function houses_get_previous_location(){
@@ -1452,7 +1465,7 @@ public function houses_extend(){
         }
     }
 
-    if (!config.home_limits.UPGRADES_ARE_FREE){
+    if (!config.base.home_limits.UPGRADES_ARE_FREE){
         if (!this.player.items.items_destroy_multi(items)){
             return {
                 ok: 0,
@@ -1497,7 +1510,7 @@ public function houses_expand_yard(side){
             };
         }
 
-        if (!config.home_limits.UPGRADES_ARE_FREE){
+        if (!config.base.home_limits.UPGRADES_ARE_FREE){
             if (!this.player.stats.stats_try_remove_imagination(costs.img_cost, context)){
                 return {
                     ok: 0,
@@ -1535,7 +1548,7 @@ public function houses_expand_yard(side){
             };
         }
 
-        if (!config.home_limits.UPGRADES_ARE_FREE){
+        if (!config.base.home_limits.UPGRADES_ARE_FREE){
             if (!this.player.stats.stats_try_remove_imagination(costs.img_cost, context)){
                 return {
                     ok: 0,
@@ -1672,7 +1685,7 @@ public function houses_style_set(t){
         'to_style'  : t
     };
 
-    if (!config.home_limits.UPGRADES_ARE_FREE){
+    if (!config.base.home_limits.UPGRADES_ARE_FREE){
         if (!this.player.stats.stats_try_remove_imagination(this.house_style_switch_cost(), context)){
             return {
                 ok: 0,

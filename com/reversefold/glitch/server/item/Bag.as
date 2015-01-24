@@ -1,4 +1,6 @@
 package com.reversefold.glitch.server.item {
+	import com.reversefold.glitch.server.Server;
+
 	public class Bag {
 		public function Bag() {
 		}
@@ -318,7 +320,7 @@ public function removeItemStack(path, count=null){
 }
 
 // Removes up to count of items of type class_tsid from the bag, using the first slot that matches
-public function removeItemStackClass(class_tsid, count, args){
+public function removeItemStackClass(class_tsid, count, args=null){
 	var items = this.getContents();
 
 	var is_function = (typeof class_tsid == 'function');
@@ -426,7 +428,7 @@ public function removeItemStackTsid(tsid, count){
 
 	// Also check furn bag
 	if (this.is_player){
-		var bag = this.furniture_get_bag();
+		var bag = this.player.furniture.furniture_get_bag();
 		if (bag) return bag.removeItemStackTsid(tsid, count);
 	}
 }
@@ -445,7 +447,7 @@ public function canContain(stack){
 }
 
 // Is this bag full? Optional stack argument will also test that the bag can contain that stack
-public function isBagFull(stack){
+public function isBagFull(stack=null){
 	Server.instance.apiResetThreadCPUClock();
 	//if (stack && !this.canContain(stack)) return true;
 	var items = this.getContents();
@@ -674,7 +676,7 @@ public function findItemClass(class_tsid, args){
 
 
 // Finds the first stack in the bag and subbags and returns a reference to it
-public function findFirst(class_tsid, args){
+public function findFirst(class_tsid, args=null){
 	var items = this.getContents();
 
 	var is_function = (typeof class_tsid == 'function');

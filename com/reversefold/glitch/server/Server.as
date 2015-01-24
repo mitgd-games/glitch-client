@@ -108,9 +108,9 @@ package com.reversefold.glitch.server {
 			throw new Error('apiCallMethodForOnlinePlayers ' + func + ' ' + tsids);
 		}
 		
-		public function apiCallMethod(func : String, tsids) {
+		public function apiCallMethod(func : String, tsids, tsid=null) {
 			//RVRS: TODO: Call for just us until multiplayer?
-			throw new Error('apiCallMethod ' + func + ' ' + tsids);
+			throw new Error('apiCallMethod ' + func + ' ' + tsids + ' ' + tsid);
 		}
 		
 		public function apiGetObjectContent(tsid) {
@@ -130,6 +130,21 @@ package com.reversefold.glitch.server {
 		public function apiNewItemStack(bag_name : String, size : int) {
 			//RVRS: TODO
 			throw new Error('apiNewItemStack ' + bag_name + ' ' + size);
+		}
+		
+		public function apiNewItemStackFromXY(class_id, num, x, y) {
+			//RVRS: TODO
+			throw new Error('apiNewItemStackFromXY ' + class_id + ' ' + num + ' ' + x + ' ' + y);
+		}
+		
+		public function apiNewItemStackFromFamiliar(class_id, num) {
+			//RVRS: TODO
+			throw new Error('apiNewItemStackFromFamiliar ' + class_id + ' ' + num);
+		}
+		
+		public function apiNewItemStackFromSource(class_id, num, source_item) {
+			//RVRS: TODO
+			throw new Error('apiNewItemStackFromSource ' + class_id + ' ' + num + ' ' + source_item);
 		}
 		
 		// END api funcs

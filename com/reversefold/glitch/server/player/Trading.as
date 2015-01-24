@@ -320,7 +320,7 @@ public function trading_rollback(){
             if (contents[i]){
                 var restore = escrow.removeItemStackSlot(i);
                 var count = restore.count;
-                var remaining = this.addItemStack(restore);
+                var remaining = this.player.bag.addItemStack(restore);
                 if (remaining) overflow = true;
 
                 if (remaining != count){
@@ -516,7 +516,7 @@ public function trading_add_item_do(itemstack_tsid, amount, destination_slot){
         var restore = escrow.removeItemStackClass(item.class_tsid, remaining);
         this.player.items.items_put_back(item);
 
-        this.addItemStack(restore);
+        this.player.bag.addItemStack(restore);
         return {
             ok: 0,
             error: "Oops! We couldn't place that item in escrow."
@@ -541,7 +541,7 @@ public function trading_add_item_do(itemstack_tsid, amount, destination_slot){
                 var restore = escrow.removeItemStackClass(item.class_tsid, remaining);
                 this.player.items.items_put_back(stack);
 
-                this.addItemStack(restore);
+                this.player.bag.addItemStack(restore);
                 return {
                     ok: 0,
                     error: "Oops! We couldn't place that item in escrow."
@@ -679,7 +679,7 @@ public function trading_remove_item_do(itemstack_tsid, amount){
     var item_class = item.class_tsid;
     var item_label = item.label;
 
-    var remaining = this.addItemStack(item);
+    var remaining = this.player.bag.addItemStack(item);
     if (remaining){
         var restore = this.removeItemStackClass(item.class_tsid, remaining);
         this.player.items.items_put_back(item);

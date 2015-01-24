@@ -36,7 +36,7 @@ public function tests_bag_contents_empty(){
 }
 
 public function tests_bag_add_apple(){
-    this.addItemStack(apiNewItemStack('apple', 2));
+    this.player.bag.addItemStack(apiNewItemStack('apple', 2));
 
     var contents = this.getContents();
     var ret = tests_assert_equals('Bag size', 1, this.size);
@@ -58,7 +58,7 @@ public function tests_bag_add_apple(){
 }
 
 public function tests_bag_add_apple_stackable(){
-    this.addItemStack(apiNewItemStack('apple', 2));
+    this.player.bag.addItemStack(apiNewItemStack('apple', 2));
 
     var contents = this.getContents();
     var ret = tests_assert_equals('Bag size', 1, this.size);
@@ -80,7 +80,7 @@ public function tests_bag_add_apple_stackable(){
 }
 
 public function tests_bag_add_apple_overflow(){
-    this.addItemStack(apiNewItemStack('apple', 100));
+    this.player.bag.addItemStack(apiNewItemStack('apple', 100));
 
     var contents = this.getContents();
     var ret = tests_assert_equals('Bag size', 2, this.size);
@@ -112,7 +112,7 @@ public function tests_bag_add_apple_overflow(){
 }
 
 public function tests_bag_add_apple_slot(){
-    this.addItemStack(apiNewItemStack('apple', 5), 10);
+    this.player.bag.addItemStack(apiNewItemStack('apple', 5), 10);
 
     var contents = this.getContents();
     var ret = tests_assert_equals('Bag size', 3, this.size);
@@ -172,7 +172,7 @@ public function tests_bag_remove_partial_item(){
 
 public function tests_bag_fill(){
     for (var i=this.size; i<=this.capacity; i++){
-        this.addItemStack(apiNewItemStack('apple', 5), i-1);
+        this.player.bag.addItemStack(apiNewItemStack('apple', 5), i-1);
     }
 
     var contents = this.getContents();
@@ -185,7 +185,7 @@ public function tests_bag_fill(){
 }
 
 public function tests_bag_add_item_fail(){
-    var remaining = this.addItemStack(apiNewItemStack('banana', 1));
+    var remaining = this.player.bag.addItemStack(apiNewItemStack('banana', 1));
     var ret = tests_assert_equals('Returned stack count', 1, remaining);
     if (!ret.ok){
         return ret;
@@ -204,7 +204,7 @@ public function tests_bag_add_subbag(){
     var stack = this.removeItemStackSlot(0);
     stack.apiDelete();
 
-    var remaining = this.addItemStack(apiNewItemStack('bag_generic', 1));
+    var remaining = this.player.bag.addItemStack(apiNewItemStack('bag_generic', 1));
     var ret = tests_assert_equals('Returned stack count', 0, remaining);
     if (!ret.ok){
         return ret;
@@ -225,7 +225,7 @@ public function tests_bag_add_subbag(){
 }
 
 public function tests_bag_add_banana_subbag(){
-    var remaining = this.addItemStack(apiNewItemStack('banana', 1));
+    var remaining = this.player.bag.addItemStack(apiNewItemStack('banana', 1));
     var ret = tests_assert_equals('Returned stack count', 0, remaining);
     if (!ret.ok){
         return ret;
@@ -275,7 +275,7 @@ public function tests_bag_remove_banana_subbag(){
 
 public function tests_bag_serguei(){
     log.info('Adding subbag');
-    var remaining = this.addItemStack(apiNewItemStack('bag_generic', 1), this.capacity-1);
+    var remaining = this.player.bag.addItemStack(apiNewItemStack('bag_generic', 1), this.capacity-1);
 
     var contents = this.getContents();
     var subbag = contents[this.capacity-1];
@@ -340,7 +340,7 @@ public function tests_bag_delete_subbag(){
 }
 
 public function tests_bag_add_spicerack(){
-    var remaining = this.addItemStack(apiNewItemStack('bag_spicerack', 1));
+    var remaining = this.player.bag.addItemStack(apiNewItemStack('bag_spicerack', 1));
     var ret = tests_assert_equals('Returned stack count', 0, remaining);
     if (!ret.ok){
         return ret;
@@ -361,7 +361,7 @@ public function tests_bag_add_spicerack(){
 }
 
 public function tests_bag_add_banana_spicerack_auto_fail(){
-    var remaining = this.addItemStack(apiNewItemStack('banana', 1));
+    var remaining = this.player.bag.addItemStack(apiNewItemStack('banana', 1));
     var ret = tests_assert_equals('Returned stack count', 1, remaining);
     if (!ret.ok){
         return ret;
@@ -401,7 +401,7 @@ public function tests_bag_add_banana_spicerack_direct_fail(){
 }
 
 public function tests_bag_add_cumin_spicerack_auto(){
-    var remaining = this.addItemStack(apiNewItemStack('cumin', 1));
+    var remaining = this.player.bag.addItemStack(apiNewItemStack('cumin', 1));
     var ret = tests_assert_equals('Returned stack count', 0, remaining);
     if (!ret.ok){
         return ret;

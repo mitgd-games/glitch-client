@@ -644,7 +644,7 @@ public function announce_build_indicator_annc(uid){
     return annc;
 }
 
-public function announce_add_indicator(uid, overlay_key, is_item, state, args){
+public function announce_add_indicator(uid, overlay_key, is_item, state=null, args=null){
     // already exists? Remove first
     if (this.announced_indicators && this.announced_indicators[uid]){
         this.announce_remove_indicator(uid);

@@ -1,8 +1,9 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +12,16 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var items;
+		public var delayedCreateItems;
+		public var on_discovery_closed;
+		public var swf_one;
+		public var swf_two;
+		public var swf_three;
+		public var glitch_game;
+		public var zilloweenTreaters;
+		public var food_history;
 
         public function Items(config : Config, player : Player) {
             this.config = config;
@@ -187,7 +198,7 @@ public function createArtifact(artifact_type){
 
     var stack = null;
     for (var i in artifact_map[artifact_type].pieces){
-        stack = this.removeItemStackClass(this.artifact_map[artifact_type].pieces[i], 1);
+        stack = this.player.bag.removeItemStackClass(this.artifact_map[artifact_type].pieces[i], 1);
         if (!stack) break;
         stack.apiDelete();
     }
@@ -222,14 +233,14 @@ public function createArtifactNecklace(piece_type){
 public function items_has(class_tsid, num){
     if (!num) num = 1;
 
-    return this.countItemClass(class_tsid) >= num ? true : false;
+    return this.player.bag.countItemClass(class_tsid) >= num ? true : false;
 }
 
 // Return what, if anything, we have from the list
 public function items_has_list(class_list, num) {
     var out_list = [];
     for(var i in class_list) {
-        if(this.countItemClass(class_list[i]) >= num) {
+        if(this.player.bag.countItemClass(class_list[i]) >= num) {
             out_list.push(class_list[i]);
         }
     }
@@ -246,7 +257,7 @@ public function items_has_drops(drop_table, num) {
         for (var drop_chance in table.drops){
             var items = table.drops[drop_chance];
             for (var i in items){
-                if(this.countItemClass(items[i].class_id) >= num) {
+                if(this.player.bag.countItemClass(items[i].class_id) >= num) {
                     out_list.push(items[i].class_id);
                 }
             }
@@ -357,7 +368,7 @@ public function get_stacks_by_class(class_id){
 
     var out = [];
 
-    var items = this.getAllContents();
+    var items = this.player.bag.getAllContents();
     for (var i in items){
         if (items[i].class_id == class_id){
             out.push(items[i]);
@@ -371,7 +382,7 @@ public function get_item_counts_including_bags(){
 
     var items = {};
 
-    var all_items = this.getAllContents();
+    var all_items = this.player.bag.getAllContents();
     for (var i in all_items){
         var it = all_items[i];
         if (!items[it.class_tsid]) items[it.class_tsid] = 0;
@@ -392,7 +403,7 @@ public function get_item_counts_including_bags(){
 public function find_items_including_bags(class_tsid, args){
     var is_function = (typeof class_tsid == 'function');
 
-    var all_items = this.getAllContents();
+    var all_items = this.player.bag.getAllContents();
     var items = [];
     for (var i in all_items){
         var it = all_items[i];
@@ -422,7 +433,7 @@ public function find_items_including_bags(class_tsid, args){
 
 public function checkItemsInBag(class_id, num){
     var found_num =0;
-    var items = this.getAllContents();
+    var items = this.player.bag.getAllContents();
     for (var i in items){
         if (items[i].class_id == class_id && !items[i].isHidden){
 
@@ -435,9 +446,9 @@ public function checkItemsInBag(class_id, num){
 }
 
 public function hasEmptySlot(){
-    if (!this.isBagFull()) return true;
+    if (!this.player.bag.isBagFull()) return true;
 
-    var contents = this.getContents();
+    var contents = this.player.bag.getContents();
     for (var slot in contents){
         if (contents[slot] && contents[slot].is_bag && !contents[slot].isHidden){
             if (!contents[slot].isBagFull()) return true;
@@ -452,10 +463,10 @@ public function takeItemsFromBag(class_id, num){
     var stacks = [];
     var found_num = 0;
 
-    var items = this.getAllContents();
+    var items = this.player.bag.getAllContents();
     for (var i in items){
         if (items[i].class_id == class_id){
-            var it = this.removeItemStack(items[i].path);
+            var it = this.player.bag.removeItemStack(items[i].path);
 
             if (found_num + it.count > num){
 
@@ -491,25 +502,25 @@ public function takeItemsFromBag(class_id, num){
     return null;
 }
 
-public function createItem(class_id, num, destroy_remainder, props){
+public function createItem(class_id, num, destroy_remainder=null, props=null){
     var s = Server.instance.apiNewItemStack(class_id, num);
     if (!s) return num;
 
     var size = s.count;
-    var remaining = this.addItemStack(s);
+    var remaining = this.player.bag.addItemStack(s);
     if (size < num){
         remaining += this.createItem(class_id, num-size, destroy_remainder, props);
     }
 
     if (remaining && !destroy_remainder){
-        remaining = this.player.location.createItem(class_id, remaining, this.x, this.y-29, 100, this, props);
+        remaining = this.player.location.createItem(class_id, remaining, this.player.x, this.player.y-29, 100, this, props);
     }
 
     return remaining;
 }
 
-public function createItemFromGround(class_id, num, destroy_remainder, props){
-    var s = Server.instance.apiNewItemStackFromXY(class_id, num, this.x, this.y);
+public function createItemFromGround(class_id, num, destroy_remainder=null, props=null){
+    var s = Server.instance.apiNewItemStackFromXY(class_id, num, this.player.x, this.player.y);
     if (!s) return num;
 
     if (props) {
@@ -519,7 +530,7 @@ public function createItemFromGround(class_id, num, destroy_remainder, props){
     }
 
     var size = s.count;
-    var remaining = this.addItemStack(s);
+    var remaining = this.player.bag.addItemStack(s);
     if (size < num){
         var remaining_two = this.createItemFromGround(class_id, num-size, destroy_remainder, props);
     }
@@ -527,13 +538,13 @@ public function createItemFromGround(class_id, num, destroy_remainder, props){
         var remaining_two = 0;
     }
 
-    this.apiSendLocMsgX({type: "pc_itemstack_verb"});
+    this.player.apiSendLocMsgX({type: "pc_itemstack_verb"});
 
     if (destroy_remainder && remaining) {
         s.apiDelete();
     }
     else if (remaining){
-        remaining = this.player.location.createItem(class_id, remaining, this.x, this.y-29, 100, this, props);
+        remaining = this.player.location.createItem(class_id, remaining, this.player.x, this.player.y-29, 100, this, props);
     }
 
     return remaining + remaining_two;
@@ -550,7 +561,7 @@ public function createItemFromXY(class_id, num, x, y, destroy_remainder, props){
     }
 
     var size = s.count;
-    var remaining = this.addItemStack(s);
+    var remaining = this.player.bag.addItemStack(s);
     if (size < num){
         var remaining_two = this.createItemFromGround(class_id, num-size, destroy_remainder, props);
     }
@@ -558,13 +569,13 @@ public function createItemFromXY(class_id, num, x, y, destroy_remainder, props){
         var remaining_two = 0;
     }
 
-    this.apiSendLocMsgX({type: "pc_itemstack_verb"});
+    this.player.apiSendLocMsgX({type: "pc_itemstack_verb"});
 
     if (destroy_remainder && remaining) {
         s.apiDelete();
     }
     else if (remaining){
-        remaining = this.player.location.createItem(class_id, remaining, this.x, this.y-29, 100, this, props);
+        remaining = this.player.location.createItem(class_id, remaining, this.player.x, this.player.y-29, 100, this, props);
     }
 
     return remaining + remaining_two;
@@ -581,14 +592,14 @@ public function createItemFromFamiliar(class_id, num, props=null){
     }
 
     var size = s.count;
-    var remaining = this.addItemStack(s);
+    var remaining = this.player.bag.addItemStack(s);
     if (size < num){
         remaining += this.createItemFromFamiliar(class_id, num-size, props);
     }
 
     if (remaining){
         // Anything remaining from the familiar we automatically place in rewards overflow storage
-        this.player.rewards.rewards_store(apiNewItemStack(class_id, remaining));
+        this.player.rewards.rewards_store(Server.instance.apiNewItemStack(class_id, remaining));
         s.apiDelete();
     }
 
@@ -670,14 +681,14 @@ public function createDelayedItems() {
     }
 }
 
-public function createItemFromOffset(class_id, num, sourcePosition, destroy_remainder, sourceItem, props){
+public function createItemFromOffset(class_id, num, sourcePosition, destroy_remainder, sourceItem, props=null){
     var ix = (sourcePosition ? sourcePosition.x : 0) + ((sourceItem) ? sourceItem.x : 0);
     var iy = (sourcePosition ? sourcePosition.y : 0) + ((sourceItem) ? sourceItem.y : 0);
 
     var s = Server.instance.apiNewItemStackFromXY(class_id, num, ix, iy);
     if (!s) return num;
 
-    if (this.isBagFull(s)){
+    if (this.player.bag.isBagFull(s)){
         s.apiDelete();
         if (!destroy_remainder){
             return this.player.location.createItem(class_id, num, ix, iy - 20, 100, null, props);
@@ -688,7 +699,7 @@ public function createItemFromOffset(class_id, num, sourcePosition, destroy_rema
     }
 
     var size = s.count;
-    var remaining = this.addItemStack(s);
+    var remaining = this.player.bag.addItemStack(s);
     if (size < num){
         remaining += this.createItemFromOffset(class_id, num-size, sourceItem, destroy_remainder, props);
     }
@@ -701,14 +712,14 @@ public function createItemFromOffset(class_id, num, sourcePosition, destroy_rema
 }
 
 
-public function createItemFromOffsetWithEscrow(class_id, num, sourcePosition, destroy_remainder, sourceItem, props){
+public function createItemFromOffsetWithEscrow(class_id, num, sourcePosition, destroy_remainder, sourceItem, props=null){
     var ix = (sourcePosition ? sourcePosition.x : 0) + ((sourceItem) ? sourceItem.x : 0);
     var iy = (sourcePosition ? sourcePosition.y : 0) + ((sourceItem) ? sourceItem.y : 0);
 
     var s = Server.instance.apiNewItemStackFromXY(class_id, num, ix, iy);
     if (!s) return num;
 
-    if (this.isBagFull(s)){
+    if (this.player.bag.isBagFull(s)){
         if (!destroy_remainder){
             //log.info("ESCROW: putting item into escrow "+s);
             return this.player.rewards.rewards_store(s);
@@ -721,7 +732,7 @@ public function createItemFromOffsetWithEscrow(class_id, num, sourcePosition, de
     }
 
     var size = s.count;
-    var remaining = this.addItemStack(s);
+    var remaining = this.player.bag.addItemStack(s);
     //log.info("ESCROW: added to pack "+s);
     if (size < num){
         //log.info("ESCROW: calling recursively "+(num-size));
@@ -737,7 +748,7 @@ public function createItemFromOffsetWithEscrow(class_id, num, sourcePosition, de
 }
 
 
-public function createItemFromSource(class_id, num, sourceItem, destroy_remainder, props){
+public function createItemFromSource(class_id, num, sourceItem, destroy_remainder, props=null){
     var s = Server.instance.apiNewItemStackFromSource(class_id, num, sourceItem);
     if (!s) return num;
 
@@ -748,14 +759,14 @@ public function createItemFromSource(class_id, num, sourceItem, destroy_remainde
         }
     }
 
-    if (this.isBagFull(s)){
+    if (this.player.bag.isBagFull(s)){
         s.apiDelete();
         if (!destroy_remainder){
             if (sourceItem.getContainerType() == 'street'){
-                return this.player.location.createItem(class_id, num, sourceItem ? sourceItem.x : this.x, sourceItem.y-20, 100, this, props);
+                return this.player.location.createItem(class_id, num, sourceItem ? sourceItem.x : this.player.x, sourceItem.y-20, 100, this, props);
             }
             else{
-                return this.player.location.createItem(class_id, num, this.x, this.y-20, 100, this, props);
+                return this.player.location.createItem(class_id, num, this.player.x, this.player.y-20, 100, this, props);
             }
         }
         else{
@@ -764,7 +775,7 @@ public function createItemFromSource(class_id, num, sourceItem, destroy_remainde
     }
 
     var size = s.count;
-    var remaining = this.addItemStack(s);
+    var remaining = this.player.bag.addItemStack(s);
     if (size < num){
         remaining += this.createItemFromSource(class_id, num-size, sourceItem, destroy_remainder, props);
     }
@@ -774,7 +785,7 @@ public function createItemFromSource(class_id, num, sourceItem, destroy_remainde
             remaining = this.player.location.createItem(class_id, remaining, sourceItem.x, sourceItem.y-20, 100, this, props);
         }
         else{
-            remaining = this.player.location.createItem(class_id, remaining, this.x, this.y-20, 100, this, props);
+            remaining = this.player.location.createItem(class_id, remaining, this.player.x, this.player.y-20, 100, this, props);
         }
     }
 
@@ -787,7 +798,7 @@ public function items_destory_stack(tsid){
     var s = this.player.location.apiLockStack(tsid);
 
     if (!s){
-        var items = this.getAllContents();
+        var items = this.player.bag.getAllContents();
         s = items[tsid];
     }
 
@@ -796,7 +807,7 @@ public function items_destory_stack(tsid){
     }
 
     s.apiDelete();
-    this.apiSendLocMsg({ type: 'location_event' });
+    this.player.apiSendLocMsg({ type: 'location_event' });
 
     return 1;
 }
@@ -805,7 +816,7 @@ public function items_added(stack){
 
     if (stack.container && stack.container.isHidden) return;
 
-    //if (config.is_dev) log.info(this+' items_added: '+stack+' ('+this.countItemClass(stack.class_id)+')');
+    //if (config.is_dev) log.info(this+' items_added: '+stack+' ('+this.player.bag.countItemClass(stack.class_id)+')');
 
     this.player.quests.quests_changed_item(stack.class_id); // For when we care that you are always carrying it during the quest
     this.player.quests.quests_set_flag('acquired_'+stack.class_id); // For when we care that at some point during the quest, you got it
@@ -825,7 +836,7 @@ public function items_added(stack){
     var discovery_dialog_shown = false;
     if (seen_count == 1 && this.player.isOnline() && (this.player.has_done_intro || this.player.location.class_tsid == 'newbie_island')){
         var context = {'verb':'new_item','stack':stack.class_tsid};
-        var xp = this.player.stats.stats_add_xp(config.qurazy_rewards[this.player.stats.level-1], false, context);
+        var xp = this.player.stats.stats_add_xp(config.base.qurazy_rewards[this.player.stats.level-1], false, context);
         if (stack.suppress_discovery) {
             // This stack has been set to supress the discovery dialogue when added. Remove that property.
             delete stack.suppress_discovery;
@@ -905,7 +916,7 @@ public function items_removed(stack){
 
     if (stack.container && stack.container.isHidden) return;
 
-    if (config.is_dev) log.info(this+' items_removed: '+stack+' ('+this.countItemClass(stack.class_id)+'), count: '+stack.count);
+    if (config.is_dev) log.info(this+' items_removed: '+stack+' ('+this.player.bag.countItemClass(stack.class_id)+'), count: '+stack.count);
 
     this.player.quests.quests_changed_item(stack.class_id);
 
@@ -935,19 +946,19 @@ public function items_put_back(stack){
         stack.apiPutBack();
     }
     else{
-        this.addItemStack(stack);
+        this.player.bag.addItemStack(stack);
     }
 }
 
 public function has_key(key_id){
     function has_key(it, key){ return it.is_key && it.classProps.key_id == key; }
 
-    return this.findFirst(has_key, key_id);
+    return this.player.bag.findFirst(has_key, key_id);
 }
 
 public function items_find_working_tool(class_tsid){
     function is_tool(it, args){ return it.is_tool && it.isWorking() && it.class_tsid == args ? true : false; }
-    return this.findFirst(is_tool, class_tsid);
+    return this.player.bag.findFirst(is_tool, class_tsid);
 }
 
 //#############################################################################
@@ -971,7 +982,7 @@ public function createGlitchGame() {
         log.info("While creating game, SWF trackers already exist");
     }
 
-    this.swf_one = this.findFirst('swf_1');
+    this.swf_one = this.player.bag.findFirst('swf_1');
 
     if (this.swf_one) {
         this.swf_one.takeable_drop(this);
@@ -981,20 +992,20 @@ public function createGlitchGame() {
 }
 
 public function onDropFirstSwf() {
-    this.swf_two = this.findFirst('swf_2');
+    this.swf_two = this.player.bag.findFirst('swf_2');
 
     if (this.swf_two) {
-        this.player.location.apiPutItemIntoPosition(this.swf_two, this.x + 40, this.y);
+        this.player.location.apiPutItemIntoPosition(this.swf_two, this.player.x + 40, this.player.y);
     }
 
     this.apiSetTimer('onDropSecondSwf', 400);
 }
 
 public function onDropSecondSwf() {
-    this.swf_three = this.findFirst('swf_3');
+    this.swf_three = this.player.bag.findFirst('swf_3');
 
     if (this.swf_three) {
-        this.player.location.apiPutItemIntoPosition(this.swf_three, this.x + 80, this.y);
+        this.player.location.apiPutItemIntoPosition(this.swf_three, this.player.x + 80, this.player.y);
     }
 
     this.apiSetTimer('onDropThirdSwf', 400);
@@ -1031,11 +1042,11 @@ public function onFinishCreateGame() {
 
 public function zilloweenTreater(pc, candy_tsid) {
     if (this.zilloweenTreaters && !this.zilloweenTreaters.players) {
-        delete this.zilloweenTreaters;
+        this.zilloweenTreaters = null;
     }
 
     if (!this.zilloweenTreaters) {
-        this.zilloweenTreaters = Server.instance.apiNewOwnedDC(this);
+        this.zilloweenTreaters = {};//Server.instance.apiNewOwnedDC(this);
         this.zilloweenTreaters.players = {};
     }
 
@@ -1081,7 +1092,7 @@ public function food_bonus_subtract_day(num) {
 }
 
 public function find_bag_with_category(category){
-    var all_items = this.getAllContents();
+    var all_items = this.player.bag.getAllContents();
     for (var i in all_items){
         var it = all_items[i];
         if (it.is_bag && it.hasBagCategory && it.hasBagCategory(category)){
@@ -1096,7 +1107,7 @@ public function itemDiscoveryDialogClosed(msg){
         this[this.on_discovery_closed.func](this.on_discovery_closed.args.stack);
     }
 
-    delete this.on_discovery_closed;
+    this.on_discovery_closed = null;
 }
 
     }

@@ -83,7 +83,7 @@ public function rewards_has_items(){
     return bag.countContents() > 0 ? true : false;
 }
 
-public function rewards_store(stack, msg){
+public function rewards_store(stack, msg=null){
     this.rewards_init();
 
     var bag = this.rewards_get_bag();
@@ -127,7 +127,7 @@ public function rewards_return(){
                 var restore = bag.removeItemStackSlot(i);
                 var count = restore.count;
 
-                var remaining = this.addItemStack(restore);
+                var remaining = this.player.bag.addItemStack(restore);
                 if (remaining) {
                     overflow = true;
                     if (!overflow_items[restore.class_tsid]) overflow_items[restore.class_tsid] = 0;
