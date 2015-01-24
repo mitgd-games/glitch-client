@@ -258,8 +258,8 @@ package com.tinyspeck.bridge
 			}
 			
 			player_open_cases = get('player_open_cases', 'Number');
-			root_url = '/';//get('root_url') || "http://dev.glitch.com/";
-			root_url = '/';//get('SWF_root_url') || root_url;
+			root_url = '/www/';//get('root_url') || "http://dev.glitch.com/";
+			root_url = '/www/';//get('SWF_root_url') || root_url;
 			assetsUrl = '../../Assets/bin-debug/Assets.swf';//get('assets_url') || "ERROR";
 			//engineUrl = get('engine_url') || "ERROR";
 			avatar_url = '../../glitch-avatars/base_avatar/Avatar.swf';//get('avatar_url');

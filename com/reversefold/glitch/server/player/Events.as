@@ -12,6 +12,8 @@ package com.reversefold.glitch.server.player {
         public var config : Config;
         public var player : Player;
 
+		public var events;
+		
         public function Events(config : Config, player : Player) {
             this.config = config;
             this.player = player;
@@ -175,4 +177,7 @@ public function events_check(){
     for (var i in run_now){
         this.events_trigger(run_now[i]);
     }
+}
+
+	}
 }
