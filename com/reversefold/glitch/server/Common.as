@@ -539,7 +539,7 @@ public static function array_values(a){
     return out;
 }
 
-public static function array_remove(array, from, to){
+public static function array_remove(array, from, to=null){
     var rest = array.slice((to || from) + 1 || array.length);
     array.length = from < 0 ? array.length + from : from;
     return array.push.apply(array, rest);

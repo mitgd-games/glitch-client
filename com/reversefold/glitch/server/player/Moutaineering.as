@@ -24,12 +24,12 @@ package com.reversefold.glitch.server.player {
 public function displayFreeze(rung, isFaded=false){
     //log.info("MT displaying freeze for "+rung);
 
-    if (!this.party || !this.party.get_space()) {
+    if (!this.player.party.party || !this.player.party.party.get_space()) {
         log.error("MT mountain function called on player who's not in a party space");
         return;
     }
 
-    var rungs = this.party.get_space().getProp('rungs');
+    var rungs = this.player.party.party.get_space().getProp('rungs');
     var data = rungs[rung];
 
     for (var id in data.ids) {
@@ -48,13 +48,13 @@ public function displayFreeze(rung, isFaded=false){
 // Overlay removal
 public function removeFreeze(rung) {
 
-    if (!this.party || !this.party.get_space()) {
+    if (!this.player.party.party || !this.player.party.party.get_space()) {
         log.error("MT mountain function called on player who's not in a party space");
         return;
     }
 
 
-    var rungs = this.party.get_space().getProp('rungs');
+    var rungs = this.player.party.party.get_space().getProp('rungs');
     var data = rungs[rung];
 
     for (var id in data.ids) {
@@ -65,7 +65,7 @@ public function removeFreeze(rung) {
 
 // Called at end of intro sequence
 public function displayAllRungs() {
-    var rungs = this.party.get_space().getProp('rungs');
+    var rungs = this.player.party.party.get_space().getProp('rungs');
     var current_freeze_rung = this.player.location.getCurrentFreezeRung();
 
     for (var r in rungs) {
@@ -85,12 +85,12 @@ public function displayAllRungs() {
 public function showRung(rung) {
     //this.player.sendActivity("Showing rung "+rung+" current freeze at "+current_freeze_rung);
 
-    if (!this.party || !this.party.get_space()) {
+    if (!this.player.party.party || !this.player.party.party.get_space()) {
         log.error("MT mountain function called on player who's not in a party space");
         return;
     }
 
-    var rungs = this.party.get_space().getProp('rungs');
+    var rungs = this.player.party.party.get_space().getProp('rungs');
     var rung_data = rungs[rung];
 
     var height = rung_data.yPos - /*0.5*/rung_data.height;
@@ -116,17 +116,17 @@ public function showRung(rung) {
 public function onColdZone(box) {
     var player_height = Math.round(60);
     var player_width =  Math.round(50);
-    log.info("MT coldzone player pos "+this.x+" "+this.y+" dims "+player_height+" "+player_width+" box pos "+box.x+" "+box.y+" dims "+box.w+" "+box.h);
-    if (this.x+(player_width/2) >= box.x-(box.w/2) &&
-        this.x-(player_width/2) <= box.x+(box.w/2) &&
-        this.y - player_height <= box.y &&                          // top of player above bottom of box
-        this.y >= box.y-box.h){     // bottom of player below top of box
+    log.info("MT coldzone player pos "+this.player.x+" "+this.player.y+" dims "+player_height+" "+player_width+" box pos "+box.x+" "+box.y+" dims "+box.w+" "+box.h);
+    if (this.player.x+(player_width/2) >= box.x-(box.w/2) &&
+        this.player.x-(player_width/2) <= box.x+(box.w/2) &&
+        this.player.y - player_height <= box.y &&                          // top of player above bottom of box
+        this.player.y >= box.y-box.h){     // bottom of player below top of box
         this.player.metabolics.metabolics_lose_energy(3);
         this.apiSetTimerX('onColdZone', 1000, box);
 
         log.info("MT player in coldzone");
-        log.info("MT "+(this.y-player_height)+" "+box.y);
-        log.info("MT "+this.y+" "+(box.y-box.h));
+        log.info("MT "+(this.player.y-player_height)+" "+box.y);
+        log.info("MT "+this.player.y+" "+(box.y-box.h));
 
         var messages = ['Buurrr! A cold zone.',
                         'Urf. A blast of chill fills your little Glitch veins.',
@@ -196,7 +196,7 @@ public function onExitWindZone(id) {
     this.player.location.removePlayerFromWind(this.player.tsid, id);
 }
 
-public function onWindZone(id, box) {
+public function onWindZone(id, box=null) {
     //log.info("MT checking windzone");
 
     // If it's not a mountaineering level, bail out.
@@ -218,13 +218,13 @@ public function onWindZone(id, box) {
     var player_width =  Math.round(50);
 
     //log.info("MT player height "+player_height+" width "+player_width);
-    //log.info("MT player position "+this.x+" "+this.y);
+    //log.info("MT player position "+this.player.x+" "+this.player.y);
 
 
-    if (this.x+(player_width/2) >= box.x-(box.w/2) &&
-        this.x-(player_width/2) <= box.x+(box.w/2) &&
-        this.y - player_height <= box.y &&  // top of player above bottom of box
-        this.y >= box.y-box.h){             // bottom of player below top of box
+    if (this.player.x+(player_width/2) >= box.x-(box.w/2) &&
+        this.player.x-(player_width/2) <= box.x+(box.w/2) &&
+        this.player.y - player_height <= box.y &&  // top of player above bottom of box
+        this.player.y >= box.y-box.h){             // bottom of player below top of box
         //log.info("MT in windzone");
         this.apiSetTimerX('onWindZone', 500, id, box);
     }

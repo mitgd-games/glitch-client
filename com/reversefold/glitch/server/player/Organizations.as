@@ -1,8 +1,10 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +13,9 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var label : String;
+		public var organizations;
 
         public function Organizations(config : Config, player : Player) {
             this.config = config;
@@ -26,9 +31,9 @@ package com.reversefold.glitch.server.player {
 public function organizations_init(){
 
     if (this.organizations === undefined || this.organizations === null){
-        this.organizations = Server.instance.apiNewOwnedDC(this);
-        this.organizations.label = 'Organizations';
-        this.organizations.organizations = {};
+        //this.organizations = Server.instance.apiNewOwnedDC(this);
+        this.label = 'Organizations';
+        this.organizations = {};
     }
 }
 
@@ -37,7 +42,7 @@ public function organizations_delete_all(){
     // TODO: clean up!
     if (this.organizations){
         this.organizations.apiDelete();
-        delete this.organizations;
+        this.organizations = null;
     }
 }
 
@@ -52,7 +57,7 @@ public function organizations_create(name, desc){
 
     organization.doCreate(name, desc, 'public_apply', this); // Invite/apply
 
-    this.organizations.organizations[organization.tsid] = organization;
+    this.organizations[organization.tsid] = organization;
 
     return organization;
 }
@@ -82,9 +87,9 @@ public function organizations_delete(tsid){
 public function organizations_logout(){
 
     if (this.organizations){
-        for (var i in this.organizations.organizations){
+        for (var i in this.organizations){
 
-            this.organizations.organizations[i].chat_logout(this);
+            this.organizations[i].chat_logout(this);
         }
     }
 }
@@ -103,14 +108,14 @@ public function organizations_join(tsid){
     if (!ret['ok']) return ret;
 
     if (!this.organizations) this.player.init();
-    this.organizations.organizations[org.tsid] = org;
+    this.organizations[org.tsid] = org;
 
     var info = org.get_basic_info();
 
     if (info.mode != 'private'){
         this.player.activity_notify({
             type    : 'group_join',
-            group   : group.tsid
+            group   : org.tsid // Used to be group.tsid, assuming it was meant to be org
         });
     }
 
@@ -145,9 +150,9 @@ public function organizations_left(organization){
     // remove pointer from pc->organization
     //
 
-    if (this.organizations && this.organizations.organizations){
+    if (this.organizations && this.organizations){
 
-        delete this.organizations.organizations[organization.tsid];
+        delete this.organizations[organization.tsid];
     }
 
 
@@ -172,7 +177,7 @@ public function organizations_left(organization){
 
 public function organizations_has(){
     this.organizations_init();
-    return num_keys(this.organizations.organizations) ? true : false;
+    return num_keys(this.organizations) ? true : false;
 }
 
 //
@@ -182,8 +187,8 @@ public function organizations_has(){
 public function organizations_get(){
     this.organizations_init();
 
-    for (var i in this.organizations.organizations){
-        return this.organizations.organizations[i];
+    for (var i in this.organizations){
+        return this.organizations[i];
     }
 }
 

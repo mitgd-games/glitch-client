@@ -132,6 +132,11 @@ package com.reversefold.glitch.server.player {
 			//RVRS: TODO
 			throw new Error('apiSendLocMsgX ' + msg);
 		}
+		
+		public function apiGetAllItems() {
+			//RVRS: TODO
+			throw new Error('apiGetAllItems');
+		}
 
 //#include inc_admin.js,
 		public var admin : Admin;
@@ -688,7 +693,7 @@ public function init(){
 	if (this.starting_instance) this.starting_instance.apiDelete();
 	delete this.starting_instance;
 
-	if (!this.is_god && this.location_history) delete this.location_history;
+	if (!this.is_god && this.player.location_history) this.player.location_history = null;
 }
 
 //
@@ -1828,7 +1833,7 @@ public function onCreate(){
 	// getStackedPhysics() to retrieve the value
 	this.stacked_physics_cache = null;
 
-	this.physics_new = {};
+	this.physics.physics_new = {};
 	this.player.physics.setDefaultPhysics();
 
 	// if they're online, move them to starting instance now, else
@@ -2331,12 +2336,12 @@ public function resetForTesting(skip){
 	delete this.house;
 	delete this.skill_package;
 	delete this.events;
-	delete this.location_history;
+	this.player.location_history = null;
 	delete this.quoins_today;
 	delete this.meditation_today;
 	delete this.giant_emblems;
 	delete this.baqala_times;
-	delete this.physics_new;
+	this.physics.physics_new = null;
 	delete this.avatar;
 	delete this.map_path;
 	delete this.butterflies_milked;
@@ -2546,7 +2551,7 @@ public function moveAvatar(x, y, face, why=null){
 	this.apiSendMsgAsIs(rsp);
 }
 
-public function faceAvatar(face, force){
+public function faceAvatar(face, force=false){
 	if (face != 'left' && face != 'right') return;
 
 	var rsp = {

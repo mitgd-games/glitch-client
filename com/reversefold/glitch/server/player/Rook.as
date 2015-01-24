@@ -2,7 +2,7 @@ package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +11,9 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var is_rooked : Boolean;
+		public var rook_healers;
 
         public function Rook(config : Config, player : Player) {
             this.config = config;
@@ -25,15 +28,18 @@ package com.reversefold.glitch.server.player {
 
 public var can_be_rooked = true; // By including this file, you've made this object rookable!
 
+
 // Is this object currently rooked?
 public function isRooked(){
     return this.is_rooked ? true : false;
 }
 
+/* RVRS: TODO: Lots of item logic here, we need to include this in items as well as including some item logic in players I think, leaving for later
+
 // Attempt to rook this object, applying any necessary effects
 public function rookAttack(force){
     // Each player in a location at the time of an attack loses 20 energy and 20 mood, even if they are not rooked.
-    if (this.is_player){
+    if (this.player.is_player){
         var energy_modifier = 1;
         if (!this.player.buffs.buffs_has('rook_armor')) energy_modifier = 0.5;
         this.player.metabolics.metabolics_lose_energy(20 * energy_modifier);
@@ -56,7 +62,7 @@ public function rookAttack(force){
     if (is_chance(chance) || force == true){
         this.is_rooked = true;
 
-        if (this.is_player){
+        if (this.player.is_player){
             // When an player is rooked:
             // - they get the rooked overlay circling above their head
             // - they get the “Rooked” debuff which lasts 10 seconds. During that time they are frozen, looping the idle0 animation state
@@ -100,10 +106,12 @@ public function rookAttack(force){
 
 public function unRook(){
     this.is_rooked = false;
-    delete this.rook_healers;
+    this.rook_healers = null;
 
-    if (!this.is_player){
-        if (this.onRevived) this.onRevived();
+    if (!this.player.is_player){
+		//RVRS: TODO: !player
+		throw new Error('unRook !player');
+        //if (this.onRevived) this.onRevived();
     }
     else{
         this.broadcastPCRSChange();
@@ -115,7 +123,7 @@ public function broadcastPCRSChange(){
         type: 'pc_rs_change',
         pc: {
             tsid: this.player.tsid,
-            label: this.label,
+            label: this.player.label,
             location: {
                 tsid: this.player.location.tsid,
                 label: this.player.location.label
@@ -145,7 +153,7 @@ public function startRevive(pc, msg){
 
     log.info(this+' [ROOK] startRevive: '+pc);
     // Run rook revival skill package:
-    var ret = pc.runSkillPackage('rook_revive', this, {word_progress: config.word_progress_map['revive'], overlay_id:'rooked_revive', callback: 'doReviveComplete', bubble_width: 75, msg: msg});
+    var ret = pc.runSkillPackage('rook_revive', this, {word_progress: config.base.word_progress_map['revive'], overlay_id:'rooked_revive', callback: 'doReviveComplete', bubble_width: 75, msg: msg});
 
     if(ret['ok']) {
         // Set up rook healer with player info, overlay uids
@@ -330,7 +338,7 @@ public function checkConversations() {
         if (!this.container.activePlayers[pc.tsid]){
             this.cancelRookConversation(pc);
         }
-        else if(Math.abs(pc.x - this.x) > 300 || Math.abs(pc.y - this.y) > 300) {
+        else if(Math.abs(pc.x - this.player.x) > 300 || Math.abs(pc.y - this.player.y) > 300) {
             this.cancelRookConversation(pc);
         }
     }
@@ -404,6 +412,6 @@ public function getRookedStatus(args){
     return this.rook_status;
 
 }
-
+*/
     }
 }

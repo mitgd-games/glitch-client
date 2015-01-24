@@ -1,8 +1,9 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +12,9 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var physics_new;
+		public var stacked_physics_cache;
 
         public function Physics(config : Config, player : Player) {
             this.config = config;
@@ -23,7 +27,7 @@ package com.reversefold.glitch.server.player {
     NEW PHYSICS STUFF!
 
     * a hash passed to any of the add*Physics() methods can have any of the values stored
-    in config.physics_settables.booleans or config.physics_settables.percentages, plus
+    in config.base.physics_settables.booleans or config.base.physics_settables.percentages, plus
     any of the following flags:
 
     {
@@ -40,7 +44,7 @@ package com.reversefold.glitch.server.player {
 ************************************************************************************************************/
 
 public function physicsReset(){
-    delete this.physics_new;
+    this.physics_new = null;
     this.setDefaultPhysics();
 
     this.player.imagination.imagination_delete_upgrade('walk_speed_1');
@@ -155,7 +159,7 @@ public function removeAllTempPhysics(and_send){
     if (and_send) this.stackPhysicsAndSendToClient();
 }
 
-public function removeAllCTPCPhysics(and_send){
+public function removeAllCTPCPhysics(and_send=false){
     var physics = this.getPhysics();
     var key;
 
@@ -314,9 +318,9 @@ public function makeStackedPhysics(){
     var physics = this.getPhysics();
     var adjustments = {keys:{}};
 
-    var i;          // for iterating over the arrays in config.physics_settables
+    var i;          // for iterating over the arrays in config.base.physics_settables
     var key;        // key for the records in physics
-    var settable;   // name of the settable from the arrays in config.physics_settables
+    var settable;   // name of the settable from the arrays in config.base.physics_settables
     var t;          // total values for the percentages as we add them up to average them
     var c;          // tracks the number of records in percentages setting a given settable
 
@@ -328,8 +332,8 @@ public function makeStackedPhysics(){
     //
 
     // go through the boolean settables, and if ANY of the records in physics have it set to true, set it to true in adjustments
-    for (i=0; i<config.physics_settables.booleans.length; i++){
-        settable = config.physics_settables.booleans[i];
+    for (i=0; i<config.base.physics_settables.booleans.length; i++){
+        settable = config.base.physics_settables.booleans[i];
         for (key in physics){
             if (physics[key][settable]){
 
@@ -343,8 +347,8 @@ public function makeStackedPhysics(){
     }
 
     // go through the percentage settables and get the average of all the values in the physics records and put the avg in adjustments
-    for (i=0; i<config.physics_settables.percentages.length; i++){
-        settable = config.physics_settables.percentages[i];
+    for (i=0; i<config.base.physics_settables.percentages.length; i++){
+        settable = config.base.physics_settables.percentages[i];
         c = 0;
         t = 0;
 
@@ -361,7 +365,7 @@ public function makeStackedPhysics(){
                 // debugging
                 if (i == 0) adjustments.keys[key] = physics[key];
             }
-            if (utils.has_key(settable, physics[key])){
+            if (Utils.has_key(settable, physics[key])){
                 // it is imagination, skip it (we use the img hash as the base)
                 if (physics[key].is_img) continue;
 

@@ -792,7 +792,7 @@ public function announce_remote_item_state_change(args){
 }
 
 /**************** Toggle decos *********************/
-public function geo_deco_toggle_visibility(name, is_visible, fade){
+public function geo_deco_toggle_visibility(name, is_visible, fade=false){
     this.player.apiSendMsg({
         type: 'deco_visibility',
         visible: is_visible,

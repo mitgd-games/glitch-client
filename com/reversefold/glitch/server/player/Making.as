@@ -463,7 +463,7 @@ public function making_make_known(msg, item){
         var pc_action_distance = item.getClassProp('pc_action_distance');
         if (pc_action_distance === undefined) pc_action_distance = 150;
         var endpoint, face;
-        if (item.x < this.x){
+        if (item.x < this.player.x){
             endpoint = item.x+intval(pc_action_distance);
             face = 'left';
         }
@@ -474,8 +474,8 @@ public function making_make_known(msg, item){
 
 
         // Move the player
-        var distance = Math.abs(this.x-endpoint);
-        this.player.moveAvatar(endpoint, this.y, face);
+        var distance = Math.abs(this.player.x-endpoint);
+        this.player.moveAvatar(endpoint, this.player.y, face);
     }
     else{
         //log.info("Making is "+making);
@@ -661,7 +661,7 @@ public function tryToMake(msg, item){
         var pc_action_distance = item.getClassProp('pc_action_distance');
         if (pc_action_distance === undefined) pc_action_distance = 150;
         var endpoint, face;
-        if (item.x < this.x){
+        if (item.x < this.player.x){
             endpoint = item.x+intval(pc_action_distance);
             face = 'left';
         }
@@ -672,8 +672,8 @@ public function tryToMake(msg, item){
 
 
         // Move the player
-        var distance = Math.abs(this.x-endpoint);
-        this.player.moveAvatar(endpoint, this.y, face);
+        var distance = Math.abs(this.player.x-endpoint);
+        this.player.moveAvatar(endpoint, this.player.y, face);
     }
     else{
         //log.info("Making is "+making);
@@ -1530,7 +1530,7 @@ public function making_execute_recipe(recipe_id, count, energy_cost, item){
         if (item.getClassProp('making_type') != 'machine'){
             var remainder = this.player.items.createItem(output[0], output[1] * count);
             if (remainder){
-                this.player.location.createItem(output[0], remainder, this.x, this.y, 250);
+                this.player.location.createItem(output[0], remainder, this.player.x, this.player.y, 250);
             }
 
             var proto = Server.instance.apiFindItemPrototype(output[0]);

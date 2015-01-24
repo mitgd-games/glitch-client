@@ -1,8 +1,9 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -12,6 +13,9 @@ package com.reversefold.glitch.server.player {
         public var config : Config;
         public var player : Player;
 
+		public var label : String;
+		public var storage_tsid;
+		
         public function Rewards(config : Config, player : Player) {
             this.config = config;
             this.player = player;
@@ -19,10 +23,10 @@ package com.reversefold.glitch.server.player {
 
 
 public function rewards_init(){
-    if (!this.rewards){
+    if (!this.storage_tsid){
     //if (this.rewards === undefined || this.rewards === null){
-        this.rewards = Server.instance.apiNewOwnedDC(this);
-        this.rewards.label = 'Rewards';
+        //this.rewards = Server.instance.apiNewOwnedDC(this);
+        this.label = 'Rewards';
 
         this.rewards_create_bag();
     }
@@ -40,11 +44,11 @@ public function rewards_create_bag(){
 
     this.apiAddHiddenStack(it);
 
-    this.rewards.storage_tsid = it.tsid;
+    this.storage_tsid = it.tsid;
 }
 
 public function rewards_reset(){
-    if (this.rewards){
+    if (this.storage_tsid){
         var bag = this.rewards_get_bag();
         if (bag){
             var contents = bag.getContents();
@@ -56,7 +60,7 @@ public function rewards_reset(){
 }
 
 public function rewards_delete(){
-    if (this.rewards){
+    if (this.storage_tsid){
         var bag = this.rewards_get_bag();
         if (bag){
             var contents = bag.getContents();
@@ -65,16 +69,17 @@ public function rewards_delete(){
             }
 
             bag.apiDelete();
-            delete this.rewards.storage_tsid;
+            this.storage_tsid = null;
         }
 
-        this.rewards.apiDelete();
-        delete this.rewards;
+        //this.rewards.apiDelete();
+        //delete this.rewards;
+		this.player.rewards = new Rewards(config, player);
     }
 }
 
 public function rewards_get_bag(){
-    return this.player.hiddenItems[this.rewards.storage_tsid];
+    return this.player.hiddenItems[this.storage_tsid];
 }
 
 public function rewards_has_items(){

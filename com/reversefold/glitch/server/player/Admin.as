@@ -894,7 +894,7 @@ public function admin_place_pol_callback(choice, details){
         var idx = choice.substr(14);
         var pol = utils.get_pol_config(idx);
 
-        var ret = this.player.location.pols_write_create(pol.template_tsid, this.x, this.y, pol.uid, true);
+        var ret = this.player.location.pols_write_create(pol.template_tsid, this.player.x, this.player.y, pol.uid, true);
 
         if (ret.ok){
 
@@ -1101,8 +1101,8 @@ public function admin_get_location(){
         label       : info.label,
         moteid      : info.moteid,
         hubid       : info.hubid,
-        x       : this.x,
-        y       : this.y,
+        x       : this.player.x,
+        y       : this.player.y,
         is_god      : this.player.is_god,
         is_instance : info.is_instance,
         is_pol      : info.is_pol,

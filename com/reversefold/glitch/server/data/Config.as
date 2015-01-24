@@ -22,7 +22,7 @@ package com.reversefold.glitch.server.data {
 
 //#include inc_data_swfs_locations_prod.js
 //#include inc_data_maps_prod.js
-		public var maps : MapsProd = new MapsProd();
+		//MapsProd is static
 //#include inc_data_sounds.js
         public var sounds : Sounds = new Sounds();
 

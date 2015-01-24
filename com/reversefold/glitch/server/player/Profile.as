@@ -11,6 +11,8 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var home_profile;
 
         public function Profile(config : Config, player : Player) {
             this.config = config;
@@ -31,27 +33,27 @@ package com.reversefold.glitch.server.player {
 //
 
 public function profile_get_houses(){
-    if (!this.player.houses.home_profile) this.profile_update_house_info();
+    if (!this.home_profile) this.profile_update_house_info();
 
-    if (this.player.houses.home_profile){
-        return this.player.houses.home_profile;
+    if (this.home_profile){
+        return this.home_profile;
     } else {
         return {};
     }
 }
 
 public function profile_get_home_street(){
-    if (!this.player.houses.home_profile) this.profile_update_house_info();
+    if (!this.home_profile) this.profile_update_house_info();
 
-    if (this.player.houses.home_profile && this.player.houses.home_profile.exterior){
-        return this.player.houses.home_profile.exterior;
+    if (this.home_profile && this.home_profile.exterior){
+        return this.home_profile.exterior;
     } else {
         return {};
     }
 }
 
 public function profile_update_house_info(){
-    if (!this.player.houses.home_profile) this.player.houses.home_profile = {};
+    if (!this.home_profile) this.home_profile = {};
 
     if (!this.player.houses.home) return;
 
@@ -66,7 +68,7 @@ public function profile_update_house_info(){
         }
     }
 
-    this.player.houses.home_profile = out;
+    this.home_profile = out;
 }
 
 //
@@ -77,11 +79,11 @@ public function profile_get_groups(is_self){
 
     var out = [];
 
-    if (!this.groups) return out;
+    if (!this.player.groups.groups) return out;
 
-    for (var i in this.groups.groups){
+    for (var i in this.player.groups.groups){
 
-        var info = this.groups.groups[i].get_basic_info();
+        var info = this.player.groups.groups[i].get_basic_info();
 
         if (info.mode == 'public' || info.mode == 'public_apply' || is_self){
 
@@ -102,13 +104,13 @@ public function profile_get_metabolics(){
     var out = {};
 
     out.energy = {
-        'value' : this.metabolics.energy.value,
-        'max'   : this.metabolics.energy.top
+        'value' : this.player.metabolics.energy.value,
+        'max'   : this.player.metabolics.energy.top
     };
 
     out.mood = {
-        'value' : this.metabolics.mood.value,
-        'max'   : this.metabolics.mood.top
+        'value' : this.player.metabolics.mood.value,
+        'max'   : this.player.metabolics.mood.top
     };
 
     return out;
@@ -123,7 +125,7 @@ public function profile_get_inventory(){
 
     var out = [];
 
-    var items = this.apiGetAllItems();
+    var items = this.player.apiGetAllItems();
     for (var i in items){
         var item = items[i];
 

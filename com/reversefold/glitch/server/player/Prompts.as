@@ -1,15 +1,21 @@
 package com.reversefold.glitch.server.player {
+    import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
-    public class Prompts {
+    public class Prompts extends Common {
         private static var log : Logger = Log.getLogger("server.player.achievements");
 
         public var config : Config;
         public var player : Player;
+		
+		public var prompts;
+		public var greeting_previous_location;
 
         public function Prompts(config : Config, player : Player) {
             this.config = config;
@@ -23,7 +29,7 @@ public function prompts_init(){
 }
 
 public function prompts_delete(){
-    delete this.prompts;
+    this.prompts = null;
 }
 
 public function prompts_reset(){
@@ -186,9 +192,9 @@ public function prompts_choice(uid, value){
                 }
 
                 this.player.groups.groups_chat(config.greeter_group, "I got "+pc.label+"!");
-                utils.irc_inject('#greeters', this.label+': I got '+pc.label+'!');
+                Utils.irc_inject('#greeters', this.player.label+': I got '+pc.label+'!');
 
-                this.greeting_previous_location = {tsid: this.player.location.tsid, x: this.x, y: this.y};
+                this.greeting_previous_location = {tsid: this.player.location.tsid, x: this.player.x, y: this.player.y};
 
                 var instance_id = dst.getProp('instance_id');
                 if (instance_id){

@@ -157,7 +157,7 @@ public function instances_exit(id, randomize=false, no_auto_return=false){
 // The instance 'id' says we are leaving
 //
 
-public function instances_left(id, randomize, no_auto_return, force){
+public function instances_left(id, randomize, no_auto_return, force=false){
     var instance = this.instances_get(id);
     if (!instance) return false;
 

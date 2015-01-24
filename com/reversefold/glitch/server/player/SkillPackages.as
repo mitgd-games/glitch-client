@@ -1,8 +1,9 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +12,9 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var skill_package;
+		public var skill_package_overrides;
 
         public function SkillPackages(config : Config, player : Player) {
             this.config = config;
@@ -247,7 +251,7 @@ public function runSkillPackage(class_id, source_item, args){
             var delta_x = 0;
             var endpoint = source_item.x;
             var face = 'left';
-            if (source_item.x < this.x){
+            if (source_item.x < this.player.x){
                 delta_x = args.source_delta_x !== undefined ? args.source_delta_x : 10;
                 endpoint += pc_action_distance;
             }
@@ -260,9 +264,9 @@ public function runSkillPackage(class_id, source_item, args){
 
 
             // Move the player
-            var distance = Math.abs(this.x-endpoint);
-            if (distance && Math.abs(this.x-source_item.x) < Math.max(pc_action_distance * 0.125, 30) || Math.abs(this.x-source_item.x) > max_pc_action_distance){
-                //this.player.moveAvatar(endpoint, this.y, face);
+            var distance = Math.abs(this.player.x-endpoint);
+            if (distance && Math.abs(this.player.x-source_item.x) < Math.max(pc_action_distance * 0.125, 30) || Math.abs(this.player.x-source_item.x) > max_pc_action_distance){
+                //this.player.moveAvatar(endpoint, this.player.y, face);
                 distance = 0;
                 this.player.faceAvatar(face);
             }
@@ -289,7 +293,7 @@ public function runSkillPackage(class_id, source_item, args){
             if (source_item.hasTag('npc')) annc['follow'] = true;
 
             if (args.overlay_id){
-                annc['swf_url'] = this.overlay_key_to_url(args.overlay_id);
+                annc['swf_url'] = Common.overlay_key_to_url(args.overlay_id);
             }
             else{
                 annc['item_class'] = args.tool_item.class_tsid;
@@ -325,7 +329,7 @@ public function runSkillPackage(class_id, source_item, args){
             };
 
             if (args.overlay_id){
-                anncx['swf_url'] = this.overlay_key_to_url(args.overlay_id);
+                anncx['swf_url'] = Common.overlay_key_to_url(args.overlay_id);
             }
             else{
                 anncx['item_class'] = args.tool_item.class_tsid;
@@ -347,7 +351,7 @@ public function runSkillPackage(class_id, source_item, args){
             };
 
             if (args.overlay_id){
-                annc['swf_url'] = this.overlay_key_to_url(args.overlay_id);
+                annc['swf_url'] = Common.overlay_key_to_url(args.overlay_id);
             }
             else{
                 annc['item_class'] = args.tool_item.class_tsid;
@@ -379,7 +383,7 @@ public function runSkillPackage(class_id, source_item, args){
             };
 
             if (args.overlay_id){
-                anncx['swf_url'] = this.overlay_key_to_url(args.overlay_id);
+                anncx['swf_url'] = Common.overlay_key_to_url(args.overlay_id);
             }
             else{
                 anncx['item_class'] = args.tool_item.class_tsid;

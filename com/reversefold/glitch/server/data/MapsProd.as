@@ -1,7 +1,7 @@
 package com.reversefold.glitch.server.data {
     public class MapsProd {
 
-    public var data_maps = {
+    public static var data_maps = {
 hubs: {
     '26': {
             "name"      : "Abbasid",

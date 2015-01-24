@@ -1,8 +1,11 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
+    import com.reversefold.glitch.server.data.MapsProd;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +14,17 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var label : String;
+		public var targets;
+		public var map_teleports_today;
+		public var free_summons_today;
+		public var paid_summons_today;
+		public var map_paid_teleports_today;
+		public var token_balance;
+		public var location_history;
+		//RVRS: this is only referenced once, below, when it is emptied...
+		public var teleportation_target;
 
         public function Teleportation(config : Config, player : Player) {
             this.config = config;
@@ -21,27 +35,27 @@ package com.reversefold.glitch.server.player {
 // http://svn.tinyspeck.com/wiki/SpecTeleportation
 
 public function teleportation_init(){
-    if (this.teleportation === undefined || this.teleportation === null){
-        this.teleportation = Server.instance.apiNewOwnedDC(this);
-        this.teleportation.label = 'Teleportation';
+    if (this.targets === undefined || this.targets === null){
+        //this.teleportation = Server.instance.apiNewOwnedDC(this);
+        this.label = 'Teleportation';
 
-        this.teleportation.targets = {};
-        this.teleportation.map_teleports_today = 0;
-        this.teleportation.free_summons_today = 0;
-        this.teleportation.paid_summons_today = 0;
-        this.teleportation.map_paid_teleports_today = 0;
-        this.teleportation.token_balance = 0;
+        this.targets = {};
+        this.map_teleports_today = 0;
+        this.free_summons_today = 0;
+        this.paid_summons_today = 0;
+        this.map_paid_teleports_today = 0;
+        this.token_balance = 0;
     }
 }
 
 public function teleportation_reset(){
-    if (this.teleportation){
+    if (this.targets){
 
-        this.teleportation.targets = {};
-        this.teleportation.map_teleports_today = 0;
-        this.teleportation.free_summons_today = 0;
-        this.teleportation.paid_summons_today = 0;
-        this.teleportation.map_paid_teleports_today = 0;
+        this.targets = {};
+        this.map_teleports_today = 0;
+        this.free_summons_today = 0;
+        this.paid_summons_today = 0;
+        this.map_paid_teleports_today = 0;
     }
 
     if (this.player.buffs.buffs_has('teleportation_cooldown')){
@@ -51,10 +65,10 @@ public function teleportation_reset(){
 
 public function teleportation_reset_counters(){
     this.teleportation_init();
-    this.teleportation.map_teleports_today = 0;
-    this.teleportation.free_summons_today = 0;
-    this.teleportation.paid_summons_today = 0;
-    this.teleportation.map_paid_teleports_today = 0;
+    this.map_teleports_today = 0;
+    this.free_summons_today = 0;
+    this.paid_summons_today = 0;
+    this.map_paid_teleports_today = 0;
     this.teleportation_notify_client();
 }
 
@@ -83,7 +97,7 @@ public function teleportation_set_target(teleport_id){
         }
     }
 
-    this.teleportation.targets[teleport_id] = target;
+    this.targets[teleport_id] = target;
 
 
     if(this.player.location.hubid == 95 || (config.is_dev && this.player.location.hubid == 8)) {
@@ -100,9 +114,9 @@ public function teleportation_get_target(teleport_id){
     if (!teleport_id) teleport_id = 1;
 
     if (teleport_id > this.teleportation_get_max_targets()) return {};
-    if (!this.teleportation.targets[teleport_id]) return {};
+    if (!this.targets[teleport_id]) return {};
 
-    return this.teleportation.targets[teleport_id];
+    return this.targets[teleport_id];
 }
 
 public function teleportation_get_all_targets(){
@@ -110,18 +124,18 @@ public function teleportation_get_all_targets(){
 
     var count = 0;
     var max = this.teleportation_get_max_targets();
-    for (var i in this.teleportation.targets){
+    for (var i in this.targets){
         if (i > max) continue;
-        var t = this.teleportation.targets[i];
+        var t = this.targets[i];
 
         if (t && t.tsid){
             targets[i] = t;
 
             var target = Server.instance.apiFindObject(targets[i].tsid);
             if (!target){
-                //log.info(this+' teleportation_get_all_targets deleting stale target: '+this.teleportation.targets[i]);
+                //log.info(this+' teleportation_get_all_targets deleting stale target: '+this.targets[i]);
                 delete targets[i]; // http://bugs.tinyspeck.com/10452
-                //delete this.teleportation.targets[i];
+                //delete this.targets[i];
                 continue;
             }
 
@@ -143,7 +157,7 @@ public function teleportation_get_all_targets(){
     return targets;
 }
 
-public function teleportation_can_teleport(teleport_id, skip_skill, target){
+public function teleportation_can_teleport(teleport_id=null, skip_skill=null, target=null){
     if (this['!teleporting']){
         return {
             ok: 0,
@@ -214,7 +228,7 @@ public function teleportation_can_teleport(teleport_id, skip_skill, target){
     if (target){
         loc = Server.instance.apiFindObject(target.tsid);
         if (!loc || loc.getProp('is_deleted')){
-            delete this.teleportation_target;
+            this.teleportation_target = null;
             return {
                 ok: 0,
                 error: "Your teleportation target no longer exists."
@@ -263,7 +277,7 @@ public function teleportation_can_teleport(teleport_id, skip_skill, target){
             if (!loc.pols_is_owner(this) && this.player.countFollowers()){
                 var followers_have_clearance = 1;
 
-                for (var i in this.followers){
+                for (var i in this.player.followers){
                     var follower = Server.instance.apiFindObject(i);
 
                     var fret = loc.pols_canEnter(follower);
@@ -285,7 +299,7 @@ public function teleportation_can_teleport(teleport_id, skip_skill, target){
         }
 
         if (this.player.countFollowers){
-            for (var i in this.followers){
+            for (var i in this.player.followers){
                 var follower = Server.instance.apiFindObject(i);
 
                 if (follower.buffs_has('dont_get_caught')){
@@ -315,7 +329,7 @@ public function teleportation_can_teleport(teleport_id, skip_skill, target){
     return {ok: 1};
 }
 
-public function teleportation_can_set_target(teleport_id){
+public function teleportation_can_set_target(teleport_id=null){
     if (this.player.is_dead){
         return {
             ok: 0,
@@ -455,8 +469,8 @@ public function teleportation_map_teleport(tsid, use_token){
             };
         }
         else{
-            if (!this.teleportation.map_paid_teleports_today) this.teleportation.map_paid_teleports_today = 0;
-            if (this.teleportation.map_paid_teleports_today >= 5){
+            if (!this.map_paid_teleports_today) this.map_paid_teleports_today = 0;
+            if (this.map_paid_teleports_today >= 5){
                 return {
                     ok: 0,
                     error: "You can't do that anymore today."
@@ -465,8 +479,8 @@ public function teleportation_map_teleport(tsid, use_token){
         }
     }
     else{
-        if (!this.teleportation.map_teleports_today) this.teleportation.map_teleports_today = 0;
-        if (this.teleportation.map_teleports_today >= this.teleportation_get_max_map_teleports()){
+        if (!this.map_teleports_today) this.map_teleports_today = 0;
+        if (this.map_teleports_today >= this.teleportation_get_max_map_teleports()){
             return {
                 ok: 0,
                 error: "You can't do that anymore today."
@@ -528,10 +542,10 @@ public function teleportation_map_teleport(tsid, use_token){
 
         // Deduct a token
         this.teleportation_spend_token('Map teleport to '+target.label+'.');
-        this.teleportation.map_paid_teleports_today++;
+        this.map_paid_teleports_today++;
     }
     else{
-        this.teleportation.map_teleports_today++;
+        this.map_teleports_today++;
         this.player.metabolics.metabolics_lose_energy(energy_cost);
 
         this.player.buffs.buffs_apply('teleportation_cooldown', {duration: this.teleportation_get_cooldown_time()});
@@ -569,10 +583,10 @@ public function teleportation_random_teleport() {
     // find a new hub
     var hub = choose_one(config.public_hubs);
 /*  do {
-        hub = choose_one(array_keys(config.data_maps.hubs));
+        hub = choose_one(array_keys(MapsProd.data_maps.hubs));
     } while (!in_array(hub, config.public_hubs));*/
 
-    var mote = config.data_maps.hubs[hub].mote_id;
+    var mote = MapsProd.data_maps.hubs[hub].mote_id;
 
     // and finally, find a new street
     var street = null;
@@ -582,7 +596,7 @@ public function teleportation_random_teleport() {
 
     var teleport_candidates = [];
 
-    for (var i in config.data_maps.streets[mote][hub]) {
+    for (var i in MapsProd.data_maps.streets[mote][hub]) {
         teleport_candidates.push(i);
     }
     do {
@@ -651,13 +665,13 @@ public function teleportation_summon(pc){
     // Greeter summonses are free
     var method;
     if (!this.player.location.isGreetingLocation()){
-        if (summonses[0] > this.teleportation.free_summons_today){
-            this.teleportation.free_summons_today++;
+        if (summonses[0] > this.free_summons_today){
+            this.free_summons_today++;
             this.player.metabolics.metabolics_lose_energy(this.teleportation_get_energy_cost());
             method = 'energy';
         }
-        else if (summonses[1] == -1 || summonses[1] > this.teleportation.paid_summons_today){
-            this.teleportation.paid_summons_today++;
+        else if (summonses[1] == -1 || summonses[1] > this.paid_summons_today){
+            this.paid_summons_today++;
 
             // Deduct a token
             this.teleportation_spend_token('Summoning '+pc.label+' to your location.');
@@ -677,8 +691,8 @@ public function teleportation_summon(pc){
 
     var target = {
         tsid: this.player.location.tsid,
-        x: this.x+20,
-        y: this.y
+        x: this.player.x+20,
+        y: this.player.y
     };
 
     if (this.player.location.pols_is_pol() && this.player.location.getProp('is_home')){
@@ -826,7 +840,7 @@ public function teleportation_can_summon(target){
     }
 
     var summonses = this.teleportation_get_max_summons();
-    if (summonses[0] <= this.teleportation.free_summons_today && (summonses[1] != -1 && summonses[1] <= this.teleportation.paid_summons_today)){
+    if (summonses[0] <= this.free_summons_today && (summonses[1] != -1 && summonses[1] <= this.paid_summons_today)){
         return {
             ok: 0,
             error: "You cannot summon anymore today."
@@ -834,13 +848,13 @@ public function teleportation_can_summon(target){
     }
 
     // Check tokens if all out of free ones
-    if (summonses[0] <= this.teleportation.free_summons_today && !this.teleportation_get_token_balance()){
+    if (summonses[0] <= this.free_summons_today && !this.teleportation_get_token_balance()){
         return {
             ok: 0,
             error: "Buy more teleportation tokens!"
         };
     }
-    else if (summonses[0] > this.teleportation.free_summons_today && this.player.metabolics.metabolics_get_energy() <= this.teleportation_get_energy_cost()){
+    else if (summonses[0] > this.free_summons_today && this.player.metabolics.metabolics_get_energy() <= this.teleportation_get_energy_cost()){
         return {
             ok: 0,
             error: "You don't have enough energy."
@@ -849,14 +863,14 @@ public function teleportation_can_summon(target){
 
     return {
         ok: 1,
-        free: this.teleportation.free_summons_today,
-        paid: this.teleportation.paid_summons_today
+        free: this.free_summons_today,
+        paid: this.paid_summons_today
     };
 }
 
 public function teleportation_spend_token(reason){
     if (this.teleportation_get_token_balance() > 0){
-        this.teleportation.token_balance--;
+        this.token_balance--;
 
         // Tell the web app, which will sync back to us eventually
         var args = {
@@ -875,7 +889,7 @@ public function teleportation_spend_token(reason){
 }
 
 public function teleportation_give_tokens(count, reason){
-    this.teleportation.token_balance += count;
+    this.token_balance += count;
 
     // Tell the web app, which will sync back to us eventually
     var args = {
@@ -904,9 +918,9 @@ public function teleportation_get_status(){
         can_teleport: can_teleport['ok'] ? true : false,
         can_set_target: can_set_target['ok'] ? true : false,
         targets: this.teleportation_get_all_targets(),
-        map_tokens_used: intval(this.teleportation.map_paid_teleports_today),
+        map_tokens_used: intval(this.map_paid_teleports_today),
         map_tokens_max: 5,
-        map_free_used: intval(this.teleportation.map_teleports_today),
+        map_free_used: intval(this.map_teleports_today),
         map_free_max: this.teleportation_get_max_map_teleports(),
         tokens_remaining: this.teleportation_get_token_balance()
     };
@@ -997,7 +1011,7 @@ public function teleportation_get_max_summons(){
 }
 
 public function teleportation_get_token_balance(){
-    return intval(this.teleportation.token_balance);
+    return intval(this.token_balance);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -1005,16 +1019,16 @@ public function teleportation_get_token_balance(){
 public function teleportation_add_history(tsid){
     if (!this.player.is_god) return;
 
-    if (!this.player.location_history) this.player.location_history = {};
-    this.player.location_history[tsid] = time();
+    if (!this.location_history) this.location_history = {};
+    this.location_history[tsid] = time();
 }
 
 public function teleportation_get_history(num){
 
-    if (!this.player.location_history) this.player.location_history = {};
+    if (!this.location_history) this.location_history = {};
 
     var pairs = [];
-    for (var i in this.player.location_history) pairs.push([i, this.player.location_history[i] - 1288036000]);
+    for (var i in this.location_history) pairs.push([i, this.location_history[i] - 1288036000]);
     pairs.sort(function(a,b){return b[1]-a[1];});
 
     pairs = pairs.slice(0, num?num:5);
@@ -1054,7 +1068,8 @@ public function teleportation_imbue_script_prompt(value, details){
         script.apiDelete();
         var remaining = this.player.bag.addItemStack(imbued_script);
         if (remaining) {
-            this.sendAcivity("You don't have room for an imbued script, which is honestly pretty weird.");
+			//RVRS: This was a typo in the source!
+            this.player.sendActivity("You don't have room for an imbued script, which is honestly pretty weird.");
             imbued_script.apiDelete();
             return;
         }

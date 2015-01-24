@@ -475,7 +475,8 @@ public function mountaineering_start(expedition_id, duration, difficulty){
     if (this.player.party.party_has_space()) return {ok: 0, error: "There's already a space!"};
 
 	//RVRS: TODO: create_mountain is in groups/party.js
-    this.player.party.create_mountain(expedition_id, duration, difficulty, this);
+	throw new Error('create_mountain is in groups/party.js, which is not converted yet');
+    //this.player.party.create_mountain(expedition_id, duration, difficulty, this);
 
     return {ok: 1};
 }
