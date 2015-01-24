@@ -1,4 +1,5 @@
 package com.reversefold.glitch.server {
+	import com.adobe.crypto.MD5;
 	import com.reversefold.glitch.server.data.Config;
 	import com.reversefold.glitch.server.player.Player;
 	import com.reversefold.glitch.server.player.Quests;
@@ -115,6 +116,10 @@ package com.reversefold.glitch.server {
 		public function apiGetObjectContent(tsid) {
 			//RVRS: TODO
 			throw new Error(' apiGetObjectContent ' + tsid);
+		}
+		
+		public function apiMD5(s : String) : String {
+			return MD5.hash(s);
 		}
 		
 		// END api funcs

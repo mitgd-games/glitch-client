@@ -1327,14 +1327,14 @@ public function finishMakingUnknown(inf){
 
     var knowns = {};
 
-    var new_recipe = utils.copy_hash(get_recipe(match_id));
+    var new_recipe = Utils.copy_hash(get_recipe(match_id));
     new_recipe['learnt'] = 1;
     new_recipe['discoverable'] = 1;
     knowns[match_id] = new_recipe;
 
     for (var i in this.recipes.recipes){
         if (!previously_known[i]){
-            var recipe = utils.copy_hash(get_recipe(i));
+            var recipe = Utils.copy_hash(get_recipe(i));
 
             recipe['discoverable'] = 1;
             recipe['learnt'] = 1;
@@ -1608,7 +1608,7 @@ public function making_get_recipes(item, verb){
             if (!r) continue;
 
             // Copy the recipe so we don't modify the catalog
-            var rsp = utils.copy_hash(r);
+            var rsp = Utils.copy_hash(r);
 
             rsp.learnt = 1;
             rsp.discoverable = 1;
@@ -1681,7 +1681,7 @@ public function making_recipe_request(msg){
                 // Found a match!
                 if (r.outputs[o][0] == class_id){
                     // Copy the recipe so we don't modify the catalog
-                    rsp[class_id] = utils.copy_hash(r);
+                    rsp[class_id] = Utils.copy_hash(r);
                     rsp[class_id].id = j; // We need recipe id too
 
                     // Discoverable?

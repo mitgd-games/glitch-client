@@ -639,7 +639,7 @@ public function admin_auctions_get(args){
 
     if (this.auctions.active[args.uid]){
 
-        data = utils.copy_hash(this.auctions.active[args.uid]);
+        data = Utils.copy_hash(this.auctions.active[args.uid]);
         data.label = data.stack.getLabel ? data.stack.getLabel() : data.stack.label;
         data.count = data.stack.count;
         data.class_tsid = data.stack.class_tsid;
@@ -668,13 +668,13 @@ public function admin_auctions_get(args){
 
     if (this.auctions.cancelled[args.uid]){
 
-        data = utils.copy_hash(this.auctions.cancelled[args.uid]);
+        data = Utils.copy_hash(this.auctions.cancelled[args.uid]);
         status = 'cancelled';
     }
 
     if (this.auctions.done[args.uid]){
 
-        data = utils.copy_hash(this.auctions.done[args.uid]);
+        data = Utils.copy_hash(this.auctions.done[args.uid]);
         data.buyer_tsid = data.buyer.tsid;
         delete data.buyer;
 
@@ -683,7 +683,7 @@ public function admin_auctions_get(args){
 
     if (this.auctions.expired[args.uid]){
 
-        data = utils.copy_hash(this.auctions.expired[args.uid]);
+        data = Utils.copy_hash(this.auctions.expired[args.uid]);
         status = 'expired';
     }
 

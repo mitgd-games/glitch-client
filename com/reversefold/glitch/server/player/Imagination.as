@@ -332,7 +332,7 @@ public function imagination_get_deck(){
                                 }
 
                                 for (var l=0; l<chance; l++){
-                                    var row = utils.copy_hash(u);
+                                    var row = Utils.copy_hash(u);
                                     row.class_tsid = i;
                                     delete row.options;
                                     row.chance = chance;
@@ -386,7 +386,7 @@ public function imagination_get_deck(){
                                 }
 
                                 for (var l=0; l<chance; l++){
-                                    var row = utils.copy_hash(u);
+                                    var row = Utils.copy_hash(u);
                                     row.class_tsid = i;
                                     delete row.options;
                                     row.chance = chance;
@@ -437,7 +437,7 @@ public function imagination_get_deck(){
                                 }
 
                                 for (var l=0; l<chance; l++){
-                                    var row = utils.copy_hash(u);
+                                    var row = Utils.copy_hash(u);
                                     row.class_tsid = i;
                                     delete row.options;
                                     row.chance = chance;
@@ -457,7 +457,7 @@ public function imagination_get_deck(){
             }
             else{
                 for (var j=0; j<u.chance; j++){
-                    var row = utils.copy_hash(u);
+                    var row = Utils.copy_hash(u);
                     row.class_tsid = i;
 
                     if (i == 'keepable_reshuffle'){

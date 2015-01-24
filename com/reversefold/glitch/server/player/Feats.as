@@ -208,7 +208,7 @@ public function feats_familiar_turnin_do(choice, details){
 
         var completion_text = "The ancient Feat \""+rewards.title+"\" has been successfully recreated by modern Glitches. Your participation has earned you the following rewards:";
 
-        var rewards_clean = utils.copy_hash(rewards);
+        var rewards_clean = Utils.copy_hash(rewards);
         delete rewards_clean.title;
         delete rewards_clean.feat_id;
 

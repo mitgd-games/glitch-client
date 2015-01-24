@@ -157,7 +157,7 @@ public function instances_left(id, randomize, no_auto_return, force){
 
     log.info(this+' Left instance '+id);
 
-    var prev = utils.copy_hash(this.instances_get_exit(id));
+    var prev = Utils.copy_hash(this.instances_get_exit(id));
 
     delete this.instances.instances[id];
     delete this.instances.previously[id];

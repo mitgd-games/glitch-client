@@ -512,7 +512,7 @@ public function make_and_store_evasion_record(msg, location, today_key, alltime)
     location.hi_sign_daily_evasion_record = ob;
 
     if (alltime) {
-        location.hi_sign_evasion_record = utils.copy_hash(ob);
+        location.hi_sign_evasion_record = Utils.copy_hash(ob);
 
         if (config.feature_report_hi_records) {
             //this.player.achievements.achievements_increment('alltime_evasion_record_made', 'set', 1);

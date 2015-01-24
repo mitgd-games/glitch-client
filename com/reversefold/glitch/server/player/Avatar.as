@@ -1,8 +1,14 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
+    import com.reversefold.glitch.server.data.Clothing;
     import com.reversefold.glitch.server.data.Config;
+    import com.reversefold.glitch.server.data.DefaultAvatars;
+    import com.reversefold.glitch.server.data.Faces;
+    import com.reversefold.glitch.server.data.SwfsAvatar;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +17,10 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+
+		public var clothing;
+		public var a2;
+        public var av_meta;
 
         public function Avatar(config : Config, player : Player) {
             this.config = config;
@@ -21,7 +31,7 @@ package com.reversefold.glitch.server.player {
 public function avatar_init(){
 
     if (this.clothing === null || this.clothing === undefined){
-        this.clothing = Server.instance.apiNewOwnedDC(this);
+        this.clothing = {};//Server.instance.apiNewOwnedDC(this);
         this.clothing.label = 'Clothing';
         this.clothing.slots = {};
     }
@@ -34,7 +44,7 @@ public function avatar_delete_all(){
 
     if (this.clothing){
         this.clothing.apiDelete();
-        delete this.clothing;
+        this.clothing = null;
     }
 }
 
@@ -60,12 +70,12 @@ public function avatar_set_clothing(map){
     this.clothing.clothing_changes++;
     this.clothing.change_time = time();
 
-    for (var i in config.clothing_slots){
+    for (var i in config.base.clothing_slots){
 
-        if (utils.has_key(i, map)){
+        if (Utils.has_key(i, map)){
 
             if (map[i]){
-                var item = config.data_clothing[map[i]];
+                var item = Clothing.data_clothing[map[i]];
                 if (item && item.slot == i){
                     if (this.clothing_is_owned(item.slot, map[i])){
                         this.a2[i] = map[i];
@@ -110,12 +120,12 @@ public function avatar_set_face(map){
     // set the slot-based stuff first.
     //
 
-    for (var i in config.face_slots){
+    for (var i in config.base.face_slots){
 
-        if (utils.has_key(i, map)){
+        if (Utils.has_key(i, map)){
 
             if (map[i]){
-                var item = config.data_faces[map[i]];
+                var item = Faces.data_faces[map[i]];
                 if (item && item.slot == i){
                     this.a2[i] = map[i];
                 }
@@ -133,12 +143,12 @@ public function avatar_set_face(map){
     if (map['hair_tint']) map['hair_color'] = map['hair_tint'];
     if (map['skin_tint']) map['skin_color'] = map['skin_tint'];
 
-    for (var i in config.face_color_slots){
+    for (var i in config.base.face_color_slots){
 
-        if (utils.has_key(i, map)){
+        if (Utils.has_key(i, map)){
 
             if (map[i]){
-                var item = config.data_avatar_colors[map[i]];
+                var item = Faces.data_avatar_colors[map[i]];
                 if (item && item.slot+"_color" == i){
                     this.a2[i] = map[i];
                 }
@@ -153,11 +163,11 @@ public function avatar_set_face(map){
     // the scaling params
     //
 
-    for (var slot in config.face_scaling_params){
+    for (var slot in config.base.face_scaling_params){
 
-        var settings = config.face_scaling_params[slot];
+        var settings = config.base.face_scaling_params[slot];
 
-        if (utils.has_key(slot, map)){
+        if (Utils.has_key(slot, map)){
 
             var v = floatval(map[slot]);
             if (v < settings[0]) v = settings[0];
@@ -213,12 +223,12 @@ public function avatar_format_hash(cur){
     // face scaling
     //
 
-    for (var slot in config.face_scaling_params){
+    for (var slot in config.base.face_scaling_params){
 
         if (cur[slot]){
             out[slot] = floatval(cur[slot]);
         }else{
-            out[slot] = config.face_scaling_params[slot][2]; // defaults
+            out[slot] = config.base.face_scaling_params[slot][2]; // defaults
         }
     }
 
@@ -227,7 +237,7 @@ public function avatar_format_hash(cur){
     // clothing items
     //
 
-    for (var slot in config.clothing_slots){
+    for (var slot in config.base.clothing_slots){
 
         out.articles[slot] = {
             'package_swf_url'   : '',
@@ -235,11 +245,11 @@ public function avatar_format_hash(cur){
         };
 
         var id = cur[slot];
-        if (config.data_clothing[id]){
+        if (Clothing.data_clothing[id]){
 
-            var hash = utils.copy_hash(config.data_clothing[id]);
-            var package_name = config.data_swfs_avatar.assets[hash.asset];
-            var package_url = config.data_swfs_avatar.packages[package_name];
+            var hash = Utils.copy_hash(Clothing.data_clothing[id]);
+            var package_name = SwfsAvatar.data_swfs_avatar.assets[hash.asset];
+            var package_url = SwfsAvatar.data_swfs_avatar.packages[package_name];
 
             if (package_url){
 
@@ -257,7 +267,7 @@ public function avatar_format_hash(cur){
     // facial features
     //
 
-    for (var slot in config.face_slots){
+    for (var slot in config.base.face_slots){
 
         out.articles[slot] = {
             'package_swf_url'   : '',
@@ -265,11 +275,11 @@ public function avatar_format_hash(cur){
         };
 
         var id = cur[slot];
-        if (config.data_faces[id]){
+        if (Faces.data_faces[id]){
 
-            var hash = utils.copy_hash(config.data_faces[id]);
-            var package_name = config.data_swfs_avatar.assets[hash.asset];
-            var package_url = config.data_swfs_avatar.packages[package_name];
+            var hash = Utils.copy_hash(Faces.data_faces[id]);
+            var package_name = SwfsAvatar.data_swfs_avatar.assets[hash.asset];
+            var package_url = SwfsAvatar.data_swfs_avatar.packages[package_name];
 
             if (package_url){
 
@@ -287,7 +297,7 @@ public function avatar_format_hash(cur){
     // colors
     //
 
-    for (var slot in config.face_color_slots){
+    for (var slot in config.base.face_color_slots){
 
         // $slot contains strings like skin_color, which we need to map to skin_tint_color and skin_colors
 
@@ -298,10 +308,10 @@ public function avatar_format_hash(cur){
         out[new_key] = {};
 
         var id = cur[slot];
-        if (config.data_avatar_colors[id]){
+        if (Faces.data_avatar_colors[id]){
 
-            out[old_key] = config.data_avatar_colors[id].color;
-            out[new_key] = config.data_avatar_colors[id].colors;
+            out[old_key] = Faces.data_avatar_colors[id].color;
+            out[new_key] = Faces.data_avatar_colors[id].colors;
         }
     }
 
@@ -326,7 +336,7 @@ public function clothing_admin_add_multi(args){
 
 public function clothing_add(id, info){
 
-    var item = config.data_clothing[id];
+    var item = Clothing.data_clothing[id];
     if (!item) return false;
 
     this.avatar_init();
@@ -441,7 +451,7 @@ public function clothing_get_owned(slot){
     //
 
     var list = [];
-    var slots = utils.copy_hash(this.clothing.slots);
+    var slots = Utils.copy_hash(this.clothing.slots);
 
     if (slot){
         if (slots[slot]){
@@ -497,7 +507,7 @@ public function clothing_admin_remove(args){
 
 public function clothing_remove(id, info){
 
-    var item = config.data_clothing[id];
+    var item = Clothing.data_clothing[id];
     if (!item){
         return {
             ok: 0,
@@ -526,7 +536,7 @@ public function clothing_remove(id, info){
     var key = time();
     while ( this.clothing.recycled[key] ) key++;
 
-    this.clothing.recycled[key] = utils.copy_hash(this.clothing.slots[item.slot][id]);
+    this.clothing.recycled[key] = Utils.copy_hash(this.clothing.slots[item.slot][id]);
     this.clothing.recycled[key].id = id;
     this.clothing.recycled[key].recycled = time();
 
@@ -668,7 +678,7 @@ public function avatar_is_valid_facial_feature(id, slot){
 
     if (!id) return true;
 
-    var item = config.data_faces[id];
+    var item = Faces.data_faces[id];
     if (item && item.slot == slot){
         return true;
     }
@@ -678,7 +688,7 @@ public function avatar_is_valid_facial_feature(id, slot){
 
 public function avatar_is_valid_color(id, slot){
 
-    var item = config.data_avatar_colors[id];
+    var item = Faces.data_avatar_colors[id];
     if (item && item.slot+'_color' == slot){
         return true;
     }
@@ -709,9 +719,10 @@ public function avatar_get_pc_msg_props(){
 }
 
 public function avatar_set_sheets(args){
-
+	/*
     delete this.avatar_sheets; // legacy cleanup
     delete this.avatar_pending; // legacy cleanup
+	*/
     if (!this.av_meta) this.av_meta = {};
 
     if (args.url){
@@ -722,11 +733,11 @@ public function avatar_set_sheets(args){
         this.av_meta.pending = true;
     }
 
-    if (apiIsPlayerOnline(this.tsid)){
+    if (Server.instance.apiIsPlayerOnline(this.player.tsid)){
 
         var msg = {
             'type' : 'avatar_update',
-            'tsid' : this.tsid
+            'tsid' : this.player.tsid
         };
 
         var props = this.avatar_get_pc_msg_props();
@@ -867,11 +878,11 @@ public function clothing_find_sub_only(){
 
     var matches = [];
 
-    for (var i=0; i<config.data_clothing_sub_only.length; i++){
+    for (var i=0; i<Clothing.data_clothing_sub_only.length; i++){
 
-        if (owned_hash[config.data_clothing_sub_only[i]]){
+        if (owned_hash[Clothing.data_clothing_sub_only[i]]){
 
-            matches.push(config.data_clothing_sub_only[i]);
+            matches.push(Clothing.data_clothing_sub_only[i]);
         }
     }
 
@@ -913,7 +924,7 @@ public function avatar_admin_set_full(args){
 
 public function avatar_build_default(args){
 
-    var def = config.default_avatars;
+    var def = DefaultAvatars.default_avatars;
 
     var hash = {};
     var owned = {};
@@ -986,7 +997,7 @@ public function avatar_build_default(args){
 
 public function avatar_default_choices(){
 
-    var choices = config.default_avatars;
+    var choices = DefaultAvatars.default_avatars;
     var out = {};
 
     for (var slot in choices){
@@ -1027,7 +1038,7 @@ public function avatar_admin_set_default(args){
     var hash = {};
     var code = {};
 
-    var choices = config.default_avatars;
+    var choices = DefaultAvatars.default_avatars;
 
     for (var i in choices){
 
@@ -1041,7 +1052,7 @@ public function avatar_admin_set_default(args){
     }
 
     this.a2 = hash;
-    delete this.quickstart_needs_avatar;
+    this.player.quickstart_needs_avatar = false;
 
     this.avatar_set_singles({
         'url'       : args.singles,
@@ -1053,7 +1064,7 @@ public function avatar_admin_set_default(args){
     });
 
     if (this.player.location.class_tsid == 'newxp_training1'){
-        if (this.quickstart_needs_player){
+        if (this.player.quickstart_needs_player){
             var flamingo = this.player.location.getFlamingo();
             if (flamingo){
                 this.player.openInputBox('player_name_picker', 'What should we call you?', {check_user_name: true, input_max_chars: 19, cancelable: false, itemstack_tsid: flamingo.tsid, follow: true, input_label: 'What should we call you?'});

@@ -16,7 +16,12 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>[source path] src</name>
+			<name>[source path] as3corelib-src</name>
+			<type>2</type>
+			<location>/Users/papercrane/src/glitch/as3corelib/src</location>
+		</link>
+		<link>
+			<name>[source path] asunit-4.0-src</name>
 			<type>2</type>
 			<location>/Users/papercrane/src/glitch/asunit/asunit-4.0/src</location>
 		</link>

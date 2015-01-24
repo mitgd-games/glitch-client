@@ -33,6 +33,8 @@ package com.reversefold.glitch.server.data {
 //#include inc_data_pols_prod.js
 		public static var pols : Pols = new Pols();
 //#include inc_data_swfs_avatar_prod.js
+		//SwfsAvatar is static
+		
 //#include inc_data_mapextras_prod.js
 //#include inc_data_homes_prod.js
 //#include inc_data_feats_prod.js

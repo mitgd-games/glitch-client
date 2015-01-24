@@ -38,6 +38,9 @@ package com.reversefold.glitch.server.player {
 		public var apply_buff = null;
 		public var x;
 		public var y;
+		public var quickstart_needs_avatar : Boolean = false;
+		public var quickstart_needs_player : Boolean = false;
+		public var quickstart_needs_account : Boolean = false;
 		
 		public var is_god : Boolean = false;
 		public var is_help : Boolean = false;
