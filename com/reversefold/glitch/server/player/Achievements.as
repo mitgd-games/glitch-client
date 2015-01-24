@@ -67,7 +67,7 @@ public function achievements_login(){
 }
 
 public function achievements_delete_all(){
-	Server.instance.apiDeleteTimers();
+	apiDeleteTimers();
 	this.player.achievements = new Achievements(config, player);
 	/*
     if (this.achievements){

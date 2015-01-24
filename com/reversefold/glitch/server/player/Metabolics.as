@@ -1,4 +1,5 @@
 package com.reversefold.glitch.server.player {
+    import com.reversefold.glitch.server.Common;
     import com.reversefold.glitch.server.Prop;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
@@ -14,6 +15,8 @@ package com.reversefold.glitch.server.player {
 
 		public var energy : Prop;
 		public var mood : Prop;
+		public var tank : int;
+		public var dontGetPooped : Boolean;
 		
         public function Metabolics(config : Config, player : Player) {
             this.config = config;
@@ -22,19 +25,14 @@ package com.reversefold.glitch.server.player {
 
 
 public function metabolics_init(){
-
-    if (!this.metabolics){
-        this.metabolics = {};
-    }
-
-    var max = this.metabolics_calc_max(this.stats.level);
-    this.player.init_prop('metabolics', 'energy', max, 0, max);
-    this.player.init_prop('metabolics', 'mood', max, 0, max);
+    var max = this.metabolics_calc_max(this.player.stats.level);
+    this.energy = new Prop(max, 0, max);
+    this.mood = new Prop(max, 0, max);
 
     // This seems unnecessary
     //this.metabolics_recalc_limits(false);
 
-    if (!this.metabolics.tank) this.metabolics.tank = this.metabolics.energy.top;
+    if (!this.tank) this.tank = this.energy.top;
 }
 
 
@@ -42,13 +40,13 @@ public function metabolics_init(){
 public function metabolics_get_login(out){
 
     out.energy = {
-        value   : this.metabolics.energy.value,
-        max : this.metabolics.energy.top
+        value   : this.energy.value,
+        max : this.energy.top
     };
 
     out.mood = {
-        value   : this.metabolics.mood.value,
-        max : this.metabolics.mood.top
+        value   : this.mood.value,
+        max : this.mood.top
     };
 }
 
@@ -56,12 +54,12 @@ public function metabolics_get_login(out){
  * they next go above five energy. Used by Wine of the Dead.
  */
 public function metabolics_dont_get_pooped() {
-    this.dontGetPooped = true;
+    this.dontGetPooped  = true;
 }
 
 public function metabolics_add_energy(x, quiet, force){
 
-    if (this.is_dead){
+    if (this.player.is_dead){
         if (!quiet){
             this.player.sendOnlineActivity("You would have gained energy, but you're dead!");
         }
@@ -74,7 +72,7 @@ public function metabolics_add_energy(x, quiet, force){
         return 0;
     }
 
-    var change = this.metabolics.energy.apiInc(x);
+    var change = this.energy.apiInc(x);
 
     this.player.daily_history.daily_history_increment('energy_gained', change);
 
@@ -90,8 +88,8 @@ public function metabolics_add_energy(x, quiet, force){
             this.player.buffs.buffs_remove('pooped');
         }
 
-        if (this.dontGetPooped) {
-            delete this.dontGetPooped;
+        if (this.dontGetPooped ) {
+            this.dontGetPooped = false;
         }
     }
 
@@ -100,14 +98,14 @@ public function metabolics_add_energy(x, quiet, force){
 
 public function metabolics_add_mood(x, quiet=false, force=false){
 
-    if (this.is_dead){
+    if (this.player.is_dead){
         if (!quiet){
             this.player.sendOnlineActivity("You would have gained some mood, but you're dead!");
         }
         return 0;
     }
 
-    var change = this.metabolics.mood.apiInc(x);
+    var change = this.mood.apiInc(x);
 
     if (change && !quiet){
         this.player.announcements.apiSendAnnouncement({
@@ -127,7 +125,7 @@ public function metabolics_try_lose_energy(x){
     return 0;
 }
 
-public function metabolics_lose_energy(x, quiet, force){
+public function metabolics_lose_energy(x, quiet=false, force=false){
 
     // No energy loss during newxp
     if (!force){
@@ -136,14 +134,14 @@ public function metabolics_lose_energy(x, quiet, force){
         }
     }
 
-    if (this.is_dead){
+    if (this.player.is_dead){
         if (!quiet){
             this.player.sendOnlineActivity("You would have lost energy, but you're dead!");
         }
         return 0;
     }
 
-    var change = this.metabolics.energy.apiDec(x);
+    var change = this.energy.apiDec(x);
 
     if (change && !quiet){
         this.player.announcements.apiSendAnnouncement({
@@ -156,19 +154,19 @@ public function metabolics_lose_energy(x, quiet, force){
     this.player.daily_history.daily_history_increment('energy_consumed', change * -1);
 
     // Check for croaking
-    if (this.metabolics_get_energy() == 0 && !this.deaths_today && !this.player.buffs.buffs_has('no_no_powder')){
+    if (this.metabolics_get_energy() == 0 && !this.player.deaths_today && !this.player.buffs.buffs_has('no_no_powder')){
         // 1. If you get down below the DEATH THRESHOLD (I think that's less than 2% of energy?) on a given day, you die. That will be the only time you die that day.
         log.info(this+' croaking due to low energy');
         this.player.croak();
     }
     // Check for pooped
-    else if (this.metabolics_get_percentage('energy') <= 5 && !this.is_dead && this.deaths_today && !this.dontGetPooped){
-        var tomorrow = timestamp_to_gametime(time()+ (game_days_to_ms(1)/1000));
+    else if (this.metabolics_get_percentage('energy') <= 5 && !this.player.is_dead && this.player.deaths_today && !this.dontGetPooped ){
+        var tomorrow = Common.timestamp_to_gametime(Common.time()+ (Common.game_days_to_ms(1)/1000));
         tomorrow[3] = 0;
         tomorrow[4] = 0;
 
-        var remaining = gametime_to_timestamp(tomorrow) - time();
-        if (this.player.daily_history.daily_history_get(current_day_key(), 'energy_consumed') >= this.metabolics.energy.top * 20 && !this.player.buffs.buffs_has('super_pooped')){
+        var remaining = Common.gametime_to_timestamp(tomorrow) - Common.time();
+        if (this.player.daily_history.daily_history_get(Common.current_day_key(), 'energy_consumed') >= this.energy.top * 20 && !this.player.buffs.buffs_has('super_pooped')){
             if (this.player.buffs.buffs_has('pooped')) this.player.buffs.buffs_remove('pooped');
             this.player.buffs.buffs_apply('super_pooped', {duration: remaining});
         }
@@ -177,15 +175,15 @@ public function metabolics_lose_energy(x, quiet, force){
         }
     };
 
-    if (this.metabolics_get_percentage('energy') <= 10 && !this.player.buffs.buffs_has('walking_dead') && !this.is_dead && time() - this['!last_energy_warning'] > 60){
-        if (this.deaths_today){
+    if (this.metabolics_get_percentage('energy') <= 10 && !this.player.buffs.buffs_has('walking_dead') && !this.player.is_dead && Common.time() - this['!last_energy_warning'] > 60){
+        if (this.player.deaths_today){
             this.player.sendOnlineActivity('You are extremely low on energy! Find something to eat.');
         }
         else{
             this.player.sendOnlineActivity('You are about to croak! Find something to eat.');
         }
 
-        this['!last_energy_warning'] = time();
+        this['!last_energy_warning'] = Common.time();
     }
 
     return change;
@@ -215,7 +213,7 @@ public function metabolics_lose_mood(x, quiet=false, force=false){
         return 0;
     }
 
-    var change = this.metabolics.mood.apiDec(x);
+    var change = this.mood.apiDec(x);
 
     if (change && !quiet){
         this.player.announcements.apiSendAnnouncement({
@@ -225,10 +223,10 @@ public function metabolics_lose_mood(x, quiet=false, force=false){
     }
 
     if (this.player.location.instance_id != 'tower_quest_desert'){
-        if (this.metabolics_get_percentage('mood') <= 20 && !this.player.buffs.buffs_has('walking_dead') && !this.is_dead){
+        if (this.metabolics_get_percentage('mood') <= 20 && !this.player.buffs.buffs_has('walking_dead') && !this.player.is_dead){
             this.player.sendOnlineActivity('Your mood is getting very low! Try drinking something tasty.');
         }
-        else if (this.metabolics_get_percentage('mood') <= 50 && !this.player.buffs.buffs_has('walking_dead') && !this.is_dead){
+        else if (this.metabolics_get_percentage('mood') <= 50 && !this.player.buffs.buffs_has('walking_dead') && !this.player.is_dead){
             //this.player.sendOnlineActivity('Your mood is getting low. Watch it: you\'ll start burning energy faster.');
             this.player.sendOnlineActivity('Your mood is getting low. Drink something, else you\'ll earn less iMG for your actions.');
         }
@@ -242,17 +240,17 @@ public function metabolics_lose_mood(x, quiet=false, force=false){
 }
 
 public function metabolics_get_energy(){
-    return this.metabolics.energy.value;
+    return this.energy.value;
 }
 
 public function metabolics_get_mood(){
-    return this.metabolics.mood.value;
+    return this.mood.value;
 }
 
 public function metabolics_set_energy(x, quiet = false, force = false){
 
-    if (this.metabolics.energy.top < x){
-        x = this.metabolics.energy.top;
+    if (this.energy.top < x){
+        x = this.energy.top;
     }
 
     var change = x - this.metabolics_get_energy();
@@ -269,8 +267,8 @@ public function metabolics_set_energy(x, quiet = false, force = false){
 }
 
 public function metabolics_set_mood(x, quiet = false, force = false){
-    if (this.metabolics.mood.top < x){
-        x = this.metabolics.mood.top;
+    if (this.mood.top < x){
+        x = this.mood.top;
     }
 
     var change = x - this.metabolics_get_mood();
@@ -293,20 +291,20 @@ public function metabolics_recalc_limits(set_to_max){
     }
     //log.info(this+' metabolics_recalc_limits 2: '+set_to_max);
 
-    var max = this.metabolics_calc_max(this.stats.level);
+    var max = this.metabolics_calc_max(this.player.stats.level);
     this.metabolics_set_max('energy', max);
     this.metabolics_set_max('mood', max);
 
     if (set_to_max){
-        this.metabolics.energy.apiSet(max);
-        this.metabolics.mood.apiSet(max);
+        this.energy.apiSet(max);
+        this.mood.apiSet(max);
 
         if (this.player.buffs.buffs_has('pooped')){
             this.player.buffs.buffs_remove('pooped');
         }
 
-        if (this.dontGetPooped) {
-            delete this.dontGetPooped;
+        if (this.dontGetPooped ) {
+            this.dontGetPooped = false;
         }
     }
 
@@ -315,24 +313,24 @@ public function metabolics_recalc_limits(set_to_max){
 
 // This will currently be reset any time metabolics_recalc_limits is called
 public function metabolics_set_max(metabolic, max){
-    if (!this.metabolics[metabolic]) return false;
+    if (!this[metabolic]) return false;
 
-    if (this.metabolics[metabolic].top != max){
-        this.metabolics[metabolic].apiSetLimits(0, max);
+    if (this[metabolic].top != max){
+        this[metabolic].apiSetLimits(0, max);
     }
 
-    if (this.metabolics[metabolic].value > max){
-        this.metabolics[metabolic].apiSet(max);
+    if (this[metabolic].value > max){
+        this[metabolic].apiSet(max);
     }
 
     return true;
 }
 
 public function metabolics_get_percentage(stat){
-    return this.metabolics[stat].value / this.metabolics[stat].top * 100;
+    return this[stat].value / this[stat].top * 100;
 }
 
-public function metabolics_calc_max(level, ignore_buffs){
+public function metabolics_calc_max(level, ignore_buffs=false){
 
     // Some buffs artificially restrict your max amounts
     if (!ignore_buffs){
@@ -386,41 +384,41 @@ public function metabolics_test(){
 
 
 public function metabolics_try_set(stat, val){
-    if (this.metabolics[stat].top < val){
-        val = this.metabolics[stat].top;
+    if (this[stat].top < val){
+        val = this[stat].top;
     }
     return val;
 }
 
 public function metabolics_try_inc(stat, val){
-    if (this.is_dead) return 0;
+    if (this.player.is_dead) return 0;
     if (this.player.buffs.buffs_has('super_pooped')) return 0;
-    var remain = this.metabolics[stat].top - this.metabolics[stat].value;
+    var remain = this[stat].top - this[stat].value;
     return val > remain ? remain : val;
 }
 
 public function metabolics_try_dec(stat, val){
-    if (this.is_dead) return 0;
-    var cur = this.metabolics[stat].value;
+    if (this.player.is_dead) return 0;
+    var cur = this[stat].value;
     return val > cur ? cur : val;
 }
 
 public function metabolics_get_max_energy(){
     this.metabolics_init();
-    return this.metabolics.energy.top;
+    return this.energy.top;
 }
 
 public function metabolics_get_max_mood(){
     this.metabolics_init();
-    return this.metabolics.mood.top;
+    return this.mood.top;
 }
 
 public function metabolics_get_tank(){
-    return this.metabolics.tank;
+    return this.tank;
 }
 
 public function metabolics_set_tank(tank){
-    this.metabolics.tank = tank;
+    this.tank = tank;
 }
 
     }

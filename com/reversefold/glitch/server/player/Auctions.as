@@ -113,7 +113,7 @@ public function auctions_start(stack, count, cost, fee_percent, fee_min){
     //
 
     var temp = stack.apiGetLocatableContainerOrSelf();
-    if (temp.tsid != this.tsid){
+    if (temp.tsid != this.player.tsid){
 
         return {
             ok: 0,
@@ -220,7 +220,7 @@ public function auctions_start(stack, count, cost, fee_percent, fee_min){
     // create the auction
     //
 
-    Server.instance.apiLogAction('AUCTION_START', 'pc='+this.tsid, 'stack='+_use.tsid, 'count='+count);
+    Server.instance.apiLogAction('AUCTION_START', 'pc='+this.player.tsid, 'stack='+_use.tsid, 'count='+count);
 
     if (_use.onAuctionList) _use.onAuctionList(this);
 
@@ -277,7 +277,7 @@ public function auctions_cancel(uid, destroy_items){
     delete this.auctions.active[uid];
     var stack = details.stack;
 
-    Server.instance.apiLogAction('AUCTION_CANCEL', 'pc='+this.tsid, 'stack='+stack.tsid, 'count='+stack.count);
+    Server.instance.apiLogAction('AUCTION_CANCEL', 'pc='+this.player.tsid, 'stack='+stack.tsid, 'count='+stack.count);
     this.auctions_flatten(details, "cancelled");
     details.cancelled = time();
     this.auctions.cancelled[uid] = details;
@@ -288,7 +288,7 @@ public function auctions_cancel(uid, destroy_items){
     }
     else{
         // give the items back by mail
-        this.player.mail.mail_add_auction_delivery(stack.tsid, config.auction_delivery_time, uid, this.tsid, 'cancelled');
+        this.player.mail.mail_add_auction_delivery(stack.tsid, config.auction_delivery_time, uid, this.player.tsid, 'cancelled');
     }
 
     return {
@@ -333,9 +333,9 @@ public function auctions_expire(uid){
     this.auctions.expired[uid] = details;
     this.auctions_sync(uid);
 
-    Server.instance.apiLogAction('AUCTION_EXPIRE', 'pc='+this.tsid, 'stack='+stack.tsid, 'count='+stack.count);
+    Server.instance.apiLogAction('AUCTION_EXPIRE', 'pc='+this.player.tsid, 'stack='+stack.tsid, 'count='+stack.count);
 
-    this.player.mail.mail_add_auction_delivery(stack.tsid, config.auction_delivery_time, uid, this.tsid, 'expired');
+    this.player.mail.mail_add_auction_delivery(stack.tsid, config.auction_delivery_time, uid, this.player.tsid, 'expired');
 
     return {
         ok: 1
@@ -366,7 +366,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
     // is this our own auction?
     //
 
-    if (buyer.tsid == this.tsid){
+    if (buyer.tsid == this.player.tsid){
 
         return {
             ok: 0,
@@ -448,7 +448,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
     //
 
     utils.http_get('callbacks/auctions_purchased.php', {
-        seller_tsid : this.tsid,
+        seller_tsid : this.player.tsid,
         buyer_tsid  : buyer.tsid,
         item_class_tsid : stack.class_tsid,
         qty     : stack.count,
@@ -515,7 +515,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
     // resolve
     //
 
-    buyer.mail_add_auction_delivery(stack.tsid, config.auction_delivery_time, uid, this.tsid, 'purchased');
+    buyer.mail_add_auction_delivery(stack.tsid, config.auction_delivery_time, uid, this.player.tsid, 'purchased');
 
     buyer.stats_remove_currants(details.cost, {type: 'auction_buy', class_id: stack.class_tsid, count: stack.count});
 
@@ -525,7 +525,7 @@ public function auctions_purchase(uid, buyer, commission, preflight){
 
     var result = this.player.stats.stats_add_currants(proceeds, {type:'auction_buy',class_id: stack.class_tsid, count: stack.count});
 
-    Server.instance.apiLogAction('AUCTION_PURCHASE', 'pc='+this.tsid, 'buyer='+buyer.tsid, 'stack='+stack.tsid, 'count='+stack.count, 'currants='+proceeds);
+    Server.instance.apiLogAction('AUCTION_PURCHASE', 'pc='+this.player.tsid, 'buyer='+buyer.tsid, 'stack='+stack.tsid, 'count='+stack.count, 'currants='+proceeds);
 
     // Item callback for a sold auction.
     if (stack.onAuctionSold) {
@@ -610,7 +610,7 @@ public function auctions_get_uid(){
 public function auctions_sync(uid){
 
     utils.http_get('callbacks/auctions_update.php', {
-        'player_tsid'   : this.tsid,
+        'player_tsid'   : this.player.tsid,
         'auction_uid'   : uid
     });
 }
@@ -618,7 +618,7 @@ public function auctions_sync(uid){
 public function auctions_sync_all(){
 
     utils.http_get('callbacks/auctions_update.php', {
-        'player_tsid'   : this.tsid
+        'player_tsid'   : this.player.tsid
     });
 }
 
@@ -745,7 +745,7 @@ public function admin_auctions_relist_broken(args){
     }
 
     var temp = stack.apiGetLocatableContainerOrSelf();
-    if (temp.tsid != this.tsid){
+    if (temp.tsid != this.player.tsid){
 
         return {
             ok: 0,
@@ -777,7 +777,7 @@ public function admin_auctions_private_bag_items(){
 }
 
 public function admin_auctions_return_expired_item(args){
-    this.player.mail.mail_add_auction_delivery(args.tsid, 0, args.uid, this.tsid, 'expired');
+    this.player.mail.mail_add_auction_delivery(args.tsid, 0, args.uid, this.player.tsid, 'expired');
     return 1;
 }
 

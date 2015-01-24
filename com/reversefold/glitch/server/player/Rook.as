@@ -114,7 +114,7 @@ public function broadcastPCRSChange(){
     var rsp = {
         type: 'pc_rs_change',
         pc: {
-            tsid: this.tsid,
+            tsid: this.player.tsid,
             label: this.label,
             location: {
                 tsid: this.player.location.tsid,
@@ -230,7 +230,7 @@ public function doReviveComplete(pc, ret, force_full_revive){
             type: 'itemstack_overlay',
             swf_url: this.overlay_key_to_url('rainbow_fullyrevived'),
             duration: 4000,
-            itemstack_tsid: this.tsid,
+            itemstack_tsid: this.player.tsid,
             delta_x: 0,
             delta_y: 0,
             width: 400,

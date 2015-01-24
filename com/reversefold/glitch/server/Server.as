@@ -115,11 +115,16 @@ package com.reversefold.glitch.server {
 		
 		public function apiGetObjectContent(tsid) {
 			//RVRS: TODO
-			throw new Error(' apiGetObjectContent ' + tsid);
+			throw new Error('apiGetObjectContent ' + tsid);
 		}
 		
 		public function apiMD5(s : String) : String {
 			return MD5.hash(s);
+		}
+		
+		public function apiNewGroup(a) {
+			//RVRS: TODO
+			throw new Error('apiNewGroup ' + a);
 		}
 		
 		// END api funcs

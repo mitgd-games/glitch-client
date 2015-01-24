@@ -163,7 +163,7 @@ public function adminFeatsGiveRewards(rewards){
         this.player.achievements.achievements_grant('the_cigar');
     }
 
-    if (this.is_dead) return; // resurrecting will send these later
+    if (this.player.is_dead) return; // resurrecting will send these later
     this.player.familiar.familiar_send_alert({
         'callback'  : 'feats_familiar_turnin_do',
         'feat_id'   : rewards.feat_id
@@ -183,7 +183,7 @@ public function feats_has_unclaimed_rewards(){
 
 public function feats_familiar_turnin_do(choice, details){
     /*
-    if (this.tsid != 'PHVRJ840M992GJK'){
+    if (this.player.tsid != 'PHVRJ840M992GJK'){
         return {
             txt: "Feat rewards are currently disabled while we work on a bug",
             done: true
@@ -299,7 +299,7 @@ public function feats_gather_rewards(feat_id){
     delete this.feats.todo[feat_id];
 
     this.player.achievements.achievements_increment('feats', 'contributed_to');
-    Server.instance.apiLogAction('FEAT_REWARDS', 'pc='+this.tsid, 'feat_id='+rewards.feat_id, 'xp='+intval(rewards.xp), 'mood='+intval(rewards.mood), 'energy='+intval(rewards.energy), 'currants='+intval(rewards.currants));
+    Server.instance.apiLogAction('FEAT_REWARDS', 'pc='+this.player.tsid, 'feat_id='+rewards.feat_id, 'xp='+intval(rewards.xp), 'mood='+intval(rewards.mood), 'energy='+intval(rewards.energy), 'currants='+intval(rewards.currants));
 }
 
 public function feats_has_contributed(feat_id){

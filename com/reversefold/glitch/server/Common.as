@@ -29,14 +29,26 @@ package com.reversefold.glitch.server {
 			timer.start();
 		}
 
-		public function apiSetTimer(callback_name : String, ms : int) : void {
-			_apiSetTimer(callback_name, ms, this[callback_name]);
+		public function apiSetTimer(callback_name : String, ms : int, ... args) : void {
+			var callback : Function;
+			if (args.length == 0) {
+				callback = this[callback_name];
+			} else {
+				callback = function() : void {
+					this[callback_name].apply(this, args);
+				};
+			}
+			_apiSetTimer(callback_name, ms, callback);
 		}
 		
 		public function apiSetTimerX(callback_name : String, ms : int, x) {
+			//RVRS: TODO: I think this is right, but why not just use apiSetTimer directly?
+			apiSetTimer(callback_name, ms, x);
+			/*
 			_apiSetTimer(callback_name, ms, function() : void {
 				this[callback_name](x);
 			});
+			*/
 		}
 
 		public function apiCancelTimer(callback_name : String) : Boolean {

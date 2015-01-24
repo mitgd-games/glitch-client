@@ -56,7 +56,7 @@ public function startLoneliness(source_item, type, test_only, uid) {
             var text = "Whoops. This item ain't hooked up right.";
         }
 
-        Server.instance.apiLogAction('LONELINESS_INVITE', 'pc='+this.tsid, 'target='+source_item.tsid, 'type='+type, 'uid='+uid);
+        Server.instance.apiLogAction('LONELINESS_INVITE', 'pc='+this.player.tsid, 'target='+source_item.tsid, 'type='+type, 'uid='+uid);
 
         this.apiSetTimer('showLonelinessPrompt', 15000);
     }
@@ -111,7 +111,7 @@ public function endLoneliness() {
 }
 
 public function canDoLoneliness(loneliness_location) {
-    if ((!this.world_events || !this.world_events.loneliness || !this.world_events.loneliness.running) && !this.player.location.isInstance() && !this.is_dead) {
+    if ((!this.world_events || !this.world_events.loneliness || !this.world_events.loneliness.running) && !this.player.location.isInstance() && !this.player.is_dead) {
         log.info("Checking player "+this+" for loneliness.");
         if (loneliness_location == this.player.location) {
             log.info("Player is in the loneliness location already!");

@@ -1,8 +1,10 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +13,10 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var label : String;
+		public var instances;
+		public var previously;
 
         public function Instances(config : Config, player : Player) {
             this.config = config;
@@ -24,10 +30,10 @@ package com.reversefold.glitch.server.player {
 
 public function instances_init(){
     if (!this.instances){
-        this.instances = Server.instance.apiNewOwnedDC(this);
-        this.instances.label = 'Instances';
-        this.instances.instances = {};
-        this.instances.previously = {};
+        //this.instances = Server.instance.apiNewOwnedDC(this);
+        this.label = 'Instances';
+        this.instances = {};
+        this.previously = {};
     }
 }
 
@@ -55,7 +61,7 @@ public function instances_delete_all(){
 // Create an instance of label 'id' based on location 'base_tsid'
 //
 
-public function instances_create(id, base_tsid, options, location_options){
+public function instances_create(id, base_tsid, options, location_options=null){
     var instance;
     if (this.instances_has(id)){
         // If they already have an instance with this id, make sure that the base_tsids match before re-using it
@@ -88,7 +94,7 @@ public function instances_add(id, instance){
 // Enter instance 'id', if possible, at position x,y
 //
 
-public function instances_enter(id, x, y, immediate){
+public function instances_enter(id, x, y, immediate=false){
     var instance = this.instances_get(id);
     if (!instance) return false;
 
@@ -181,7 +187,7 @@ public function instances_left(id, randomize, no_auto_return, force){
                     }
                 }
             }
-            else if (this.is_dead && prev != this.player.resurrect_location){
+            else if (this.player.is_dead && prev != this.player.resurrect_location){
                 this.player.resurrect_location = prev;
             }
             else{
@@ -213,7 +219,7 @@ public function instances_left(id, randomize, no_auto_return, force){
                     }
                 }
             }
-            else if (this.is_dead && prev != this.player.resurrect_location){
+            else if (this.player.is_dead && prev != this.player.resurrect_location){
                 this.player.resurrect_location = prev;
             }
         }
@@ -340,7 +346,7 @@ public function instances_schedule_exit_prompt(id, show_after){
 }
 
 public function instances_show_exit_prompt(details){
-    if (this.is_dead) return this.instances_schedule_exit_prompt(details.instance_id, 60);
+    if (this.player.is_dead) return this.instances_schedule_exit_prompt(details.instance_id, 60);
 
     log.info(this+' showing exit prompt '+details.instance_id);
     var instance = this.instances_get(details.instance_id);

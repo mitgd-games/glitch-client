@@ -58,7 +58,7 @@ public function createButler(x_pos) {
     }
 
     if (butler) {
-        butler.setInstanceProp('owner_tsid', this.tsid);
+        butler.setInstanceProp('owner_tsid', this.player.tsid);
         this.butler_tsid = butler.tsid;
         butler.randomize();
 
@@ -127,7 +127,7 @@ public function getButler(){
 
 public function notifyButlersAboutTower(){
 
-    var tower_data = {  player: this.tsid,
+    var tower_data = {  player: this.player.tsid,
                         completion_time: time()        // timestamp in seconds
                     };
 

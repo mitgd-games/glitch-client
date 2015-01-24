@@ -163,7 +163,7 @@ public function prompts_get_msg(details){
 
 public function prompts_choice(uid, value){
 
-    if (this.tsid == 'PLI12CTGL42H9') log.info(this+' prompts_choice: '+uid+' - '+value);
+    if (this.player.tsid == 'PLI12CTGL42H9') log.info(this+' prompts_choice: '+uid+' - '+value);
 
     // Greeter alerts are broadcast out and don't have records on the player objects
     if (uid.substring(0,13) == 'greeter_alert'){

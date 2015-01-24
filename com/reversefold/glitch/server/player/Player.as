@@ -41,6 +41,8 @@ package com.reversefold.glitch.server.player {
 		public var quickstart_needs_avatar : Boolean = false;
 		public var quickstart_needs_player : Boolean = false;
 		public var quickstart_needs_account : Boolean = false;
+		public var deaths_today : int;
+		public var resurrect_location;
 		
 		public var is_god : Boolean = false;
 		public var is_help : Boolean = false;
@@ -190,7 +192,7 @@ public function acl_keys_grant_receive(loc, silent){
 
 	if (this.isOnline() && !silent){
 		this.player.prompts.prompts_add({
-			txt		: "<b>"+utils.escape(loc.owner.label)+"</b> sent you a key to their house! (Keys can be found at your Magic Rock.)",
+			txt		: "<b>"+Utils.escape(loc.owner.label)+"</b> sent you a key to their house! (Keys can be found at your Magic Rock.)",
 			icon_buttons	: false,
 			timeout		: 0,
 			choices		: [
@@ -318,7 +320,7 @@ public function acl_keys_find_my_house(){
 	if (this.home && this.home.interior){
 		return this.home.interior;
 	} else {
-		log.info('KEY FAIL: could not find new house for '+this.tsid);
+		log.info('KEY FAIL: could not find new house for '+this.player.tsid);
 		return false;
 	}
 }
@@ -402,7 +404,7 @@ public function acl_keys_fix_house_backup(really_fix_it){
 
 public function activity_notify(args){
 
-	args.to_tsid = this.tsid;
+	args.to_tsid = this.player.tsid;
 
 	Utils.http_get('callbacks/activity_push.php', args);
 }
@@ -536,7 +538,7 @@ public function newxpComplete(){
 	*/
 
 	// Log it
-	Server.instance.apiLogAction('NEWXP_COMPLETE', 'pc='+this.tsid);
+	Server.instance.apiLogAction('NEWXP_COMPLETE', 'pc='+this.player.tsid);
 }
 
 public function newxpReturnToGentleIsland(){
@@ -546,7 +548,7 @@ public function newxpReturnToGentleIsland(){
 
 public function doNewxpCompleteCallback(){
 	this.checkNeighborSignpost();
-	//utils.http_post('callbacks/finished_newxp.php', {tsid: this.tsid}, this.tsid);
+	//utils.http_post('callbacks/finished_newxp.php', {tsid: this.player.tsid}, this.player.tsid);
 }
 
 public function newxpGiveGreeterTwig(){
@@ -563,8 +565,8 @@ public function newxpExplainGreeters(){
 public function newxpProgressCallback(args){
 	if (!args) return;
 
-	args.pc = this.tsid;
-	Utils.http_post('callbacks/newxp_progress.php', args, this.tsid);
+	args.pc = this.player.tsid;
+	Utils.http_post('callbacks/newxp_progress.php', args, this.player.tsid);
 }
 
 public function checkNeighborSignpost(){
@@ -666,7 +668,7 @@ public function init(){
 //
 
 public function onLogin(){
-	log.info('----------------- onLogin: '+this.tsid);
+	log.info('----------------- onLogin: '+this.player.tsid);
 
 	this.init();
 
@@ -685,7 +687,7 @@ public function onLogin(){
 
 	var tsids = this.player.buddies.buddies_get_reverse_tsids();
 	var args = {
-		tsid: this.tsid,
+		tsid: this.player.tsid,
 		label: this.label,
 		level: this.player.stats.stats_get_level(),
 		location: {
@@ -714,7 +716,7 @@ public function onLogin(){
 
 public function onRelogin(){
 
-	log.info('----------------- onReLogin: '+this.tsid);
+	log.info('----------------- onReLogin: '+this.player.tsid);
 
 	this.init();
 }
@@ -818,7 +820,7 @@ public function onLogout(){
 	//
 
 	var tsids = this.player.buddies.buddies_get_reverse_tsids();
-	var online = Server.instance.apiCallMethodForOnlinePlayers('buddies_send_buddy_offline', tsids, {tsid: this.tsid, label: this.label});
+	var online = Server.instance.apiCallMethodForOnlinePlayers('buddies_send_buddy_offline', tsids, {tsid: this.player.tsid, label: this.label});
 
 	//
 	// tell old location we've gone offline (this is to handle when client reloads mid-move, after player has been removed from old location already
@@ -846,7 +848,7 @@ public function onLogout(){
 		if (!this.time_played) this.time_played = 0;
 		this.time_played += time_played;
 
-		Server.instance.apiLogAction('LOGOUT', 'pc='+this.tsid);
+		Server.instance.apiLogAction('LOGOUT', 'pc='+this.player.tsid);
 	}
 
 	if (this['!current_overlay_script']){
@@ -939,12 +941,12 @@ public function onClean(){
 	// this is called on all dev players when you type '/clean' into
 	// the chat box
 
-	this.player.quests.quests_reset();
+	this.quests.quests_reset();
 
 	this.init();
 }
 
-public function init_prop(group, key, value, lo, hi){
+/*public function init_prop(group, key, value, lo, hi){
 	if (!this[group]){
 		this[group] = {};
 	}
@@ -952,10 +954,10 @@ public function init_prop(group, key, value, lo, hi){
 		this[group][key] = this.apiNewProperty(key, value);
 	}
 	this[group][key].apiSetLimits(lo, hi);
-}
+}*/
 
 public function testTimer(){
-	log.info("TEST TIMER time="+getTime());
+	log.info("TEST TIMER time="+new Date().getTime());
 	this.apiSetTimer("testTimer",60000);
 }
 
@@ -1054,7 +1056,7 @@ public function sendLocationActivity(msg, from, exclusions){
 	if (!exclusions) {
 		exclusions = [];
 	}
-	exclusions.push(this.tsid);
+	exclusions.push(this.player.tsid);
 
 	//this.sendActivity("Sending location activity while excluding "+exclusions);
 
@@ -1068,7 +1070,7 @@ public function sendLocationActivity(msg, from, exclusions){
 
 public function teleportToLocationVariableDelay(tsid, x, y, time, args){
 
-	if (!apiIsPlayerOnline(this.tsid)){
+	if (!apiIsPlayerOnline(this.player.tsid)){
 		return this.teleportToLocation(tsid, x, y, args);
 	}
 
@@ -1084,7 +1086,7 @@ public function teleportToLocationVariableDelay(tsid, x, y, time, args){
 
 public function teleportToLocationDelayed(tsid, x, y, args=null){
 
-	if (!Server.instance.apiIsPlayerOnline(this.tsid)){
+	if (!Server.instance.apiIsPlayerOnline(this.player.tsid)){
 		return this.teleportToLocation(tsid, x, y, args);
 	}
 
@@ -1121,7 +1123,7 @@ public function handleDelayedTeleport(){
 	}
 }
 
-public function teleportToLocation(tsid, x, y, args){
+public function teleportToLocation(tsid, x, y, args=null){
 
 	if (!args) args = {};
 
@@ -1135,7 +1137,7 @@ public function teleportToLocation(tsid, x, y, args){
 		};
 	}
 
-	Server.instance.apiLogAction('TELEPORT', 'pc='+this.tsid, 'location='+tsid, 'x='+x, 'y='+y);
+	Server.instance.apiLogAction('TELEPORT', 'pc='+this.player.tsid, 'location='+tsid, 'x='+x, 'y='+y);
 
 	var target = Server.instance.apiFindObject(tsid);
 	if (!target){
@@ -1222,7 +1224,7 @@ public function teleportToLocation(tsid, x, y, args){
 	// if they're offline, we just move em
 	//
 
-	if (!apiIsPlayerOnline(this.tsid)){
+	if (!apiIsPlayerOnline(this.player.tsid)){
 		this.apiMoveOfflinePlayerToAnotherLocation(target,x,y);
 		//target.apiMoveIn(this, x, y);
 
@@ -1465,7 +1467,7 @@ public function doNewDay(){
 		mood = this.player.metabolics.metabolics_set_mood(this.metabolics.mood.top);
 	}
 
-	Server.instance.apiLogAction('NEW_DAY', 'pc='+this.tsid, 'energy='+energy, 'mood='+mood);
+	Server.instance.apiLogAction('NEW_DAY', 'pc='+this.player.tsid, 'energy='+energy, 'mood='+mood);
 
 	var maxDonationXP = Math.round(this.player.stats.stats_calc_level_from_xp(this.player.stats.stats_get_xp()).xp_for_this * 0.1);
 
@@ -1633,7 +1635,7 @@ public function deleteMe(){
 		if (this.friends.reverse.pcs){
 			for (var i in this.friends.reverse.pcs){
 				var pc = this.friends.reverse.pcs[i];
-				pc.removeBuddy(this.tsid);
+				pc.removeBuddy(this.player.tsid);
 			}
 		}
 		this.friends.reverse.apiDelete();
@@ -1804,7 +1806,7 @@ public function onCreate(){
 	// if they're online, move them to starting instance now, else
 	// we'll send them next time they load game.php
 	if (this.no_reset_teleport) return;
-	if (apiIsPlayerOnline(this.tsid)){
+	if (apiIsPlayerOnline(this.player.tsid)){
 		this.goToNewNewStartingLevel();
 	}else{
 		this.teleportHome();
@@ -1818,7 +1820,7 @@ public function croak(){
 	if (this.is_dead || this.player.buffs.buffs_has('walking_dead') || this.location.isInHell()) return 0;
 	if (!this.has_done_intro || this.location.class_tsid == 'newbie_island') return 0;
 
-	Server.instance.apiLogAction('CROAKED', 'pc='+this.tsid);
+	Server.instance.apiLogAction('CROAKED', 'pc='+this.player.tsid);
 	this.player.announcements.apiSendAnnouncement({type: 'stop_all_music'});
 	this.player.announcements.announce_sound('CROAK');
 
@@ -1899,7 +1901,7 @@ public function resurrect(){
 	if (this.apiPlayerHasLockForCurrentLocation()) return 0;
 	if (!this.is_dead && !this.location.isInHell()) return 0;
 
-	Server.instance.apiLogAction('RESURRECTED', 'pc='+this.tsid);
+	Server.instance.apiLogAction('RESURRECTED', 'pc='+this.player.tsid);
 
 	//log.info('---------------- resurrect');
 	this.is_dead = 0;
@@ -2060,7 +2062,7 @@ public function respondToFollow(choice, details) {
 			return;
 		}
 
-		follower.apiStartFollowing(this.tsid);
+		follower.apiStartFollowing(this.player.tsid);
 		follower.streets_followed = 1;
 
 		follower.sendActivity("You started following " + this.label + ".");
@@ -2070,7 +2072,7 @@ public function respondToFollow(choice, details) {
 		}
 		this.followers[follower.tsid] = follower.label;
 
-		follower.followee = this.tsid;
+		follower.followee = this.player.tsid;
 
 		this.updateGlitchTrain(this.location);
 
@@ -2087,7 +2089,7 @@ public function respondToFollow(choice, details) {
 
 public function getInfo(){
 	return {
-		tsid: this.tsid,
+		tsid: this.player.tsid,
 		label: this.label,
 		location: this.location,
 		location_info: this.location.get_info(),
@@ -2383,7 +2385,7 @@ public function resetForTesting(skip){
 }
 
 public function distanceFromPlayer(pc){
-	if (this.tsid == pc.tsid) return 0;
+	if (this.player.tsid == pc.tsid) return 0;
 	if (this.location.tsid != pc.location.tsid) return 9999999;
 	return this.distanceFromPlayerXY(pc.x, pc.y);
 }
@@ -2498,7 +2500,7 @@ public function run_overlay_event(details){
 	this.player.announcements.run_overlay_script(details.overlay);
 }
 
-public function moveAvatar(x, y, face, why){
+public function moveAvatar(x, y, face, why=null){
 	var rsp = {
 		type:	'move_avatar',
 		x:	intval(x),
@@ -2630,7 +2632,7 @@ public function teleportSomewhere(){
 
 public function make_hash(){
 	return {
-		tsid    : this.tsid,
+		tsid    : this.player.tsid,
 		label   : this.label,
 		is_admin	: (this.is_god || this.is_help) ? true : false,
 		is_guide	: this.is_guide ? true : false,
@@ -2640,9 +2642,9 @@ public function make_hash(){
 
 public function make_hash_online(){
 	return {
-		tsid	: this.tsid,
+		tsid	: this.player.tsid,
 		label	: this.label,
-		online	: Server.instance.apiIsPlayerOnline(this.tsid),
+		online	: Server.instance.apiIsPlayerOnline(this.player.tsid),
 		is_admin	: (this.is_god || this.is_help) ? true : false,
 		is_guide	: this.is_guide ? true : false,
 		home_info	: this.player.houses.houses_get_login_new()
@@ -2651,13 +2653,13 @@ public function make_hash_online(){
 
 public function make_hash_with_location(){
 	var out = {
-		tsid	: this.tsid,
+		tsid	: this.player.tsid,
 		label	: this.label,
 		x	: this.x,
 		y	: this.y,
 		s	: this.s,
 		level	: this.player.stats.stats_get_level(),
-		online	: Server.instance.apiIsPlayerOnline(this.tsid),
+		online	: Server.instance.apiIsPlayerOnline(this.player.tsid),
 		location: {
 			tsid	: this.location.tsid,
 			label	: this.location.is_hidden() ? 'A secret place' : this.location.label
@@ -2680,10 +2682,10 @@ public function make_hash_with_location(){
 
 public function make_hash_with_avatar(){
 	var out = {
-		tsid	: this.tsid,
+		tsid	: this.player.tsid,
 		label	: this.label,
 		level	: this.player.stats.stats_get_level(),
-		online	: Server.instance.apiIsPlayerOnline(this.tsid),
+		online	: Server.instance.apiIsPlayerOnline(this.player.tsid),
 		location: {
 			tsid	: this.location.tsid,
 			label	: this.location.is_hidden() ? 'A secret place' : this.location.label
@@ -2701,7 +2703,7 @@ public function make_hash_with_avatar(){
 
 public function make_label_hash(){
 	return {
-		tsid    : this.tsid,
+		tsid    : this.player.tsid,
 		label   : this.label
 	};
 }
@@ -2878,7 +2880,7 @@ public function inputBoxResponse(msg){
 }
 
 public function isOnline(){
-	return true;//apiIsPlayerOnline(this.tsid);
+	return true;//apiIsPlayerOnline(this.player.tsid);
 }
 
 
@@ -3206,7 +3208,7 @@ public function sneeze(){
 			type: 'pc_overlay',
 			swf_url: overlay_key_to_url('overlay_sneezing_powder'),
 			duration: 2000,
-			pc_tsid: this.tsid,
+			pc_tsid: this.player.tsid,
 			delta_x: 0,
 			delta_y: -110,
 			width: 300,
@@ -3319,7 +3321,7 @@ public function fireflyWhistleSwallowed(details){
 			width: 100,
 			height: 100,
 			bubble_talk: true,
-			pc_tsid: this.tsid,
+			pc_tsid: this.player.tsid,
 			delta_x: 0,
 			delta_y: -219,
 			text: [
@@ -3339,7 +3341,7 @@ public function fireflyWhistleSwallowed(details){
 }
 
 public function linkifyLabel(){
-	return '<a href="event:pc|'+this.tsid+'">'+utils.escape(this.label)+'</a>';
+	return '<a href="event:pc|'+this.player.tsid+'">'+Utils.escape(this.label)+'</a>';
 }
 
 public function isGreeter(){
@@ -3356,7 +3358,7 @@ public function isFreeGreeter(){
 		if (!this.player.groups.groups_is_in_chat(config.greeter_group)) return false;
 
 		//if (this.location.isGreetingLocation() && this.location.countGreeters() < this.location.getNumActivePlayers() && this.location.countGreeters() == 1) return false;
-		//if (this.location.isGreetingLocation() && (!this.is_god || this.tsid == 'PLI16FSFK2I91')) return false;
+		//if (this.location.isGreetingLocation() && (!this.is_god || this.player.tsid == 'PLI16FSFK2I91')) return false;
 		if (this.location.isGreetingLocation()) return false;
 		if (this.location.isInstance()) return false; // http://bugs.tinyspeck.com/5912
 
@@ -3429,7 +3431,7 @@ public function placeInTimeout(args){
 	this.is_in_timeout = 1;
 
 	var args = {
-		'tsid': this.tsid,
+		'tsid': this.player.tsid,
 		'key': 'is_in_timeout',
 		'value': 1
 	};
@@ -3462,7 +3464,7 @@ public function removeFromTimeout(args){
 	delete this.is_in_timeout;
 
 	var args = {
-		'tsid': this.tsid,
+		'tsid': this.player.tsid,
 		'key': 'is_in_timeout',
 		'value': 0
 	};
@@ -3586,7 +3588,7 @@ public function show_rainbow(overlay_key, delay=0){
 		type: 'pc_overlay',
 		swf_url: this.overlay_key_to_url(overlay_key),
 		duration: duration,
-		pc_tsid: this.tsid,
+		pc_tsid: this.player.tsid,
 		delta_x: 0,
 		delta_y: 0,
 		width: 400,
@@ -3641,8 +3643,8 @@ public function stopFollowing() {
 	if(this.followee) {
 		var followee = getPlayer(this.followee);
 		var list = followee.followers;
-		if(followee && list && list[this.tsid]) {
-			delete list[this.tsid];
+		if(followee && list && list[this.player.tsid]) {
+			delete list[this.player.tsid];
 			followee.updateGlitchTrain(followee.location);
 
 			// Update rest of followers:
@@ -3773,7 +3775,7 @@ public function isGuideOnDuty(){
 
 public function lastActiveCallback(type){
 	var args ={
-		'tsid': this.tsid,
+		'tsid': this.player.tsid,
 		'type': type ? type : ''
 	};
 
@@ -3845,7 +3847,7 @@ public function getLocation(){
 //
 public function deletePlayer(){
 
-	log.info("Deleting player "+this.tsid);
+	log.info("Deleting player "+this.player.tsid);
 
 	this.is_deleted = true;
 
@@ -3878,7 +3880,7 @@ public function deletePlayer(){
 // Undo a player account deletion.
 //
 public function undeletePlayer(){
-	log.info("Undeleting player "+this.tsid);
+	log.info("Undeleting player "+this.player.tsid);
 
 	delete this.is_deleted;
 
@@ -3975,7 +3977,7 @@ public function canJoinTradeChat(){
 }
 
 public function getLabel(){
-	return utils.escape(this.label);
+	return Utils.escape(this.label);
 }
 
 public function getJumpCount(){

@@ -70,7 +70,7 @@ public function startSecretLocationsQuest() {
 
 // For testing
 public function resetSecretLocationsQuest() {
-    log.info("Reset 11 secret locations for "+this.tsid);
+    log.info("Reset 11 secret locations for "+this.player.tsid);
 
     this.player.announcements.announce_sound_stop('11_SECRET_LOCATIONS_BEACON_LOOP');
 

@@ -85,7 +85,7 @@ public function groups_create(name, desc, mode){
 
     utils.http_get('callbacks/groups_joined.php', {
         group_tsid: group.tsid,
-        pc_tsid: this.tsid
+        pc_tsid: this.player.tsid
     });
 
     return group.tsid;
@@ -148,7 +148,7 @@ public function groups_join(tsid){
 
     utils.http_get('callbacks/groups_joined.php', {
         group_tsid: group.tsid,
-        pc_tsid: this.tsid
+        pc_tsid: this.player.tsid
     });
 
     return ret;
@@ -209,7 +209,7 @@ public function groups_leave(tsid, promote_tsid){
 
     utils.http_get('callbacks/groups_left.php', {
         group_tsid: tsid,
-        pc_tsid: this.tsid
+        pc_tsid: this.player.tsid
     });
 
     return 1;
@@ -241,7 +241,7 @@ public function groups_left(tsid){
 
     utils.http_get('callbacks/groups_left.php', {
         group_tsid: tsid,
-        pc_tsid: this.tsid
+        pc_tsid: this.player.tsid
     });
 
     return 1;
@@ -265,7 +265,7 @@ public function adminGetGroups(){
         for (var i in this.group_invites){
             var g = Server.instance.apiFindObject(i);
             if (g){
-                var invite = g.get_invite(this.tsid);
+                var invite = g.get_invite(this.player.tsid);
                 if (invite){
                     var info = g.get_basic_info();
                     info.invite = invite;
@@ -416,7 +416,7 @@ public function groups_is_in_chat(tsid){
     }
     else if (this.groups && this.groups.groups[tsid]){
 
-        return this.groups.groups[tsid].chat_is_in_roster(this.tsid);
+        return this.groups.groups[tsid].chat_is_in_roster(this.player.tsid);
     }else{
         return false;
     }
@@ -436,7 +436,7 @@ public function groups_uninvited(group){
 
     utils.http_get('callbacks/groups_declined.php', {
         group_tsid: group.tsid,
-        pc_tsid: this.tsid
+        pc_tsid: this.player.tsid
     });
 }
 
@@ -480,7 +480,7 @@ public function groups_get_all(){
         };
     }
 
-    var ret = Server.instance.apiCallMethod('get_member_status', tsids, this.tsid);
+    var ret = Server.instance.apiCallMethod('get_member_status', tsids, this.player.tsid);
     for (var i in ret){
         out[i].rev = ret[i];
     }
@@ -518,7 +518,7 @@ public function groups_check_pointers(){
     var gi = this.group_invites;
     for (var i in gi){
         var g = Server.instance.apiFindObject(i);
-        if (!g || !g.get_invite(this.tsid) || g.getProp('deleted')){
+        if (!g || !g.get_invite(this.player.tsid) || g.getProp('deleted')){
             log.info(this+" groups_check_pointers deleting invite "+i);
             delete gg[i];
         }
@@ -527,7 +527,7 @@ public function groups_check_pointers(){
     var ga = this.group_applied;
     for (var i in ga){
         var g = Server.instance.apiFindObject(i);
-        if (!g || !g.get_apply(this.tsid) || g.getProp('deleted')){
+        if (!g || !g.get_apply(this.player.tsid) || g.getProp('deleted')){
             log.info(this+" groups_check_pointers deleting application "+i);
             delete gg[i];
         }

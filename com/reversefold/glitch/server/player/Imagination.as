@@ -154,7 +154,7 @@ public function imagination_grant(class_tsid, amount, hand_id, no_growl, no_hist
     // Special effects
     if (class_tsid == 'energy_tank'){
         this.player.metabolics.metabolics_set_tank(this.player.metabolics.metabolics_get_tank()+intval(amount));
-        this.player.metabolics.metabolics_recalc_limits(this.is_dead ? false : true); // Refill our tank, unless we're dead
+        this.player.metabolics.metabolics_recalc_limits(this.player.is_dead ? false : true); // Refill our tank, unless we're dead
 
         if (this.player.buffs.buffs_has('zen')) this.player.buffs.buffs_remove('zen');
         this.player.stats.stats_set_meditation_max_today(true);

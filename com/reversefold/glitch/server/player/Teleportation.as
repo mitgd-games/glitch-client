@@ -70,7 +70,7 @@ public function teleportation_set_target(teleport_id){
     var pol = this.player.location.pols_get_status();
 
     // Rewrite pols to be the door coming in
-    if (pol.is_pol && pol.owner == this.tsid && !pol.is_public){
+    if (pol.is_pol && pol.owner == this.player.tsid && !pol.is_public){
         var outgoing = this.player.location.geo_links_get_outgoing();
         for (var i in outgoing){
             if (outgoing[i] && outgoing[i].target.tsid != target.tsid){
@@ -156,7 +156,7 @@ public function teleportation_can_teleport(teleport_id, skip_skill, target){
         loc = Server.instance.apiFindObject(target.tsid);
     }
 
-    if (this.is_dead){
+    if (this.player.is_dead){
         // Players who are dead can only teleport within Naraka.
         if (!loc || loc.hubid != 40){
             return {
@@ -221,7 +221,7 @@ public function teleportation_can_teleport(teleport_id, skip_skill, target){
             };
         }
 
-        if (this.is_dead){
+        if (this.player.is_dead){
             // Players who are dead can only teleport within Naraka.
             if (loc.hubid != 40){
                 return {
@@ -316,7 +316,7 @@ public function teleportation_can_teleport(teleport_id, skip_skill, target){
 }
 
 public function teleportation_can_set_target(teleport_id){
-    if (this.is_dead){
+    if (this.player.is_dead){
         return {
             ok: 0,
             error: "You are dead."
@@ -340,7 +340,7 @@ public function teleportation_can_set_target(teleport_id){
     }
 
     var pol = this.player.location.pols_get_status();
-    if (pol.is_pol && pol.owner != this.tsid && !pol.is_public){
+    if (pol.is_pol && pol.owner != this.player.tsid && !pol.is_public){
         return {
             ok: 0,
             error: "You can't save this location as a Teleportation Point."
@@ -778,7 +778,7 @@ public function teleportation_can_summon(target){
         };
     }
 
-    if (this.is_dead){
+    if (this.player.is_dead){
         return {
             ok: 0,
             error: "You are dead."
@@ -860,7 +860,7 @@ public function teleportation_spend_token(reason){
 
         // Tell the web app, which will sync back to us eventually
         var args = {
-            player  : this.tsid,
+            player  : this.player.tsid,
             tokens  : 1,
             reason  : reason
         };
@@ -879,7 +879,7 @@ public function teleportation_give_tokens(count, reason){
 
     // Tell the web app, which will sync back to us eventually
     var args = {
-        player  : this.tsid,
+        player  : this.player.tsid,
         tokens  : count,
         reason  : reason
     };

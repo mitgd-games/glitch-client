@@ -88,12 +88,12 @@ public function daily_history_archive(day_key){
     if (!this.daily_history.days[day_key]) return;
 
     var args = {
-        player_tsid: this.tsid,
+        player_tsid: this.player.tsid,
         day_key: day_key,
         data: utils.JSON_stringify(this.daily_history.days[day_key])
     };
 
-    utils.http_post('callbacks/daily_history_archive.php', args, this.tsid);
+    utils.http_post('callbacks/daily_history_archive.php', args, this.player.tsid);
 }
 
 public function daily_history_archive_all(){

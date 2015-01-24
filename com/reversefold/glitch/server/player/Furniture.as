@@ -374,7 +374,7 @@ public function furniture_set_wall(wp_key, wp_type){
     var loc_type = this.player.location.homes_get_type();
 
     // we own it - set it!
-    Server.instance.apiLogAction('WALL_CHANGE', 'pc='+this.tsid, 'type='+wp_type, 'loc_type='+loc_type);
+    Server.instance.apiLogAction('WALL_CHANGE', 'pc='+this.player.tsid, 'type='+wp_type, 'loc_type='+loc_type);
 
     if (loc_type == 'interior') return this.home.interior.homes_set_wp(wp_key, wp_type);
     if (loc_type == 'tower') return this.player.location.tower_set_wp(wp_key, wp_type);
@@ -393,7 +393,7 @@ public function furniture_set_floor(floor_key, floor_type){
     var loc_type = this.player.location.homes_get_type();
 
     // we own it - set it!
-    Server.instance.apiLogAction('FLOOR_CHANGE', 'pc='+this.tsid, 'type='+floor_type);
+    Server.instance.apiLogAction('FLOOR_CHANGE', 'pc='+this.player.tsid, 'type='+floor_type);
 
     if (loc_type == 'interior') return this.home.interior.homes_set_floor(floor_key, floor_type);
     if (loc_type == 'tower') return this.player.location.tower_set_floor(floor_key, floor_type);
@@ -412,7 +412,7 @@ public function furniture_set_ceiling(ceiling_key, ceiling_type){
     var loc_type = this.player.location.homes_get_type();
 
     // we own it - set it!
-    Server.instance.apiLogAction('CEILING_CHANGE', 'pc='+this.tsid, 'type='+ceiling_type);
+    Server.instance.apiLogAction('CEILING_CHANGE', 'pc='+this.player.tsid, 'type='+ceiling_type);
 
     if (loc_type == 'interior') return this.home.interior.homes_set_ceiling(ceiling_key, ceiling_type);
     if (loc_type == 'tower') return this.player.location.tower_set_ceiling(ceiling_key, ceiling_type);
@@ -544,7 +544,7 @@ public function furniture_buy_wall_done(success, wp_type, error){
         'error'     : error
     });
 
-    if (success) Server.instance.apiLogAction('WALL_PURCHASE', 'pc='+this.tsid, 'type='+wp_type);
+    if (success) Server.instance.apiLogAction('WALL_PURCHASE', 'pc='+this.player.tsid, 'type='+wp_type);
     //log.info("FINISHED PURCHASE!!!", success, wp_type, error);
 }
 
@@ -646,7 +646,7 @@ public function furniture_buy_floor_done(success, floor_type, error){
         'error'     : error
     });
 
-    if (success) Server.instance.apiLogAction('FLOOR_PURCHASE', 'pc='+this.tsid, 'type='+floor_type);
+    if (success) Server.instance.apiLogAction('FLOOR_PURCHASE', 'pc='+this.player.tsid, 'type='+floor_type);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -745,7 +745,7 @@ public function furniture_buy_ceiling_done(success, ceiling_type, error){
         'error'     : error
     });
 
-    if (success) Server.instance.apiLogAction('CEILING_PURCHASE', 'pc='+this.tsid, 'type='+ceiling_type);
+    if (success) Server.instance.apiLogAction('CEILING_PURCHASE', 'pc='+this.player.tsid, 'type='+ceiling_type);
 }
 
 
@@ -766,7 +766,7 @@ public function furniture_upgrade_purchase(item, upgrade_id, msg_id, user_config
 
     if (!config.home_limits.UPGRADES_ARE_FREE && !upgrade.is_owned && upgrade.imagination_cost && !this.player.stats.stats_try_remove_imagination(upgrade.imagination_cost, {'furniture_class': item.class_tsid, 'upgrade_id': upgrade_id})) return {ok: 0, error: 'You don\'t have enough imagination.'};
 
-    if (upgrade.is_owned) Server.instance.apiLogAction('FURNITURE_CHANGE', 'pc='+this.tsid, 'item='+item.class_tsid, 'upgrade='+upgrade_id, 'config='+utils.JSON_stringify(user_config)+'');
+    if (upgrade.is_owned) Server.instance.apiLogAction('FURNITURE_CHANGE', 'pc='+this.player.tsid, 'item='+item.class_tsid, 'upgrade='+upgrade_id, 'config='+utils.JSON_stringify(user_config)+'');
 
     // Can we do this now?
     if (!upgrade.credits_cost || upgrade.is_owned || config.home_limits.UPGRADES_ARE_FREE){
@@ -836,7 +836,7 @@ public function furniture_upgrade_purchase_do(args){
 
         item.broadcastConfig();
 
-        if (args.is_owned == 0) Server.instance.apiLogAction('FURNITURE_PURCHASE', 'pc='+this.tsid, 'item='+item.class_tsid, 'upgrade='+args.upgrade_id, 'cost='+(args.amount ? args.amount : 0), 'config='+args.user_config+'');
+        if (args.is_owned == 0) Server.instance.apiLogAction('FURNITURE_PURCHASE', 'pc='+this.player.tsid, 'item='+item.class_tsid, 'upgrade='+args.upgrade_id, 'cost='+(args.amount ? args.amount : 0), 'config='+args.user_config+'');
 
         delete item['!upgrade_in_progress'];
 

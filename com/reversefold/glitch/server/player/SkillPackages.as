@@ -225,7 +225,7 @@ public function runSkillPackage(class_id, source_item, args){
         details: details
     };
 
-    if (details.duration && Server.instance.apiIsPlayerOnline(this.tsid) && (args.tool_item || args.overlay_id) && !args.no_timers){
+    if (details.duration && Server.instance.apiIsPlayerOnline(this.player.tsid) && (args.tool_item || args.overlay_id) && !args.no_timers){
 
         if (source_item.isOnGround()){
             // Which direction are we "facing"?
@@ -276,7 +276,7 @@ public function runSkillPackage(class_id, source_item, args){
             // Start overlays
             var annc = {
                 type: 'itemstack_overlay',
-                uid: this.tsid+'-'+class_id,
+                uid: this.player.tsid+'-'+class_id,
                 duration: duration,
                 locking: true,
                 itemstack_tsid: source_item.tsid,
@@ -314,9 +314,9 @@ public function runSkillPackage(class_id, source_item, args){
 
             var anncx = {
                 type: 'pc_overlay',
-                uid: this.tsid+'-'+class_id+'-all',
+                uid: this.player.tsid+'-'+class_id+'-all',
                 duration: duration,
-                pc_tsid: this.tsid,
+                pc_tsid: this.player.tsid,
                 delta_x: args.pc_delta_x ? args.pc_delta_x : 0,
                 delta_y: args.pc_delta_y ? args.pc_delta_y : -110,
                 bubble: true,
@@ -337,9 +337,9 @@ public function runSkillPackage(class_id, source_item, args){
         else{
             var annc = {
                 type: 'pc_overlay',
-                uid: this.tsid+'-'+class_id,
+                uid: this.player.tsid+'-'+class_id,
                 duration: duration,
-                pc_tsid: this.tsid,
+                pc_tsid: this.player.tsid,
                 locking: true,
                 delta_x: 0,
                 delta_y: -115,
@@ -368,9 +368,9 @@ public function runSkillPackage(class_id, source_item, args){
 
             var anncx = {
                 type: 'pc_overlay',
-                uid: this.tsid+'-'+class_id+'-all',
+                uid: this.player.tsid+'-'+class_id+'-all',
                 duration: duration,
-                pc_tsid: this.tsid,
+                pc_tsid: this.player.tsid,
                 delta_x: 0,
                 delta_y: -110,
                 bubble: true,
@@ -709,7 +709,7 @@ public function checkSkillPackageOverLimit(class_id, limit, source_item){
 
 public function incrementSkillPackageLimit(class_id, source_item){
     var today = current_day_key();
-    source_item.package_intervals[class_id][today][this.tsid]++;
+    source_item.package_intervals[class_id][today][this.player.tsid]++;
 }
 
 public function getSkillPackageLimitUses(class_id, source_item){
@@ -731,11 +731,11 @@ public function getSkillPackageLimitUses(class_id, source_item){
         source_item.package_intervals[class_id][today] = {};
     }
 
-    if (!source_item.package_intervals[class_id][today][this.tsid]){
-        source_item.package_intervals[class_id][today][this.tsid] = 0;
+    if (!source_item.package_intervals[class_id][today][this.player.tsid]){
+        source_item.package_intervals[class_id][today][this.player.tsid] = 0;
     }
 
-    return source_item.package_intervals[class_id][today][this.tsid];
+    return source_item.package_intervals[class_id][today][this.player.tsid];
 }
 
 public function addSkillPackageOverride(class_id, overrides){

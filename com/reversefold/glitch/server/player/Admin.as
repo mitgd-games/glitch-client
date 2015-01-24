@@ -1,8 +1,9 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -189,7 +190,7 @@ public function adminGetProfile(args){
     // online?
     //
 
-    out.is_online = Server.instance.apiIsPlayerOnline(this.tsid);
+    out.is_online = Server.instance.apiIsPlayerOnline(this.player.tsid);
 
 
     //
@@ -228,7 +229,7 @@ public function adminGetProfile(args){
         //
 
         var viewer = Server.instance.apiFindObject(args.viewer_tsid);
-        var ret = viewer ? viewer.getBuddyGroup(this.tsid) : null;
+        var ret = viewer ? viewer.getBuddyGroup(this.player.tsid) : null;
         if (ret != null){
             out.is_rev_contact = 1;
             out.rev_contact_group = ret;
@@ -247,7 +248,7 @@ public function adminGetProfile(args){
         // Hellooooo? Is it me you're looking forrrrr?
         //
 
-        if (args.viewer_tsid == this.tsid){
+        if (args.viewer_tsid == this.player.tsid){
             out.is_me = 1;
         }
     }
@@ -326,7 +327,7 @@ public function adminGetFullInfo(args){
     // online?
     //
 
-    out.is_online = Server.instance.apiIsPlayerOnline(this.tsid);
+    out.is_online = Server.instance.apiIsPlayerOnline(this.player.tsid);
 
     if (out.is_online){
         out.last_online = 0;
@@ -366,7 +367,7 @@ public function adminGetFullInfo(args){
         //
 
         var viewer = Server.instance.apiFindObject(args.viewer_tsid);
-        var ret = viewer ? viewer.getBuddyGroup(this.tsid) : null;
+        var ret = viewer ? viewer.getBuddyGroup(this.player.tsid) : null;
         if (ret != null){
             out.is_rev_contact = true;
             out.rev_contact_group = ret;
@@ -377,12 +378,12 @@ public function adminGetFullInfo(args){
         // (For now, this boils down to "is there an ignore in place?")
         //
 
-        out.can_contact = (viewer && this.player.buddies.buddies_is_ignoring(viewer)) || (viewer && this.player.buddies.buddies_is_ignored_by(viewer)) || (args.viewer_tsid == this.tsid) ? false : true;
+        out.can_contact = (viewer && this.player.buddies.buddies_is_ignoring(viewer)) || (viewer && this.player.buddies.buddies_is_ignored_by(viewer)) || (args.viewer_tsid == this.player.tsid) ? false : true;
 
         //
         // Iiii'm looking at the man inthemirror...
         //
-        if (args.viewer_tsid == this.tsid){
+        if (args.viewer_tsid == this.player.tsid){
             out.is_me = true;
         }
     }
@@ -440,7 +441,7 @@ public function adminGetFullInfo(args){
 }
 
 public function adminGetLocationInfo(){
-    var is_online = Server.instance.apiIsPlayerOnline(this.tsid);
+    var is_online = Server.instance.apiIsPlayerOnline(this.player.tsid);
     var out = {
         is_online: is_online,
 
@@ -461,7 +462,7 @@ public function adminGetLocationInfo(){
 }
 
 public function adminIsOnline(){
-    return Server.instance.apiIsPlayerOnline(this.tsid);
+    return Server.instance.apiIsPlayerOnline(this.player.tsid);
 }
 
 public function adminHasUnlearningAbility() {
@@ -505,7 +506,7 @@ public function adminGetGodProfile(args){
     // online?
     //
 
-    out.is_online = Server.instance.apiIsPlayerOnline(this.tsid);
+    out.is_online = Server.instance.apiIsPlayerOnline(this.player.tsid);
     out.date_last_login = this.date_last_login;
 
 
@@ -954,7 +955,7 @@ public function admin_get_remote_location(){
 
 public function admin_get_leaderboards(){
 
-    if (!config.is_dev && (this.player.is_god || this.player.is_help || this.tsid == 'PCRFDQOCKNS1LIS')) return {};
+    if (!config.is_dev && (this.player.is_god || this.player.is_help || this.player.tsid == 'PCRFDQOCKNS1LIS')) return {};
 
     var out = {
         'players': {
@@ -1113,7 +1114,7 @@ public function admin_is_instanced(){
         var joined = 0;
 
         for (var member_tsid in members){
-            if (member_tsid == this.tsid){
+            if (member_tsid == this.player.tsid){
                 joined = members[member_tsid].joined;
             }
         }
@@ -1134,13 +1135,13 @@ public function admin_renamed(args){
     if (args.cost) this.player.stats.stats_try_remove_currants(args.cost);
 
     if (this.home){
-        var label = utils.escape(this.label)+"'s";
+        var label = Utils.escape(this.label)+"'s";
         if (this.home.interior) this.home.interior.setProp('label', label+' House');
         if (this.home.exterior) this.home.exterior.setProp('label', label+' Home Street');
         if (this.home.tower) this.home.tower.tower_set_label(label+' Tower');
     }
 
-    if (apiIsPlayerOnline(this.tsid)) {
+    if (apiIsPlayerOnline(this.player.tsid)) {
         this.apiSendMsg({
             type: 'pc_rename',
             pc: this.player.make_hash()
@@ -1164,7 +1165,7 @@ public function adminGetGodExtras(args){
         is_in_coneofsilence: this.player.isInConeOfSilence(),
         is_in_help_coneofsilence: this.player.isInConeOfSilence('help'),
         img_migrated: (this.imagination && this.imagination.converted_at) ? this.imagination.converted_at : 0,
-        is_online: Server.instance.apiIsPlayerOnline(this.tsid)
+        is_online: Server.instance.apiIsPlayerOnline(this.player.tsid)
     };
 }
 
@@ -1303,7 +1304,7 @@ public function admin_mail_send(args){
 
     // Remove currents for shipping costs
     var sender_pc = getPlayer(args.sender_tsid);
-    sender_pc.stats_remove_currants(cost, {type: 'mail_send', in_reply_to: args.in_reply_to, to: this.tsid});
+    sender_pc.stats_remove_currants(cost, {type: 'mail_send', in_reply_to: args.in_reply_to, to: this.player.tsid});
 
     if (args.in_reply_to) {
         args.in_reply_to = sender_pc.mail_get_player_reply(args.in_reply_to);
@@ -1358,7 +1359,7 @@ public function adminCleanLostHiddenItems(){
     for (var i in hidden){
         var stack = hidden[i];
         if (!stack.is_bag && !this.player.auctions.auctions_get_uid_for_item(stack.tsid)){
-            this.player.mail.mail_add_auction_delivery(stack.tsid, config.auction_delivery_time, null, this.tsid, 'expired');
+            this.player.mail.mail_add_auction_delivery(stack.tsid, config.auction_delivery_time, null, this.player.tsid, 'expired');
         }
     }
 }

@@ -77,7 +77,7 @@ public function displayAllRungs() {
         }
     }
 
-    this.player.location.recordMountaineer(this.tsid);
+    this.player.location.recordMountaineer(this.player.tsid);
 }
 
 // Pan the camera to a rung and turn the deco on for that rung if necessary.
@@ -157,7 +157,7 @@ public function onColdZone(box) {
 public function onEnterVWindZone(id) {
     this.player.physics.addCTPCPhysics({   gravity: 4,
                             vx_max: 1.0
-                        }, this.tsid
+                        }, this.player.tsid
                         );
 
     this.onSendWindMessage();
@@ -171,7 +171,7 @@ public function onEnterHWindZone(id) {
                         vx_accel_add_in_air : 2,
                         vx_accel_add_in_floor: 2
                         //duration_ms : 4000
-                        }, this.tsid
+                        }, this.player.tsid
                         );
 
     this.onSendWindMessage();
@@ -191,9 +191,9 @@ public function onSendWindMessage() {
 }
 
 public function onExitWindZone(id) {
-    this.player.physics.removePhysics(this.tsid, true);
+    this.player.physics.removePhysics(this.player.tsid, true);
 
-    this.player.location.removePlayerFromWind(this.tsid, id);
+    this.player.location.removePlayerFromWind(this.player.tsid, id);
 }
 
 public function onWindZone(id, box) {

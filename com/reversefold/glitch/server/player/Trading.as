@@ -97,7 +97,7 @@ public function trading_has_escrow_items(){
 //
 
 public function trading_request_start(target_tsid){
-    //log.info(this.tsid+' starting trade with '+target_tsid);
+    //log.info(this.player.tsid+' starting trade with '+target_tsid);
 
     this.trading_init();
 
@@ -127,7 +127,7 @@ public function trading_request_start(target_tsid){
     // Valid player?
     //
 
-    if (target_tsid == this.tsid){
+    if (target_tsid == this.player.tsid){
         return {
             ok: 0,
             error: 'No trading with yourself.'
@@ -193,11 +193,11 @@ public function trading_request_start(target_tsid){
 
     target.trading_init();
     this['!is_trading'] = target.tsid;
-    target['!is_trading'] = this.tsid;
+    target['!is_trading'] = this.player.tsid;
 
     target.apiSendMsgAsIs({
         type: 'trade_start',
-        tsid: this.tsid
+        tsid: this.player.tsid
     });
 
 
@@ -208,14 +208,14 @@ public function trading_request_start(target_tsid){
     var anncx = {
         type: 'pc_overlay',
         duration: 0,
-        pc_tsid: this.tsid,
+        pc_tsid: this.player.tsid,
         delta_x: 0,
         delta_y: -110,
         bubble: true,
         width: 70,
         height: 70,
         swf_url: this.overlay_key_to_url('trading'),
-        uid: this.tsid+'_trading'
+        uid: this.player.tsid+'_trading'
     };
 
     this.player.location.apiSendAnnouncementX(anncx, this);
@@ -234,7 +234,7 @@ public function trading_request_start(target_tsid){
 //
 
 public function trading_cancel(target_tsid){
-    //log.info(this.tsid+' canceling trade with '+target_tsid);
+    //log.info(this.player.tsid+' canceling trade with '+target_tsid);
     //
     // Sanity check
     //
@@ -254,7 +254,7 @@ public function trading_cancel(target_tsid){
     //
 
     this.trading_rollback();
-    if (target['!is_trading'] == this.tsid){
+    if (target['!is_trading'] == this.player.tsid){
         target.trading_rollback();
     }
 
@@ -265,9 +265,9 @@ public function trading_cancel(target_tsid){
 
     this.player.location.apiSendMsgAsIsX({
         type: 'overlay_cancel',
-        uid: this.tsid+'_trading'
+        uid: this.player.tsid+'_trading'
     }, this);
-    if (apiIsPlayerOnline(target_tsid) && target['!is_trading'] == this.tsid){
+    if (apiIsPlayerOnline(target_tsid) && target['!is_trading'] == this.player.tsid){
         target.location.apiSendMsgAsIsX({
             type: 'overlay_cancel',
             uid: target.tsid+'_trading'
@@ -279,10 +279,10 @@ public function trading_cancel(target_tsid){
     // Tell the other player
     //
 
-    if (apiIsPlayerOnline(target_tsid) && target['!is_trading'] == this.tsid){
+    if (apiIsPlayerOnline(target_tsid) && target['!is_trading'] == this.player.tsid){
         target.apiSendMsgAsIs({
             type: 'trade_cancel',
-            tsid: this.tsid
+            tsid: this.player.tsid
         });
 
         target.prompts_add({
@@ -296,7 +296,7 @@ public function trading_cancel(target_tsid){
     }
 
     delete this['!is_trading'];
-    if (target['!is_trading'] == this.tsid){
+    if (target['!is_trading'] == this.player.tsid){
         delete target['!is_trading'];
     }
 
@@ -306,7 +306,7 @@ public function trading_cancel(target_tsid){
 }
 
 public function trading_rollback(){
-    //log.info(this.tsid+' rolling back trade');
+    //log.info(this.player.tsid+' rolling back trade');
     //
     // Refund all the in-progress items
     //
@@ -373,7 +373,7 @@ public function trading_rollback(){
 //
 
 public function trading_cancel_auto(){
-    //log.info(this.tsid+' canceling all trades');
+    //log.info(this.player.tsid+' canceling all trades');
     if (this['!is_trading']) this.trading_cancel(this['!is_trading']);
 }
 
@@ -382,7 +382,7 @@ public function trading_cancel_auto(){
 //
 
 public function trading_add_item(target_tsid, itemstack_tsid, amount){
-    //log.info(this.tsid+' adding item '+itemstack_tsid+' to trade with '+target_tsid);
+    //log.info(this.player.tsid+' adding item '+itemstack_tsid+' to trade with '+target_tsid);
     //
     // Sanity check
     //
@@ -422,7 +422,7 @@ public function trading_add_item(target_tsid, itemstack_tsid, amount){
     if (ret.item_class){
         var rsp = {
             type: 'trade_add_item',
-            tsid: this.tsid,
+            tsid: this.player.tsid,
             itemstack_class: ret.item_class,
             amount: ret.count,
             slot: ret.slot,
@@ -561,7 +561,7 @@ public function trading_add_item_do(itemstack_tsid, amount, destination_slot){
             if (slots[i] && contents[i].count != slots[i]){
                 var rsp = {
                     type: 'trade_change_item',
-                    tsid: this.tsid,
+                    tsid: this.player.tsid,
                     itemstack_class: contents[i].class_id,
                     amount: contents[i].count,
                     slot: i,
@@ -603,7 +603,7 @@ public function trading_add_item_do(itemstack_tsid, amount, destination_slot){
 //
 
 public function trading_remove_item(target_tsid, itemstack_tsid, amount){
-    //log.info(this.tsid+' removing item '+itemstack_tsid+' from trade with '+target_tsid);
+    //log.info(this.player.tsid+' removing item '+itemstack_tsid+' from trade with '+target_tsid);
     //
     // Sanity check
     //
@@ -642,7 +642,7 @@ public function trading_remove_item(target_tsid, itemstack_tsid, amount){
 
     target.apiSendMsgAsIs({
         type: 'trade_remove_item',
-        tsid: this.tsid,
+        tsid: this.player.tsid,
         itemstack_class: ret.item_class,
         amount: amount,
         slot: ret.slot,
@@ -733,7 +733,7 @@ public function trading_reorder_escrow(){
 //
 
 public function trading_change_item(target_tsid, itemstack_tsid, amount){
-    //log.info(this.tsid+' changing item '+itemstack_tsid+' to trade with '+target_tsid+' ('+amount+')');
+    //log.info(this.player.tsid+' changing item '+itemstack_tsid+' to trade with '+target_tsid+' ('+amount+')');
     //
     // Sanity check
     //
@@ -803,7 +803,7 @@ public function trading_change_item(target_tsid, itemstack_tsid, amount){
             //log.info('trade_change_item ---------------------- slot '+ret.slot+' = '+amount);
             target.apiSendMsgAsIs({
                 type: 'trade_change_item',
-                tsid: this.tsid,
+                tsid: this.player.tsid,
                 itemstack_class: ret.item_class,
                 amount: amount,
                 slot: ret.slot,
@@ -823,7 +823,7 @@ public function trading_change_item(target_tsid, itemstack_tsid, amount){
 //
 
 public function trading_update_currants(target_tsid, amount){
-    //log.info(this.tsid+' updating currants to '+amount+' on trade with '+target_tsid);
+    //log.info(this.player.tsid+' updating currants to '+amount+' on trade with '+target_tsid);
     //
     // Sanity check
     //
@@ -877,7 +877,7 @@ public function trading_update_currants(target_tsid, amount){
 
         target.apiSendMsgAsIs({
             type: 'trade_currants',
-            tsid: this.tsid,
+            tsid: this.player.tsid,
             amount: this.trading.currants
         });
     }
@@ -892,7 +892,7 @@ public function trading_update_currants(target_tsid, amount){
 //
 
 public function trading_accept(target_tsid){
-    //log.info(this.tsid+' accepting trade with '+target_tsid);
+    //log.info(this.player.tsid+' accepting trade with '+target_tsid);
     //
     // Sanity check
     //
@@ -920,7 +920,7 @@ public function trading_accept(target_tsid){
 
     target.apiSendMsgAsIs({
         type: 'trade_accept',
-        tsid: this.tsid
+        tsid: this.player.tsid
     });
 
 
@@ -945,7 +945,7 @@ public function trading_accept(target_tsid){
 //
 
 public function trading_unlock(target_tsid){
-    //log.info(this.tsid+' unlocking trade with '+target_tsid);
+    //log.info(this.player.tsid+' unlocking trade with '+target_tsid);
     //
     // Sanity check
     //
@@ -973,7 +973,7 @@ public function trading_unlock(target_tsid){
 
     target.apiSendMsgAsIs({
         type: 'trade_unlock',
-        tsid: this.tsid
+        tsid: this.player.tsid
     });
 
     return {
@@ -986,7 +986,7 @@ public function trading_unlock(target_tsid){
 //
 
 public function trading_complete(target_tsid){
-    //log.info(this.tsid+' completing trade with '+target_tsid);
+    //log.info(this.player.tsid+' completing trade with '+target_tsid);
     //
     // Sanity check
     //
@@ -1031,7 +1031,7 @@ public function trading_complete(target_tsid){
     //
 
     this.trading_transfer(target_tsid);
-    target.trading_transfer(this.tsid);
+    target.trading_transfer(this.player.tsid);
 
 
     //
@@ -1040,7 +1040,7 @@ public function trading_complete(target_tsid){
 
     this.player.location.apiSendMsgAsIsX({
         type: 'overlay_cancel',
-        uid: this.tsid+'_trading'
+        uid: this.player.tsid+'_trading'
     }, this);
     target.location.apiSendMsgAsIsX({
         type: 'overlay_cancel',
@@ -1059,7 +1059,7 @@ public function trading_complete(target_tsid){
 
     target.apiSendMsgAsIs({
         type: 'trade_complete',
-        tsid: this.tsid
+        tsid: this.player.tsid
     });
 
 
@@ -1134,7 +1134,7 @@ public function trading_transfer(target_tsid){
     //
 
     if (this.trading.currants){
-        target.stats_add_currants(this.trading.currants, {'trade':this.tsid});
+        target.stats_add_currants(this.trading.currants, {'trade':this.player.tsid});
         this.trading.currants = 0;
         traded_something = true;
     }
@@ -1145,7 +1145,7 @@ public function trading_transfer(target_tsid){
         //
 
         this.player.achievements.achievements_increment('players_traded', target_tsid);
-        target.achievements_increment('players_traded', this.tsid);
+        target.achievements_increment('players_traded', this.player.tsid);
     }
 }
 

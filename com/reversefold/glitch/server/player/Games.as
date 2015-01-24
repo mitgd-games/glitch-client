@@ -298,7 +298,7 @@ public function games_set_color_group(color, secondary_color) {
     var msg = {
         type: 'pc_game_flag_change',
         pc: {
-            tsid: this.tsid,
+            tsid: this.player.tsid,
             label: this.label,
             location: {
                 tsid: this.player.location.tsid,
@@ -389,7 +389,7 @@ public function games_tag_player(pc){
     log.info('[GAMES] '+this+" tagged "+pc+", it: "+it);
 
     // Are either of us it?
-    if (it == this.tsid && !this.games_it_game_is_locked() && !this.games_it_is_out()){
+    if (it == this.player.tsid && !this.games_it_game_is_locked() && !this.games_it_is_out()){
         this.games_is_not_it();
         pc.games_is_it();
     }
@@ -473,7 +473,7 @@ public function games_set_it_map(){
     var msg = {
         type: 'pc_game_flag_change',
         pc: {
-            tsid: this.tsid,
+            tsid: this.player.tsid,
             label: this.label,
             location: {
                 tsid: this.player.location.tsid,
@@ -552,7 +552,7 @@ public function games_set_notit_map(){
     var msg = {
         type: 'pc_game_flag_change',
         pc: {
-            tsid: this.tsid,
+            tsid: this.player.tsid,
             label: this.label,
             location: {
                 tsid: this.player.location.tsid,
@@ -578,7 +578,7 @@ public function games_it_game_gate(){
         this.it_game.is_started = true;
 
         // If we are it, start the timer
-        if (it == this.tsid){
+        if (it == this.player.tsid){
             log.info('[GAMES] '+this+' passed through the starting gate, and is it!');
             this.it_game.crown_start = time();
             this.apiSetTimer('games_end_it_game', 1000 * 60);
@@ -604,7 +604,7 @@ public function games_it_game_gate(){
     else{
         delete this.it_game.is_started;
 
-        if (it == this.tsid){
+        if (it == this.player.tsid){
             log.info('[GAMES] '+this+' went above the starting gate, and is it!');
 
             if (!this.it_game.crown_start) this.it_game.crown_start = time();
@@ -685,7 +685,7 @@ public function games_end_it_game(){
 
 
         // Did we win?
-        if (winner.tsid == this.tsid){
+        if (winner.tsid == this.player.tsid){
             log.info('[GAMES] '+this+" games_end_it_game was it!");
 
             var context = {'verb':'it_game'};
@@ -694,7 +694,7 @@ public function games_end_it_game(){
             this.player.achievements.achievements_increment('it_game', 'won');
 
             if (!this.it_game.crown_start) {
-                log.error("Player "+this.tsid+" won GoC without a crown start time");
+                log.error("Player "+this.player.tsid+" won GoC without a crown start time");
             }
             else {
                 var delta = time() - this.it_game.crown_start;
@@ -787,7 +787,7 @@ public function games_it_game_lock(duration){
     log.info('[GAMES] '+'it_game locking: '+this);
 
     var it = this.it_game.game.whosIt(true);
-    if (this.tsid == it){
+    if (this.player.tsid == it){
         log.info('[GAMES] '+'it_game locking IT: '+this);
         if (this.it_game.lock_start) {
             this.apiCancelTimer('games_it_game_unlock');
@@ -817,7 +817,7 @@ public function games_it_game_unlock(){
         delete this.it_game.lock_start;
 
         var it = this.it_game.game.whosIt(true);
-        if (this.tsid == it){
+        if (this.player.tsid == it){
             this.player.announcements.announce_add_indicator('it_game_crown', 'game_crown', true, 'unlocking', {width: 42, height: 42});
         }
         else{
@@ -889,7 +889,7 @@ public function games_it_game_start_scores(it){
 
     this.player.announcements.overlay_dismiss('crown_game_indicator');
     this.player.announcements.overlay_dismiss('crown_game_king');
-    if (it.tsid == this.tsid){
+    if (it.tsid == this.player.tsid){
         this.player.announcements.apiSendAnnouncement({
             uid: "crown_game_indicator",
             type: "vp_overlay",
@@ -922,7 +922,7 @@ public function games_it_game_start_scores(it){
             y: '81%',
             x: '94%',
             text: [
-                '<p align="center"><span class="crowns_king">'+utils.escape(it.label)+'</span></p>'
+                '<p align="center"><span class="crowns_king">'+Utils.escape(it.label)+'</span></p>'
             ]
         });
     }
@@ -1079,7 +1079,7 @@ public function games_end_math_mayhem(){
 
     // Did we win?
     var winner = this.math_mayhem.game.math_mayhem_get_winner();
-    if (winner && winner.tsid == this.tsid){
+    if (winner && winner.tsid == this.player.tsid){
         log.info('[GAMES] '+this+" games_end_math_mayhem was winner!");
 
         this.player.announcements.apiSendAnnouncement({
@@ -1127,7 +1127,7 @@ public function games_end_math_mayhem(){
                 y: '30%',
                 x: '50%',
                 text: [
-                    '<p align="center"><span class="nuxp_vog_brain">'+utils.escape(winner.label)+'</span></p>'
+                    '<p align="center"><span class="nuxp_vog_brain">'+Utils.escape(winner.label)+'</span></p>'
                 ]
             });
         }
@@ -1191,7 +1191,7 @@ public function games_show_mayhem_score(color, score){
     var msg = {
         type: 'pc_game_flag_change',
         pc: {
-            tsid: this.tsid,
+            tsid: this.player.tsid,
             label: this.label,
             location: {
                 tsid: this.player.location.tsid,
@@ -1210,7 +1210,7 @@ public function games_clear_mayhem_score(){
     var msg = {
         type: 'pc_game_flag_change',
         pc: {
-            tsid: this.tsid,
+            tsid: this.player.tsid,
             label: this.label,
             location: {
                 tsid: this.player.location.tsid,
@@ -1386,7 +1386,7 @@ public function games_end_race(){
         };
 
         // Did we win?
-        if (this.race.game.race_get_winner() == this.tsid){
+        if (this.race.game.race_get_winner() == this.player.tsid){
             log.info('[GAMES] '+this+" won the race!");
 
             var context = {'verb':'race'};
@@ -1499,7 +1499,7 @@ public function quoin_grab_show_overlays() {
     var overlay_text = "";
 
     for (var i in scores) {
-        overlay_text += utils.escape(scores[i].label)+": "+scores[i].score+"<br />";
+        overlay_text += Utils.escape(scores[i].label)+": "+scores[i].score+"<br />";
         remaining -= scores[i].score;
     }
     overlay_text += "Remaining: "+remaining;
@@ -1586,7 +1586,7 @@ public function games_end_quoin_grab(){
         };
 
         // Did we win?
-        if (this.quoin_grab.game.quoin_grab_get_winner() == this.tsid){
+        if (this.quoin_grab.game.quoin_grab_get_winner() == this.player.tsid){
             log.info('[GAMES] '+this+" won grab 'em good!");
 
             var context = {'verb':'quoin_grab'};
@@ -1699,7 +1699,7 @@ public function cloudhopolis_show_overlays() {
     var overlay_text = "";
 
     for (var i in scores) {
-        overlay_text += utils.escape(scores[i].label)+": "+scores[i].score+"<br />";
+        overlay_text += Utils.escape(scores[i].label)+": "+scores[i].score+"<br />";
         remaining -= scores[i].score;
     }
     overlay_text += "Time Remaining: "+remaining;
@@ -1786,7 +1786,7 @@ public function games_end_cloudhopolis(){
         };
 
         // Did we win?
-        if (this.cloudhopolis.game.cloudhopolis_get_winner() == this.tsid){
+        if (this.cloudhopolis.game.cloudhopolis_get_winner() == this.player.tsid){
             log.info('[GAMES] '+this+" won cloudhopolis!");
 
             var context = {'verb':'cloudhopolis'};
@@ -1899,7 +1899,7 @@ public function hogtie_piggy_show_overlays() {
     var overlay_text = "";
 
     for (var i in scores) {
-        overlay_text += utils.escape(scores[i].label)+": "+scores[i].score+"<br />";
+        overlay_text += Utils.escape(scores[i].label)+": "+scores[i].score+"<br />";
     }
 
     this.player.announcements.apiSendAnnouncement({
@@ -2147,7 +2147,7 @@ public function games_end_hogtie_piggy(){
         };
 
         // Did we win?
-        if (winner.tsid == this.tsid){
+        if (winner.tsid == this.player.tsid){
             log.info('[GAMES] '+this+" won the hogtied piggy race!");
 
             var context = {'verb':'hogtie_piggy'};
@@ -2411,7 +2411,7 @@ public function games_invite_create(class_tsid, ticket_on_cancel, location_id){
 
         this.player.requests.broadcastActionRequest('game_accept', class_tsid, 'is looking for a challenger for <b>'+game_name+'</b>.', q.min_players-1);
 
-        this['!invite_uid_'+this.tsid] = this.player.prompts.prompts_add({
+        this['!invite_uid_'+this.player.tsid] = this.player.prompts.prompts_add({
             txt     : 'Waiting for other players...',
             timeout     : 60,
             choices     : [
@@ -2421,7 +2421,7 @@ public function games_invite_create(class_tsid, ticket_on_cancel, location_id){
             quest_id    : class_tsid,
             game_name   : game_name,
             is_game     : true,
-            challenger  : this.tsid
+            challenger  : this.player.tsid
         });
 
         // Set a timer to fail the request
@@ -2444,11 +2444,11 @@ public function games_invite_timeout(details){
         if (!this.games_invite_is_full()){
 
             // Remove prompts
-            this.player.prompts.prompts_remove(this['!invite_uid_'+this.tsid]);
+            this.player.prompts.prompts_remove(this['!invite_uid_'+this.player.tsid]);
             if (this.games_invite){
                 for (var i in this.games_invite.opponents){
                     var opp = getPlayer(i);
-                    if (opp) opp.prompts_remove(opp['!invite_uid_'+this.tsid]);
+                    if (opp) opp.prompts_remove(opp['!invite_uid_'+this.player.tsid]);
                 }
             }
 
@@ -2476,14 +2476,14 @@ public function games_invite_timeout(details){
 public function games_accept(value, details){
     if (value == 'yes'){
         var challenger = getPlayer(details.challenger);
-        if (!challenger || challenger.tsid == this.tsid) return;
+        if (!challenger || challenger.tsid == this.player.tsid) return;
 
         var q = config.shared_instances[class_tsid];
         if (!q) return;
 
         if (this.games_invite_is_full()){
             this.player.prompts.prompts_add({
-                txt     : 'Sorry, you were not quite fast enough to join '+utils.escape(challenger.label)+' for '+details.game_name+'.',
+                txt     : 'Sorry, you were not quite fast enough to join '+Utils.escape(challenger.label)+' for '+details.game_name+'.',
                 timeout     : 10,
                 choices     : [
                     { value : 'ok', label : 'Dagnabit!' }
@@ -2532,19 +2532,19 @@ public function games_add_opponent(pc){
         this.player.requests.cancelActionRequestBroadcast('game_accept', this.games_invite.class_tsid);
 
         var opponent_names = [];
-        opponent_names.push(utils.escape(this.label));
+        opponent_names.push(Utils.escape(this.label));
         for (var i in this.games_invite.opponents){
 
             var opp = getPlayer(this.games_invite.opponents[i]);
             if (opp){
-                opponent_names.push(utils.escape(opp.label));
+                opponent_names.push(Utils.escape(opp.label));
             }
         }
 
         var pretty_opponents = pretty_list(opponent_names, ' and ');
 
         // Remove waiting prompts, add starting prompts!
-        this.player.prompts.prompts_remove(this['!invite_uid_'+this.tsid]);
+        this.player.prompts.prompts_remove(this['!invite_uid_'+this.player.tsid]);
         this.player.announcements.apiSendAnnouncement({
             uid: "race_start_delay",
             type: "vp_overlay",
@@ -2563,7 +2563,7 @@ public function games_add_opponent(pc){
         for (var i in this.games_invite.opponents){
             var opp2 = getPlayer(this.games_invite.opponents[i]);
             if (opp2){
-                opp2.prompts_remove(opp['!invite_uid_'+this.tsid]);
+                opp2.prompts_remove(opp['!invite_uid_'+this.player.tsid]);
                 opp2.removeActionRequestReply(this);
                 opp2.apiSendAnnouncement({
                     uid: "race_start_delay",
@@ -2587,14 +2587,14 @@ public function games_add_opponent(pc){
     else{
         this.player.requests.updateActionRequest(null, this.games_invite.opponents.length);
 
-        pc['!invite_uid_'+this.tsid] = pc.prompts_add({
+        pc['!invite_uid_'+this.player.tsid] = pc.prompts_add({
             txt     : 'Waiting for other players...',
             timeout     : 60,
             choices     : [
                 { value : 'ok', label : 'OK' }
             ],
             quest_id    : this.games_invite.class_tsid,
-            challenger  : this.tsid
+            challenger  : this.player.tsid
         });
     }
 }
@@ -2611,7 +2611,7 @@ public function games_remove_opponent(pc){
 
     this.player.requests.updateActionRequest(null, this.games_invite.opponents.length);
 
-    pc.prompts_remove(pc['!invite_uid_'+this.tsid]);
+    pc.prompts_remove(pc['!invite_uid_'+this.player.tsid]);
 }
 
 public function games_invite_start(){

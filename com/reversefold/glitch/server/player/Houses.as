@@ -39,7 +39,7 @@ public function houses_logout(){
         if (this.player.location.pols_is_owner(this)){
             var pcs = this.player.location.getAllPlayers();
             for (var i in pcs){
-                if (i == this.tsid || pcs[i].is_god || pcs[i].is_help || this.player.location.acl_keys_player_has_key(pcs[i])) continue;
+                if (i == this.player.tsid || pcs[i].is_god || pcs[i].is_help || this.player.location.acl_keys_player_has_key(pcs[i])) continue;
 
                 pcs[i].teleportToLocationDelayed(entrance.tsid, entrance.x, entrance.y);
             }
@@ -594,7 +594,7 @@ public function houses_familiar_org_create(choice, details){
         // Charge them
         //
 
-        if (!this.player.stats.stats_try_remove_currants(details.cost, {type: 'org_purchase', pol: this.tsid})){
+        if (!this.player.stats.stats_try_remove_currants(details.cost, {type: 'org_purchase', pol: this.player.tsid})){
             this.player.sendActivity('Not enough currants!');
 
             return {
@@ -752,7 +752,7 @@ public function houses_remove_all(){
             if (!pc) continue;
 
             var exterior = pc.houses_get_external_entrance();
-            if (exterior) exterior.loc.removeNeighborTo(this.tsid);
+            if (exterior) exterior.loc.removeNeighborTo(this.player.tsid);
         }
     }
     catch(e){
@@ -801,7 +801,7 @@ public function houses_remove_new(){
             if (!pc) continue;
 
             var exterior = pc.houses_get_external_entrance();
-            if (exterior && exterior.loc) exterior.loc.removeNeighborTo(this.tsid);
+            if (exterior && exterior.loc) exterior.loc.removeNeighborTo(this.player.tsid);
         }
 
         for (var i in this.home){
@@ -848,7 +848,7 @@ public function houses_go_to_new_house(force_recreate, no_teleport, go_inside){
         this.home_is_creating = time();
         this.home = {};
 
-        var label = utils.escape(this.label)+"'s";
+        var label = Utils.escape(this.label)+"'s";
         var ret = this.houses_create_location(label+' House', 'home_interior', false);
         if (!ret.ok) return ret;
 
@@ -1056,7 +1056,7 @@ public function houses_visit(player_tsid){
 
 public function houses_teleport_to(target_house, x, y){
 
-    if (this.is_dead) return {ok: 0, error: "You are dead."};
+    if (this.player.is_dead) return {ok: 0, error: "You are dead."};
 
     if (this.player.making.making_is_making()) return {ok: 0, error: "You need to finish up what you're working on first."};
 
@@ -1144,7 +1144,7 @@ public function houses_create_location(label, type, db_sync){
     //
 
     // TODO: Separate location classes for interior/exterior?
-    var new_loc = source.apiCopyLocation(label, config.is_prod ? '15' : '28', 'POL_'+this.tsid, false, 'home');
+    var new_loc = source.apiCopyLocation(label, config.is_prod ? '15' : '28', 'POL_'+this.player.tsid, false, 'home');
 
     // TODO: Shrink down the geo from the template to make the initial street
 
@@ -1185,13 +1185,13 @@ public function houses_get_external_entrance(){
 }
 
 public function houses_is_at_home(){
-    return this.player.location.homes_belongs_to(this.tsid);
+    return this.player.location.homes_belongs_to(this.player.tsid);
 }
 
 public function houses_is_our_home(tsid){
     var loc = Server.instance.apiFindObject(tsid);
     if (!loc) return false;
-    return loc.homes_belongs_to(this.tsid);
+    return loc.homes_belongs_to(this.player.tsid);
 }
 
 public function houses_check_inside_home(){
@@ -1679,7 +1679,7 @@ public function houses_style_set(t){
         }
     }
 
-    Server.instance.apiLogAction('HOME_STYLE_SWITCH', 'pc='+this.tsid, 'location='+this.player.location.tsid, 'street_type='+s, 'old_style='+this.player.location.style, 'new_style='+t);
+    Server.instance.apiLogAction('HOME_STYLE_SWITCH', 'pc='+this.player.tsid, 'location='+this.player.location.tsid, 'street_type='+s, 'old_style='+this.player.location.style, 'new_style='+t);
 
     // do eeet
     this.player.location.homes_set_style(t);

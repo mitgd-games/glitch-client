@@ -484,7 +484,7 @@ public function making_make_known(msg, item){
             item_class: item.class_tsid,
             duration: making.wait,
             state: 'tool_animation',
-            pc_tsid: this.tsid,
+            pc_tsid: this.player.tsid,
             delta_x: 0,
             delta_y: -110,
             bubble: true,
@@ -682,7 +682,7 @@ public function tryToMake(msg, item){
             item_class: item.class_tsid,
             duration: making.wait,
             state: 'tool_animation',
-            pc_tsid: this.tsid,
+            pc_tsid: this.player.tsid,
             delta_x: 0,
             delta_y: -110,
             bubble: true,
@@ -1843,7 +1843,7 @@ public function machinesRunning(machine) {
 
             //if (config.is_dev) log.info("Making checking "+metalmakers[m]+" for pc "+this);
 
-            if (metalmakers[m].is_running && metalmakers[m].last_user == this.tsid) {
+            if (metalmakers[m].is_running && metalmakers[m].last_user == this.player.tsid) {
                 // Return false if there's a metal machine running but it's playering metal music
                 // because we're trying not to run the machine noise if the metal music is playing
                 if (!metalmakers[m].isPlayingMusic(this)) {
@@ -1857,7 +1857,7 @@ public function machinesRunning(machine) {
 
             //if (config.is_dev) log.info("Making checking "+woodworkers[w]+" for pc "+this);
 
-            if (woodworkers[w].is_running && woodworkers[w].last_user == this.tsid) {
+            if (woodworkers[w].is_running && woodworkers[w].last_user == this.player.tsid) {
                 return true;
             }
         }
@@ -1867,7 +1867,7 @@ public function machinesRunning(machine) {
 
             //if (config.is_dev) log.info("Making checking "+fuelmakers[f]+" for pc "+this);
 
-            if (fuelmakers[f].is_running && fuelmakers[f].last_user == this.tsid) {
+            if (fuelmakers[f].is_running && fuelmakers[f].last_user == this.player.tsid) {
                 return true;
             }
         }
@@ -1877,7 +1877,7 @@ public function machinesRunning(machine) {
 
             //if (config.is_dev) log.info("Making checking "+blockmakers[b]+" for pc "+this);
 
-            if (blockmakers[b].is_running && blockmakers[b].last_user == this.tsid) {
+            if (blockmakers[b].is_running && blockmakers[b].last_user == this.player.tsid) {
                 return true;
             }
         }

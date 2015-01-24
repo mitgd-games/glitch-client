@@ -358,7 +358,7 @@ public function answer_mail_prompt() {
         frog.setInstanceProp('variant', 'frogRed');
     }
 
-    frog.setDelivery(this.tsid, this.delivery_type);
+    frog.setDelivery(this.player.tsid, this.delivery_type);
     this.frogVisiting = true;
 }
 
@@ -437,7 +437,7 @@ public function mail_test_auctions(num) {
             var slot = bag.firstEmptySlot();
             bag.addItemStack(s, slot);
 
-            this.mail_add_auction_delivery(s.tsid, 30, 0, this.tsid);
+            this.mail_add_auction_delivery(s.tsid, 30, 0, this.player.tsid);
         }
     }
 }
@@ -617,7 +617,7 @@ public function mail_read(msg_id, is_read) {
     if (was_read != is_read) {
         // send callback to www so it can update unread count on mobile
         utils.http_get('callbacks/mail_read.php', {
-            'player_tsid' : this.tsid,
+            'player_tsid' : this.player.tsid,
             'unread': this.mail_count_unread(),
             'msg_id': msg_id
         });
@@ -629,7 +629,7 @@ public function mail_archive_message(msg_id){
     if (this.mail.inbox[msg_id].items.__count || this.mail.inbox[msg_id].currants) return false;
 
     utils.http_get('callbacks/mail_archive.php', {
-        'player_tsid' : this.tsid,
+        'player_tsid' : this.player.tsid,
         'msg_id': msg_id
     });
 
@@ -894,7 +894,7 @@ public function schedule_inbox_growl() {
         if((mail_item.delivery_time < next_notification || next_notification == -1) &&
                 mail_item.in_mailbox && !mail_item.notification_sent) {
             if (isNaN(mail_item.delivery_time) || !mail_item.delivery_time){
-                log.info('MAIL PROBLEM: message '+i+' for player '+this.tsid+' had bad delivery time of '+mail_item.delivery_time+'. fixing...');
+                log.info('MAIL PROBLEM: message '+i+' for player '+this.player.tsid+' had bad delivery time of '+mail_item.delivery_time+'. fixing...');
                 this.mail.inbox[i].delivery_time = time();
             }
             next_notification = mail_item.delivery_time;
@@ -1049,7 +1049,7 @@ public function get_mail_items(mailType, msg_id) {
                             this.fix_broken_mail_item(stack);
                         }
                     } else {
-                        log.info("Mail: item "+i+" added onto player "+this.tsid+".");
+                        log.info("Mail: item "+i+" added onto player "+this.player.tsid+".");
                     }
                 } else {
                     // couldn't store item.
@@ -1218,7 +1218,7 @@ public function mail_add_player_delivery(itemstack_tsid, sender_tsid, currants, 
     // Notify www via callback
     utils.http_get('callbacks/mail.php', {
         'sender_tsid' : sender_tsid,
-        'receiver_tsid' : this.tsid,
+        'receiver_tsid' : this.player.tsid,
         'mail_id' : this.mail.next_msg_id,
         'has_attachment' : itemstack_tsid ? 1 : 0
     });
@@ -1315,7 +1315,7 @@ public function mail_add_stack(stack, delay, mailType, id, sender_tsid, subType)
                 deliveryPacket.sender_tsid = sender_tsid;
             }
         } else {
-            log.error("Mail delivery scheduled for "+this.tsid+" with item "+stack.tsid+" of unknown type.");
+            log.error("Mail delivery scheduled for "+this.player.tsid+" with item "+stack.tsid+" of unknown type.");
             deliveryPacket.mailType = 'unknown';
         }
 
@@ -1323,7 +1323,7 @@ public function mail_add_stack(stack, delay, mailType, id, sender_tsid, subType)
 
 
         this.schedule_next_delivery();
-        log.info("Mail: item "+stack.tsid+" scheduled for delivery to player "+this.tsid+" at "+deliveryPacket.delivery_time+".");
+        log.info("Mail: item "+stack.tsid+" scheduled for delivery to player "+this.player.tsid+" at "+deliveryPacket.delivery_time+".");
     }
 }
 

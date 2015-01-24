@@ -230,7 +230,7 @@ public function storeBuy(msg, item){
 
     if (item.store_sold && item.store_sold[msg.class_tsid] !== undefined){
         item.store_sold[msg.class_tsid] += got;
-        Server.instance.apiLogAction('RARE_SALE', 'pc='+this.tsid, 'class_id='+msg.class_tsid, 'amount='+got);
+        Server.instance.apiLogAction('RARE_SALE', 'pc='+this.player.tsid, 'class_id='+msg.class_tsid, 'amount='+got);
     }
 
     if (!item.sales_made) item.sales_made = 0;

@@ -1,8 +1,10 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +13,7 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		public var party;
 
         public function Party(config : Config, player : Player) {
             this.config = config;
@@ -24,7 +27,7 @@ package com.reversefold.glitch.server.player {
 
 public function party_invite(pc, silent){
 
-    if (!this.has_done_intro){
+    if (!this.player.has_done_intro){
         return false;
     }
 
@@ -62,25 +65,25 @@ public function party_invite(pc, silent){
 
     switch (ret){
         case 'invited':
-            this.party_activity(utils.escape(pc.label)+" has already been invited to join your party.");
+            this.party_activity(Utils.escape(pc.label)+" has already been invited to join your party.");
             break;
         case 'offline':
-            this.party_activity(utils.escape(pc.label)+" is currently offline.");
+            this.party_activity(Utils.escape(pc.label)+" is currently offline.");
             break;
         case 'other_party':
-            this.party_activity(utils.escape(pc.label)+" is already in a party.");
+            this.party_activity(Utils.escape(pc.label)+" is already in a party.");
             break;
         case 'full':
             this.party_activity("Your party is full!");
             break;
         case 'kicked':
-            this.party_activity(utils.escape(pc.label)+" has been removed from your party - only the party creator can re-invite them.");
+            this.party_activity(Utils.escape(pc.label)+" has been removed from your party - only the party creator can re-invite them.");
             break;
         case 'newxp':
-            this.party_activity(utils.escape(pc.label)+" cannot yet join your party.");
+            this.party_activity(Utils.escape(pc.label)+" cannot yet join your party.");
             break;
         case 'ok':
-            this.party_activity("You have invited "+utils.escape(pc.label)+" to join your party.");
+            this.party_activity("You have invited "+Utils.escape(pc.label)+" to join your party.");
             break;
         default:
             this.party_activity("Unknown invite response: "+ret);
@@ -95,7 +98,7 @@ public function party_invite(pc, silent){
 
 public function party_leave(){
 
-    //log.info(this.tsid+'.party_leave()');
+    //log.info(this.player.tsid+'.party_leave()');
 
     if (this.party) this.party.leave(this, 'left');
 }
@@ -126,13 +129,13 @@ public function party_is_full(){
 
 public function party_invited(party, inviter){
 
-    var txt = utils.escape(inviter.label)+" has invited you to join their ";
+    var txt = Utils.escape(inviter.label)+" has invited you to join their ";
 
     var space = party.get_space();
     if (space){
         var loc = Server.instance.apiFindObject(space.get_entrance());
         if (loc){
-            txt += "Party in "+utils.escape(loc.label)+".";
+            txt += "Party in "+Utils.escape(loc.label)+".";
         }
         else{
             txt += "Party Chat.";
@@ -147,7 +150,7 @@ public function party_invited(party, inviter){
         party       : party,
         inviter     : inviter,
         txt     : txt,
-        timeout     : config.party_invite_timeout-1,
+        timeout     : config.base.party_invite_timeout-1,
         icon_buttons    : true,
         choices     : [
             { label : 'OK', value: 'accept' },
@@ -193,7 +196,7 @@ public function party_uninvited(party, inviter){
 
     // TODO: remove any invites from this player from the familiar queue
 
-    this.party_activity('Your invite from '+utils.escape(inviter.label)+' to join their party has expired');
+    this.party_activity('Your invite from '+Utils.escape(inviter.label)+' to join their party has expired');
 }
 
 
@@ -203,9 +206,9 @@ public function party_uninvited(party, inviter){
 
 public function party_left(reason){
 
-    //log.error('party_left for '+this.tsid);
+    //log.error('party_left for '+this.player.tsid);
 
-    delete this.party;
+    this.party = null;
 
     switch (reason){
         case 'disband':
@@ -247,7 +250,7 @@ public function party_now_leader(){
 
 public function party_joined(party, reason, pc){
 
-    //log.error("party_joined for "+this.tsid);
+    //log.error("party_joined for "+this.player.tsid);
 
     this.party = party;
 
@@ -261,14 +264,14 @@ public function party_joined(party, reason, pc){
 
     if (reason == 'invite_accepted'){
 
-        this.party_activity(utils.escape(pc.label)+' accepted your party invite.');
+        this.party_activity(Utils.escape(pc.label)+' accepted your party invite.');
 
     }else{
 
         var m_names = [];
         for (var i in m){
-            if (i != this.tsid){
-                m_names.push(utils.escape(m[i].label));
+            if (i != this.player.tsid){
+                m_names.push(Utils.escape(m[i].label));
             }
         }
 
@@ -284,9 +287,9 @@ public function party_joined(party, reason, pc){
 public function party_declined(pc, expired){
 
     if (expired){
-        this.party_activity(utils.escape(pc.label)+' has declined your invitation (expired)');
+        this.party_activity(Utils.escape(pc.label)+' has declined your invitation (expired)');
     }else{
-        this.party_activity(utils.escape(pc.label)+' has declined your invitation');
+        this.party_activity(Utils.escape(pc.label)+' has declined your invitation');
     }
 }
 
@@ -298,9 +301,9 @@ public function party_declined(pc, expired){
 public function party_member_joined(pc, invited){
 
     if (invited){
-        this.party_activity(utils.escape(pc.label)+' accepted your party invite.');
+        this.party_activity(Utils.escape(pc.label)+' accepted your party invite.');
     }else{
-        this.party_activity(utils.escape(pc.label)+' has joined the party');
+        this.party_activity(Utils.escape(pc.label)+' has joined the party');
     }
 
     //this.player.sendActivity('MSG:party_add');
@@ -312,7 +315,7 @@ public function party_member_joined(pc, invited){
 
 public function party_member_left(pc, reason){
 
-    this.party_activity(utils.escape(pc.label)+" has left the party");
+    this.party_activity(Utils.escape(pc.label)+" has left the party");
 
     //this.player.sendActivity('MSG:party_remove');
     this.apiSendMsg({
@@ -328,7 +331,7 @@ public function party_member_left(pc, reason){
 
 public function party_member_online(pc){
 
-    this.party_activity("Party member "+utils.escape(pc.label)+" has come online");
+    this.party_activity("Party member "+Utils.escape(pc.label)+" has come online");
 
     //this.player.sendActivity('MSG:party_online');
     this.apiSendMsg({
@@ -339,7 +342,7 @@ public function party_member_online(pc){
 
 public function party_member_offline(pc){
 
-    this.party_activity("Party member "+utils.escape(pc.label)+" has gone offline");
+    this.party_activity("Party member "+Utils.escape(pc.label)+" has gone offline");
 
     //this.player.sendActivity('MSG:party_offline');
     this.apiSendMsg({
@@ -374,7 +377,7 @@ public function party_chat(txt){
 
         this.party.chat(this, txt);
 
-        Server.instance.apiLogAction('CHAT_PARTY', 'pc='+this.tsid, 'party='+this.party.tsid, 'msg='+txt);
+        Server.instance.apiLogAction('CHAT_PARTY', 'pc='+this.player.tsid, 'party='+this.party.tsid, 'msg='+txt);
     }else{
         this.party_activity("You're not in a party!");
     }
@@ -404,7 +407,7 @@ public function party_members(){
 
 public function party_get_invites_sent(){
 
-    if (this.party) return this.party.remove_invites_from(this.tsid);
+    if (this.party) return this.party.remove_invites_from(this.player.tsid);
 
     return null;
 }
@@ -452,7 +455,7 @@ public function party_enter_space(){
 
 public function party_create(){
 
-    //log.error('party_create for '+this.tsid);
+    //log.error('party_create for '+this.player.tsid);
 
     this.party = Server.instance.apiNewGroup('party');
 
@@ -527,7 +530,7 @@ public function party_space_prompt_callback(choice, details){
 
 public function party_create_teleporter(){
     //log.info(this+' Creating party teleporter');
-    var tp = this.player.location.createAndReturnItem('teleporter_visible', 1, this.x+100, this.y+40, 0, this.tsid);
+    var tp = this.player.location.createAndReturnItem('teleporter_visible', 1, this.player.x+100, this.player.y+40, 0, this.player.tsid);
     if (tp){
         this.player.announcements.announce_sound('TELEPORTER_VISIBLE_APPEAR');
         this.player.announcements.announce_sound_delayed('TELEPORTER_VISIBLE_PORTAL', 0, 0, 1);
@@ -538,14 +541,14 @@ public function party_create_teleporter(){
         tp.setInstanceProp('is_party', 1);
         tp.apiSetTimer('disappear', 2*60*1000);
 
-        this.player.moveAvatar(tp.x-100, this.y, 'right');
+        this.player.moveAvatar(tp.x-100, this.player.y, 'right');
     }
 }
 
 public function party_find_teleporter(){
     var is_tp = function(it, args){ return it.class_tsid == 'teleporter_visible' && it.only_visible_to == args; };
 
-    var tp = this.player.location.find_items(is_tp, this.tsid)[0];
+    var tp = this.player.location.find_items(is_tp, this.player.tsid)[0];
     if (tp){
         this.player.moveAvatar(tp.x, tp.y-40, 'right');
         return true;

@@ -506,7 +506,7 @@ public function skills_unlearnable_list() {
 }
 
 public function skills_remove(id){
-    Server.instance.apiLogAction('SKILLS_REMOVE', 'pc='+this.tsid, 'skill='+id);
+    Server.instance.apiLogAction('SKILLS_REMOVE', 'pc='+this.player.tsid, 'skill='+id);
 
     //log.info(this+" Unlearning: removing skill "+id);
 
@@ -657,7 +657,7 @@ public function skills_unlearn(id) {
 
                 // perform web callback for additional processing
                 var args = {
-                    player  : this.tsid,
+                    player  : this.player.tsid,
                     skill_id: i,
                     action  : 'pause'
                 };
@@ -762,7 +762,7 @@ public function skills_train(id){
         return { busyUnlearning: 1, learn: 1, id: id, fullname: skill_name } ;
     }
 
-    Server.instance.apiLogAction('SKILLS_TRAIN', 'pc='+this.tsid, 'skill='+id);
+    Server.instance.apiLogAction('SKILLS_TRAIN', 'pc='+this.player.tsid, 'skill='+id);
 
     //
     // Have the pre-reqs?
@@ -813,14 +813,14 @@ public function skills_train(id){
 
                 // perform web callback for additional processing
                 var args = {
-                    player  : this.tsid,
+                    player  : this.player.tsid,
                     skill_id: i,
                     action  : 'pause'
                 };
 
                 utils.http_get('callbacks/skill.php', args);
 
-            Server.instance.apiLogAction('SKILLS_PAUSE', 'pc='+this.tsid, 'skill='+i);
+            Server.instance.apiLogAction('SKILLS_PAUSE', 'pc='+this.player.tsid, 'skill='+i);
             }
         }
     }
@@ -876,7 +876,7 @@ public function skills_train(id){
 
         // perform web callback for additional processing
         var args = {
-            player  : this.tsid,
+            player  : this.player.tsid,
             skill_id: id,
             action  : 'resume'
         };
@@ -901,7 +901,7 @@ public function skills_train(id){
 
         // perform web callback for additional processing
         var args = {
-            player  : this.tsid,
+            player  : this.player.tsid,
             skill_id: id,
             action  : 'start'
         };
@@ -1347,7 +1347,7 @@ public function skills_complete_training(){
 
                 // perform web callback for additional processing
                 var args = {
-                    player  : this.tsid,
+                    player  : this.player.tsid,
                     skill_id: id,
                     action  : 'resume'
                 };
@@ -1441,7 +1441,7 @@ public function skills_give(id){
     var data = this.skills_get(id);
     if (!data) return;
 
-    Server.instance.apiLogAction('SKILLS_GIVE', 'pc='+this.tsid, 'skill='+id);
+    Server.instance.apiLogAction('SKILLS_GIVE', 'pc='+this.player.tsid, 'skill='+id);
 
     this.skills.skills[id] = time();
 
@@ -1475,7 +1475,7 @@ public function skills_give(id){
 
     // perform web callback for additional processing
     var args = {
-        player  : this.tsid,
+        player  : this.player.tsid,
         skill_id: id,
         action  : 'complete'
     };
@@ -1577,7 +1577,7 @@ public function skills_remove_notify(id){
 
     // perform web callback for additional processing
     var args = {
-        player  : this.tsid,
+        player  : this.player.tsid,
         skill_id: id,
         action  : 'complete'
     };

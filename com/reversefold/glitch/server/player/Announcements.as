@@ -32,7 +32,7 @@ package com.reversefold.glitch.server.player {
 // Music and sound management
 //
 
-public function announce_sound(name, loop_count, fade_in, is_exclusive=false, allow_multiple=false){
+public function announce_sound(name, loop_count=0, fade_in=false, is_exclusive=false, allow_multiple=false){
     if (name == 'NO_MUSIC') return;
 
     if (config.sounds.music_map[name]) name = config.sounds.music_map[name];

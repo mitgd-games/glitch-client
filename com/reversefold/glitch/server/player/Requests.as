@@ -40,11 +40,11 @@ public function broadcastActionRequest(type, tsid, txt, need=false, got=false){
 
     // Store some flags on the location
     if (!this.player.location.action_requests) this.player.location.action_requests = {};
-    if (this.player.location.action_requests[this.tsid]){
-        this.cancelActionRequestBroadcast(this.player.location.action_requests[this.tsid].type, this.player.location.action_requests[this.tsid].tsid);
+    if (this.player.location.action_requests[this.player.tsid]){
+        this.cancelActionRequestBroadcast(this.player.location.action_requests[this.player.tsid].type, this.player.location.action_requests[this.player.tsid].tsid);
     }
 
-    this.player.location.action_requests[this.tsid] = {
+    this.player.location.action_requests[this.player.tsid] = {
         type: type,
         tsid: tsid,
         txt: txt,
@@ -63,7 +63,7 @@ public function broadcastActionRequest(type, tsid, txt, need=false, got=false){
         event_type: type,
         event_tsid: tsid,
         timeout_secs: timeout,
-        uid: this.tsid+'_'+type+'_'+tsid
+        uid: this.player.tsid+'_'+type+'_'+tsid
     }, this);
 
     this.apiSendMsg({
@@ -75,7 +75,7 @@ public function broadcastActionRequest(type, tsid, txt, need=false, got=false){
         event_type: type,
         event_tsid: tsid,
         timeout_secs: timeout,
-        uid: this.tsid+'_'+type+'_'+tsid
+        uid: this.player.tsid+'_'+type+'_'+tsid
     });
 
     return true;
@@ -130,12 +130,12 @@ public function actionRequestReply(from, msg){
         return true;
     } else if (msg.event_type == 'trade'){
         this.updateActionRequest('was looking for someone to trade with. '+from.linkifyLabel()+' accepted.', 1);
-        this.cancelActionRequestBroadcast('trade', this.tsid);
-        var ret = from.trading_request_start(this.tsid);
+        this.cancelActionRequestBroadcast('trade', this.player.tsid);
+        var ret = from.trading_request_start(this.player.tsid);
         if (ret.ok){
             from.apiSendMsgAsIs({
                 type: 'trade_start',
-                tsid: this.tsid
+                tsid: this.player.tsid
             });
         }
 
@@ -155,11 +155,11 @@ public function actionRequestCancel(msg){
         if (q){
             if (!q.isFull()){
                 // Remove prompts
-                this.player.prompts.prompts_remove(this['!invite_uid_'+this.tsid]);
+                this.player.prompts.prompts_remove(this['!invite_uid_'+this.player.tsid]);
                 for (var i in q.opponents){
                     var opp = getPlayer(i);
                     if (opp){
-                        opp.prompts_remove(opp['!invite_uid_'+this.tsid]);
+                        opp.prompts_remove(opp['!invite_uid_'+this.player.tsid]);
                         opp.removeActionRequestReply(this);
                     }
                 }
@@ -180,11 +180,11 @@ public function actionRequestCancel(msg){
             }
 
             // Remove prompts
-            this.player.prompts.prompts_remove(this['!invite_uid_'+this.tsid]);
+            this.player.prompts.prompts_remove(this['!invite_uid_'+this.player.tsid]);
             for (var i in this.games_invite.opponents){
                 var opp = getPlayer(i);
                 if (opp){
-                    opp.prompts_remove(opp['!invite_uid_'+this.tsid]);
+                    opp.prompts_remove(opp['!invite_uid_'+this.player.tsid]);
                     opp.removeActionRequestReply(this);
                 }
             }
@@ -202,7 +202,7 @@ public function actionRequestCancel(msg){
         return true;
     } else if (msg.event_type == 'trade'){
         this.updateActionRequest('was looking for someone to trade with.', 0);
-        this.cancelActionRequestBroadcast('trade', this.tsid);
+        this.cancelActionRequestBroadcast('trade', this.player.tsid);
 
         return true;
     } else{
@@ -214,19 +214,19 @@ public function actionRequestCancel(msg){
 
 public function cancelActionRequestBroadcast(type, tsid){
     if (!this.player.location.action_requests) this.player.location.action_requests = {};
-    var details = this.player.location.action_requests[this.tsid];
+    var details = this.player.location.action_requests[this.player.tsid];
     if (!details) return;
     if (details.type != type) return;
 
     this.player.location.apiSendMsg({
         type: "action_request_cancel",
-        player_tsid: this.tsid,
+        player_tsid: this.player.tsid,
         event_type: details.type,
         event_tsid: details.tsid,
-        uid: this.tsid+'_'+details.type+'_'+details.tsid
+        uid: this.player.tsid+'_'+details.type+'_'+details.tsid
     });
 
-    delete this.player.location.action_requests[this.tsid];
+    delete this.player.location.action_requests[this.player.tsid];
 }
 
 public function cancelActionRequest(from, type, tsid){
@@ -246,22 +246,22 @@ public function cancelActionRequest(from, type, tsid){
 
 public function updateActionRequest(txt, got){
     if (!this.player.location.action_requests) this.player.location.action_requests = {};
-    var details = this.player.location.action_requests[this.tsid];
+    var details = this.player.location.action_requests[this.player.tsid];
     if (!details) return;
 
     this.player.location.apiSendMsg({
         type: "action_request_update",
-        player_tsid: this.tsid,
+        player_tsid: this.player.tsid,
         event_type: details.type,
         event_tsid: details.tsid,
         txt: txt ? txt : '',
         got: intval(got),
         need: intval(details.need),
-        uid: this.tsid+'_'+details.type+'_'+details.tsid
+        uid: this.player.tsid+'_'+details.type+'_'+details.tsid
     });
 
-    this.player.location.action_requests[this.tsid].got = got;
-    if (txt) this.player.location.action_requests[this.tsid].txt = txt;
+    this.player.location.action_requests[this.player.tsid].got = got;
+    if (txt) this.player.location.action_requests[this.player.tsid].txt = txt;
 }
 
 public function addActionRequestReply(from){

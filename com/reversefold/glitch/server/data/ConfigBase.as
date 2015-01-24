@@ -2,7 +2,11 @@ package com.reversefold.glitch.server.data {
     public class ConfigBase {
 
 //#include inc_data_clothing.js
+		//Clothing is static
+		
 //#include inc_data_faces.js
+		//Faces is static
+		
 //#include inc_data_skills.js
         public var skills : Skills = new Skills();
 //#include achievements/inc_data_counters.js
@@ -10,6 +14,7 @@ package com.reversefold.glitch.server.data {
 		public var imagination : Imagination = new Imagination();
 //#include inc_data_homes.js
 //#include inc_data_default_avatars.js
+		//DefaultAvatars is static
 
 // this config file is for settings
 // shared on dev & prod

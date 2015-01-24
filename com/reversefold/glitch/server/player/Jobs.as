@@ -223,7 +223,7 @@ public function jobs_familiar_turnin(job_location, job_id, class_id, is_winner){
 
     this.jobs_familiar_turnin_cancel(job_location, job_id, class_id);
 
-    if (this.is_dead) return;
+    if (this.player.is_dead) return;
     this.player.familiar.familiar_send_alert({
         'callback'  : 'jobs_familiar_turnin_do',
         'job_location'  : job_location,
@@ -261,17 +261,17 @@ public function jobs_familiar_turnin_do(choice, details){
 
         if (job && job.isDone()){
             var contributions = job.getContributions();
-            var my_contribution = contributions[this.tsid];
+            var my_contribution = contributions[this.player.tsid];
             if (my_contribution){
                 var actual_rewards = job.onComplete(this, my_contribution / job.getTotalBasecost());
 
                 if (details.is_winner){
                     var performance_rewards = job.applyPerformanceRewards(this);
-                    Server.instance.apiLogAction('JOB_COMPLETE', 'pc='+this.tsid, 'job_id='+details.job_id, 'phase='+details.class_id, 'xp='+intval(actual_rewards.xp), 'mood='+intval(actual_rewards.mood), 'energy='+intval(actual_rewards.energy), 'currants='+intval(actual_rewards.currants), 'xp_perf='+intval(performance_rewards.xp), 'mood_perf='+intval(performance_rewards.mood), 'energy_perf='+intval(performance_rewards.energy), 'currants_perf='+intval(performance_rewards.currants));
+                    Server.instance.apiLogAction('JOB_COMPLETE', 'pc='+this.player.tsid, 'job_id='+details.job_id, 'phase='+details.class_id, 'xp='+intval(actual_rewards.xp), 'mood='+intval(actual_rewards.mood), 'energy='+intval(actual_rewards.energy), 'currants='+intval(actual_rewards.currants), 'xp_perf='+intval(performance_rewards.xp), 'mood_perf='+intval(performance_rewards.mood), 'energy_perf='+intval(performance_rewards.energy), 'currants_perf='+intval(performance_rewards.currants));
                 }
                 else{
                     var performance_rewards = {};
-                    Server.instance.apiLogAction('JOB_COMPLETE', 'pc='+this.tsid, 'job_id='+details.job_id, 'phase='+details.class_id, 'xp='+intval(actual_rewards.xp), 'mood='+intval(actual_rewards.mood), 'energy='+intval(actual_rewards.energy), 'currants='+intval(actual_rewards.currants));
+                    Server.instance.apiLogAction('JOB_COMPLETE', 'pc='+this.player.tsid, 'job_id='+details.job_id, 'phase='+details.class_id, 'xp='+intval(actual_rewards.xp), 'mood='+intval(actual_rewards.mood), 'energy='+intval(actual_rewards.energy), 'currants='+intval(actual_rewards.currants));
                 }
 
                 this.jobs_mark_complete(details.job_location, details.job_id, details.class_id, actual_rewards, performance_rewards);
@@ -303,7 +303,7 @@ public function jobs_familiar_turnin_do(choice, details){
         var winning_option = job.getWinningOption();
 
         var contributions = job.getContributions();
-        var my_contribution = contributions[this.tsid];
+        var my_contribution = contributions[this.player.tsid];
 
         if (!my_contribution){
             return {
@@ -352,7 +352,7 @@ public function jobs_familiar_job_complete(job_location, job_id, multiplier){
 
     this.jobs_familiar_job_complete_cancel(job_location, job_id);
 
-    if (this.is_dead) return;
+    if (this.player.is_dead) return;
     this.player.familiar.familiar_send_alert_delayed({
         'callback'  : 'jobs_familiar_job_complete_do',
         'job_location'  : job_location,
@@ -442,7 +442,7 @@ public function jobs_familiar_job_complete_do(choice, details){
 
     if (job.type == 5){
         var contributions = job.getContributions();
-        var my_contribution = contributions[this.tsid];
+        var my_contribution = contributions[this.player.tsid];
 
         if (!my_contribution || !job_location.getProp('owner')){
             return {
@@ -462,7 +462,7 @@ public function jobs_familiar_job_complete_do(choice, details){
         var rewards = job.onComplete(this, my_contribution / job.getTotalBasecost() * multiplier);
 
         var location_name;
-        if (job_location.getProp('owner') && job_location.getProp('owner').tsid == this.tsid){
+        if (job_location.getProp('owner') && job_location.getProp('owner').tsid == this.player.tsid){
             if (job_location.getProp('is_public')){
                 location_name = "on your home street";
             }
@@ -472,10 +472,10 @@ public function jobs_familiar_job_complete_do(choice, details){
         }
         else{
             if (job_location.getProp('is_public')){
-                location_name = "on "+utils.escape(job_location.owner.label)+"'s home street";
+                location_name = "on "+Utils.escape(job_location.owner.label)+"'s home street";
             }
             else{
-                location_name = "in "+utils.escape(job_location.owner.label)+"'s yard";
+                location_name = "in "+Utils.escape(job_location.owner.label)+"'s yard";
             }
 
             if ((my_contribution / job.getTotalBasecost()) > .5) {
@@ -495,7 +495,7 @@ public function jobs_familiar_job_complete_do(choice, details){
             job_txt += job.expandText("Since you contributed, you got "+Math.round(rewards.xp)+" imagination.", this);
         }
 
-        Server.instance.apiLogAction('JOB_COMPLETE', 'pc='+this.tsid, 'job_id='+details.job_id, 'class_id='+job.class_id, 'location='+details.job_location, 'xp='+intval(rewards.xp), 'mood='+intval(rewards.mood), 'energy='+intval(rewards.energy), 'currants='+intval(rewards.currants));
+        Server.instance.apiLogAction('JOB_COMPLETE', 'pc='+this.player.tsid, 'job_id='+details.job_id, 'class_id='+job.class_id, 'location='+details.job_location, 'xp='+intval(rewards.xp), 'mood='+intval(rewards.mood), 'energy='+intval(rewards.energy), 'currants='+intval(rewards.currants));
 
         this.player.sendActivity(job_txt, null, true);
         completion_text = job_txt;
@@ -507,7 +507,7 @@ public function jobs_familiar_job_complete_do(choice, details){
         var phases = job.getAllPhases();
         for (var i in phases){
             var phase_contributions = phases[i].instance.getContributions();
-            var my_phase_contribution = phase_contributions[this.tsid];
+            var my_phase_contribution = phase_contributions[this.player.tsid];
 
             completion_text += phases[i].in_order+'. '+phases[i].label+": ";
             if (my_phase_contribution){

@@ -423,7 +423,7 @@ public function sendPhysicsAdjustments(){
     if (this.player.isOnline()) {
         this.player.location.apiSendMsgX({
             type: 'pc_physics_changes',
-            pc_tsid: this.tsid,
+            pc_tsid: this.player.tsid,
             adjustments: this.reducePhysicsAdjustmentsToMinumum(this.stacked_physics_cache)
         }, this);
     }
