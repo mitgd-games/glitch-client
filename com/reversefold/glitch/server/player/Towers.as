@@ -21,33 +21,33 @@ package com.reversefold.glitch.server.player {
 public function getTestTower(){
 
     // we must already have a house for this to work
-    if (!this.home || !this.home.exterior) return null;
+    if (!this.player.houses.home || !this.player.houses.home.exterior) return null;
 
     if (this.tower_tsid){
 
         var tower = Server.instance.apiFindObject(this.tower_tsid);
         delete this.tower_tsid;
-        this.home.tower = tower;
-        this.home.exterior.homes_position_tower(tower, 48, -97);
+        this.player.houses.home.tower = tower;
+        this.player.houses.home.exterior.homes_position_tower(tower, 48, -97);
     }
 
-    if (!this.home.tower){
+    if (!this.player.houses.home.tower){
 
         var tower = Server.instance.apiNewLocation("Test Tower", config.is_prod ? '15' : '28', 'POL_'+this.player.tsid, 'tower');
         tower.tower_create(this);
-        this.home.tower = tower;
-        this.home.exterior.homes_position_tower(tower, 48, -97);
+        this.player.houses.home.tower = tower;
+        this.player.houses.home.exterior.homes_position_tower(tower, 48, -97);
     }
 
-    this.home.tower.tower_set_label(this.label+"'s Tower");
+    this.player.houses.home.tower.tower_set_label(this.label+"'s Tower");
 
-    return this.home.tower;
+    return this.player.houses.home.tower;
 }
 
 public function getTower(){
-    if (!this.home || !this.home.exterior) return null;
+    if (!this.player.houses.home || !this.player.houses.home.exterior) return null;
 
-    return this.home.tower;
+    return this.player.houses.home.tower;
 }
 
 public function visitTower(){
@@ -73,28 +73,28 @@ public function resetTower(){
 }
 
 public function removeTower(){
-    if (!this.home) return;
+    if (!this.player.houses.home) return;
 
-    if (this.home.exterior){
-        var chassis = this.home.exterior.homes_get_tower_chassis();
+    if (this.player.houses.home.exterior){
+        var chassis = this.player.houses.home.exterior.homes_get_tower_chassis();
         if (chassis){
-            for (var i in this.home.exterior.geometry.layers.middleground.doors){
-                var d = this.home.exterior.geometry.layers.middleground.doors[i];
+            for (var i in this.player.houses.home.exterior.geometry.layers.middleground.doors){
+                var d = this.player.houses.home.exterior.geometry.layers.middleground.doors[i];
                 if (d.itemstack_tsid == chassis.tsid){
-                    delete this.home.exterior.geometry.layers.middleground.doors[i];
-                    this.home.exterior.apiGeometryUpdated();
+                    delete this.player.houses.home.exterior.geometry.layers.middleground.doors[i];
+                    this.player.houses.home.exterior.apiGeometryUpdated();
                     break;
                 }
             }
 
             chassis.apiDelete();
-            this.home.exterior.upgrades_move_players('misc');
+            this.player.houses.home.exterior.upgrades_move_players('misc');
         }
     }
 
-    if (this.home.tower) this.home.tower.tower_delete();
+    if (this.player.houses.home.tower) this.player.houses.home.tower.tower_delete();
 
-    delete this.home.tower;
+    delete this.player.houses.home.tower;
     delete this.tower_tsid;
 }
 

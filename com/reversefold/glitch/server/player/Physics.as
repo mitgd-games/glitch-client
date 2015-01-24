@@ -171,7 +171,7 @@ public function removeAllCTPCPhysics(and_send){
 
 public function checkForExpiringPhysics(){
     var physics = this.getPhysics();
-    var now = getTime();
+    var now = new Date().getTime();
 
     // we'll use this to know if we should sned a message to the client, if any expired
     var any_expired = false;
@@ -256,7 +256,7 @@ public function addPhysics(hash, key){
     if (!hash.is_img) {
         hash.location_tsid = this.player.location.tsid;
     }
-    hash.added_time = getTime();
+    hash.added_time = new Date().getTime();
 
     physics[key] = hash;
     this.stackPhysicsAndSendToClient();

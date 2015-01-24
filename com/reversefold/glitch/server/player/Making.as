@@ -418,7 +418,7 @@ public function making_make_known(msg, item){
             energy: energy_cost,
             started: intval(getTime())
         };
-        var now = getTime();
+        var now = new Date().getTime();
         var then = ((now + wait_time));
         //log.info("Making: now is "+now+" and then is "+then);
         var queued = { time: then, making: making, type: "known" };
@@ -439,7 +439,7 @@ public function making_make_known(msg, item){
             energy: energy_cost,
             started: intval(getTime())
         };
-        var now = getTime();
+        var now = new Date().getTime();
         var then = ((now + wait_time));
         //log.info("Making: now is "+now+" and then is "+then);
         var queued = { time: then, making: making, type: "known" };
@@ -642,7 +642,7 @@ public function tryToMake(msg, item){
         verb: verb,
         started: intval(getTime())
     };
-    var now = getTime();
+    var now = new Date().getTime();
     var then = now + wait_time;
     var queued = { time: then, making: making, type: "unknown" };
     if (!this.making_queue) { this.making_queue = []; }
@@ -1012,11 +1012,11 @@ public function scheduleNextTimer(info) {
     if (this.making_queue.length > 0) {
         var type = this.making_queue[0]['type'];
 
-        var when = this.making_queue[0]['time'] - getTime();
+        var when = this.making_queue[0]['time'] - new Date().getTime();
 
         if (type === "known") {
             this.apiCancelTimer("finishMakingKnown");
-            //log.info("Making setting timer for "+this.making_queue[0]['time'] - getTime());
+            //log.info("Making setting timer for "+this.making_queue[0]['time'] - new Date().getTime());
 
             if (when <= 0) {
                 this.finishMakingKnown(this.making_queue[0]['making']);
@@ -1027,7 +1027,7 @@ public function scheduleNextTimer(info) {
         }
         else if (type === "unknown") {
             this.apiCancelTimer("finishMakingUnknown");
-            //log.info("Making setting timer for "+this.making_queue[0]['time'] - getTime());
+            //log.info("Making setting timer for "+this.making_queue[0]['time'] - new Date().getTime());
 
             if (when <= 0) {
                 this.finishMakingUnknown(this.making_queue[0]['making']);
@@ -1760,7 +1760,7 @@ public function making_is_making(){
         }
 
         if (this.making_queue[0]['making'] && this.making_queue[0]['making'].wait && this.making_queue[0]['making'].started) {
-            var diff = getTime() - intval(this.making_queue[0]['making'].started);
+            var diff = new Date().getTime() - intval(this.making_queue[0]['making'].started);
             log.info(this+" Making is making diff is "+diff);
             log.info(this+" Making first in queue is "+this.making_queue[0]['making']);
             if (diff < 600*1000){
@@ -1898,7 +1898,7 @@ public function machineTimeRemaining(tsid) {
 
             if (machine_tsid === tsid) {
                 // found it
-                var time_left = Math.round((making['time'] - getTime())/1000);
+                var time_left = Math.round((making['time'] - new Date().getTime())/1000);
 
                 return time_left;
             }

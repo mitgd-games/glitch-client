@@ -47,6 +47,7 @@ package com.reversefold.glitch.server.player {
 		public var date_last_logout;
 		public var date_last_loggedin;
 		public var trade_chat_group;
+		public var return_to_gentle_island;
 		
 		public var is_god : Boolean = false;
 		public var is_help : Boolean = false;
@@ -325,8 +326,8 @@ public function acl_keys_build_client_msg(msg){
 }
 
 public function acl_keys_find_my_house(){
-	if (this.home && this.home.interior){
-		return this.home.interior;
+	if (this.houses.home && this.houses.home.interior){
+		return this.houses.home.interior;
 	} else {
 		log.info('KEY FAIL: could not find new house for '+this.player.tsid);
 		return false;
@@ -354,24 +355,24 @@ public function acl_keys_fix_house_backup(really_fix_it){
 	if (!really_fix_it) really_fix_it = false;
 
 
-        if (!this.home_backup || !this.home_backup.interior) return ['no backup home found'];
-        if (!this.home || !this.home.interior) return ['no home found'];
+        if (!this.houses.home_backup || !this.houses.home_backup.interior) return ['no backup home found'];
+        if (!this.houses.home || !this.houses.home.interior) return ['no home found'];
 
         var results = [];
 
-        var backup_keys = this.home_backup.interior.acl_keys_get_keys();
+        var backup_keys = this.houses.home_backup.interior.acl_keys_get_keys();
 
-        var keys = this.home.interior.acl_keys_get_keys();
+        var keys = this.houses.home.interior.acl_keys_get_keys();
 
         for(var i in backup_keys){
                 if (!keys[i]){
 			var pc = backup_keys[i].pc;
                         var their_keys = pc.acl_keys_get_keys();
 
-                        if (their_keys[this.home_backup.interior.tsid]){
+                        if (their_keys[this.houses.home_backup.interior.tsid]){
                         	if (really_fix_it){
-					pc.acl_keys_grant_receive(this.home.interior, true);
-					pc.acl_keys_remove_receive(this.home_backup.interior);
+					pc.acl_keys_grant_receive(this.houses.home.interior, true);
+					pc.acl_keys_remove_receive(this.houses.home_backup.interior);
 				}
 				results.push(i+' key reassigned from backup house to new');
                         } else {
@@ -662,7 +663,7 @@ public function init(){
 	delete this.mooned;
 	delete this.bag_size;
 	delete this.last_pet;
-	//delete this.home;
+	//delete this.houses.home;
 	*/
 
 	if (this.starting_instance) this.starting_instance.apiDelete();
@@ -1858,7 +1859,7 @@ public function croak(){
 			y:	this.y
 		};
 
-		if (this.location == this.home.interior) {
+		if (this.location == this.houses.home.interior) {
 			this.player.achievements.achievements_increment("croaked", "at_home", 1);
 		}
 	}
@@ -3927,7 +3928,7 @@ public function cleanUpHouses(){
 		var obj = Server.instance.apiFindObject(i);
 		if (obj){
 			if (obj.class_tsid == 'home'){
-				if (obj.tsid != this.home.interior.tsid && obj.tsid != this.home.exterior.tsid){
+				if (obj.tsid != this.houses.home.interior.tsid && obj.tsid != this.houses.home.exterior.tsid){
 
 					delete this.houses[i];
 					log.info('delete house - not current', i);

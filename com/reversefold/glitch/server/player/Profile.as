@@ -31,42 +31,42 @@ package com.reversefold.glitch.server.player {
 //
 
 public function profile_get_houses(){
-    if (!this.home_profile) this.profile_update_house_info();
+    if (!this.player.houses.home_profile) this.profile_update_house_info();
 
-    if (this.home_profile){
-        return this.home_profile;
+    if (this.player.houses.home_profile){
+        return this.player.houses.home_profile;
     } else {
         return {};
     }
 }
 
 public function profile_get_home_street(){
-    if (!this.home_profile) this.profile_update_house_info();
+    if (!this.player.houses.home_profile) this.profile_update_house_info();
 
-    if (this.home_profile && this.home_profile.exterior){
-        return this.home_profile.exterior;
+    if (this.player.houses.home_profile && this.player.houses.home_profile.exterior){
+        return this.player.houses.home_profile.exterior;
     } else {
         return {};
     }
 }
 
 public function profile_update_house_info(){
-    if (!this.home_profile) this.home_profile = {};
+    if (!this.player.houses.home_profile) this.player.houses.home_profile = {};
 
-    if (!this.home) return;
+    if (!this.player.houses.home) return;
 
     var out = {};
 
     var found_house = false;
 
-    for (var i in this.home){
-        var house = this.home[i];
+    for (var i in this.player.houses.home){
+        var house = this.player.houses.home[i];
         if (house && !house.getProp('is_deleted')){
             out[i] = house.pols_get_profile_info();
         }
     }
 
-    this.home_profile = out;
+    this.player.houses.home_profile = out;
 }
 
 //

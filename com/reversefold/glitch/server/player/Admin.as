@@ -808,18 +808,18 @@ public function admin_test_data(){
     }
     */
 
-    if (this.home) {
+    if (this.player.houses.home) {
         out.furniture = {};
         out.furniture.bag = this.player.furniture.furniture_count();
-        if (this.home.interior) {
-            var interior_items = this.home.interior.admin_get_items().items;
+        if (this.player.houses.home.interior) {
+            var interior_items = this.player.houses.home.interior.admin_get_items().items;
             out.furniture.interior = num_keys(interior_items);
-            out.yard_size = this.home.interior.home_get_yard_size();
+            out.yard_size = this.player.houses.home.interior.home_get_yard_size();
         }
-        if (this.home.exterior) {
-            var exterior_items = this.home.exterior.admin_get_items().items;
+        if (this.player.houses.home.exterior) {
+            var exterior_items = this.player.houses.home.exterior.admin_get_items().items;
             out.furniture.exterior = num_keys(exterior_items);
-            var yard_size = this.home.exterior.home_get_yard_size();
+            var yard_size = this.player.houses.home.exterior.home_get_yard_size();
             out.street_size_left = yard_size[0];
             out.street_size_right = yard_size[1];
         }
@@ -987,8 +987,8 @@ public function admin_get_inventory_cabinets(){
     //
 
     out['cabinets'] = [];
-    if (this.houses){
-        for (var house_tsid in this.houses){
+    if (this.player.houses){
+        for (var house_tsid in this.player.houses){
             var house = Server.instance.apiFindObject(house_tsid);
             var items = house.admin_get_items();
 
@@ -1136,11 +1136,11 @@ public function admin_renamed(args){
     // called after player-initiated rename
     if (args.cost) this.player.stats.stats_try_remove_currants(args.cost);
 
-    if (this.home){
+    if (this.player.houses.home){
         var label = Utils.escape(this.label)+"'s";
-        if (this.home.interior) this.home.interior.setProp('label', label+' House');
-        if (this.home.exterior) this.home.exterior.setProp('label', label+' Home Street');
-        if (this.home.tower) this.home.tower.tower_set_label(label+' Tower');
+        if (this.player.houses.home.interior) this.player.houses.home.interior.setProp('label', label+' House');
+        if (this.player.houses.home.exterior) this.player.houses.home.exterior.setProp('label', label+' Home Street');
+        if (this.player.houses.home.tower) this.player.houses.home.tower.tower_set_label(label+' Tower');
     }
 
     if (apiIsPlayerOnline(this.player.tsid)) {
@@ -1629,8 +1629,8 @@ public function admin_grant_perftesting_rewards(args){
 }
 
 public function admin_recover_moving_boxes(){
-    for (var i in this.home_backup){
-        var loc = this.home_backup[i];
+    for (var i in this.player.houses.home_backup){
+        var loc = this.player.houses.home_backup[i];
         if (loc){
             loc.admin_recover_moving_boxes();
         }
@@ -1638,18 +1638,18 @@ public function admin_recover_moving_boxes(){
 }
 
 public function admin_pack_more_moving_boxes(){
-    if (this.home_backup){
-        if (this.home_backup.interior){
-            this.home_backup.interior.pack_moving_boxes('interior');
+    if (this.player.houses.home_backup){
+        if (this.player.houses.home_backup.interior){
+            this.player.houses.home_backup.interior.pack_moving_boxes('interior');
         }
 
-        if (this.home_backup.exterior){
-            this.home_backup.exterior.pack_moving_boxes('exterior');
+        if (this.player.houses.home_backup.exterior){
+            this.player.houses.home_backup.exterior.pack_moving_boxes('exterior');
         }
     }
 
-    if (this.houses_backup){
-        for (var i in this.houses_backup){
+    if (this.player.houses_backup){
+        for (var i in this.player.houses_backup){
             if (this.player.houses.houses_is_our_home(i)) continue;
 
             var pol = Server.instance.apiFindObject(i);
@@ -1672,15 +1672,15 @@ public function admin_evacuate_houses(){
 }
 
 public function admin_fix_home_door(){
-    if (this.home && this.home.exterior){
-        return this.home.exterior.admin_fix_home_door();
+    if (this.player.houses.home && this.player.houses.home.exterior){
+        return this.player.houses.home.exterior.admin_fix_home_door();
     }
 
     return {ok: 1};
 }
 
 public function admin_remove_deleted_houses(){
-    for (var i in this.houses){
+    for (var i in this.player.houses){
         var loc = Server.instance.apiFindObject(i);
         if (!loc) continue;
 
@@ -1696,12 +1696,12 @@ public function admin_remove_deleted_houses(){
 }
 
 public function admin_replace_home_sign_with_rock(){
-    if (this.home && this.home.exterior){
-        this.home.exterior.homes_replace_sign_with_rock();
+    if (this.player.houses.home && this.player.houses.home.exterior){
+        this.player.houses.home.exterior.homes_replace_sign_with_rock();
     }
 
-    if (this.home && this.home.interior){
-        this.home.interior.homes_replace_sign_with_rock();
+    if (this.player.houses.home && this.player.houses.home.interior){
+        this.player.houses.home.interior.homes_replace_sign_with_rock();
     }
 }
 

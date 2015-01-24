@@ -27,14 +27,14 @@ public function visiting_can_opt_in(){
         };
     }
 
-    if (!this.home || !this.home.exterior){
+    if (!this.player.houses.home || !this.player.houses.home.exterior){
         return {
             ok: 0,
             error: 'no_home'
         };
     }
 
-    var jobs = this.home.exterior.cultivation_count_all_items();
+    var jobs = this.player.houses.home.exterior.cultivation_count_all_items();
 
     if (jobs < 3){
         return {
@@ -57,18 +57,18 @@ public function visiting_can_opt_in(){
 }
 
 public function visiting_opt_in_done(){
-    this.home_allow_visits = true;
+    this.player.houses.home_allow_visits = true;
     this.player.sendActivity("You've been opted in - you will recieve random visitors to your street.");
 }
 
 public function visiting_opt_out_done(){
-    delete this.home_allow_visits;
+    delete this.player.houses.home_allow_visits;
     this.player.sendActivity("You've been opted out - you will no longer receive random visitors to your street.");
 }
 
 public function visiting_opt_in(){
 
-    if (this.home_allow_visits){
+    if (this.player.houses.home_allow_visits){
         return {
             ok: 1
         };
@@ -90,7 +90,7 @@ public function visiting_opt_in(){
 
 public function visiting_opt_out(){
 
-    if (!this.home_allow_visits){
+    if (!this.player.houses.home_allow_visits){
         return {
             ok: 1
         };

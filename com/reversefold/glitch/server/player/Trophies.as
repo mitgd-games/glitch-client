@@ -140,8 +140,8 @@ public function trophies_clean_and_sync(){
         if (!best_dates[t.class_tsid] || best_dates[t.class_tsid] > ago) best_dates[t.class_tsid] = ago;
     }
 
-    for (var i in this.home){
-        var house = this.home[i];
+    for (var i in this.player.houses.home){
+        var house = this.player.houses.home[i];
         if (!house) continue;
 
         var items = house.getItems();
@@ -183,8 +183,8 @@ public function trophies_clean_and_sync(){
         if (uniques[class_tsid] == 1) continue;
 
         var deleted = 0;
-        for (var i in this.home){
-            var house = this.home[i];
+        for (var i in this.player.houses.home){
+            var house = this.player.houses.home[i];
             if (!house) continue;
 
             var items = house.getItems();

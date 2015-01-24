@@ -1,8 +1,9 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -13,6 +14,7 @@ package com.reversefold.glitch.server.player {
         public var player : Player;
 		
 		public var butler_tsid;
+		public var last_command_time;
 
         public function Butler(config : Config, player : Player) {
             this.config = config;
@@ -26,7 +28,7 @@ public function createButler(x_pos) {
 
         var old_butler = Server.instance.apiFindObject(this.butler_tsid);
 
-        if (!old_butler || (old_butler.location != this.home.exterior)) {
+        if (!old_butler || (old_butler.location != this.player.houses.home.exterior)) {
             // check for error cases - if we find one, just delete the butler and start over
             this.removeButler();
         }
@@ -36,22 +38,22 @@ public function createButler(x_pos) {
         }
     }
 
-    var loc = this.home.exterior;
+    var loc = this.player.houses.home.exterior;
 
     if (!loc) { return; }
 
     var butler = null;
     if (loc == this.player.location) {
-        if (Math.abs(x_pos - this.x) < 25) {
-            if ((this.x +50) < this.player.location.geo.r) {
-                x_pos = this.x +50;
+        if (Math.abs(x_pos - this.player.x) < 25) {
+            if ((this.player.x +50) < this.player.location.geo.r) {
+                x_pos = this.player.x +50;
             }
             else {
-                x_pos = this.x - 50;
+                x_pos = this.player.x - 50;
             }
         }
 
-        butler = this.player.location.createItemStackWithPoof('bag_butler', 1, x_pos, this.y);
+        butler = this.player.location.createItemStackWithPoof('bag_butler', 1, x_pos, this.player.y);
     }
     else {
         this.player.sendActivity("You must be on your home street to create a butler.");
@@ -66,8 +68,8 @@ public function createButler(x_pos) {
 
         // Can't update the butler on creation because the location isn't set yet. Do it here instead:
         butler.stateChange("attending", "start");
-        this.last_command_time = getTime();
-        butler.stepBackFromPlayer(this, this.x);
+        this.last_command_time = new Date().getTime();
+        butler.stepBackFromPlayer(this, this.player.x);
 
         butler.onUpdate();
     }
@@ -85,7 +87,7 @@ public function removeButler(){
         butler.apiDelete();
     }
 
-    delete this.butler_tsid;
+    this.butler_tsid = null;
 }
 
 public function has_butler(){
@@ -98,7 +100,7 @@ public function giveButlerBox() {
         return;
     }
 
-    if (!this.player.has_done_intro || this.return_to_gentle_island || this.player.quests.getQuestStatus('leave_gentle_island') == 'todo'){
+    if (!this.player.has_done_intro || this.player.return_to_gentle_island || this.player.quests.getQuestStatus('leave_gentle_island') == 'todo'){
         return;
     }
 
@@ -106,12 +108,12 @@ public function giveButlerBox() {
         return;
     }
 
-    if (this.home && this.home.exterior && this.home.exterior.item_exists("butler_box")) {
+    if (this.player.houses.home && this.player.houses.home.exterior && this.player.houses.home.exterior.item_exists("butler_box")) {
         return;
     }
 
-    if (this.home && this.home.exterior) {
-        this.home.exterior.createItemStackWithPoof('butler_box', 1, 50, -97);
+    if (this.player.houses.home && this.player.houses.home.exterior) {
+        this.player.houses.home.exterior.createItemStackWithPoof('butler_box', 1, 50, -97);
     }
 }
 

@@ -169,13 +169,13 @@ public function furniture_has_item(class_tsid){
     var bag = this.furniture_get_bag();
     if (bag.countItemClass(class_tsid)) return true;
 
-    if (!this.home || !this.home.interior) return false;
+    if (!this.player.houses.home || !this.player.houses.home.interior) return false;
 
-    if (this.home.interior.item_exists(class_tsid)) return true;
+    if (this.player.houses.home.interior.item_exists(class_tsid)) return true;
 
-    if (!this.home.exterior) return false;
+    if (!this.player.houses.home.exterior) return false;
 
-    if (this.home.exterior.item_exists(class_tsid)) return true;
+    if (this.player.houses.home.exterior.item_exists(class_tsid)) return true;
 
     return false;
 }
@@ -185,10 +185,10 @@ public function furniture_get_count(class_tsid){
     var bag = this.furniture_get_bag();
     count += bag.countItemClass(class_tsid);
 
-    if (!this.home || !this.home.interior || !this.home.exterior) return count;
+    if (!this.player.houses.home || !this.player.houses.home.interior || !this.player.houses.home.exterior) return count;
 
-    count += this.home.interior.countItemClass(class_tsid);
-    count += this.home.exterior.countItemClass(class_tsid);
+    count += this.player.houses.home.interior.countItemClass(class_tsid);
+    count += this.player.houses.home.exterior.countItemClass(class_tsid);
 
     return count;
 }
@@ -211,8 +211,8 @@ public function furniture_migrate_trophies(){
             if (s){
                 s.setProp('ago', t.getProp('ago') ? t.getProp('ago') : t.ts);
             }
-            else if (this.home && this.home.interior){
-                s = this.home.interior.find_items(t.class_tsid);
+            else if (this.player.houses.home && this.player.houses.home.interior){
+                s = this.player.houses.home.interior.find_items(t.class_tsid);
                 if (s[0]) s[0].setProp('ago', t.ts);
             }
         }
@@ -376,7 +376,7 @@ public function furniture_set_wall(wp_key, wp_type){
     // we own it - set it!
     Server.instance.apiLogAction('WALL_CHANGE', 'pc='+this.player.tsid, 'type='+wp_type, 'loc_type='+loc_type);
 
-    if (loc_type == 'interior') return this.home.interior.homes_set_wp(wp_key, wp_type);
+    if (loc_type == 'interior') return this.player.houses.home.interior.homes_set_wp(wp_key, wp_type);
     if (loc_type == 'tower') return this.player.location.tower_set_wp(wp_key, wp_type);
 }
 
@@ -395,7 +395,7 @@ public function furniture_set_floor(floor_key, floor_type){
     // we own it - set it!
     Server.instance.apiLogAction('FLOOR_CHANGE', 'pc='+this.player.tsid, 'type='+floor_type);
 
-    if (loc_type == 'interior') return this.home.interior.homes_set_floor(floor_key, floor_type);
+    if (loc_type == 'interior') return this.player.houses.home.interior.homes_set_floor(floor_key, floor_type);
     if (loc_type == 'tower') return this.player.location.tower_set_floor(floor_key, floor_type);
 }
 
@@ -414,7 +414,7 @@ public function furniture_set_ceiling(ceiling_key, ceiling_type){
     // we own it - set it!
     Server.instance.apiLogAction('CEILING_CHANGE', 'pc='+this.player.tsid, 'type='+ceiling_type);
 
-    if (loc_type == 'interior') return this.home.interior.homes_set_ceiling(ceiling_key, ceiling_type);
+    if (loc_type == 'interior') return this.player.houses.home.interior.homes_set_ceiling(ceiling_key, ceiling_type);
     if (loc_type == 'tower') return this.player.location.tower_set_ceiling(ceiling_key, ceiling_type);
 }
 
@@ -427,7 +427,7 @@ public function furniture_preview_wall(wp_key, wp_type){
 
     var loc_type = this.player.location.homes_get_type();
 
-    if (loc_type == 'interior') return this.home.interior.homes_set_wp(wp_key, wp_type, this);
+    if (loc_type == 'interior') return this.player.houses.home.interior.homes_set_wp(wp_key, wp_type, this);
     if (loc_type == 'tower') return this.player.location.tower_set_wp(wp_key, wp_type, this);
 }
 
@@ -435,7 +435,7 @@ public function furniture_preview_floor(floor_key, floor_type){
 
     var loc_type = this.player.location.homes_get_type();
 
-    if (loc_type == 'interior') return this.home.interior.homes_set_floor(floor_key, floor_type, this);
+    if (loc_type == 'interior') return this.player.houses.home.interior.homes_set_floor(floor_key, floor_type, this);
     if (loc_type == 'tower') return this.player.location.tower_set_floor(floor_key, floor_type, this);
 }
 
@@ -443,7 +443,7 @@ public function furniture_preview_ceiling(ceiling_key, ceiling_type){
 
     var loc_type = this.player.location.homes_get_type();
 
-    if (loc_type == 'interior') return this.home.interior.homes_set_ceiling(ceiling_key, ceiling_type, this);
+    if (loc_type == 'interior') return this.player.houses.home.interior.homes_set_ceiling(ceiling_key, ceiling_type, this);
     if (loc_type == 'tower') return this.player.location.tower_set_ceiling(ceiling_key, ceiling_type, this);
 }
 
@@ -935,21 +935,21 @@ public function furniture_admin_remove_texture(args){
 
     // Tell the client and remove from house
     if (args.type == 'walls'){
-        this.home.interior.homes_delete_wallpaper(args.id);
+        this.player.houses.home.interior.homes_delete_wallpaper(args.id);
         this.player.apiSendMsg({
             'type'      : 'houses_wall_removed',
             'wp_type'   : args.id
         });
     }
     else if (args.type == 'floors'){
-        this.home.interior.homes_delete_flooring(args.id);
+        this.player.houses.home.interior.homes_delete_flooring(args.id);
         this.player.apiSendMsg({
             'type'      : 'houses_floor_removed',
             'floor_type'    : args.id
         });
     }
     else if (args.type == 'ceilings'){
-        this.home.interior.homes_delete_ceiling(args.id);
+        this.player.houses.home.interior.homes_delete_ceiling(args.id);
         this.player.apiSendMsg({
             'type'      : 'houses_ceiling_removed',
             'ceiling_type'  : args.id
