@@ -975,7 +975,7 @@ public static function get_item_name_from_class(class_tsid, plural, include_arti
 }
 
 public static function round_to_5(value){
-    return (value % 5) >= 2.5 ? int(value / 5) * 5 + 5 : int(value / 5) * 5;
+    return (value % 5) >= 2.5 ? intval(value / 5) * 5 + 5 : intval(value / 5) * 5;
 }
 
 public static function rootPlayer(pc){

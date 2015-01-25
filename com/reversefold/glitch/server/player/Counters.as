@@ -98,7 +98,7 @@ public function counters_set(group, label, count){
 
 public function counters_get_label_count(group, label){
     if (!this.counters || !this.counters[group]){ return 0; }
-    return int(this.counters[group][label]);
+    return intval(this.counters[group][label]);
 }
 
 //

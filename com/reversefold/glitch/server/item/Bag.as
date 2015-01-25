@@ -272,7 +272,7 @@ public function addItemStack(stack, slot=null, pc=null){
 
 // Remove an item stack: The bag is told the slot and an optional count. The current item stack is removed from that slot, or just
 // the number of items from the stack if specified.
-public function removeItemStackSlot(slot, count){
+public function removeItemStackSlot(slot, count=null){
 	var pack = this.findPack();
 	var contents = this.getContents();
 	var it = contents[slot];

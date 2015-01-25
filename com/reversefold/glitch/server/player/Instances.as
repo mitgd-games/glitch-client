@@ -61,7 +61,7 @@ public function instances_delete_all(){
 // Create an instance of label 'id' based on location 'base_tsid'
 //
 
-public function instances_create(id, base_tsid, options, location_options=null){
+public function instances_create(id, base_tsid, options=null, location_options=null){
     var instance;
     if (this.instances_has(id)){
         // If they already have an instance with this id, make sure that the base_tsids match before re-using it

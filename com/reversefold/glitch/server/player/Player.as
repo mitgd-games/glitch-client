@@ -60,6 +60,7 @@ package com.reversefold.glitch.server.player {
 		public var crafty_bot;
 		public var greeting;
 		public var animals_named;
+		public var grapes_squished;
 		
 		public var use_img;
 		

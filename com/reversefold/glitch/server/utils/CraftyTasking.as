@@ -1,5 +1,8 @@
 package com.reversefold.glitch.server.utils {
+	import com.reversefold.glitch.server.Common;
 	import com.reversefold.glitch.server.Server;
+	import com.reversefold.glitch.server.Utils;
+	
 	import org.osmf.logging.Log;
 	import org.osmf.logging.Logger;
 
@@ -107,7 +110,7 @@ public static function craftytasking_get_build_spec(crafty_bot, class_tsid, req_
 	// Make recursive call with recursing parameters
 	//
 	
-	var craftytasking_timing_build_spec_start = getTime();
+	var craftytasking_timing_build_spec_start = new Date().getTime();
 	
 	if (!req_count) req_count = 1;
 	
@@ -121,19 +124,19 @@ public static function craftytasking_get_build_spec(crafty_bot, class_tsid, req_
 			container = crafty_bot.getContainer();		
 		}
 	}
-	var cache_data = this.craftytasking_build_cache(container);		
+	var cache_data = craftytasking_build_cache(container);		
 	
-	var ret = this.craftytasking_get_build_spec_with_cache(crafty_bot, class_tsid, req_count, use_current_ingredients, cache_data);
+	var ret = craftytasking_get_build_spec_with_cache(crafty_bot, class_tsid, req_count, use_current_ingredients, cache_data);
 	
-	//	if (this.CRAFTYTASKING_OUPUT_TIMING_DATA) log.info('CRAFTYTASKING TIMING -- craftytasking_get_build_spec --'+(getTime() - craftytasking_timing_build_spec_start+'ms'));
+	//	if (CRAFTYTASKING_OUPUT_TIMING_DATA) log.info('CRAFTYTASKING TIMING -- craftytasking_get_build_spec --'+(getTime() - craftytasking_timing_build_spec_start+'ms'));
 	
 	return ret;
 }
 
 public static function craftytasking_get_build_spec_with_cache(crafty_bot, class_tsid, req_count, use_current_ingredients, cache_data){
-	apiResetThreadCPUClock();
-	var ret = this.craftytasking_get_build_spec_recurs(crafty_bot, class_tsid, req_count, use_current_ingredients, {}, {}, {}, 0, cache_data);
-	apiResetThreadCPUClock("crafty_bot");
+	Server.instance.apiResetThreadCPUClock();
+	var ret = craftytasking_get_build_spec_recurs(crafty_bot, class_tsid, req_count, use_current_ingredients, {}, {}, {}, 0, cache_data);
+	Server.instance.apiResetThreadCPUClock("crafty_bot");
 	return ret;
 }
 
@@ -223,7 +226,7 @@ public static function craftytasking_get_build_spec_recurs(crafty_bot, class_tsi
 			// We are requesting an element, which are created in their own process, so cache the requirements here
 			//
 			if (!required_elements[class_tsid]) required_elements[class_tsid] = 0;
-			required_elements[class_tsid] += intval(diff_required);
+			required_elements[class_tsid] += Common.intval(diff_required);
 			
 		}else{
 			//			for (var i in cache_data['recipe_cache']){
@@ -358,7 +361,7 @@ public static function craftytasking_get_build_spec_recurs(crafty_bot, class_tsi
 							continue;
 						}
 						
-						var ing_spec = utils.craftytasking_get_build_spec_recurs(crafty_bot, ingredients[i][0], diff_required*ingredients[i][1], use_current_ingredients, claimed_ingredients, required_elements, claimed_crafting_items, level, cache_data);
+						var ing_spec = craftytasking_get_build_spec_recurs(crafty_bot, ingredients[i][0], diff_required*ingredients[i][1], use_current_ingredients, claimed_ingredients, required_elements, claimed_crafting_items, level, cache_data);
 						if (ing_spec){
 							var cannot_make = false;
 							//
@@ -366,7 +369,7 @@ public static function craftytasking_get_build_spec_recurs(crafty_bot, class_tsi
 							//
 							if (ing_spec['required_skills']) {
 								for (var s in ing_spec['required_skills']){
-									if (!in_array(ing_spec['required_skills'][s], spec['required_skills'])) spec['required_skills'].push(ing_spec['required_skills'][s]);
+									if (!Common.in_array(ing_spec['required_skills'][s], spec['required_skills'])) spec['required_skills'].push(ing_spec['required_skills'][s]);
 								}
 							}
 							if (ing_spec['required_machines']) {
@@ -522,7 +525,7 @@ public static function craftytasking_get_build_spec_list(spec, depth){
 	depth++;
 	
 	for (var i in spec['ingredients']){
-		var res = utils.craftytasking_get_build_spec_list(spec['ingredients'][i], depth);
+		var res = craftytasking_get_build_spec_list(spec['ingredients'][i], depth);
 		for (var j in res){
 			if (j){
 				if (!list[j]) list[j] = {};
@@ -594,7 +597,7 @@ public static function craftytasking_get_build_element_spec(crafty_bot, required
 	//
 	// element_shiny from sparkly
 	//
-	var res = this.craftytasking_get_required_rocks_for_elements(required_elements, 'element_shiny', sparkly_left - sparkly_used, 6, 4, 5, 1);
+	var res = craftytasking_get_required_rocks_for_elements(required_elements, 'element_shiny', sparkly_left - sparkly_used, 6, 4, 5, 1);
 	sparkly_used += res['rock_used'];
 	required_elements['element_shiny'] = res.required_elements['element_shiny'];
 	required_elements['element_red'] = res.required_elements['element_red'];
@@ -604,7 +607,7 @@ public static function craftytasking_get_build_element_spec(crafty_bot, required
 	//
 	// element_blue from beryl
 	//
-	res = this.craftytasking_get_required_rocks_for_elements(required_elements, 'element_blue', beryl_left - beryl_used, 0, 4, 20, 2);
+	res = craftytasking_get_required_rocks_for_elements(required_elements, 'element_blue', beryl_left - beryl_used, 0, 4, 20, 2);
 	beryl_used += res['rock_used'];
 	required_elements['element_red'] = res.required_elements['element_red'];
 	required_elements['element_blue'] = res.required_elements['element_blue'];
@@ -613,7 +616,7 @@ public static function craftytasking_get_build_element_spec(crafty_bot, required
 	//
 	// element_red from beryl
 	//
-	res = this.craftytasking_get_required_rocks_for_elements(required_elements, 'element_red', beryl_left - beryl_used, 0, 4, 20, 2);
+	res = craftytasking_get_required_rocks_for_elements(required_elements, 'element_red', beryl_left - beryl_used, 0, 4, 20, 2);
 	beryl_used += res['rock_used'];
 	required_elements['element_red'] = res.required_elements['element_red'];
 	required_elements['element_blue'] = res.required_elements['element_blue'];
@@ -622,7 +625,7 @@ public static function craftytasking_get_build_element_spec(crafty_bot, required
 	//
 	// element_green from dullite
 	//
-	res = this.craftytasking_get_required_rocks_for_elements(required_elements, 'element_green', dullite_left - dullite_used, 0, 0, 5, 8);
+	res = craftytasking_get_required_rocks_for_elements(required_elements, 'element_green', dullite_left - dullite_used, 0, 0, 5, 8);
 	dullite_used += res['rock_used'];
 	required_elements['element_red'] = res.required_elements['element_red'];
 	required_elements['element_green'] = res.required_elements['element_green'];
@@ -630,7 +633,7 @@ public static function craftytasking_get_build_element_spec(crafty_bot, required
 	//
 	// element_red from dullite
 	//
-	res = this.craftytasking_get_required_rocks_for_elements(required_elements, 'element_red', dullite_left - dullite_used, 0, 0, 5, 8);
+	res = craftytasking_get_required_rocks_for_elements(required_elements, 'element_red', dullite_left - dullite_used, 0, 0, 5, 8);
 	dullite_used += res['rock_used'];
 	required_elements['element_red'] = res.required_elements['element_red'];
 	required_elements['element_green'] = res.required_elements['element_green'];
@@ -638,7 +641,7 @@ public static function craftytasking_get_build_element_spec(crafty_bot, required
 	//
 	// element_green from beryl
 	//
-	res = this.craftytasking_get_required_rocks_for_elements(required_elements, 'element_green', beryl_left - beryl_used, 0, 4, 20, 2);
+	res = craftytasking_get_required_rocks_for_elements(required_elements, 'element_green', beryl_left - beryl_used, 0, 4, 20, 2);
 	beryl_used += res['rock_used'];
 	required_elements['element_red'] = res.required_elements['element_red'];
 	required_elements['element_blue'] = res.required_elements['element_blue'];
@@ -647,7 +650,7 @@ public static function craftytasking_get_build_element_spec(crafty_bot, required
 	//
 	// element_blue from beryl
 	//
-	res = this.craftytasking_get_required_rocks_for_elements(required_elements, 'element_blue', beryl_left - beryl_used, 0, 4, 20, 2);
+	res = craftytasking_get_required_rocks_for_elements(required_elements, 'element_blue', beryl_left - beryl_used, 0, 4, 20, 2);
 	beryl_used += res['rock_used'];
 	required_elements['element_red'] = res.required_elements['element_red'];
 	required_elements['element_blue'] = res.required_elements['element_blue'];
@@ -656,7 +659,7 @@ public static function craftytasking_get_build_element_spec(crafty_bot, required
 	//
 	// element_green from sparkly
 	//
-	var res = this.craftytasking_get_required_rocks_for_elements(required_elements, 'element_green', sparkly_left - sparkly_used, 6, 4, 5, 1);
+	var res = craftytasking_get_required_rocks_for_elements(required_elements, 'element_green', sparkly_left - sparkly_used, 6, 4, 5, 1);
 	sparkly_used += res['rock_used'];
 	required_elements['element_shiny'] = res.required_elements['element_shiny'];
 	required_elements['element_red'] = res.required_elements['element_red'];
@@ -666,7 +669,7 @@ public static function craftytasking_get_build_element_spec(crafty_bot, required
 	//
 	// element_red from sparkly
 	//
-	var res = this.craftytasking_get_required_rocks_for_elements(required_elements, 'element_red', sparkly_left - sparkly_used, 6, 4, 5, 1);
+	var res = craftytasking_get_required_rocks_for_elements(required_elements, 'element_red', sparkly_left - sparkly_used, 6, 4, 5, 1);
 	sparkly_used += res['rock_used'];
 	required_elements['element_shiny'] = res.required_elements['element_shiny'];
 	required_elements['element_red'] = res.required_elements['element_red'];
@@ -676,7 +679,7 @@ public static function craftytasking_get_build_element_spec(crafty_bot, required
 	//
 	// element_blue from sparkly
 	//
-	var res = this.craftytasking_get_required_rocks_for_elements(required_elements, 'element_blue', sparkly_left - sparkly_used, 6, 4, 5, 1);
+	var res = craftytasking_get_required_rocks_for_elements(required_elements, 'element_blue', sparkly_left - sparkly_used, 6, 4, 5, 1);
 	sparkly_used += res['rock_used'];
 	required_elements['element_shiny'] = res.required_elements['element_shiny'];
 	required_elements['element_red'] = res.required_elements['element_red'];
@@ -819,10 +822,10 @@ public static function craftytasking_limited_spec_recurs(spec, max_steps){
 				tmp_spec['required_tools'] = {};
 				tmp_spec['required_machines'] = {};
 				for (var i in limited_spec){
-					tmp_spec['total_energy_cost'] += intval(limited_spec[i]['total_energy_cost']);
-					tmp_spec['total_fuel_cost'] += intval(limited_spec[i]['total_fuel_cost']);
-					tmp_spec['energy_cost'] += intval(limited_spec[i]['energy_cost']);
-					tmp_spec['wait_ms'] += intval(limited_spec[i]['wait_ms']);
+					tmp_spec['total_energy_cost'] += Common.intval(limited_spec[i]['total_energy_cost']);
+					tmp_spec['total_fuel_cost'] += Common.intval(limited_spec[i]['total_fuel_cost']);
+					tmp_spec['energy_cost'] += Common.intval(limited_spec[i]['energy_cost']);
+					tmp_spec['wait_ms'] += Common.intval(limited_spec[i]['wait_ms']);
 					tmp_spec['required_ingredients'] = limited_spec[i]['required_ingredients'];
 					tmp_spec['required_skills'] = limited_spec[i]['required_skills'];
 					tmp_spec['required_tools'] = limited_spec[i]['required_tools'];
@@ -857,14 +860,14 @@ public static function craftytasking_recipe_request(crafty_bot, msg){
 		
 		// Loop over all recipes to find what makes 'class_id'
 		for (var j in all_recipes){
-			var r = get_recipe(j); // get_recipe sets some other stuff up for us, so let's call it
+			var r = Common.get_recipe(j); // get_recipe sets some other stuff up for us, so let's call it
 			
 			// Loop over the outputs of recipe 'r' (id 'j')
 			for (var o=0; o<r.outputs.length; o++){
 				// Found a match!
 				if (r.outputs[o][0] == class_id){
 					// Copy the recipe so we don't modify the catalog
-					rsp[class_id] = utils.copy_hash(r);
+					rsp[class_id] = Utils.copy_hash(r);
 					rsp[class_id].id = j; // We need recipe id too
 					
 					// Discoverable?
@@ -945,7 +948,7 @@ public static function craftytasking_build_sequence(crafty_bot, spec, count, hol
 		//
 		// Generate the new element spec (based on the new multiplier)
 		//
-		element_spec = this.craftytasking_get_build_element_spec(crafty_bot, required_elements, {});
+		element_spec = craftytasking_get_build_element_spec(crafty_bot, required_elements, {});
 		
 		//
 		// Add the rocks to the shopping list
@@ -967,7 +970,7 @@ public static function craftytasking_build_sequence(crafty_bot, spec, count, hol
 	//
 	// ...and then add everything else
 	//
-	this.craftytasking_build_shopping_list_step(crafty_bot, spec, count, true, shopping_list, holder);
+	craftytasking_build_shopping_list_step(crafty_bot, spec, count, true, shopping_list, holder);
 	
 	for (var i in shopping_list){
 		
@@ -1091,7 +1094,7 @@ public static function craftytasking_build_sequence(crafty_bot, spec, count, hol
 	//
 	// Add the crafting steps
 	//
-	var max_count = this.craftytasking_build_sequence_step(crafty_bot, spec, count, true, craft_sequence, ingredient_source_shopping_list, external_crafted_items, holder);
+	var max_count = craftytasking_build_sequence_step(crafty_bot, spec, count, true, craft_sequence, ingredient_source_shopping_list, external_crafted_items, holder);
 	
 	//
 	// Determine how many we are actually crafting
@@ -1204,7 +1207,7 @@ public static function craftytasking_build_sequence_step(crafty_bot, spec, count
 	var max_count_craftable = (!spec['ingredients']) ? 0: count;
 	
 	for (var i in spec['ingredients']){
-		ingredient_craft_count = this.craftytasking_build_sequence_step(crafty_bot, spec['ingredients'][i], spec['ingredients'][i]['count']*count, false, craft_sequence, ingredient_source_shopping_list, external_crafted_items, holder);
+		ingredient_craft_count = craftytasking_build_sequence_step(crafty_bot, spec['ingredients'][i], spec['ingredients'][i]['count']*count, false, craft_sequence, ingredient_source_shopping_list, external_crafted_items, holder);
 		max_count_craftable = Math.min(max_count_craftable, Math.floor(ingredient_craft_count / spec['ingredients'][i]['count']));
 	}
 	
@@ -1346,7 +1349,7 @@ public static function craftytasking_build_shopping_list_step(crafty_bot, spec, 
 		// Determine how many items we need to craft, and setup their shopping lists.
 		//
 		for (var i in spec['ingredients']){
-			this.craftytasking_build_shopping_list_step(crafty_bot, spec['ingredients'][i], multiplier - source_items_used, false, shopping_list, holder);
+			craftytasking_build_shopping_list_step(crafty_bot, spec['ingredients'][i], multiplier - source_items_used, false, shopping_list, holder);
 		}
 		
 		return;
@@ -1389,7 +1392,7 @@ public static function craftytasking_build_cache(container){
 		recipe = all_recipes[i];
 		recipe['id'] = i;
 		for (var j in recipe.outputs){
-			cache_data['recipe_cache'][recipe.outputs[j][0]] = utils.copy_hash(recipe);
+			cache_data['recipe_cache'][recipe.outputs[j][0]] = Utils.copy_hash(recipe);
 		}
 	}
 	
@@ -1401,7 +1404,7 @@ public static function craftytasking_build_cache(container){
 	cache_data['recipe_cache']['cheese']['tool_wear'] = 0;
 	cache_data['recipe_cache']['cheese']['tool_fuel_cost'] = 0;
 	cache_data['recipe_cache']['cheese']['energy_cost'] = 5;
-	cache_data['recipe_cache']['cheese']['wait_ms'] = 3000 + 1000 * intval(1 / 10);
+	cache_data['recipe_cache']['cheese']['wait_ms'] = 3000 + 1000 * Common.intval(1 / 10); //RVRS: WTF is this? isn't is 0?
 	cache_data['recipe_cache']['cheese']['inputs'] = [['butterfly_butter', 1, false]];
 	
 	// cheese_stinky
@@ -1412,7 +1415,7 @@ public static function craftytasking_build_cache(container){
 	cache_data['recipe_cache']['cheese_stinky']['tool_wear'] = 0;
 	cache_data['recipe_cache']['cheese_stinky']['tool_fuel_cost'] = 0;
 	cache_data['recipe_cache']['cheese_stinky']['energy_cost'] = 5;
-	cache_data['recipe_cache']['cheese_stinky']['wait_ms'] = 3000 + 1000 * intval(1 / 10);
+	cache_data['recipe_cache']['cheese_stinky']['wait_ms'] = 3000 + 1000 * Common.intval(1 / 10);
 	cache_data['recipe_cache']['cheese_stinky']['inputs'] = [['cheese', 1, false]];
 	
 	// cheese_very_stinky
@@ -1423,7 +1426,7 @@ public static function craftytasking_build_cache(container){
 	cache_data['recipe_cache']['cheese_very_stinky']['tool_wear'] = 0;
 	cache_data['recipe_cache']['cheese_very_stinky']['tool_fuel_cost'] = 0;
 	cache_data['recipe_cache']['cheese_very_stinky']['energy_cost'] = 5;
-	cache_data['recipe_cache']['cheese_very_stinky']['wait_ms'] = 3000 + 1000 * intval(1 / 10);
+	cache_data['recipe_cache']['cheese_very_stinky']['wait_ms'] = 3000 + 1000 * Common.intval(1 / 10);
 	cache_data['recipe_cache']['cheese_very_stinky']['inputs'] = [['cheese_stinky', 1, false]];
 	
 	// cheese_very_very_stinky
@@ -1434,7 +1437,7 @@ public static function craftytasking_build_cache(container){
 	cache_data['recipe_cache']['cheese_very_very_stinky']['tool_wear'] = 0;
 	cache_data['recipe_cache']['cheese_very_very_stinky']['tool_fuel_cost'] = 0;
 	cache_data['recipe_cache']['cheese_very_very_stinky']['energy_cost'] = 5;
-	cache_data['recipe_cache']['cheese_very_very_stinky']['wait_ms'] = 3000 + 1000 * intval(1 / 10);
+	cache_data['recipe_cache']['cheese_very_very_stinky']['wait_ms'] = 3000 + 1000 * Common.intval(1 / 10);
 	cache_data['recipe_cache']['cheese_very_very_stinky']['inputs'] = [['cheese_very_stinky', 1, false]];
 	
 	// butterfly_butter
@@ -1445,7 +1448,7 @@ public static function craftytasking_build_cache(container){
 	cache_data['recipe_cache']['butterfly_butter']['tool_wear'] = 0;
 	cache_data['recipe_cache']['butterfly_butter']['tool_fuel_cost'] = 0;
 	cache_data['recipe_cache']['butterfly_butter']['energy_cost'] = 2;
-	cache_data['recipe_cache']['butterfly_butter']['wait_ms'] = 2000 + 1000 * intval(1 / 10);
+	cache_data['recipe_cache']['butterfly_butter']['wait_ms'] = 2000 + 1000 * Common.intval(1 / 10);
 	cache_data['recipe_cache']['butterfly_butter']['inputs'] = [['milk_butterfly', 1, false]];
 	
 	// meat
@@ -1456,7 +1459,7 @@ public static function craftytasking_build_cache(container){
 	cache_data['recipe_cache']['meat']['tool_unit_count'] = 1;
 	cache_data['recipe_cache']['meat']['tool_fuel_cost'] = 0;
 	cache_data['recipe_cache']['meat']['energy_cost'] = 0;
-	cache_data['recipe_cache']['meat']['wait_ms'] = 2000 + 1000 * intval(1 / 10);
+	cache_data['recipe_cache']['meat']['wait_ms'] = 2000 + 1000 * Common.intval(1 / 10);
 	cache_data['recipe_cache']['meat']['inputs'] = [];
 	
 	// milk_butterfly
@@ -1467,7 +1470,7 @@ public static function craftytasking_build_cache(container){
 	cache_data['recipe_cache']['milk_butterfly']['tool_unit_count'] = 1;
 	cache_data['recipe_cache']['milk_butterfly']['tool_fuel_cost'] = 0;
 	cache_data['recipe_cache']['milk_butterfly']['energy_cost'] = 0;
-	cache_data['recipe_cache']['milk_butterfly']['wait_ms'] = 2000 + 1000 * intval(1 / 10);
+	cache_data['recipe_cache']['milk_butterfly']['wait_ms'] = 2000 + 1000 * Common.intval(1 / 10);
 	cache_data['recipe_cache']['milk_butterfly']['inputs'] = [];
 	
 	// hooch
@@ -1478,7 +1481,7 @@ public static function craftytasking_build_cache(container){
 	cache_data['recipe_cache']['hooch']['tool_unit_count'] = 1;
 	cache_data['recipe_cache']['hooch']['tool_fuel_cost'] = 0;
 	cache_data['recipe_cache']['hooch']['energy_cost'] = 0;
-	cache_data['recipe_cache']['hooch']['wait_ms'] = 2000 + 1000 * intval(1 / 10);
+	cache_data['recipe_cache']['hooch']['wait_ms'] = 2000 + 1000 * Common.intval(1 / 10);
 	cache_data['recipe_cache']['hooch']['inputs'] = [];
 	
 	// barnacle_talc
@@ -1648,7 +1651,7 @@ recipe = all_recipes[i];
 recipe['id'] = i;
 step_start = getTime();
 
-this.craftytasking_get_build_spec(crafty_bot, i, 1, false)
+craftytasking_get_build_spec(crafty_bot, i, 1, false)
 count++;
 
 //			log.info('CRAFTYTASKING TIMING -- test: ['+indexID+'] -- count: '+count+' -- time: '+(getTime() - step_start)+'ms -- Batch '+j);
