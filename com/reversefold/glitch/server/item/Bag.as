@@ -1,13 +1,53 @@
 package com.reversefold.glitch.server.item {
+	import com.reversefold.glitch.server.Common;
 	import com.reversefold.glitch.server.Server;
+	import com.reversefold.glitch.server.data.Config;
+	import com.reversefold.glitch.server.player.Player;
+	
+	import org.osmf.logging.Log;
+	import org.osmf.logging.Logger;
 
-	public class Bag {
+	public class Bag extends Common {
+		private static var log : Logger = Log.getLogger("server.Player");
 
+		private var player : Player;
+		
+		public function Bag(player : Player) : void {
+			this.player = player;
+		}
+		
+		//assuming this is a tsid of the bag rather than the player
+		public var tsid;
+
+		public var is_furniture;
+		public var is_trophycase;
+		public var is_trophycontainer;
+		public var path;
+		
+		
+		
 		public function apiLockStack(path) {
 			//RVRS: TODO
 			throw new Error('apiLockStack ' + path);
 		}
 		
+		public function apiGetSlots(size) {
+			//RVRS: TODO
+			throw new Error('apiGetSlots ' + size);
+		}
+		
+		public function apiGetAllItems() {
+			//RVRS: TODO
+			throw new Error('apiGetAllItems');
+		}
+		
+		public function apiGetLocatableContainerOrSelf() {
+			//RVRS: TODO
+			throw new Error('apiGetLocatableContainerOrSelf');
+		}
+
+
+
 public var capacity = 16; // The number of slots in the bag
 public var is_bag = true;
 public var is_pack = true;
@@ -290,7 +330,7 @@ public function removeItemStackSlot(slot, count=null){
 	}
 
 	if (count && count < stack.count){
-		if (config.is_dev) log.info(this+" splitting "+stack+" ("+stack.count+") into "+count);
+		if (Config.is_dev) log.info(this+" splitting "+stack+" ("+stack.count+") into "+count);
 		return stack.apiSplit(count);
 	}
 	else{
@@ -356,41 +396,41 @@ public function removeItemStackClassExact(class_tsid, count, args){
 	for (var slot=0; slot < items.length; slot++){
 		var it = items[slot];
 
-		//if (config.is_dev) log.info("REMOVEXACT: Slot "+slot+" contains "+it);
+		//if (Config.is_dev) log.info("REMOVEXACT: Slot "+slot+" contains "+it);
 
 		var item = null;
 		if ((is_function && it && class_tsid(it, args)) || (!is_function && it && it.class_tsid == class_tsid)){
 			item = this.removeItemStackSlot(slot, count);
-			if (config.is_dev) log.info("REMOVEXACT: Got item "+item);
+			if (Config.is_dev) log.info("REMOVEXACT: Got item "+item);
 		}
 		else if (it && it.is_bag && !it.isHidden){
-			if (config.is_dev) log.info("REMOVEXACT: Recursing with count "+count);
+			if (Config.is_dev) log.info("REMOVEXACT: Recursing with count "+count);
 			item = it.removeItemStackClassExact(class_tsid, count, args);
-			if (config.is_dev) log.info("REMOVEXACT: Got item "+item);
+			if (Config.is_dev) log.info("REMOVEXACT: Got item "+item);
 		}
 
 		if (item) {
 			count -= item.count;
 
 			if (!stack){
-				if (config.is_dev) log.info("REMOVEXACT: initializing stack "+item);
+				if (Config.is_dev) log.info("REMOVEXACT: initializing stack "+item);
 				stack = item;
 			}
 			else{
-				if (config.is_dev) log.info("REMOVEXACT: merging stacks "+stack +" with "+item);
+				if (Config.is_dev) log.info("REMOVEXACT: merging stacks "+stack +" with "+item);
 				stack.apiMerge(item, item.count);
 				if (item){
 					var pack = this.findPack();
 					if (pack.is_player){
-						if (config.is_dev) log.info("REMOVEXACT: putting back "+item+" in "+pack);
+						if (Config.is_dev) log.info("REMOVEXACT: putting back "+item+" in "+pack);
 						pack.items_put_back(item);
 					}
 					else if (item.container){
-						if (config.is_dev) log.info("REMOVEXACT: putting back "+item+" in "+item.container);
+						if (Config.is_dev) log.info("REMOVEXACT: putting back "+item+" in "+item.container);
 						item.apiPutBack();
 					}
 					else{
-						if (config.is_dev) log.info("REMOVEXACT: putting back "+item+" in "+this);
+						if (Config.is_dev) log.info("REMOVEXACT: putting back "+item+" in "+this);
 						this.addItemStack(item);
 					}
 				}
@@ -399,18 +439,18 @@ public function removeItemStackClassExact(class_tsid, count, args){
 
 		// Done?
 		if (count <= 0){
-			if (config.is_dev) log.info("REMOVEXACT: done, returning "+stack);
+			if (Config.is_dev) log.info("REMOVEXACT: done, returning "+stack);
 			return stack;
 		}
 
 		// If we can't merge the stacks together, then just go ahead and return it.
 		if (stack && stack.count == stack.stackmax){
-			if (config.is_dev) log.info("REMOVEXACT: can't merge, returning "+stack + " count "+stack.count+" max "+stack.stackmax);
+			if (Config.is_dev) log.info("REMOVEXACT: can't merge, returning "+stack + " count "+stack.count+" max "+stack.stackmax);
 			return stack;
 		}
 	}
 
-	if (config.is_dev) log.info("REMOVEXACT: ran out of items, returning "+stack);
+	if (Config.is_dev) log.info("REMOVEXACT: ran out of items, returning "+stack);
 	return stack;	// shouldn't happen unless there weren't any appropriate item stacks, in which case this is null.
 }
 
@@ -430,8 +470,9 @@ public function removeItemStackTsid(tsid, count=null){
 		}
 	}
 
+	//RVRS: TODO: Obviously this.player is a misnomer is it can't be a player...
 	// Also check furn bag
-	if (this.is_player){
+	if (this.player.is_player){
 		var bag = this.player.furniture.furniture_get_bag();
 		if (bag) return bag.removeItemStackTsid(tsid, count);
 	}
@@ -532,7 +573,7 @@ public function canFitHowMany(class_id, count) {
 	//log.info("MG called canFitHowMany with "+class_id+" and "+count+" and proto is "+proto);
 
 	// Izzit Furniture? Then it doesn't go here, it goes there, and we'll be smart enough to pass it through... won't we, Myles?
-	if (proto.has_parent('furniture_base')) return stack.count;
+	if (proto.has_parent('furniture_base')) return count; //RVRS: TODO: originally stack.count, assuming this was a typo/bug 
 
 	var num = 0;
 
@@ -591,7 +632,7 @@ public function canFitWhere(class_id) {
 
 // From this bag, go up the tree until we find the root
 public function findPack(){
-	if (this.is_player) return this;
+	if (this.player.is_player) return this;
 
 	var pack = this.apiGetLocatableContainerOrSelf();
 	if (pack.is_player){
@@ -735,6 +776,7 @@ public function get_item_counts(recurse_bags){
 
 }
 
+/* RVRS: TODO: commenting out bag category stuff for now
 public function getBagCategories(){
 	var categories = [];
 	if (this.getCustomBagCategories) categories = this.getCustomBagCategories();
@@ -817,7 +859,7 @@ public function stackMatchesBagCategory(stack){
 	}
 	return false;
 }
-
+*/
 
 	}
 }
