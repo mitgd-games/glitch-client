@@ -235,6 +235,11 @@ package com.reversefold.glitch.server.player {
 			throw new Error('apiStopFollowing');
 		}
 		
+		public function apiEndLocationMove(location) {
+			//RVRS: TODO
+			throw new Error('apiEndLocationMove');
+		}
+		
 
 //#include inc_admin.js,
 		public var admin : Admin;

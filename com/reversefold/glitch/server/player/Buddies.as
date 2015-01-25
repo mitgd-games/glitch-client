@@ -415,7 +415,7 @@ public function buddies_get_login_info(){
     return ret;
 }
 
-public function buddies_get_login(max){
+public function buddies_get_login(max=null){
 
     // we'll first build a list of friend TSIDs so
     // we can fetch info in parallel, then fetch their info

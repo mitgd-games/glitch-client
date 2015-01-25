@@ -567,7 +567,7 @@ package com.reversefold.glitch.server {
 			return ret;
 		}
 
-		function doLoginStart(pc, msg, isRelogin){
+		function doLoginStart(pc : Player, msg, isRelogin){
 
 			//log.info('***LOGIN-START-'+pc.tsid+'-1');
 
@@ -822,8 +822,8 @@ package com.reversefold.glitch.server {
 				//
 
 				rsp.pc.stats = {};
-				pc.stats_get_login(rsp.pc.stats);
-				pc.metabolics_get_login(rsp.pc.stats);
+				pc.stats.stats_get_login(rsp.pc.stats);
+				pc.metabolics.metabolics_get_login(rsp.pc.stats);
 
 
 				//
@@ -832,7 +832,7 @@ package com.reversefold.glitch.server {
 
 				rsp.pc.itemstacks = make_bag(pc);
 
-				var furniture_bag = pc.furniture_get_bag();
+				var furniture_bag = pc.furniture.furniture_get_bag();
 				if (furniture_bag){
 					var contents = furniture_bag.getContents();
 
@@ -849,13 +849,13 @@ package com.reversefold.glitch.server {
 				// quests, buffs & familiar
 				//
 
-				rsp.quests = pc.quests_get_status();
+				rsp.quests = pc.quests.quests_get_status();
 
-				rsp.buffs = pc.buffs_get_active();
+				rsp.buffs = pc.buffs.buffs_get_active();
 
-				rsp.familiar = pc.familiar_get_login();
+				rsp.familiar = pc.familiar.familiar_get_login();
 
-				rsp.groups = pc.groups_get_login();
+				rsp.groups = pc.groups.groups_get_login();
 				/*
 				if (!pc.live_help_group || (!in_array_real(pc.live_help_group, config.live_help_groups) && !in_array_real(pc.live_help_group, config.newbie_live_help_groups)) || time() - pc.date_last_loggedin >= 3600){
 					if (pc.stats_get_level() < 11){
@@ -874,20 +874,20 @@ package com.reversefold.glitch.server {
 					rsp.trade_chat_group = pc.trade_chat_group;
 				}
 				*/
-				rsp.prompts = pc.prompts_get_login();
+				rsp.prompts = pc.prompts.prompts_get_login();
 
-				rsp.pc.hi_emote_variant = pc.hi_emote_variant;
+				rsp.pc.hi_emote_variant = pc.emotes.hi_emote_variant;
 				rsp.pc.escrow_tsid = pc.trading.storage_tsid;
 				rsp.pc.rewards_bag_tsid = pc.rewards.storage_tsid;
 				rsp.pc.mail_bag_tsid = pc.mail.storage_tsid;
-				rsp.pc.trophy_storage_tsid = pc.trophies_find_container().tsid;
-				rsp.pc.auction_storage_tsid = pc.auctions_find_container().tsid;
+				rsp.pc.trophy_storage_tsid = pc.trophies.trophies_find_container().tsid;
+				rsp.pc.auction_storage_tsid = pc.auctions.auctions_find_container().tsid;
 				rsp.pc.furniture_bag_tsid = pc.furniture.storage_tsid;
 				rsp.pc.needs_account = (pc.quickstart_needs_account && pc.location.class_tsid != 'newxp_intro' && pc.location.class_tsid != 'newxp_training1') ? true : false;
 
 				rsp.acl_key_count = pc.acl_keys_count_received();
-				rsp.pol_info = pc.houses_get_login();
-				rsp.home_info = pc.houses_get_login_new();
+				rsp.pol_info = pc.houses.houses_get_login();
+				rsp.home_info = pc.houses.houses_get_login_new();
 
 				rsp.overlay_urls = config.overlays.overlays_map;
 				rsp.newxp_locations = config.newxp_locations;
@@ -1074,13 +1074,13 @@ package com.reversefold.glitch.server {
 				var tool = apiFindItemPrototype(r.tool);
 
 				// Change task_limit based on potential upgrades
-				var task_limit_multiplier = pc.get_task_limit_multiplier(tool);
+				var task_limit_multiplier = pc.making.get_task_limit_multiplier(tool);
 				if (task_limit_multiplier != 1.0){
 					r.task_limit = Math.round(r.task_limit * task_limit_multiplier);
 				}
 
 				// Do we know this recipe?
-				if (!pc.recipes.recipes[rid]){
+				if (!pc.making.recipes.recipes[rid]){
 					// We implicitly know all transmogrification recipes
 					if (!tool || tool.getClassProp('making_type') != 'transmogrification'){
 						r.learnt = 0;
@@ -1100,9 +1100,9 @@ package com.reversefold.glitch.server {
 					r.disabled = false;
 					if (r.skills){
 						for (var s in r.skills){
-							if (!pc.skills_has(r.skills[s])){
+							if (!pc.skills.skills_has(r.skills[s])){
 								r.disabled = true;
-								r.disabled_reason = "You need to learn the "+pc.skills_linkify(r.skills[s])+" skill.";
+								r.disabled_reason = "You need to learn the "+pc.skills.skills_linkify(r.skills[s])+" skill.";
 								break;
 							}
 						}
@@ -1110,9 +1110,9 @@ package com.reversefold.glitch.server {
 
 					if (r.achievements){
 						for (var a in r.achievements){
-							if (!pc.achievements_has(r.achievements[a])){
+							if (!pc.achievements.achievements_has(r.achievements[a])){
 								r.disabled = true;
-								r.disabled_reason = "You need to get the "+pc.achievements_linkify(r.achievements[a])+" achievement.";
+								r.disabled_reason = "You need to get the "+pc.achievements.achievements_linkify(r.achievements[a])+" achievement.";
 								break;
 							}
 						}
@@ -1129,8 +1129,8 @@ package com.reversefold.glitch.server {
 			// the player's buddylists
 			//
 
-			rsp.buddies = pc.buddies_get_login();
-			rsp.ignoring = pc.buddies_get_ignoring_login();
+			rsp.buddies = pc.buddies.buddies_get_login();
+			rsp.ignoring = pc.buddies.buddies_get_ignoring_login();
 
 			//log.info('***LOGIN-START-'+pc.tsid+'-5');
 
@@ -1139,7 +1139,7 @@ package com.reversefold.glitch.server {
 			// in a party?
 			//
 
-			var m = pc.party_members();
+			var m = pc.party.party_members();
 			if (m){
 				rsp.party = {
 					members: m
@@ -1160,7 +1160,7 @@ package com.reversefold.glitch.server {
 			// Skill urls
 			//
 
-			rsp.skill_urls = pc.skills_get_urls();
+			rsp.skill_urls = pc.skills.skills_get_urls();
 
 			//log.info('***LOGIN-START-'+pc.tsid+'-7');
 
@@ -1173,7 +1173,7 @@ package com.reversefold.glitch.server {
 			//
 			// Perf testing
 			//
-
+			/* RVRS: disabled
 			if (msg.perf_testing && msg.perf_testing == true){
 				if (!pc.after_perf_test_location){
 					pc.after_perf_test_location = {
@@ -1188,6 +1188,7 @@ package com.reversefold.glitch.server {
 			else if (pc.after_perf_test_location){
 				pc.halt_perf_test = true;
 			}
+			*/
 		}
 
 
