@@ -12,6 +12,7 @@ public var capacity = 16; // The number of slots in the bag
 public var is_bag = true;
 public var is_pack = true;
 public var is_limited = false; // Is this bag limited in the type of items it can store?
+public var size;
 
 // List bag contents: This should return a hash of item stacks in the bag. Hash keys are the slot numbers, starting from 0.
 public function getContents(){

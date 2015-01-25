@@ -143,7 +143,7 @@ public function imagination_purchase_upgrade_confirmed(id){
     }
 }
 
-public function imagination_grant(class_tsid, amount, hand_id=null, no_growl=false, no_history=false){
+public function imagination_grant(class_tsid, amount=null, hand_id=null, no_growl=false, no_history=false){
     this.imagination_init();
 
     var upgrade = com.reversefold.glitch.server.data.Imagination.data_imagination_upgrades[class_tsid];

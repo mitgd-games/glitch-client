@@ -1,8 +1,9 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
@@ -11,6 +12,10 @@ package com.reversefold.glitch.server.player {
 
         public var config : Config;
         public var player : Player;
+		
+		public var label : String;
+		public var currants;
+		public var storage_tsid;
 
         public function Trading(config : Config, player : Player) {
             this.config = config;
@@ -19,13 +24,13 @@ package com.reversefold.glitch.server.player {
 
 
 public function trading_init(){
-    if (!this.trading){
+    if (!this.storage_tsid){
     //if (this.trading === undefined || this.trading === null){
-        this.trading = Server.instance.apiNewOwnedDC(this);
-        this.trading.label = 'Trading';
+        //this.trading = Server.instance.apiNewOwnedDC(this);
+        this.label = 'Trading';
 
         this.trading_create_escrow_bag();
-        this.trading.currants = 0;
+        this.currants = 0;
     }
 
     var escrow = this.trading_get_escrow_bag();
@@ -45,13 +50,13 @@ public function trading_create_escrow_bag(){
 
     this.apiAddHiddenStack(it);
 
-    this.trading.storage_tsid = it.tsid;
+    this.storage_tsid = it.tsid;
 }
 
 public function trading_reset(){
     this.trading_cancel_auto();
 
-    if (this.trading){
+    if (this.storage_tsid){
         var escrow = this.trading_get_escrow_bag();
         if (escrow){
             var contents = escrow.getContents();
@@ -65,7 +70,7 @@ public function trading_reset(){
 public function trading_delete(){
     this.trading_cancel_auto();
 
-    if (this.trading){
+    if (this.storage_tsid){
         var escrow = this.trading_get_escrow_bag();
         if (escrow){
             var contents = escrow.getContents();
@@ -74,16 +79,17 @@ public function trading_delete(){
             }
 
             escrow.apiDelete();
-            delete this.trading.storage_tsid;
+            this.storage_tsid = null;
         }
 
-        this.trading.apiDelete();
-        delete this.trading;
+        //this.trading.apiDelete();
+        //delete this.trading;
+		this.currants = null;
     }
 }
 
 public function trading_get_escrow_bag(){
-    return this.player.hiddenItems[this.trading.storage_tsid];
+    return this.player.hiddenItems[this.storage_tsid];
 }
 
 public function trading_has_escrow_items(){
@@ -149,7 +155,7 @@ public function trading_request_start(target_tsid){
         };
     }
 
-    if (!apiIsPlayerOnline(target_tsid)){
+    if (!Server.instance.apiIsPlayerOnline(target_tsid)){
         return {
             ok: 0,
             error: 'That player is not online.'
@@ -214,7 +220,7 @@ public function trading_request_start(target_tsid){
         bubble: true,
         width: 70,
         height: 70,
-        swf_url: this.overlay_key_to_url('trading'),
+        swf_url: overlay_key_to_url('trading'),
         uid: this.player.tsid+'_trading'
     };
 
@@ -267,7 +273,7 @@ public function trading_cancel(target_tsid){
         type: 'overlay_cancel',
         uid: this.player.tsid+'_trading'
     }, this);
-    if (apiIsPlayerOnline(target_tsid) && target['!is_trading'] == this.player.tsid){
+    if (Server.instance.apiIsPlayerOnline(target_tsid) && target['!is_trading'] == this.player.tsid){
         target.location.apiSendMsgAsIsX({
             type: 'overlay_cancel',
             uid: target.tsid+'_trading'
@@ -279,7 +285,7 @@ public function trading_cancel(target_tsid){
     // Tell the other player
     //
 
-    if (apiIsPlayerOnline(target_tsid) && target['!is_trading'] == this.player.tsid){
+    if (Server.instance.apiIsPlayerOnline(target_tsid) && target['!is_trading'] == this.player.tsid){
         target.apiSendMsgAsIs({
             type: 'trade_cancel',
             tsid: this.player.tsid
@@ -360,9 +366,9 @@ public function trading_rollback(){
     // Refund currants
     //
 
-    if (this.trading.currants){
-        this.player.stats.stats_add_currants(this.trading.currants);
-        this.trading.currants = 0;
+    if (this.currants){
+        this.player.stats.stats_add_currants(this.currants);
+        this.currants = 0;
     }
 
     delete this['!trade_accepted'];
@@ -395,7 +401,7 @@ public function trading_add_item(target_tsid, itemstack_tsid, amount){
     }
 
     var target = getPlayer(target_tsid);
-    if (!apiIsPlayerOnline(target_tsid)){
+    if (!Server.instance.apiIsPlayerOnline(target_tsid)){
         return {
             ok: 0,
             error: 'That player is not online.'
@@ -439,7 +445,7 @@ public function trading_add_item(target_tsid, itemstack_tsid, amount){
     };
 }
 
-public function trading_add_item_do(itemstack_tsid, amount, destination_slot){
+public function trading_add_item_do(itemstack_tsid, amount, destination_slot=null){
     //log.info('trading_add_item_do '+itemstack_tsid+' ('+amount+')');
     var item = this.player.bag.removeItemStackTsid(itemstack_tsid, amount);
     if (!item){
@@ -616,7 +622,7 @@ public function trading_remove_item(target_tsid, itemstack_tsid, amount){
     }
 
     var target = getPlayer(target_tsid);
-    if (!apiIsPlayerOnline(target_tsid)){
+    if (!Server.instance.apiIsPlayerOnline(target_tsid)){
         return {
             ok: 0,
             error: 'That player is not online.'
@@ -746,7 +752,7 @@ public function trading_change_item(target_tsid, itemstack_tsid, amount){
     }
 
     var target = getPlayer(target_tsid);
-    if (!apiIsPlayerOnline(target_tsid)){
+    if (!Server.instance.apiIsPlayerOnline(target_tsid)){
         return {
             ok: 0,
             error: 'That player is not online.'
@@ -774,7 +780,7 @@ public function trading_change_item(target_tsid, itemstack_tsid, amount){
     if (item.count != amount){
         if (item.count < amount){
             // We need an item from the pack to move
-            var pack_item = this.findFirst(item.class_id);
+            var pack_item = this.player.bag.findFirst(item.class_id);
             if (!pack_item){
                 return {
                     ok: 0,
@@ -836,7 +842,7 @@ public function trading_update_currants(target_tsid, amount){
     }
 
     var target = getPlayer(target_tsid);
-    if (!apiIsPlayerOnline(target_tsid)){
+    if (!Server.instance.apiIsPlayerOnline(target_tsid)){
         return {
             ok: 0,
             error: 'That player is not online.'
@@ -850,9 +856,9 @@ public function trading_update_currants(target_tsid, amount){
 
     delete this['!trade_accepted'];
     delete target['!trade_accepted'];
-    var amount_diff = amount - this.trading.currants;
+    var amount_diff = amount - this.currants;
 
-    //log.info('Currants diff of '+amount+' - '+this.trading.currants+' is '+amount_diff);
+    //log.info('Currants diff of '+amount+' - '+this.currants+' is '+amount_diff);
     //log.info('Player currently has: '+this.player.stats.currants.value);
     if (amount_diff != 0){
         if (amount_diff < 0){
@@ -868,7 +874,7 @@ public function trading_update_currants(target_tsid, amount){
             }
         }
 
-        this.trading.currants = amount;
+        this.currants = amount;
 
 
         //
@@ -878,7 +884,7 @@ public function trading_update_currants(target_tsid, amount){
         target.apiSendMsgAsIs({
             type: 'trade_currants',
             tsid: this.player.tsid,
-            amount: this.trading.currants
+            amount: this.currants
         });
     }
 
@@ -905,7 +911,7 @@ public function trading_accept(target_tsid){
     }
 
     var target = getPlayer(target_tsid);
-    if (!apiIsPlayerOnline(target_tsid)){
+    if (!Server.instance.apiIsPlayerOnline(target_tsid)){
         return {
             ok: 0,
             error: 'That player is not online.'
@@ -958,7 +964,7 @@ public function trading_unlock(target_tsid){
     }
 
     var target = getPlayer(target_tsid);
-    if (!apiIsPlayerOnline(target_tsid)){
+    if (!Server.instance.apiIsPlayerOnline(target_tsid)){
         return {
             ok: 0,
             error: 'That player is not online.'
@@ -999,7 +1005,7 @@ public function trading_complete(target_tsid){
     }
 
     var target = getPlayer(target_tsid);
-    if (!apiIsPlayerOnline(target_tsid)){
+    if (!Server.instance.apiIsPlayerOnline(target_tsid)){
         return {
             ok: 0,
             error: 'That player is not online.'
@@ -1133,9 +1139,9 @@ public function trading_transfer(target_tsid){
     // Currants!
     //
 
-    if (this.trading.currants){
-        target.stats_add_currants(this.trading.currants, {'trade':this.player.tsid});
-        this.trading.currants = 0;
+    if (this.currants){
+        target.stats_add_currants(this.currants, {'trade':this.player.tsid});
+        this.currants = 0;
         traded_something = true;
     }
 

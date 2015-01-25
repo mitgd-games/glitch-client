@@ -55,6 +55,19 @@ package com.reversefold.glitch.server.player {
 		public var newxp_allow_home;
 		public var followers;
 		public var hiddenItems = {};
+		public var intro_steps;
+		public var no_reset_teleport;
+		public var crafty_bot;
+		public var greeting;
+		public var animals_named;
+		
+		public var use_img;
+		
+		//RVRS: TODO: should this be here?
+		public var greeted;
+
+		//RVRS: TODO: only referenced in admin...
+		public var houses_backup;
 
 		public var is_god : Boolean = false;
 		public var is_help : Boolean = false;
@@ -2254,7 +2267,7 @@ public function greeterGoToGreetingLocation(){
 }
 
 public var collectible_item_classes = ['gameserver', 'collectors_edition_2010_glitchmas_yeti', 'glitchmas_present', 'greeter_badge', 'bag_greeter_badge', 'trophy_egghunt', 'trophy_street_creator_dirt', 'trophy_street_creator_earth', 'trophy_street_creator_rock', 'trophy_street_creator_wood'];
-public function resetForTesting(skip){
+public function resetForTesting(skip=false){
 
 	log.info(this+' resetForTesting');
 
@@ -3040,7 +3053,7 @@ public function clearDoNotDisturb(){
 	return true;
 }
 
-public function buildPath(dst, src){
+public function buildPath(dst, src=null){
 
 	var dst_array = (typeof dst == 'object' && dst.length);
 
@@ -4014,7 +4027,7 @@ public function getLabel(){
 }
 
 public function getJumpCount(){
-	return this.jump_count;
+	return this.achievements.jump_count;
 }
 
 public function resetQuickstartNeeds(){

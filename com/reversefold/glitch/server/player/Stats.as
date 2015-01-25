@@ -927,7 +927,7 @@ public function stats_remove_currants(num, context){
     return change;
 }
 
-public function stats_try_remove_currants(num, context){
+public function stats_try_remove_currants(num, context=null){
     this.stats_init();
 
     if (this.stats.currants.value < num) return false;

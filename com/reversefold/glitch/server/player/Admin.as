@@ -1,8 +1,12 @@
 package com.reversefold.glitch.server.player {
     import com.reversefold.glitch.server.Common;
     import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
+    import com.reversefold.glitch.server.data.MapsProd;
+    import com.reversefold.glitch.server.data.Pols;
     import com.reversefold.glitch.server.player.Player;
+    import com.reversefold.glitch.server.utils.CraftyTasking;
     
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
@@ -865,11 +869,11 @@ public function admin_place_pol_callback(choice, details){
         var choices = {};
         var c = 1;
 
-        for (var i in config.pol_types){
+        for (var i in Pols.pol_types){
 
             choices[c++] = {
-                txt : config.pol_types[i].label,
-                value   : 'pick_template_'+config.pol_types[i].uid
+                txt : Pols.pol_types[i].label,
+                value   : 'pick_template_'+Pols.pol_types[i].uid
             };
         }
 
@@ -892,7 +896,7 @@ public function admin_place_pol_callback(choice, details){
     if (choice.substr(0, 14) == 'pick_template_'){
 
         var idx = choice.substr(14);
-        var pol = utils.get_pol_config(idx);
+        var pol = Utils.get_pol_config(idx);
 
         var ret = this.player.location.pols_write_create(pol.template_tsid, this.player.x, this.player.y, pol.uid, true);
 
@@ -942,9 +946,9 @@ public function admin_test_teleporting(){
 
 public function admin_get_remote_location(){
 
-    for (var mote_id in config.data_maps.streets){
-        for (var hub_id in config.data_maps.streets[mote_id]){
-            for (var tsid in config.data_maps.streets[mote_id][hub_id]){
+    for (var mote_id in MapsProd.data_maps.streets){
+        for (var hub_id in MapsProd.data_maps.streets[mote_id]){
+            for (var tsid in MapsProd.data_maps.streets[mote_id][hub_id]){
 
                 var street = Server.instance.apiFindObject(tsid);
                 if (street.isRemote) return street;
@@ -1064,20 +1068,20 @@ public function adminDebug(args){
 }
 
 public function adminCheckDoneIntro(args){
-    if (!this.player.has_done_intro && (config.force_intro || this.quickstart_needs_player) && (!this.intro_steps || this.intro_steps['new_player_part1']) && this.player.stats.stats_get_level() < 2 && !this.player.location.is_newxp && !this.player.location.is_skillquest){
-        this.no_reset_teleport = true;
+    if (!this.player.has_done_intro && (config.force_intro || this.player.quickstart_needs_player) && (!this.player.intro_steps || this.player.intro_steps['new_player_part1']) && this.player.stats.stats_get_level() < 2 && !this.player.location.is_newxp && !this.player.location.is_skillquest){
+        this.player.no_reset_teleport = true;
         this.player.resetForTesting();
         this.player.goToNewNewStartingLevel();
         log.info(this+' adminCheckDoneIntro reset because not has_done_intro original');
     }
-    else if (!this.player.has_done_intro && (config.force_intro || this.quickstart_needs_player) && !this.player.location.is_newxp && !this.player.location.is_skillquest && this.player.stats.stats_get_level() < 4){
-        this.no_reset_teleport = true;
+    else if (!this.player.has_done_intro && (config.force_intro || this.player.quickstart_needs_player) && !this.player.location.is_newxp && !this.player.location.is_skillquest && this.player.stats.stats_get_level() < 4){
+        this.player.no_reset_teleport = true;
         this.player.resetForTesting();
         this.player.goToNewNewStartingLevel();
         log.info(this+' adminCheckDoneIntro reset because not has_done_intro');
     }
     else if (this.player.location.isInstance('new_starting')){
-        this.no_reset_teleport = true;
+        this.player.no_reset_teleport = true;
         this.player.resetForTesting();
         this.player.goToNewNewStartingLevel();
         log.info(this+' adminCheckDoneIntro reset because old newxp');
@@ -1106,7 +1110,7 @@ public function admin_get_location(){
         is_god      : this.player.is_god,
         is_instance : info.is_instance,
         is_pol      : info.is_pol,
-        logged_in   : this.date_last_login
+        logged_in   : this.player.date_last_login
     };
 }
 
@@ -1137,13 +1141,13 @@ public function admin_renamed(args){
     if (args.cost) this.player.stats.stats_try_remove_currants(args.cost);
 
     if (this.player.houses.home){
-        var label = Utils.escape(this.label)+"'s";
+        var label = Utils.escape(this.player.label)+"'s";
         if (this.player.houses.home.interior) this.player.houses.home.interior.setProp('label', label+' House');
         if (this.player.houses.home.exterior) this.player.houses.home.exterior.setProp('label', label+' Home Street');
         if (this.player.houses.home.tower) this.player.houses.home.tower.tower_set_label(label+' Tower');
     }
 
-    if (apiIsPlayerOnline(this.player.tsid)) {
+    if (Server.instance.apiIsPlayerOnline(this.player.tsid)) {
         this.player.apiSendMsg({
             type: 'pc_rename',
             pc: this.player.make_hash()
@@ -1166,7 +1170,7 @@ public function adminGetGodExtras(args){
         is_in_timeout: this.player.isInTimeout(),
         is_in_coneofsilence: this.player.isInConeOfSilence(),
         is_in_help_coneofsilence: this.player.isInConeOfSilence('help'),
-        img_migrated: (this.imagination && this.imagination.converted_at) ? this.imagination.converted_at : 0,
+        img_migrated: (this.player.imagination && this.player.imagination.converted_at) ? this.player.imagination.converted_at : 0,
         is_online: Server.instance.apiIsPlayerOnline(this.player.tsid)
     };
 }
@@ -1191,7 +1195,7 @@ public function adminBuildPath(args){
 
 public function adminSetTeleportationTokens(args){
     this.player.teleportation.teleportation_init();
-    this.teleportation.token_balance = intval(args.tokens);
+    this.player.teleportation.token_balance = intval(args.tokens);
     this.player.teleportation.teleportation_notify_client();
     return {ok: 1};
 }
@@ -1211,8 +1215,8 @@ public function adminSetSubscriptionStatus(args){
 public function admin_get_greeting_data(args){
     var out = {};
 
-    out.greeted = this.greeted ? this.greeted : {};
-    out.greeting = this.greeting ? this.greeting : {};
+    out.greeted = this.player.greeted ? this.player.greeted : {};
+    out.greeting = this.player.greeting ? this.player.greeting : {};
 
     return out;
 }
@@ -1221,10 +1225,10 @@ public function admin_get_named_animals(){
 
     var out = {};
 
-    if (this.animals_named){
-        for (var i in this.animals_named){
+    if (this.player.animals_named){
+        for (var i in this.player.animals_named){
 
-            var row = utils.apiCopyHash(this.animals_named[i]);
+            var row = Server.instance.apiCopyHash(this.player.animals_named[i]);
 
             var item = null;
             if (row.tsid) item = Server.instance.apiFindObject(row.tsid);
@@ -1392,15 +1396,15 @@ public function admin_create_new_home(){
 
 public function admin_craftytasking_robot_category_items(args){
     var crafty_bot = null;
-    if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
+    if (this.player.crafty_bot && this.player.crafty_bot.tsid){
+        crafty_bot = Server.instance.apiFindObject(this.player.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
 
     var status = {'ok': 1};
 
-    status.data = utils.craftytasking_category_items(crafty_bot, args.category);
+    status.data = CraftyTasking.craftytasking_category_items(crafty_bot, args.category);
 
     return status;
 }
@@ -1408,15 +1412,15 @@ public function admin_craftytasking_robot_category_items(args){
 public function admin_craftytasking_robot_sequenceSteps(args){
 
     var crafty_bot = null;
-    if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
+    if (this.player.crafty_bot && this.player.crafty_bot.tsid){
+        crafty_bot = Server.instance.apiFindObject(this.player.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
 
     var status = {'ok': 1};
 
-    status.sequence = utils.craftytasking_build_sequence(crafty_bot, utils.craftytasking_get_static_build_spec(args.class_tsid), args.count);
+    status.sequence = CraftyTasking.craftytasking_build_sequence(crafty_bot, CraftyTasking.craftytasking_get_static_build_spec(args.class_tsid), args.count);
 
     return status;
 }
@@ -1424,8 +1428,8 @@ public function admin_craftytasking_robot_sequenceSteps(args){
 public function admin_craftytasking_robot_queueAdd(args){
 
     var crafty_bot = null;
-    if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
+    if (this.player.crafty_bot && this.player.crafty_bot.tsid){
+        crafty_bot = Server.instance.apiFindObject(this.player.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
@@ -1436,8 +1440,8 @@ public function admin_craftytasking_robot_queueAdd(args){
 public function admin_craftytasking_robot_queueRemove(args){
 
     var crafty_bot = null;
-    if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
+    if (this.player.crafty_bot && this.player.crafty_bot.tsid){
+        crafty_bot = Server.instance.apiFindObject(this.player.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
@@ -1447,8 +1451,8 @@ public function admin_craftytasking_robot_queueRemove(args){
 
 public function admin_craftytasking_robot_get_status(args){
     var crafty_bot = null;
-    if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
+    if (this.player.crafty_bot && this.player.crafty_bot.tsid){
+        crafty_bot = Server.instance.apiFindObject(this.player.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
@@ -1462,8 +1466,8 @@ public function admin_craftytasking_robot_get_status(args){
 
 public function admin_craftytasking_robot_stop(args){
     var crafty_bot = null;
-    if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
+    if (this.player.crafty_bot && this.player.crafty_bot.tsid){
+        crafty_bot = Server.instance.apiFindObject(this.player.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
@@ -1476,8 +1480,8 @@ public function admin_craftytasking_robot_stop(args){
 
 public function admin_craftytasking_robot_canRefuel(args){
     var crafty_bot = null;
-    if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
+    if (this.player.crafty_bot && this.player.crafty_bot.tsid){
+        crafty_bot = Server.instance.apiFindObject(this.player.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
@@ -1491,8 +1495,8 @@ public function admin_craftytasking_robot_canRefuel(args){
 
 public function admin_craftytasking_robot_refuel(args){
     var crafty_bot = null;
-    if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
+    if (this.player.crafty_bot && this.player.crafty_bot.tsid){
+        crafty_bot = Server.instance.apiFindObject(this.player.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
@@ -1504,8 +1508,8 @@ public function admin_craftytasking_robot_refuel(args){
 
 public function admin_craftytasking_robot_queue(args){
     var crafty_bot = null;
-    if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
+    if (this.player.crafty_bot && this.player.crafty_bot.tsid){
+        crafty_bot = Server.instance.apiFindObject(this.player.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
@@ -1540,8 +1544,8 @@ public function admin_craftytasking_robot_queue(args){
 
 public function admin_craftytasking_robot_queueItem(args){
     var crafty_bot = null;
-    if (this.crafty_bot && this.crafty_bot.tsid){
-        crafty_bot = Server.instance.apiFindObject(this.crafty_bot.tsid);
+    if (this.player.crafty_bot && this.player.crafty_bot.tsid){
+        crafty_bot = Server.instance.apiFindObject(this.player.crafty_bot.tsid);
     }
 
     if (!crafty_bot) return {'ok':0, 'error':-200, 'error_desc': 'This player does not have a Crafty-bot'};
@@ -1706,15 +1710,15 @@ public function admin_replace_home_sign_with_rock(){
 }
 
 public function adminGetJumpCount(args){
-    return this.jump_count;
+    return this.player.achievements.jump_count;
 }
 
 public function adminBackfillNewxpPhysics(args){
-    if (this.use_img) return;
+    if (this.player.use_img) return;
 
-    this.physics_new = {};
+    this.player.physics.physics_new = {};
     this.player.physics.setDefaultPhysics();
-    this.use_img = true;
+    this.player.use_img = true;
 
     this.player.imagination.imagination_grant('walk_speed_1', 1, undefined, true, true);
     this.player.imagination.imagination_grant('walk_speed_2', 1, undefined, true, true);
@@ -1939,9 +1943,9 @@ public function adminRebuildSocialSignpost(args){
 
 public function admin_quickstart_flags(){
     return {
-        name    : !!this.quickstart_needs_player,
-        avatar  : !!this.quickstart_needs_avatar,
-        account : !!this.quickstart_needs_account
+        name    : !!this.player.quickstart_needs_player,
+        avatar  : !!this.player.quickstart_needs_avatar,
+        account : !!this.player.quickstart_needs_account
     };
 }
 
@@ -1953,7 +1957,7 @@ public function admin_feats_increment(args){
 public function admin_can_feat(args){
     return {
         quest: this.player.quests.getQuestStatus('last_pilgrimage_of_esquibeth') == 'done',
-        conch: !!this.has_blown_conch
+        conch: !!this.player.quests.has_blown_conch
     };
 }
 

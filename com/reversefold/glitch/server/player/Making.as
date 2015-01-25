@@ -1,15 +1,23 @@
 package com.reversefold.glitch.server.player {
+    import com.reversefold.glitch.server.Common;
+    import com.reversefold.glitch.server.Server;
+    import com.reversefold.glitch.server.Utils;
     import com.reversefold.glitch.server.data.Config;
     import com.reversefold.glitch.server.player.Player;
-
+    
     import org.osmf.logging.Log;
     import org.osmf.logging.Logger;
 
-    public class Making {
+    public class Making extends Common {
         private static var log : Logger = Log.getLogger("server.player.achievements");
 
         public var config : Config;
         public var player : Player;
+		
+		public var label : String;
+		public var recipes;
+		public var making;
+		public var making_queue;
 
         public function Making(config : Config, player : Player) {
             this.config = config;
@@ -23,9 +31,9 @@ public function making_init(){
     //
 
     if (this.recipes === undefined || this.recipes === null){
-        this.recipes = Server.instance.apiNewOwnedDC(this);
-        this.recipes.label = 'Recipes';
-        this.recipes.recipes = {};
+        //this.recipes = Server.instance.apiNewOwnedDC(this);
+        this.label = 'Recipes';
+        this.recipes = {};
     }
 
     if (!this.making){
@@ -39,19 +47,21 @@ public function making_init(){
 
 public function making_reset(){
 
-    if (this.recipes) this.recipes.recipes = {};
+    if (this.recipes) this.recipes = {};
     this.making = {};
     this.making_queue = [];
 }
 
 public function making_delete(){
-
+	this.player.making = new Making(config, player);
+	/*
     if (this.recipes){
         this.recipes.apiDelete();
-        delete this.recipes;
+        this.recipes = null;
     }
-    delete this.making;
-    delete this.making_queue;
+    this.making = null;
+    this.making_queue = null;
+	*/
 }
 
 
@@ -190,7 +200,7 @@ public function making_open_interface(item, verb){
         knowns[recipe].energy_cost = costs.energy_cost;
     }
 
-    this.apiSendMsgAsIs(out);
+    this.player.apiSendMsgAsIs(out);
 
     return true;
 }
@@ -201,7 +211,7 @@ public function computeEnergyAndTimeCost(recipe, item, count, verb) {
     //
     // make skill-based adjustments
     //
-    var wait_time = count * intval(recipe.wait_ms);
+    var wait_time = count * int(recipe.wait_ms);
     var energy_cost = recipe.energy_cost;
     if (item.getClassProp('making_type') == 'cooking'){
 
@@ -285,7 +295,7 @@ public function making_make_known(msg, item){
     // check that the recipe is known
     //
 
-    if (!this.recipes.recipes[recipe_id] && item.getClassProp('making_type') != 'transmogrification' && !(recipe_id == 288 && isPiDay())){
+    if (!this.recipes[recipe_id] && item.getClassProp('making_type') != 'transmogrification' && !(recipe_id == 288 && isPiDay())){
 
         log.info("make failed - recipe not known "+recipe_id);
         return this.player.apiSendMsg(make_fail_rsp(msg, 0, "unknown recipe "+recipe_id));
@@ -416,7 +426,7 @@ public function making_make_known(msg, item){
             item: item,
             verb: verb,
             energy: energy_cost,
-            started: intval(getTime())
+            started: intval(new Date().getTime())
         };
         var now = new Date().getTime();
         var then = ((now + wait_time));
@@ -437,7 +447,7 @@ public function making_make_known(msg, item){
             item: item,
             verb: verb,
             energy: energy_cost,
-            started: intval(getTime())
+            started: intval(new Date().getTime())
         };
         var now = new Date().getTime();
         var then = ((now + wait_time));
@@ -640,7 +650,7 @@ public function tryToMake(msg, item){
         inputs: inputs,
         item: item,
         verb: verb,
-        started: intval(getTime())
+        started: intval(new Date().getTime())
     };
     var now = new Date().getTime();
     var then = now + wait_time;
@@ -949,7 +959,7 @@ public function finishMakingKnown(inf){
 
 
     var knowns = {};
-    for (var i in this.recipes.recipes){
+    for (var i in this.recipes){
         if (!previously_known[i]){
             var recipe = get_recipe(i);
 
@@ -1295,7 +1305,7 @@ public function finishMakingUnknown(inf){
     // mark as known
     //
 
-    this.recipes.recipes[match_id] = time();
+    this.recipes[match_id] = time();
     this.player.achievements.achievements_increment('making_unknown_recipe', str(match_id));
     this.player.achievements.achievements_increment('making_unknown_tool', info.item.class_id);
     this.player.achievements.achievements_increment('making_tool', info.item.class_id);
@@ -1332,7 +1342,7 @@ public function finishMakingUnknown(inf){
     new_recipe['discoverable'] = 1;
     knowns[match_id] = new_recipe;
 
-    for (var i in this.recipes.recipes){
+    for (var i in this.recipes){
         if (!previously_known[i]){
             var recipe = Utils.copy_hash(get_recipe(i));
 
@@ -1374,7 +1384,7 @@ public function makingFindBestMatch(inputs, available_recipes, exact_quantities)
 
         // Only discoverable recipes
         if (recipe.learnt != 0) continue;
-        if (this.recipes.recipes[recipe_id]) continue;
+        if (this.recipes[recipe_id]) continue;
 
         // get the score
         var score = this.makingInputsMatch(recipe.inputs, inputs, exact_quantities);
@@ -1463,8 +1473,8 @@ public function makingInputsMatch(a, b, exact_counts){
 public function making_get_known_recipes(){
     var known = {};
 
-    for (var i in this.recipes.recipes){
-        known[i] = this.recipes.recipes[i];
+    for (var i in this.recipes){
+        known[i] = this.recipes[i];
     }
 
     return known;
@@ -1472,7 +1482,7 @@ public function making_get_known_recipes(){
 
 public function making_try_learn_recipe(recipe_id){
 
-    if (!this.recipes.recipes[recipe_id]){
+    if (!this.recipes[recipe_id]){
 
         return this.making_learn_recipe(recipe_id);
     }
@@ -1480,7 +1490,7 @@ public function making_try_learn_recipe(recipe_id){
 
 public function making_unlearn_recipe(recipe_id){
 
-    delete this.recipes.recipes[recipe_id];
+    delete this.recipes[recipe_id];
 }
 
 public function making_learn_recipe(recipe_id){
@@ -1489,13 +1499,13 @@ public function making_learn_recipe(recipe_id){
 
     if (!recipe_info.name) return;
 
-    this.recipes.recipes[recipe_id] = time();
+    this.recipes[recipe_id] = time();
 
     this.player.sendOnlineActivity("You learned how to make "+recipe_info.name+"!");
 }
 
 public function making_recipe_is_known(recipe_id){
-    return this.recipes.recipes[recipe_id] ? true : false;
+    return this.recipes[recipe_id] ? true : false;
 }
 
 public function making_execute_recipe(recipe_id, count, energy_cost, item){
@@ -1603,7 +1613,7 @@ public function making_get_recipes(item, verb){
         var id = making_info.recipes[i];
 
         // Show all known recipes, which is all recipes for the tool if this is a transmogrification tool
-        if (this.recipes.recipes[id] || item.getClassProp('making_type') == 'transmogrification' || (id == 288 && isPiDay())){
+        if (this.recipes[id] || item.getClassProp('making_type') == 'transmogrification' || (id == 288 && isPiDay())){
             var r = get_recipe(id);
             if (!r) continue;
 
@@ -1697,7 +1707,7 @@ public function making_recipe_request(msg){
                     }
 
                     // Do we know this recipe?
-                    if (!this.recipes.recipes[j]){
+                    if (!this.recipes[j]){
                         // We implicitly know all transmogrification recipes
                         if (!tool || tool.getClassProp('making_type') != 'transmogrification'){
                             rsp[class_id].learnt = 0;

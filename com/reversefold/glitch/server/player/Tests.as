@@ -19,15 +19,15 @@ package com.reversefold.glitch.server.player {
 
 
 public function tests_bag_contents_empty(){
-    this.emptyBag();
-    var contents = this.getContents();
+    this.player.bag.emptyBag();
+    var contents = this.player.bag.getContents();
 
-    var ret = tests_assert_equals('Bag capacity', this.capacity, contents.length);
+    var ret = tests_assert_equals('Bag capacity', this.player.bag.capacity, contents.length);
     if (!ret.ok){
         return ret;
     }
 
-    var ret = tests_assert_equals('Bag size', 0, this.size);
+    var ret = tests_assert_equals('Bag size', 0, this.player.bag.size);
     if (!ret.ok){
         return ret;
     }
