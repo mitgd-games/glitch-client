@@ -657,7 +657,7 @@ public function stats_get_login(out){
         out.favor_points_new[i] = {
             current: this.favor_points[i].value,
             max: this.stats_get_max_favor(i),
-            cur_daily_favor: (this.player.daily_favor && this.player.daily_favor[i]) ? this.player.daily_favor[i] : 0
+            cur_daily_favor: (this.daily_favor && this.daily_favor[i]) ? this.daily_favor[i] : 0
         };
     }
 

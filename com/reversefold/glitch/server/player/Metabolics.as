@@ -283,9 +283,10 @@ public function metabolics_set_mood(x, quiet = false, force = false){
     }
 }
 
-public function metabolics_recalc_limits(set_to_max){
+public function metabolics_recalc_limits(set_to_max=true){
 
     //log.info(this+' metabolics_recalc_limits 1: '+set_to_max);
+	//RVRS: TODO: Remove
     if (set_to_max === undefined){
         set_to_max = true;
     }

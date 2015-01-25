@@ -103,7 +103,7 @@ package com.reversefold.glitch.server {
 			return tsid == pc.tsid;
 		}
 		
-		public function apiCallMethodForOnlinePlayers(func : String, tsids) {
+		public function apiCallMethodForOnlinePlayers(func : String, tsids, args=null) {
 			//RVRS: TODO: Call for just us until multiplayer?
 			throw new Error('apiCallMethodForOnlinePlayers ' + func + ' ' + tsids);
 		}

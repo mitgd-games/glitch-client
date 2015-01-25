@@ -64,7 +64,7 @@ public function auctions_find_container(){
     return it;
 }
 
-public function auctions_delete(destroy_items){
+public function auctions_delete(destroy_items=false){
     if (this.active){
 
         for (var i in this.active){

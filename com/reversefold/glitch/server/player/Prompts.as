@@ -59,7 +59,7 @@ public function prompts_get_login(){
 // For the times when all you want are some text and an OK button
 //
 
-public function prompts_add_simple(txt, timeout){
+public function prompts_add_simple(txt, timeout=null){
     var details = {
         txt             : txt,
         icon_buttons    : false,
